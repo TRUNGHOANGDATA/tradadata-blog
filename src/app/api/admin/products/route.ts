@@ -1,0 +1,68 @@
+import { NextResponse } from 'next/server';
+import { auth } from '@/lib/auth';
+import { supabaseAdmin } from '@/lib/supabase/server';
+
+export async function GET() {
+    try {
+        const session = await auth();
+        if (!session?.user || session.user.role !== 'admin') {
+            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+        }
+
+        if (!supabaseAdmin) {
+            return NextResponse.json({ error: 'Database not configured' }, { status: 500 });
+        }
+
+        const { data, error } = await supabaseAdmin
+            .from('products')
+            .select('*')
+            .order('sort_order', { ascending: true })
+            .order('created_at', { ascending: false });
+
+        if (error) throw error;
+
+        return NextResponse.json({ products: data || [] });
+    } catch (error: any) {
+        return NextResponse.json({ error: error.message }, { status: 500 });
+    }
+}
+
+export async function POST(request: Request) {
+    try {
+        const session = await auth();
+        if (!session?.user || session.user.role !== 'admin') {
+            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+        }
+
+        if (!supabaseAdmin) {
+            return NextResponse.json({ error: 'Database not configured' }, { status: 500 });
+        }
+
+        const body = await request.json();
+        const { name, description, price, product_type, is_active, features, sort_order, duration_days, image_url, section_id } = body;
+
+        const { data, error } = await supabaseAdmin
+            .from('products')
+            .insert({
+                name,
+                description,
+                price: parseFloat(price),
+                product_type,
+                is_active,
+                features, // expecting an array of strings
+                sort_order: parseInt(sort_order) || 0,
+                duration_days: duration_days ? parseInt(duration_days) : null,
+                image_url: image_url || null,
+                section_id: section_id || null
+            })
+            .select()
+            .single();
+
+        if (error) throw error;
+
+        return NextResponse.json({ product: data }, { status: 201 });
+    } catch (error: any) {
+        console.error('Error creating product:', error);
+        return NextResponse.json({ error: error.message }, { status: 500 });
+    }
+}

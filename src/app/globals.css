@@ -1,26 +1,608 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* ============================================
+   Custom Theme Variables
+   ============================================ */
+
+@theme {
+  /* Brand Colors */
+  --color-brand-50: #eef2ff;
+  --color-brand-100: #e0e7ff;
+  --color-brand-200: #c7d2fe;
+  --color-brand-300: #a5b4fc;
+  --color-brand-400: #818cf8;
+  --color-brand-500: #6366f1;
+  --color-brand-600: #4f46e5;
+  --color-brand-700: #4338ca;
+  --color-brand-800: #3730a3;
+  --color-brand-900: #312e81;
+
+  /* Surface Colors */
+  --color-surface-50: #f8fafc;
+  --color-surface-100: #f1f5f9;
+  --color-surface-200: #e2e8f0;
+  --color-surface-300: #cbd5e1;
+  --color-surface-400: #94a3b8;
+  --color-surface-500: #64748b;
+  --color-surface-600: #475569;
+  --color-surface-700: #334155;
+  --color-surface-800: #1e293b;
+  --color-surface-900: #0f172a;
+  --color-surface-950: #020617;
+
+  /* Accent Colors for Categories */
+  --color-excel: #217346;
+  --color-power-query: #F2C811;
+  --color-vba: #8B4513;
+  --color-power-bi: #F2C811;
+  --color-sql: #CC2927;
+  --color-python: #3776AB;
+  --color-ai: #8B5CF6;
+  --color-supply-chain: #059669;
+
+  /* Fonts */
+  --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+
+  /* Animations */
+  --animate-fade-in: fade-in 0.5s ease-out;
+  --animate-slide-up: slide-up 0.5s ease-out;
+  --animate-slide-down: slide-down 0.3s ease-out;
+  --animate-scale-in: scale-in 0.2s ease-out;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+/* Enable class-based dark mode for Tailwind v4 */
+@custom-variant dark (&:is(.dark, .dark *));
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
   }
 }
 
+@keyframes slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slide-down {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* ============================================
+   Base Styles
+   ============================================ */
+
+html {
+  scroll-behavior: smooth;
+}
+
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  @apply bg-surface-50 text-surface-900 antialiased;
+  font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+}
+
+/* Dark mode */
+.dark body {
+  @apply bg-surface-950 text-surface-100;
+}
+
+/* ============================================
+   Dark Mode Overrides — Explicit high-specificity
+   rules to guarantee dark backgrounds on cards
+   regardless of Tailwind utility cascade order.
+   ============================================ */
+.dark .bg-white {
+  background-color: var(--color-surface-900) !important;
+}
+
+.dark .border-surface-200 {
+  border-color: var(--color-surface-800) !important;
+}
+
+.dark .text-surface-900 {
+  color: var(--color-surface-100) !important;
+}
+
+.dark .text-surface-500 {
+  color: var(--color-surface-300) !important;
+}
+
+.dark .text-surface-400 {
+  color: var(--color-surface-300) !important;
+}
+
+.dark .text-surface-600 {
+  color: var(--color-surface-300) !important;
+}
+
+/* ============================================
+   Typography
+   ============================================ */
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  @apply font-bold tracking-tight;
+}
+
+/* ============================================
+   Glassmorphism Utility
+   ============================================ */
+
+.glass {
+  @apply bg-white/70 backdrop-blur-xl border border-white/20 shadow-lg;
+}
+
+.dark .glass {
+  @apply bg-surface-900/70 border-surface-700/30;
+}
+
+/* ============================================
+   Prose (Blog Content)
+   ============================================ */
+
+.prose {
+  @apply text-surface-700 leading-relaxed;
+  font-family: 'Inter', ui-sans-serif, system-ui, sans-serif;
+}
+
+.prose h2 {
+  @apply text-2xl font-bold text-surface-900 mt-10 mb-4 pb-2 border-b border-surface-200;
+}
+
+.prose h3 {
+  @apply text-xl font-semibold text-surface-800 mt-8 mb-3;
+}
+
+.prose p {
+  @apply mb-4 leading-relaxed;
+}
+
+.prose a {
+  @apply text-brand-600 underline underline-offset-4 hover:text-brand-700 transition-colors;
+  text-decoration-thickness: 1px;
+  transition: text-decoration-thickness 0.2s, color 0.2s;
+}
+
+.prose a:hover {
+  text-decoration-thickness: 2px;
+}
+
+/* -- Inline Code -- */
+.prose code {
+  @apply bg-surface-100 text-brand-700 px-1.5 py-0.5 rounded-md text-sm font-mono;
+  border: 1px solid rgb(226 232 240 / 0.6);
+}
+
+/* -- Code Block wrapper (public page) -- */
+.code-block-wrapper {
+  @apply my-6 rounded-xl overflow-hidden shadow-lg;
+  border: 1px solid rgb(255 255 255 / 0.08);
+}
+
+.code-block-wrapper .code-header {
+  @apply flex items-center justify-between px-4 py-2.5 text-xs select-none;
+  background: #2d2d2d;
+  color: #a0a0a0;
+}
+
+.code-block-wrapper .code-header .dots {
+  @apply flex items-center gap-3;
+}
+
+.code-block-wrapper .code-header .dot {
+  @apply w-3 h-3 rounded-full;
+}
+
+.code-block-wrapper .code-header .dot-red {
+  background: #ff5f56;
+}
+
+.code-block-wrapper .code-header .dot-yellow {
+  background: #ffbd2e;
+}
+
+.code-block-wrapper .code-header .dot-green {
+  background: #27c93f;
+}
+
+.code-block-wrapper .code-header .lang-label {
+  @apply font-medium px-2 py-0.5 rounded text-xs;
+  background: #1e1e1e;
+  color: #ccc;
+}
+
+.code-block-wrapper [data-copy-btn] {
+  @apply px-2 py-1 rounded-md text-xs cursor-pointer transition-all;
+  background: rgba(255, 255, 255, 0.08);
+  color: #a0a0a0;
+}
+
+.code-block-wrapper [data-copy-btn]:hover {
+  background: rgba(255, 255, 255, 0.15);
+  color: #fff;
+}
+
+.prose pre {
+  @apply m-0;
+  background: #1e1e1e;
+  padding: 1rem 1.25rem;
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-size: 0.875rem;
+  line-height: 1.7;
+  color: #d4d4d4;
+  overflow-x: auto;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+.prose pre code {
+  background: transparent;
+  padding: 0;
+  color: #d4d4d4;
+  border: none;
+  font-size: inherit;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+/* Override highlight.js theme backgrounds on inner elements only */
+.prose pre code.hljs,
+.prose pre .hljs,
+.code-block-wrapper pre code,
+.code-block-wrapper .hljs {
+  background: transparent !important;
+  background-color: transparent !important;
+}
+
+/* Force code-block-wrapper to always stay dark regardless of light/dark theme */
+.code-block-wrapper {
+  background: #1e1e1e !important;
+}
+
+.code-block-wrapper pre {
+  background: #1e1e1e !important;
+}
+
+.prose pre code .hljs-keyword {
+  color: #569cd6;
+}
+
+.prose pre code .hljs-built_in {
+  color: #4ec9b0;
+}
+
+.prose pre code .hljs-string {
+  color: #ce9178;
+}
+
+.prose pre code .hljs-number {
+  color: #b5cea8;
+}
+
+.prose pre code .hljs-comment {
+  color: #6a9955;
+  font-style: italic;
+}
+
+.prose pre code .hljs-function {
+  color: #dcdcaa;
+}
+
+.prose pre code .hljs-title {
+  color: #dcdcaa;
+}
+
+.prose pre code .hljs-params {
+  color: #9cdcfe;
+}
+
+.prose pre code .hljs-variable {
+  color: #9cdcfe;
+}
+
+.prose pre code .hljs-attr {
+  color: #9cdcfe;
+}
+
+.prose pre code .hljs-literal {
+  color: #569cd6;
+}
+
+.prose pre code .hljs-type {
+  color: #4ec9b0;
+}
+
+.prose pre code .hljs-symbol {
+  color: #569cd6;
+}
+
+/* -- Lists: fix Tiptap p-inside-li causing bullet/text split -- */
+.prose li>p {
+  margin: 0;
+  display: inline;
+}
+
+.prose ol>li,
+.prose ul>li {
+  margin-top: 0.25em;
+  margin-bottom: 0.25em;
+}
+
+/* -- Images -- */
+.prose img {
+  @apply rounded-xl shadow-md my-6;
+}
+
+/* -- Blockquote -- */
+.prose blockquote {
+  @apply border-l-4 border-brand-500 pl-5 my-6 py-3 rounded-r-xl;
+  background: linear-gradient(90deg, rgb(79 70 229 / 0.06) 0%, transparent 100%);
+  font-style: italic;
+  color: #475569;
+  position: relative;
+}
+
+.prose blockquote::before {
+  content: '\201C';
+  font-size: 3rem;
+  line-height: 1;
+  color: rgb(79 70 229 / 0.2);
+  position: absolute;
+  top: -0.25rem;
+  left: 0.5rem;
+  font-family: Georgia, serif;
+}
+
+/* -- Lists -- */
+.prose ul {
+  @apply list-disc list-inside mb-4 space-y-1;
+}
+
+.prose ol {
+  @apply list-decimal list-inside mb-4 space-y-1;
+}
+
+/* -- Task List -- */
+.prose ul[data-type="taskList"] {
+  list-style: none;
+  padding-left: 0;
+}
+
+.prose ul[data-type="taskList"] li {
+  @apply flex items-start gap-2 py-1;
+}
+
+.prose ul[data-type="taskList"] li label input[type="checkbox"] {
+  @apply w-5 h-5 rounded-md border-2 border-surface-300 accent-brand-600 mt-0.5;
+}
+
+/* -- Table -- */
+.prose table {
+  @apply w-full border-collapse my-6 rounded-xl overflow-hidden;
+  border: 1px solid #e2e8f0;
+}
+
+.prose th {
+  @apply font-semibold text-left px-4 py-3 text-sm uppercase tracking-wider;
+  background: linear-gradient(135deg, #f1f5f9, #e2e8f0);
+  color: #334155;
+  border-bottom: 2px solid #cbd5e1;
+}
+
+.prose td {
+  @apply px-4 py-3 text-sm;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.prose tr:nth-child(even) td {
+  background: rgb(248 250 252 / 0.6);
+}
+
+.prose tr:hover td {
+  background: rgb(79 70 229 / 0.04);
+}
+
+/* -- Highlight -- */
+.prose mark {
+  @apply rounded px-1 py-0.5;
+  background: linear-gradient(120deg, #fde68a 0%, #fbbf24 100%);
+  color: #78350f;
+  box-decoration-break: clone;
+}
+
+/* -- Horizontal Rule -- */
+.prose hr {
+  @apply my-8;
+  border: none;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #cbd5e1, transparent);
+}
+
+/* ============================================
+   Dark Mode Prose
+   ============================================ */
+.dark .prose {
+  @apply text-surface-300;
+}
+
+.dark .prose h2 {
+  @apply text-surface-100 border-surface-700;
+}
+
+.dark .prose h3 {
+  @apply text-surface-200;
+}
+
+.dark .prose code {
+  @apply bg-surface-800 text-brand-300;
+  border-color: rgb(51 65 85 / 0.6);
+}
+
+.dark .prose blockquote {
+  color: #94a3b8;
+  background: linear-gradient(90deg, rgb(79 70 229 / 0.1) 0%, transparent 100%);
+}
+
+.dark .prose blockquote::before {
+  color: rgb(79 70 229 / 0.3);
+}
+
+.dark .prose th {
+  background: linear-gradient(135deg, #1e293b, #0f172a);
+  color: #e2e8f0;
+  border-bottom-color: #334155;
+}
+
+.dark .prose td {
+  border-bottom-color: #1e293b;
+}
+
+.dark .prose tr:nth-child(even) td {
+  background: rgb(15 23 42 / 0.4);
+}
+
+.dark .prose tr:hover td {
+  background: rgb(79 70 229 / 0.08);
+}
+
+.dark .prose table {
+  border-color: #334155;
+}
+
+.dark .prose mark {
+  background: linear-gradient(120deg, #854d0e 0%, #a16207 100%);
+  color: #fef3c7;
+}
+
+.dark .prose hr {
+  background: linear-gradient(90deg, transparent, #334155, transparent);
+}
+
+/* ============================================
+   Scrollbar
+   ============================================ */
+
+::-webkit-scrollbar {
+  @apply w-2;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-surface-100;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-surface-300 rounded-full;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-surface-400;
+}
+
+.dark ::-webkit-scrollbar-track {
+  @apply bg-surface-900;
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  @apply bg-surface-600;
+}
+
+/* ============================================
+   Gated Content Overlay
+   ============================================ */
+
+.gated-overlay {
+  @apply relative;
+}
+
+.gated-overlay::after {
+  content: '';
+  @apply absolute bottom-0 left-0 right-0 h-48 bg-gradient-to-t from-white via-white/80 to-transparent pointer-events-none;
+}
+
+.dark .gated-overlay::after {
+  @apply from-surface-950 via-surface-950/80;
+}
+
+/* ============================================
+   Tiptap / ProseMirror Editor Overrides
+   ============================================ */
+
+/* Fix list items: The editor has .prose class which uses list-inside.
+   Combined with ProseMirror wrapping li content in <p> (block element),
+   this causes bullet/number to appear on a separate line from text.
+   Fix: use list-outside positioning and remove p margin. */
+.ProseMirror ul,
+.ProseMirror ol {
+  list-style-position: outside !important;
+  padding-left: 1.5rem !important;
+}
+
+.ProseMirror ul {
+  list-style-type: disc !important;
+}
+
+.ProseMirror ol {
+  list-style-type: decimal !important;
+}
+
+.ProseMirror li>p {
+  margin: 0 !important;
+  display: inline !important;
+}
+
+.ProseMirror li {
+  display: list-item !important;
+}
+
+/* -- Copy Protection for blog content -- */
+.copy-protected {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+.copy-protected .code-block-wrapper,
+.copy-protected pre,
+.copy-protected code {
+  -webkit-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
+  user-select: text;
 }

@@ -1,65 +1,151 @@
-import Image from "next/image";
+import Link from 'next/link';
+import { ArrowRight, Sparkles, BookOpen, TrendingUp } from 'lucide-react';
+import { PostCard } from '@/components/blog/PostCard';
+import { Newsletter } from '@/components/blog/Newsletter';
+import { CategoryCard } from '@/components/blog/CategoryCard';
+import { SITE_CONFIG } from '@/lib/constants';
+import { getLatestPosts, getPosts } from '@/lib/data/posts';
+import { getCategories } from '@/lib/data/categories';
+import { supabaseAdmin } from '@/lib/supabase/server';
 
-export default function Home() {
+export default async function HomePage() {
+  const [categories, recentPosts, { count: totalPosts }] = await Promise.all([
+    getCategories(),
+    getLatestPosts(7),
+    getPosts({ limit: 1, page: 1 }),  // just for the count
+  ]);
+  const featuredPost = recentPosts[0];
+  const otherPosts = recentPosts.slice(1);
+
+
+
+  // Get post counts per category
+  const { data: countData } = await supabaseAdmin
+    .from('posts')
+    .select('category_id')
+    .eq('status', 'published');
+  const categoryCounts: Record<string, number> = {};
+  (countData || []).forEach((p: any) => {
+    if (p.category_id) categoryCounts[p.category_id] = (categoryCounts[p.category_id] || 0) + 1;
+  });
+
+
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <>
+      {/* ===== HERO SECTION ===== */}
+      <section className="relative overflow-hidden">
+        {/* Animated Background */}
+        <div className="absolute inset-0 bg-gradient-to-br from-brand-50 via-white to-cyan-50 dark:from-surface-950 dark:via-surface-900 dark:to-surface-950">
+          <div className="absolute inset-0 opacity-30 dark:opacity-20">
+            <div className="absolute top-0 -left-4 w-72 h-72 bg-brand-300 dark:bg-brand-600 rounded-full mix-blend-multiply dark:mix-blend-screen filter blur-3xl animate-pulse" />
+            <div className="absolute top-0 -right-4 w-72 h-72 bg-cyan-300 dark:bg-cyan-600 rounded-full mix-blend-multiply dark:mix-blend-screen filter blur-3xl animate-pulse [animation-delay:2s]" />
+            <div className="absolute -bottom-8 left-20 w-72 h-72 bg-purple-300 dark:bg-purple-600 rounded-full mix-blend-multiply dark:mix-blend-screen filter blur-3xl animate-pulse [animation-delay:4s]" />
+          </div>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-32">
+          <div className="text-center max-w-3xl mx-auto">
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/60 dark:bg-white/10 text-brand-700 dark:text-white/90 text-sm backdrop-blur-sm border border-brand-200 dark:border-white/20 mb-6 font-medium shadow-sm">
+              <Sparkles className="h-4 w-4" />
+              Kiến thức thực tế, chia sẻ tận tâm
+            </div>
+            <h1 className="text-4xl md:text-6xl font-bold text-surface-900 dark:text-white mb-6 leading-tight">
+              Nâng tầm kỹ năng{' '}
+              <span className="bg-gradient-to-r from-brand-600 to-cyan-500 dark:from-cyan-300 dark:to-emerald-300 bg-clip-text text-transparent">
+                Data & AI
+              </span>
+            </h1>
+            <p className="text-lg md:text-xl text-surface-600 dark:text-white/80 mb-8 leading-relaxed">
+              Blog chia sẻ kiến thức chuyên sâu về Excel, Power Query, VBA, Power BI, SQL, Python,
+              trí tuệ nhân tạo và quản lý chuỗi cung ứng.
+            </p>
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+              <Link
+                href="/blog"
+                className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-brand-600 dark:bg-white text-white dark:text-brand-700 font-semibold hover:bg-brand-700 dark:hover:bg-white/90 transition-all shadow-lg hover:shadow-xl hover:-translate-y-0.5"
+              >
+                <BookOpen className="h-5 w-5" />
+                Khám phá bài viết
+              </Link>
+              <Link
+                href="/categories"
+                className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-white/80 dark:bg-white/10 text-surface-700 dark:text-white font-semibold hover:bg-white dark:hover:bg-white/20 transition-all backdrop-blur-sm border border-surface-200 dark:border-white/20 shadow-sm"
+              >
+                Xem chủ đề
+                <ArrowRight className="h-5 w-5" />
+              </Link>
+            </div>
+          </div>
+
+          {/* Stats */}
+          <div className="mt-16 grid grid-cols-3 gap-4 max-w-lg mx-auto">
+            {[
+              { label: 'Bài viết', value: totalPosts && totalPosts > 0 ? `${totalPosts}+` : '0' },
+              { label: 'Chủ đề', value: categories.length.toString() },
+            ].map((stat) => (
+              <div key={stat.label} className="text-center">
+                <div className="text-2xl md:text-3xl font-bold text-brand-700 dark:text-white">{stat.value}</div>
+                <div className="text-sm font-medium text-surface-600 dark:text-white/60">{stat.label}</div>
+              </div>
+            ))}
+          </div>
         </div>
-      </main>
-    </div>
+      </section>
+
+      {/* ===== FEATURED POST ===== */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-10 relative z-10">
+        {featuredPost && <PostCard post={featuredPost} variant="featured" />}
+      </section>
+
+      {/* ===== CATEGORIES ===== */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        <div className="flex items-center justify-between mb-8">
+          <div>
+            <h2 className="text-2xl md:text-3xl font-bold text-surface-900 dark:text-surface-100">
+              Chủ đề
+            </h2>
+            <p className="text-surface-500 dark:text-surface-400 mt-1">Khám phá theo lĩnh vực bạn quan tâm</p>
+          </div>
+          <Link
+            href="/categories"
+            className="inline-flex items-center gap-1 text-brand-600 dark:text-brand-400 hover:text-brand-700 dark:hover:text-brand-300 text-sm font-medium"
+          >
+            Xem tất cả <ArrowRight className="h-4 w-4" />
+          </Link>
+        </div>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          {categories.slice(0, 8).map((cat) => {
+            return <CategoryCard key={cat.id} category={cat} postCount={categoryCounts[cat.id] || 0} />;
+          })}
+        </div>
+      </section>
+
+      {/* ===== RECENT POSTS ===== */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
+        <div className="flex items-center justify-between mb-8">
+          <div className="flex items-center gap-2">
+            <TrendingUp className="h-6 w-6 text-brand-600" />
+            <h2 className="text-2xl md:text-3xl font-bold text-surface-900 dark:text-surface-100">
+              Bài viết mới nhất
+            </h2>
+          </div>
+          <Link
+            href="/blog"
+            className="inline-flex items-center gap-1 text-brand-600 dark:text-brand-400 hover:text-brand-700 dark:hover:text-brand-300 text-sm font-medium"
+          >
+            Xem tất cả <ArrowRight className="h-4 w-4" />
+          </Link>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {otherPosts.map((post) => (
+            <PostCard key={post.id} post={post} />
+          ))}
+        </div>
+      </section>
+
+      {/* Newsletter Section */}
+      <Newsletter />
+    </>
   );
 }
