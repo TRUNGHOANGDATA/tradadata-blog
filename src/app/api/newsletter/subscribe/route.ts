@@ -88,7 +88,7 @@ export async function POST(request: Request) {
                 const { subject, html } = await getEmailTemplate('welcome', {
                     name: full_name || email.split('@')[0],
                     email: email,
-                    url: process.env.NEXT_PUBLIC_APP_URL || 'https://go.erx.vn',
+                    url: process.env.NEXT_PUBLIC_APP_URL || 'https://tradadata.vercel.app',
                     unsubscribe_url: `${process.env.NEXT_PUBLIC_APP_URL}/api/newsletter/unsubscribe?email=${encodeURIComponent(email)}`
                 });
                 await sendEmail(email, subject, html);

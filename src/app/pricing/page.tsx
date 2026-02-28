@@ -2,7 +2,7 @@ import { supabaseAdmin } from '@/lib/supabase/server';
 import PurchaseButton from './PurchaseButton';
 
 export const metadata = {
-    title: 'Bảng giá | ERX Blog',
+    title: 'Bảng giá | Trà Đá Data',
     description: 'Nâng cấp tài khoản rxx.vn để truy cập toàn bộ nội dung chất lượng cao.',
 };
 

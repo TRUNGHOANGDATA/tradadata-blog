@@ -1,4 +1,4 @@
-import { NextResponse } from 'next/server';
+﻿import { NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase/server';
 import crypto from 'crypto';
 import { sendEmail } from '@/lib/email/gmail';
@@ -112,9 +112,9 @@ export async function POST(request: Request) {
             }
         }
 
-        // Tạo order_code duy nhất (vd: ERX-A1BC23)
+        // Tạo order_code duy nhất (vd: TDD-A1BC23)
         const randomString = crypto.randomBytes(3).toString('hex').toUpperCase();
-        const order_code = `ERX-${randomString}`;
+        const order_code = `TDD-${randomString}`;
 
         // Hạn thanh toán (ví dụ: 24h sau)
         const expires_at = new Date();
@@ -170,7 +170,7 @@ export async function POST(request: Request) {
                     order_code: newOrder.order_code,
                     product_name: product.name || 'Gói Premium',
                     amount: amountText,
-                    url: process.env.NEXT_PUBLIC_APP_URL || 'https://go.erx.vn'
+                    url: process.env.NEXT_PUBLIC_APP_URL || 'https://tradadata.vercel.app'
                 });
                 await sendEmail(email, subject, html);
             } catch (emailErr) {

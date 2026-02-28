@@ -5,7 +5,7 @@ import { supabaseAdmin } from '@/lib/supabase/server';
 export async function POST(request: Request) {
     try {
         const session = await auth();
-        if (!session?.user?.profileId) {
+        if (!session?.user?.email) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
 
@@ -19,11 +19,35 @@ export async function POST(request: Request) {
             return NextResponse.json({ error: 'Database connection not available' }, { status: 500 });
         }
 
+        // Resolve user profile ID — verify it exists in DB (JWT token may be stale)
+        let userId: string | undefined = session.user.profileId;
+        if (userId) {
+            const { data: profileCheck } = await supabaseAdmin
+                .from('profiles')
+                .select('id')
+                .eq('id', userId)
+                .single();
+            if (!profileCheck) userId = undefined; // stale profileId, fall back to email lookup
+        }
+
+        if (!userId) {
+            // Fall back: look up by email
+            const { data: profile } = await supabaseAdmin
+                .from('profiles')
+                .select('id')
+                .eq('email', session.user.email)
+                .single();
+            if (!profile) {
+                return NextResponse.json({ error: 'Không tìm thấy hồ sơ người dùng. Vui lòng đăng xuất rồi đăng nhập lại.' }, { status: 400 });
+            }
+            userId = profile.id;
+        }
+
         // Check if bookmark exists
         const { data: existing, error: checkError } = await supabaseAdmin
             .from('user_bookmarks')
             .select('id')
-            .eq('user_id', session.user.profileId)
+            .eq('user_id', userId)
             .eq('post_id', postId)
             .single();
 
@@ -49,7 +73,7 @@ export async function POST(request: Request) {
             // Add bookmark
             const { error: insertError } = await supabaseAdmin
                 .from('user_bookmarks')
-                .insert({ user_id: session.user.profileId, post_id: postId });
+                .insert({ user_id: userId, post_id: postId });
 
             if (insertError) {
                 console.error('Bookmark insert error:', insertError);

@@ -36,7 +36,7 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
     try {
         const session = await auth();
-        if (!session?.user?.profileId) {
+        if (!session?.user?.email) {
             return NextResponse.json({ error: 'Đăng nhập để bình luận' }, { status: 401 });
         }
 
@@ -52,6 +52,18 @@ export async function POST(request: Request) {
 
         if (!supabaseAdmin) {
             return NextResponse.json({ error: 'Database not configured' }, { status: 500 });
+        }
+
+        // Resolve profileId from DB (JWT token may be stale)
+        let userId: string | undefined = session.user.profileId;
+        if (userId) {
+            const { data: check } = await supabaseAdmin.from('profiles').select('id').eq('id', userId).single();
+            if (!check) userId = undefined;
+        }
+        if (!userId) {
+            const { data: profile } = await supabaseAdmin.from('profiles').select('id').eq('email', session.user.email).single();
+            if (!profile) return NextResponse.json({ error: 'Không tìm thấy hồ sơ. Vui lòng đăng xuất và đăng nhập lại.' }, { status: 400 });
+            userId = profile.id;
         }
 
         const body = await request.json();
@@ -83,7 +95,7 @@ export async function POST(request: Request) {
             .from('comments')
             .insert({
                 post_id,
-                user_id: session.user.profileId,
+                user_id: userId,
                 parent_id: parent_id || null,
                 content: content.trim(),
             })

@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { Save, Eye, ArrowLeft, ImagePlus, Lock, Loader2, Check, Search, Globe, FileText, Tag, X, Sparkles, Copy, ClipboardCheck } from 'lucide-react';
@@ -641,10 +641,10 @@ COVER_IMAGE: Tạo một bức ảnh bìa blog có chất lượng cao, tỉ l�
                         <div className="mb-4 p-3 rounded-xl bg-surface-50 dark:bg-surface-800 border border-surface-200 dark:border-surface-700">
                             <p className="text-xs text-surface-400 mb-1.5 font-medium">🔍 Preview trên Google</p>
                             <p className="text-sm text-blue-700 dark:text-blue-400 font-medium truncate">
-                                {title || 'Tiêu đề bài viết'} | ERX Blog
+                                {title || 'Tiêu đề bài viết'} | Trà Đá Data
                             </p>
                             <p className="text-xs text-emerald-700 dark:text-emerald-500 truncate">
-                                erx.vn/blog/{displaySlug || 'duong-dan-bai-viet'}
+                                tradadata.vercel.app/blog/{displaySlug || 'duong-dan-bai-viet'}
                             </p>
                             <p className="text-xs text-surface-500 dark:text-surface-400 mt-0.5 line-clamp-2">
                                 {metaDescription || excerpt || 'Mô tả bài viết sẽ hiển thị ở đây...'}

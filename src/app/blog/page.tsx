@@ -5,7 +5,7 @@ import { Newsletter } from '@/components/blog/Newsletter';
 import { supabaseAdmin } from '@/lib/supabase/server';
 
 export const metadata = {
-    title: 'Bài viết | ERX Blog',
+    title: 'Bài viết | Trà Đá Data',
     description: 'Khám phá tất cả các bài viết về Data & AI',
 };
 

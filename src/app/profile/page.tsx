@@ -119,6 +119,7 @@ export default function ProfilePage() {
     ];
 
     const activeSub = subscriptions.find(s => new Date(s.expires_at) > new Date());
+    const isPremium = !!activeSub || profile?.is_subscribed === true;
 
     if (authStatus === 'loading' || loading) {
         return (
@@ -130,7 +131,7 @@ export default function ProfilePage() {
 
     return (
         <div className="min-h-screen bg-surface-50 dark:bg-surface-950">
-            <div className="max-w-3xl mx-auto px-4 sm:px-6 py-10">
+            <div className="max-w-3xl mx-auto px-4 sm:px-6 pt-4 pb-10">
                 {/* Header */}
                 <div className="flex items-center gap-4 mb-8">
                     <Link href="/" className="p-2 hover:bg-surface-200 dark:hover:bg-surface-800 rounded-xl transition-colors">
@@ -151,7 +152,7 @@ export default function ProfilePage() {
                             <p className="text-sm text-surface-500">{session?.user?.email}</p>
                         </div>
                     </div>
-                    {activeSub && (
+                    {isPremium && (
                         <span className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-gradient-to-r from-brand-500/10 to-purple-500/10 text-brand-600 dark:text-brand-400 border border-brand-200 dark:border-brand-800">
                             <Crown className="w-3.5 h-3.5" /> Premium
                         </span>
@@ -315,29 +316,43 @@ export default function ProfilePage() {
                                 <Crown className="w-4 h-4 text-brand-500" /> Premium
                             </h2>
 
-                            {activeSub ? (
+                            {isPremium ? (
                                 <div className="space-y-4">
-                                    <div className="p-5 bg-gradient-to-br from-brand-500/10 via-purple-500/5 to-transparent border border-brand-200 dark:border-brand-800 rounded-2xl">
-                                        <div className="flex items-center gap-3 mb-3">
-                                            <div className="w-10 h-10 rounded-xl bg-brand-500/20 flex items-center justify-center">
-                                                <Crown className="w-5 h-5 text-brand-500" />
+                                    {activeSub ? (
+                                        <div className="p-5 bg-gradient-to-br from-brand-500/10 via-purple-500/5 to-transparent border border-brand-200 dark:border-brand-800 rounded-2xl">
+                                            <div className="flex items-center gap-3 mb-3">
+                                                <div className="w-10 h-10 rounded-xl bg-brand-500/20 flex items-center justify-center">
+                                                    <Crown className="w-5 h-5 text-brand-500" />
+                                                </div>
+                                                <div>
+                                                    <p className="font-bold text-surface-900 dark:text-surface-100">Đang hoạt động</p>
+                                                    <p className="text-sm text-surface-500">{(activeSub.products as any)?.name || 'Gói Premium'}</p>
+                                                </div>
                                             </div>
-                                            <div>
-                                                <p className="font-bold text-surface-900 dark:text-surface-100">Đang hoạt động</p>
-                                                <p className="text-sm text-surface-500">{(activeSub.products as any)?.name || 'Gói Premium'}</p>
+                                            <div className="grid grid-cols-2 gap-3 mt-4">
+                                                <div className="p-3 bg-white/60 dark:bg-surface-800/60 rounded-xl">
+                                                    <p className="text-xs text-surface-500 mb-0.5 flex items-center gap-1"><Calendar className="w-3 h-3" /> Bắt đầu</p>
+                                                    <p className="text-sm font-semibold text-surface-900 dark:text-surface-100">{formatDate(activeSub.starts_at)}</p>
+                                                </div>
+                                                <div className="p-3 bg-white/60 dark:bg-surface-800/60 rounded-xl">
+                                                    <p className="text-xs text-surface-500 mb-0.5 flex items-center gap-1"><Calendar className="w-3 h-3" /> Hết hạn</p>
+                                                    <p className="text-sm font-semibold text-surface-900 dark:text-surface-100">{formatDate(activeSub.expires_at)}</p>
+                                                </div>
                                             </div>
                                         </div>
-                                        <div className="grid grid-cols-2 gap-3 mt-4">
-                                            <div className="p-3 bg-white/60 dark:bg-surface-800/60 rounded-xl">
-                                                <p className="text-xs text-surface-500 mb-0.5 flex items-center gap-1"><Calendar className="w-3 h-3" /> Bắt đầu</p>
-                                                <p className="text-sm font-semibold text-surface-900 dark:text-surface-100">{formatDate(activeSub.starts_at)}</p>
-                                            </div>
-                                            <div className="p-3 bg-white/60 dark:bg-surface-800/60 rounded-xl">
-                                                <p className="text-xs text-surface-500 mb-0.5 flex items-center gap-1"><Calendar className="w-3 h-3" /> Hết hạn</p>
-                                                <p className="text-sm font-semibold text-surface-900 dark:text-surface-100">{formatDate(activeSub.expires_at)}</p>
+                                    ) : (
+                                        <div className="p-5 bg-gradient-to-br from-brand-500/10 via-purple-500/5 to-transparent border border-brand-200 dark:border-brand-800 rounded-2xl">
+                                            <div className="flex items-center gap-3">
+                                                <div className="w-10 h-10 rounded-xl bg-brand-500/20 flex items-center justify-center">
+                                                    <Crown className="w-5 h-5 text-brand-500" />
+                                                </div>
+                                                <div>
+                                                    <p className="font-bold text-surface-900 dark:text-surface-100">Đang hoạt động</p>
+                                                    <p className="text-sm text-surface-500">Premium được kích hoạt bởi Admin</p>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
+                                    )}
 
                                     {/* All subscriptions history */}
                                     {subscriptions.length > 1 && (
@@ -379,7 +394,7 @@ export default function ProfilePage() {
                         </div>
                     )}
                 </div>
-            </div>
-        </div>
+            </div >
+        </div >
     );
 }

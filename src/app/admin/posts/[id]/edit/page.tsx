@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
-import { Save, ArrowLeft, ImagePlus, Lock, Loader2, Check, Trash2, Globe, FileText, Tag, X, Search, Sparkles, Copy, ClipboardCheck } from 'lucide-react';
+import { Save, ArrowLeft, ImagePlus, Lock, Loader2, Check, Trash2, Globe, FileText, Tag, X, Search, Sparkles, Copy, ClipboardCheck, Pin } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter, useParams } from 'next/navigation';
 import dynamic from 'next/dynamic';
@@ -32,6 +32,7 @@ export default function EditPostPage() {
     const [status, setStatus] = useState('draft');
     const [categoryId, setCategoryId] = useState('');
     const [isPremium, setIsPremium] = useState(false);
+    const [isFeatured, setIsFeatured] = useState(false);
     const [categories, setCategories] = useState<Array<{ id: string; name: string; icon: string | null }>>([]);
     const [allTags, setAllTags] = useState<Array<{ id: string; name: string }>>([]);
     const [selectedTagIds, setSelectedTagIds] = useState<string[]>([]);
@@ -92,6 +93,7 @@ export default function EditPostPage() {
                     setStatus(data.post.status || 'draft');
                     setCategoryId(data.post.category_id || '');
                     setIsPremium(data.post.is_premium || false);
+                    setIsFeatured(data.post.is_featured || false);
                     setCurrentSlug(data.post.slug || '');
                     setMetaDescription(data.post.meta_description || '');
                     setKeywords(data.post.keywords ? data.post.keywords.join(', ') : '');
@@ -199,6 +201,7 @@ export default function EditPostPage() {
                     category_id: categoryId || null,
                     status: finalStatus,
                     is_premium: isPremium,
+                    is_featured: isFeatured,
                     tags: selectedTagIds,
                     custom_slug: customSlug || null,
                     meta_description: metaDescription || null,
@@ -646,20 +649,37 @@ COVER_IMAGE: Tạo một bức ảnh bìa blog có chất lượng cao, tỉ l�
                         )}
                     </div>
 
-                    <div className="bg-white dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-700 p-5">
-                        <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-2">
-                                <Lock className="h-4 w-4 text-amber-500" />
-                                <h3 className="font-semibold text-surface-900 dark:text-surface-100">Premium</h3>
+                    <div className="bg-white dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-700 p-5 space-y-4">
+                        <div>
+                            <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-2">
+                                    <Lock className="h-4 w-4 text-amber-500" />
+                                    <h3 className="font-semibold text-surface-900 dark:text-surface-100">Premium</h3>
+                                </div>
+                                <button
+                                    onClick={() => setIsPremium(!isPremium)}
+                                    className={`relative w-11 h-6 rounded-full transition-colors ${isPremium ? 'bg-brand-600' : 'bg-surface-300 dark:bg-surface-600'}`}
+                                >
+                                    <span className={`absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white shadow transition-transform ${isPremium ? 'translate-x-5' : ''}`} />
+                                </button>
                             </div>
-                            <button
-                                onClick={() => setIsPremium(!isPremium)}
-                                className={`relative w-11 h-6 rounded-full transition-colors ${isPremium ? 'bg-brand-600' : 'bg-surface-300 dark:bg-surface-600'}`}
-                            >
-                                <span className={`absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white shadow transition-transform ${isPremium ? 'translate-x-5' : ''}`} />
-                            </button>
+                            <p className="text-xs text-surface-500 mt-1">Yêu cầu đăng nhập để xem nội dung đầy đủ</p>
                         </div>
-                        <p className="text-xs text-surface-500 mt-2">Yêu cầu đăng nhập để xem nội dung đầy đủ</p>
+                        <div className="border-t border-surface-200 dark:border-surface-700 pt-4">
+                            <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-2">
+                                    <Pin className="h-4 w-4 text-emerald-500" />
+                                    <h3 className="font-semibold text-surface-900 dark:text-surface-100">Ghim đầu trang</h3>
+                                </div>
+                                <button
+                                    onClick={() => setIsFeatured(!isFeatured)}
+                                    className={`relative w-11 h-6 rounded-full transition-colors ${isFeatured ? 'bg-emerald-600' : 'bg-surface-300 dark:bg-surface-600'}`}
+                                >
+                                    <span className={`absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white shadow transition-transform ${isFeatured ? 'translate-x-5' : ''}`} />
+                                </button>
+                            </div>
+                            <p className="text-xs text-surface-500 mt-1">Hiển thị bài viết lớn ở đầu trang chủ</p>
+                        </div>
                     </div>
 
                     {/* SEO & Metadata */}
@@ -673,10 +693,10 @@ COVER_IMAGE: Tạo một bức ảnh bìa blog có chất lượng cao, tỉ l�
                         <div className="mb-4 p-3 rounded-xl bg-surface-50 dark:bg-surface-800 border border-surface-200 dark:border-surface-700">
                             <p className="text-xs text-surface-400 mb-1.5 font-medium">🔍 Preview trên Google</p>
                             <p className="text-sm text-blue-700 dark:text-blue-400 font-medium truncate">
-                                {title || 'Tiêu đề bài viết'} | ERX Blog
+                                {title || 'Tiêu đề bài viết'} | Trà Đá Data
                             </p>
                             <p className="text-xs text-emerald-700 dark:text-emerald-500 truncate">
-                                erx.vn/blog/{displaySlug || 'duong-dan-bai-viet'}
+                                tradadata.vercel.app/blog/{displaySlug || 'duong-dan-bai-viet'}
                             </p>
                             <p className="text-xs text-surface-500 dark:text-surface-400 mt-0.5 line-clamp-2">
                                 {metaDescription || excerpt || 'Mô tả bài viết sẽ hiển thị ở đây...'}

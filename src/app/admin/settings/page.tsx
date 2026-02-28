@@ -248,7 +248,7 @@ export default function SettingsPage() {
                             />
                             <p className="text-xs text-surface-500 mt-2">
                                 Tìm Sheet ID trên thanh URL trình duyệt: docs.google.com/spreadsheets/d/<strong>[Sheet_ID]</strong>/edit.
-                                <br />Vui lòng chia sẻ quyền Editor cho: <code>{process.env.NEXT_PUBLIC_SERVICE_ACCOUNT_EMAIL || 'erx-blog-uploads@erx-blog-auth.iam.gserviceaccount.com'}</code>
+                                <br />Vui lòng chia sẻ quyền Editor cho: <code>{process.env.NEXT_PUBLIC_SERVICE_ACCOUNT_EMAIL || 'your-service-account@your-project.iam.gserviceaccount.com'}</code>
                             </p>
                         </div>
                     </section>

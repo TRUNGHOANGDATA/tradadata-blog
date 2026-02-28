@@ -1,4 +1,4 @@
-import { NextResponse } from 'next/server';
+﻿import { NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase/server';
 
 export async function GET(request: Request) {
@@ -31,7 +31,7 @@ export async function GET(request: Request) {
             <head>
                 <meta charset="UTF-8">
                 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                <title>Hủy đăng ký thành công - ERX Blog</title>
+                <title>Hủy đăng ký thành công - Trà Đá Data</title>
                 <style>
                     body { font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; background-color: #f3f4f6; }
                     .card { background: white; padding: 40px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); text-align: center; max-width: 500px; }
@@ -43,7 +43,7 @@ export async function GET(request: Request) {
             <body>
                 <div class="card">
                     <h1>Hủy đăng ký thành công</h1>
-                    <p>Rất tiếc vì ERX Blog không còn phù hợp với nhu cầu của bạn lúc này. Email <b>${email}</b> đã được xóa khỏi danh sách nhận thông báo.</p>
+                    <p>Rất tiếc vì Trà Đá Data không còn phù hợp với nhu cầu của bạn lúc này. Email <b>${email}</b> đã được xóa khỏi danh sách nhận thông báo.</p>
                     <a href="/">Quay lại Trang chủ</a>
                 </div>
             </body>

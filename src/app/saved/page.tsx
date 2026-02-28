@@ -25,46 +25,61 @@ function formatPost(post: any): Post {
 }
 
 export const metadata = {
-    title: 'Bài viết đã lưu | ERX Blog',
+    title: 'Bài viết đã lưu | Trà Đá Data',
     description: 'Danh sách các bài viết bạn đã lưu',
 };
 
 export default async function SavedPostsPage() {
     const session = await auth();
 
-    if (!session?.user?.profileId) {
+    if (!session?.user?.email) {
         redirect('/login?callbackUrl=/saved');
     }
 
     // Fetch saved posts — use full select with joins like posts.ts
     let savedPosts: Post[] = [];
     if (supabaseAdmin) {
-        const { data: bookmarks, error } = await supabaseAdmin
-            .from('user_bookmarks')
-            .select('post_id')
-            .eq('user_id', session.user.profileId)
-            .order('created_at', { ascending: false });
+        // Resolve user profile ID from DB (JWT profileId may be stale)
+        let userId: string | undefined = session.user.profileId;
+        if (userId) {
+            const { data: check } = await supabaseAdmin
+                .from('profiles').select('id').eq('id', userId).single();
+            if (!check) userId = undefined;
+        }
+        if (!userId) {
+            const { data: profile } = await supabaseAdmin
+                .from('profiles').select('id').eq('email', session.user.email).single();
+            if (profile) userId = profile.id;
+        }
 
-        if (error) {
-            console.error('Error fetching bookmarks:', error);
-        } else if (bookmarks && bookmarks.length > 0) {
-            // Fetch the actual posts with full data (author, category, etc.)
-            const postIds = bookmarks.map(b => b.post_id);
-            const { data: posts, error: postsError } = await supabaseAdmin
-                .from('posts')
-                .select('*, author:profiles(*), category:categories(*)')
-                .in('id', postIds)
-                .eq('status', 'published');
+        if (userId) {
+            const { data: bookmarks, error } = await supabaseAdmin
+                .from('user_bookmarks')
+                .select('post_id')
+                .eq('user_id', userId)
+                .order('created_at', { ascending: false });
 
-            if (postsError) {
-                console.error('Error fetching saved post details:', postsError);
-            } else if (posts) {
-                // Preserve bookmark order (most recently saved first)
-                const postMap = new Map(posts.map(p => [p.id, p]));
-                savedPosts = postIds
-                    .map(id => postMap.get(id))
-                    .filter(Boolean)
-                    .map(formatPost);
+            if (error) {
+                console.error('Error fetching bookmarks:', error);
+            } else if (bookmarks && bookmarks.length > 0) {
+                // Fetch the actual posts with full data (author, category, etc.)
+                const postIds = bookmarks.map(b => b.post_id);
+                const { data: posts, error: postsError } = await supabaseAdmin
+                    .from('posts')
+                    .select('*, author:profiles(*), category:categories(*)')
+                    .in('id', postIds)
+                    .eq('status', 'published');
+
+                if (postsError) {
+                    console.error('Error fetching saved post details:', postsError);
+                } else if (posts) {
+                    // Preserve bookmark order (most recently saved first)
+                    const postMap = new Map(posts.map(p => [p.id, p]));
+                    savedPosts = postIds
+                        .map(id => postMap.get(id))
+                        .filter(Boolean)
+                        .map(formatPost);
+                }
             }
         }
     }

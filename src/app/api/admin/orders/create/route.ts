@@ -126,7 +126,7 @@ export async function POST(request: Request) {
                             order_code: orderCode,
                             product_name: product.name || 'Gói Premium',
                             amount: new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(finalAmount),
-                            url: process.env.NEXT_PUBLIC_APP_URL || 'https://go.erx.vn'
+                            url: process.env.NEXT_PUBLIC_APP_URL || 'https://tradadata.vercel.app'
                         });
                         await sendEmail(email, subject, html);
                     } catch (e) {

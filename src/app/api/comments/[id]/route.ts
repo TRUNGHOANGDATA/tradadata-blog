@@ -10,7 +10,7 @@ export async function DELETE(_request: Request, { params }: RouteParams) {
         const { id } = await params;
         const session = await auth();
 
-        if (!session?.user?.profileId) {
+        if (!session?.user?.email) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
 
@@ -29,8 +29,19 @@ export async function DELETE(_request: Request, { params }: RouteParams) {
             return NextResponse.json({ error: 'Comment not found' }, { status: 404 });
         }
 
+        // Resolve profileId from DB
+        let userId: string | undefined = session.user.profileId;
+        if (userId) {
+            const { data: check } = await supabaseAdmin.from('profiles').select('id').eq('id', userId).single();
+            if (!check) userId = undefined;
+        }
+        if (!userId) {
+            const { data: profile } = await supabaseAdmin.from('profiles').select('id').eq('email', session.user.email).single();
+            if (profile) userId = profile.id;
+        }
+
         // Only allow owner or admin to delete
-        if (comment.user_id !== session.user.profileId && session.user.role !== 'admin') {
+        if (comment.user_id !== userId && session.user.role !== 'admin') {
             return NextResponse.json({ error: 'Bạn chỉ có thể xoá bình luận của mình' }, { status: 403 });
         }
 

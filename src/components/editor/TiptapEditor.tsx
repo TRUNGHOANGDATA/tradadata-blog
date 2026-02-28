@@ -296,7 +296,7 @@ function EditorToolbar({ editor }: { editor: Editor }) {
     }, [aiImageDesc]);
 
     return (
-        <div className="sticky top-16 z-10 flex items-center gap-0.5 px-3 py-2 border-b border-surface-200 dark:border-surface-700 bg-surface-50 dark:bg-surface-800 flex-wrap rounded-t-[calc(1rem-1px)]">
+        <div className="sticky top-0 z-10 flex items-center gap-0.5 px-3 py-2 border-b border-surface-200 dark:border-surface-700 bg-surface-50 dark:bg-surface-800 flex-wrap rounded-t-[calc(1rem-1px)]">
             <input ref={fileInputRef} type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
 
             {/* Text formatting */}

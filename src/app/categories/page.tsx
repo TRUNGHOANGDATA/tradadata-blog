@@ -3,7 +3,7 @@ import { getPosts } from '@/lib/data/posts';
 import { CategoryCard } from '@/components/blog/CategoryCard';
 
 export const metadata = {
-    title: 'Chủ đề | ERX Blog',
+    title: 'Chủ đề | Trà Đá Data',
     description: 'Khám phá bài viết theo từng chủ đề',
 };
 

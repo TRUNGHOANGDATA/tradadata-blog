@@ -5,7 +5,7 @@ import { notFound } from 'next/navigation';
 import { auth } from '@/lib/auth';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Calendar, Clock, ArrowLeft, ChevronRight, BookOpen, Sparkles, ArrowRight, Tag } from 'lucide-react';
+import { Calendar, Clock, ArrowLeft, ChevronRight, BookOpen, Sparkles, ArrowRight, Tag, Pencil } from 'lucide-react';
 import { getPostBySlug, getRelatedPosts } from '@/lib/data/posts';
 import { SITE_CONFIG } from '@/lib/constants';
 import { PostCard } from '@/components/blog/PostCard';
@@ -236,6 +236,7 @@ export default async function BlogPostPage({ params }: Props) {
     }
 
     const session = await auth();
+    const isAdminOrEditor = session?.user?.role === 'admin' || session?.user?.role === 'editor';
     let isPremiumUnlocked = !post.is_premium;
 
     // Bypass cached NextAuth session and query real-time profile status
@@ -317,7 +318,7 @@ export default async function BlogPostPage({ params }: Props) {
     // Protect Premium Content — only for subscribed users
     if (!isPremiumUnlocked) {
         htmlContent = `
-            <div class="relative">
+            <div class="relative mb-16">
                 <div class="pointer-events-none select-none blur-sm opacity-60 h-64 overflow-hidden">
                     ${htmlContent}
                 </div>
@@ -326,7 +327,7 @@ export default async function BlogPostPage({ params }: Props) {
                         <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
                     </div>
                     <h3 class="text-2xl font-bold text-surface-900 dark:text-surface-100 mb-2">Nội dung Premium</h3>
-                    <p class="text-surface-600 dark:text-surface-400 max-w-md mb-6">Bài viết này dành cho thành viên Premium. Đăng ký gói Premium để truy cập toàn bộ nội dung chất lượng cao.</p>
+                    <p class="text-surface-600 dark:text-surface-400 max-w-md mb-8">Bài viết này dành cho thành viên Premium. Đăng ký gói Premium để truy cập toàn bộ nội dung chất lượng cao.</p>
                     ${session?.user
                 ? `<a href="/pricing" class="inline-flex items-center justify-center px-6 py-3 bg-amber-500 hover:bg-amber-600 !text-white !no-underline font-medium rounded-xl transition-colors shadow-lg">Nâng cấp Premium</a>`
                 : `<a href="/login?callbackUrl=/blog/${post.slug}" class="inline-flex items-center justify-center px-6 py-3 bg-brand-600 hover:bg-brand-700 !text-white !no-underline font-medium rounded-xl transition-colors shadow-lg">Đăng nhập để tiếp tục</a>`
@@ -429,9 +430,19 @@ export default async function BlogPostPage({ params }: Props) {
                             </Link>
                         )}
 
-                        <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white leading-tight mb-6">
+                        <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white leading-tight mb-4">
                             {post.title}
                         </h1>
+
+                        {isAdminOrEditor && (
+                            <Link
+                                href={`/admin/posts/${post.id}/edit`}
+                                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/15 text-white border border-white/25 text-xs font-medium mb-4 hover:bg-white/25 transition-colors backdrop-blur-sm"
+                            >
+                                <Pencil className="h-3 w-3" />
+                                Sửa bài viết
+                            </Link>
+                        )}
 
                         <div className="flex flex-wrap items-center gap-6 text-sm text-surface-300">
                             {/* Author */}
@@ -439,7 +450,7 @@ export default async function BlogPostPage({ params }: Props) {
                                 <div className="h-8 w-8 rounded-full bg-brand-600 border-2 border-surface-800 flex items-center justify-center text-white font-bold">
                                     {post.author?.full_name?.charAt(0) || 'E'}
                                 </div>
-                                <span className="font-medium text-surface-200">{post.author?.full_name || 'ERX Vietnam'}</span>
+                                <span className="font-medium text-surface-200">{post.author?.full_name || 'Trà Đá Data'}</span>
                             </div>
 
                             {/* Meta info */}
@@ -523,20 +534,29 @@ export default async function BlogPostPage({ params }: Props) {
                         </CopyProtection>
 
                         {/* Tag List */}
-                        {post.keywords && post.keywords.length > 0 && (
+                        {postTags.length > 0 && (
                             <div className="mt-12 pt-8 border-t border-surface-200 dark:border-surface-800 flex flex-wrap gap-2">
                                 {/* Category as a primary tag */}
                                 {post.category && (
-                                    <span className="px-3 py-1.5 bg-brand-50 dark:bg-brand-900/20 text-brand-700 dark:text-brand-300 border border-brand-200 dark:border-brand-800 rounded-lg text-sm font-medium hover:bg-brand-100 dark:hover:bg-brand-900/40 cursor-pointer transition-colors">
+                                    <Link
+                                        href={`/category/${post.category.slug}`}
+                                        className="px-3 py-1.5 bg-brand-50 dark:bg-brand-900/20 text-brand-700 dark:text-brand-300 border border-brand-200 dark:border-brand-800 rounded-lg text-sm font-medium hover:bg-brand-100 dark:hover:bg-brand-900/40 transition-colors"
+                                    >
                                         #{post.category.name.toLowerCase().replace(/\s+/g, '')}
-                                    </span>
+                                    </Link>
                                 )}
-                                {/* Keywords as tags */}
-                                {post.keywords.map((keyword, index) => (
-                                    <span key={index} className="px-3 py-1.5 bg-surface-100 dark:bg-surface-800 text-surface-700 dark:text-surface-300 rounded-lg text-sm font-medium hover:bg-surface-200 dark:hover:bg-surface-700 cursor-pointer transition-colors">
-                                        #{keyword.trim().toLowerCase().replace(/\s+/g, '-')}
-                                    </span>
-                                ))}
+                                {/* Tags (exclude duplicates of category name) */}
+                                {postTags
+                                    .filter(tag => !post.category || tag.name.toLowerCase() !== post.category.name.toLowerCase())
+                                    .map(tag => (
+                                        <Link
+                                            key={tag.id}
+                                            href={`/tag/${tag.slug}`}
+                                            className="px-3 py-1.5 bg-surface-100 dark:bg-surface-800 text-surface-700 dark:text-surface-300 rounded-lg text-sm font-medium hover:bg-surface-200 dark:hover:bg-surface-700 transition-colors"
+                                        >
+                                            #{tag.name}
+                                        </Link>
+                                    ))}
                             </div>
                         )}
                     </div>
@@ -578,10 +598,10 @@ export default async function BlogPostPage({ params }: Props) {
                                     </div>
                                     <h3 className="text-lg font-bold mb-2">Muốn làm chủ {post.category?.name}?</h3>
                                     <p className="text-brand-100 text-sm mb-6 leading-relaxed">
-                                        Tham gia khoá học E-Learning của ERX Vietnam để được hướng dẫn chi tiết từ A-Z với Case Study thực tế.
+                                        Tham gia khóa học E-Learning của Trà Đá Data để được hướng dẫn chi tiết từ A-Z với Case Study thực tế.
                                     </p>
                                     <Link
-                                        href="https://khoahoc.erx.vn/"
+                                        href="/courses"
                                         className="inline-flex items-center justify-center w-full px-4 py-2.5 bg-white text-brand-700 font-bold rounded-xl hover:bg-brand-50 transition-colors"
                                     >
                                         Tìm hiểu ngay

@@ -1,4 +1,4 @@
-export interface NewPostEmailProps {
+﻿export interface NewPostEmailProps {
     postTitle: string;
     postExcerpt: string;
     postUrl: string;
@@ -24,7 +24,7 @@ export function generateNewPostEmailHtml({
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bài viết mới từ ERX Blog</title>
+    <title>Bài viết mới từ Trà Đá Data</title>
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
@@ -56,7 +56,7 @@ export function generateNewPostEmailHtml({
             letter-spacing: 1px;
         }
         .header h1 span {
-            color: #4ade80; /* ERX Green */
+            color: #4ade80; /* TDD Green */
         }
         .content {
             padding: 32px;
@@ -136,12 +136,12 @@ export function generateNewPostEmailHtml({
     <div class="container">
         <!-- Header -->
         <div class="header">
-            <h1><span>ERX</span> Blog</h1>
+            <h1>Trà Đá Data</h1>
         </div>
 
         <!-- Content -->
         <div class="content">
-            <p class="greeting">Chào bạn, ERX Blog vừa có một bài viết mới cực kỳ thú vị chờ bạn khám phá!</p>
+            <p class="greeting">Chào bạn, Trà Đá Data vừa có một bài viết mới cực kỳ thú vị chờ bạn khám phá!</p>
             
             <div class="post-card">
                 <!-- Cover Image -->
@@ -161,14 +161,14 @@ export function generateNewPostEmailHtml({
             </div>
             
             <p style="color: #4b5563; font-size: 14px; text-align: center; margin-top: 20px;">
-                Cảm ơn bạn đã luôn đồng hành cùng ERX Vietnam!
+                Cảm ơn bạn đã luôn đồng hành cùng TRÀ ĐÁ DATA!
             </p>
         </div>
 
         <!-- Footer -->
         <div class="footer">
-            <p>© ${new Date().getFullYear()} ERX Vietnam. All rights reserved.</p>
-            <p>Bạn nhận được email này vì đã đăng ký nhận bản tin từ ERX Blog.</p>
+            <p>© ${new Date().getFullYear()} TRÀ ĐÁ DATA. All rights reserved.</p>
+            <p>Bạn nhận được email này vì đã đăng ký nhận bản tin từ Trà Đá Data.</p>
             <a href="${unsubscribeUrl}" class="unsubscribe">Hủy đăng ký (Unsubscribe)</a>
         </div>
     </div>

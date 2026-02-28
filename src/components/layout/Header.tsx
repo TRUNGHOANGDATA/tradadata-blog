@@ -25,17 +25,20 @@ export function Header() {
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                         <div className="flex items-center justify-between h-16">
                             {/* Logo */}
-                            <Link href="/" className="flex items-center gap-2 group dark:bg-white dark:p-1.5 dark:rounded-xl">
-                                <img src="/ERX_LOGO.png" alt={SITE_CONFIG.name} className="h-8 w-auto object-contain transition-transform group-hover:scale-105" />
+                            <Link href="/" className="flex items-center gap-2.5 group flex-shrink-0">
+                                <img src="/LOGO_TRA_DA_DATA.jpg" alt={SITE_CONFIG.name} className="h-12 w-12 object-cover transition-transform group-hover:scale-105 rounded-full ring-2 ring-brand-500/30" />
+                                <span className="hidden sm:block font-bold text-lg text-surface-900 dark:text-white tracking-tight group-hover:text-brand-600 dark:group-hover:text-brand-400 transition-colors">
+                                    Trà Đá Data
+                                </span>
                             </Link>
 
-                            {/* Desktop Nav */}
-                            <nav className="hidden md:flex items-center gap-1">
+                            {/* Desktop Nav - Centered */}
+                            <nav className="hidden md:flex items-center justify-center gap-1 flex-1">
                                 {NAV_ITEMS.map((item) => (
                                     <Link
                                         key={item.href}
                                         href={item.href}
-                                        className="px-3 py-2 rounded-xl text-surface-600 dark:text-surface-300 hover:text-surface-900 dark:hover:text-surface-100 hover:bg-surface-100 dark:hover:bg-surface-800 transition-all duration-200 text-sm font-medium"
+                                        className="px-4 py-2 rounded-xl text-surface-600 dark:text-surface-300 hover:text-surface-900 dark:hover:text-surface-100 hover:bg-surface-100 dark:hover:bg-surface-800 transition-all duration-200 text-sm font-medium"
                                     >
                                         {item.label}
                                     </Link>

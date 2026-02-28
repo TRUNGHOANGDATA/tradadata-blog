@@ -3,11 +3,11 @@
 // ============================================
 
 export const SITE_CONFIG = {
-    name: 'ERX Blog',
+    name: 'Trà Đá Data',
     description: 'Chia sẻ kiến thức về Data, AI & Supply Chain',
-    url: process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000',
+    url: process.env.NEXT_PUBLIC_APP_URL || 'https://tradadata.com',
     ogImage: '/images/og-default.png',
-    author: 'ERX Vietnam',
+    author: 'Trà Đá Data',
 };
 
 // ============================================

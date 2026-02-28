@@ -1,8 +1,8 @@
 import { SITE_CONFIG } from '@/lib/constants';
 
 export const metadata = {
-    title: 'Chính sách bảo mật | ERX Blog',
-    description: 'Chính sách bảo mật và quyền riêng tư của ERX VIETNAM',
+    title: 'Chính sách bảo mật | Trà Đá Data',
+    description: 'Chính sách bảo mật và quyền riêng tư của TRÀ ĐÁ DATA',
     robots: { index: false, follow: true },
 };
 
@@ -19,7 +19,7 @@ export default function PrivacyPage() {
                 <section>
                     <h2 className="text-xl font-semibold text-surface-900 dark:text-surface-100">1. Giới thiệu</h2>
                     <p>
-                        <strong>{SITE_CONFIG.name}</strong> (thuộc ERX VIETNAM) cam kết bảo vệ quyền riêng tư của bạn.
+                        <strong>{SITE_CONFIG.name}</strong> (thuộc TRÀ ĐÁ DATA) cam kết bảo vệ quyền riêng tư của bạn.
                         Chính sách này mô tả cách chúng tôi thu thập, sử dụng và bảo vệ thông tin cá nhân khi bạn sử dụng website và dịch vụ của chúng tôi.
                     </p>
                 </section>
@@ -121,8 +121,8 @@ export default function PrivacyPage() {
                     </ul>
                     <p>
                         Để thực hiện các quyền trên, vui lòng liên hệ:{' '}
-                        <a href="mailto:info@erx.vn" className="text-brand-600 dark:text-brand-400 hover:underline">
-                            info@erx.vn
+                        <a href="mailto:trunghoangdata101091@gmail.com" className="text-brand-600 dark:text-brand-400 hover:underline">
+                            trunghoangdata101091@gmail.com
                         </a>
                     </p>
                 </section>
@@ -152,8 +152,8 @@ export default function PrivacyPage() {
                         Nếu có câu hỏi về chính sách bảo mật, vui lòng liên hệ:
                     </p>
                     <ul className="list-disc pl-6 space-y-1">
-                        <li>Email: <a href="mailto:info@erx.vn" className="text-brand-600 dark:text-brand-400 hover:underline">info@erx.vn</a></li>
-                        <li>Website: <a href="https://erx.vn" className="text-brand-600 dark:text-brand-400 hover:underline">erx.vn</a></li>
+                        <li>Email: <a href="mailto:trunghoangdata101091@gmail.com" className="text-brand-600 dark:text-brand-400 hover:underline">trunghoangdata101091@gmail.com</a></li>
+                        <li>Website: <a href="https://tradadata.vercel.app" className="text-brand-600 dark:text-brand-400 hover:underline">tradadata.vercel.app</a></li>
                     </ul>
                 </section>
             </div>

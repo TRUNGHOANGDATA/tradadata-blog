@@ -59,7 +59,12 @@ export function BookmarkButton({ postId, className = '', variant = 'icon' }: Boo
             if (!res.ok) {
                 // Revert if failed
                 setIsBookmarked((prev) => !prev);
-                alert('Có lỗi xảy ra khi lưu bài viết.');
+                const errData = await res.json().catch(() => ({}));
+                if (res.status === 401) {
+                    alert('Phiên đăng nhập không hợp lệ. Vui lòng đăng xuất rồi đăng nhập lại.');
+                } else {
+                    alert('Có lỗi xảy ra khi lưu bài viết: ' + (errData.error || 'Vui lòng thử lại'));
+                }
             } else {
                 const data = await res.json();
                 setIsBookmarked(data.isBookmarked);
@@ -85,8 +90,8 @@ export function BookmarkButton({ postId, className = '', variant = 'icon' }: Boo
                 onClick={toggleBookmark}
                 disabled={isLoading}
                 className={`flex items-center gap-2 px-4 py-2 rounded-xl transition-all font-medium border ${isBookmarked
-                        ? 'bg-brand-50 border-brand-200 text-brand-700 dark:bg-brand-900/20 dark:border-brand-800 dark:text-brand-300'
-                        : 'bg-white border-surface-200 text-surface-600 hover:bg-surface-50 dark:bg-surface-900 dark:border-surface-800 dark:text-surface-400 dark:hover:bg-surface-800'
+                    ? 'bg-brand-50 border-brand-200 text-brand-700 dark:bg-brand-900/20 dark:border-brand-800 dark:text-brand-300'
+                    : 'bg-white border-surface-200 text-surface-600 hover:bg-surface-50 dark:bg-surface-900 dark:border-surface-800 dark:text-surface-400 dark:hover:bg-surface-800'
                     } ${className}`}
                 title={isBookmarked ? 'Bỏ lưu bài viết' : 'Lưu bài viết'}
             >
@@ -102,8 +107,8 @@ export function BookmarkButton({ postId, className = '', variant = 'icon' }: Boo
             onClick={toggleBookmark}
             disabled={isLoading}
             className={`p-2 rounded-full transition-all backdrop-blur-md shadow-sm border ${isBookmarked
-                    ? 'bg-brand-100/90 border-brand-200 text-brand-600 dark:bg-brand-900/80 dark:border-brand-700 dark:text-brand-400'
-                    : 'bg-white/80 border-white/20 text-surface-600 hover:bg-white dark:bg-surface-900/80 dark:border-surface-700 dark:text-surface-300 dark:hover:bg-surface-800'
+                ? 'bg-brand-100/90 border-brand-200 text-brand-600 dark:bg-brand-900/80 dark:border-brand-700 dark:text-brand-400'
+                : 'bg-white/80 border-white/20 text-surface-600 hover:bg-white dark:bg-surface-900/80 dark:border-surface-700 dark:text-surface-300 dark:hover:bg-surface-800'
                 } ${className}`}
             title={isBookmarked ? 'Bỏ lưu bài viết' : 'Lưu bài viết'}
         >

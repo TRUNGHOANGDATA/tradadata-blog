@@ -1,13 +1,13 @@
-import { supabaseAdmin } from '@/lib/supabase/server';
+﻿import { supabaseAdmin } from '@/lib/supabase/server';
 import { BookOpen, CheckCircle } from 'lucide-react';
 import { AddToCartButton } from '@/components/cart/AddToCartButton';
 import { SITE_CONFIG } from '@/lib/constants';
 
 export const metadata = {
-    title: 'Khóa học | ERX Blog',
-    description: 'Nâng cấp kỹ năng với các khóa học thực chiến từ ERX. Hệ thống kiến thức Data, AI & Supply Chain.',
+    title: 'Khóa học | Trà Đá Data',
+    description: 'Nâng cấp kỹ năng với các khóa học thực chiến từ Trà Đá Data. Hệ thống kiến thức Data, AI & Supply Chain.',
     openGraph: {
-        title: 'Khóa học & Premium | ERX Blog',
+        title: 'Khóa học & Premium | Trà Đá Data',
         description: 'Hệ thống kiến thức được đóng gói chuẩn mực, giúp bạn làm chủ Data, AI và Supply Chain.',
         url: `${SITE_CONFIG.url}/courses`,
     },
@@ -71,7 +71,7 @@ export default async function CoursesPage() {
     const jsonLd = {
         '@context': 'https://schema.org',
         '@type': 'ItemList',
-        name: 'Khóa học & Premium - ERX Blog',
+        name: 'Khóa học & Premium - Trà Đá Data',
         itemListElement: (products || []).map((p: Product, i: number) => ({
             '@type': 'ListItem',
             position: i + 1,

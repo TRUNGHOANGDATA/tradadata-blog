@@ -1,8 +1,8 @@
 import { SITE_CONFIG } from '@/lib/constants';
 
 export const metadata = {
-    title: 'Điều khoản sử dụng | ERX Blog',
-    description: 'Điều khoản sử dụng dịch vụ của ERX VIETNAM',
+    title: 'Điều khoản sử dụng | Trà Đá Data',
+    description: 'Điều khoản sử dụng dịch vụ của TRÀ ĐÁ DATA',
     robots: { index: false, follow: true },
 };
 
@@ -20,7 +20,7 @@ export default function TermsPage() {
                     <h2 className="text-xl font-semibold text-surface-900 dark:text-surface-100">1. Giới thiệu</h2>
                     <p>
                         Chào mừng bạn đến với <strong>{SITE_CONFIG.name}</strong> — nền tảng chia sẻ kiến thức về Data, AI &amp; Supply Chain,
-                        đồng thời cung cấp các khoá học trực tuyến do ERX VIETNAM vận hành.
+                        đồng thời cung cấp các khoá học trực tuyến do TRÀ ĐÁ DATA vận hành.
                     </p>
                     <p>
                         Bằng việc truy cập và sử dụng website, bạn đồng ý tuân thủ các điều khoản được nêu dưới đây.
@@ -63,7 +63,7 @@ export default function TermsPage() {
                 <section>
                     <h2 className="text-xl font-semibold text-surface-900 dark:text-surface-100">5. Quyền sở hữu trí tuệ</h2>
                     <ul className="list-disc pl-6 space-y-1">
-                        <li>Toàn bộ nội dung trên website (bài viết, hình ảnh, video, tài liệu khoá học) thuộc quyền sở hữu của ERX VIETNAM hoặc tác giả được uỷ quyền.</li>
+                        <li>Toàn bộ nội dung trên website (bài viết, hình ảnh, video, tài liệu khoá học) thuộc quyền sở hữu của TRÀ ĐÁ DATA hoặc tác giả được uỷ quyền.</li>
                         <li>Bạn được phép đọc, học tập và chia sẻ link bài viết blog công khai.</li>
                         <li>Bạn <strong>không được phép</strong> sao chép, phân phối, bán lại hoặc tái xuất bản nội dung khoá học dưới bất kỳ hình thức nào.</li>
                         <li>Việc quay màn hình, tải về hoặc chia sẻ nội dung khoá học trả phí là vi phạm bản quyền.</li>
@@ -86,7 +86,7 @@ export default function TermsPage() {
                     <h2 className="text-xl font-semibold text-surface-900 dark:text-surface-100">7. Giới hạn trách nhiệm</h2>
                     <ul className="list-disc pl-6 space-y-1">
                         <li>Nội dung blog được cung cấp với mục đích chia sẻ kiến thức, không phải tư vấn chuyên nghiệp.</li>
-                        <li>ERX VIETNAM không chịu trách nhiệm cho bất kỳ thiệt hại nào phát sinh từ việc áp dụng kiến thức từ blog hoặc khoá học.</li>
+                        <li>TRÀ ĐÁ DATA không chịu trách nhiệm cho bất kỳ thiệt hại nào phát sinh từ việc áp dụng kiến thức từ blog hoặc khoá học.</li>
                         <li>Chúng tôi nỗ lực đảm bảo website hoạt động ổn định nhưng không cam kết dịch vụ sẵn sàng 100% mọi lúc.</li>
                     </ul>
                 </section>
@@ -95,7 +95,7 @@ export default function TermsPage() {
                 <section>
                     <h2 className="text-xl font-semibold text-surface-900 dark:text-surface-100">8. Thay đổi điều khoản</h2>
                     <p>
-                        ERX VIETNAM có quyền cập nhật hoặc thay đổi các điều khoản này bất cứ lúc nào.
+                        TRÀ ĐÁ DATA có quyền cập nhật hoặc thay đổi các điều khoản này bất cứ lúc nào.
                         Các thay đổi sẽ có hiệu lực ngay khi được đăng tải trên trang này. Việc tiếp tục sử dụng dịch vụ sau khi thay đổi đồng nghĩa với việc bạn chấp nhận điều khoản mới.
                     </p>
                 </section>
@@ -105,8 +105,8 @@ export default function TermsPage() {
                     <h2 className="text-xl font-semibold text-surface-900 dark:text-surface-100">9. Liên hệ</h2>
                     <p>
                         Nếu có câu hỏi về các điều khoản này, vui lòng liên hệ qua email:{' '}
-                        <a href="mailto:info@erx.vn" className="text-brand-600 dark:text-brand-400 hover:underline">
-                            info@erx.vn
+                        <a href="mailto:trunghoangdata101091@gmail.com" className="text-brand-600 dark:text-brand-400 hover:underline">
+                            trunghoangdata101091@gmail.com
                         </a>
                     </p>
                 </section>

@@ -13,7 +13,7 @@ export default function LoginPage() {
                     {/* Header */}
                     <div className="bg-gradient-to-br from-brand-600 to-brand-800 px-8 py-10 text-center">
                         <div className="w-14 h-14 rounded-2xl bg-white/10 backdrop-blur-sm flex items-center justify-center mx-auto mb-4 border border-white/20">
-                            <span className="text-white font-bold text-xl">ERX</span>
+                            <span className="text-white font-bold text-xl">TDD</span>
                         </div>
                         <h1 className="text-2xl font-bold text-white mb-2">
                             Chào mừng đến {SITE_CONFIG.name}

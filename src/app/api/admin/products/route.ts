@@ -41,10 +41,22 @@ export async function POST(request: Request) {
         const body = await request.json();
         const { name, description, price, product_type, is_active, features, sort_order, duration_days, image_url, section_id } = body;
 
+        // Generate slug from name
+        const slug = name
+            .toLowerCase()
+            .normalize('NFD')
+            .replace(/[\u0300-\u036f]/g, '')
+            .replace(/đ/g, 'd').replace(/Đ/g, 'd')
+            .replace(/[^a-z0-9\s-]/g, '')
+            .replace(/\s+/g, '-')
+            .replace(/-+/g, '-')
+            .trim() + '-' + Date.now().toString(36);
+
         const { data, error } = await supabaseAdmin
             .from('products')
             .insert({
                 name,
+                slug,
                 description,
                 price: parseFloat(price),
                 product_type,

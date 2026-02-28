@@ -1,6 +1,6 @@
 /**
  * Custom Highlight.js language definitions for domain-specific languages
- * used in ERX Blog: Excel formulas, DAX, VBA, Power Query M, R
+ * used in Trà Đá Data: Excel formulas, DAX, VBA, Power Query M, R
  */
 import type { HLJSApi, Language } from 'highlight.js';
 

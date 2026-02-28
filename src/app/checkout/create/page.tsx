@@ -2,7 +2,7 @@ import { Suspense } from 'react';
 import CheckoutForm from './CheckoutForm';
 
 export const metadata = {
-    title: 'Thanh toán | ERX Blog',
+    title: 'Thanh toán | Trà Đá Data',
 };
 
 export default function CheckoutCreatePage() {

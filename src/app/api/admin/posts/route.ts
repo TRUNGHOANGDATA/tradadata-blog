@@ -94,6 +94,17 @@ export async function POST(request: Request) {
             slug = `${slug}-${Date.now().toString(36)}`;
         }
 
+        // Resolve author profileId from DB
+        let authorId: string | undefined = session.user.profileId;
+        if (authorId) {
+            const { data: check } = await supabaseAdmin.from('profiles').select('id').eq('id', authorId).single();
+            if (!check) authorId = undefined;
+        }
+        if (!authorId && session.user.email) {
+            const { data: profile } = await supabaseAdmin.from('profiles').select('id').eq('email', session.user.email).single();
+            if (profile) authorId = profile.id;
+        }
+
         // Create post
         const postData: any = {
             title: title.trim(),
@@ -104,7 +115,7 @@ export async function POST(request: Request) {
             category_id: category_id || null,
             status: status || 'draft',
             is_premium: is_premium || false,
-            author_id: session.user.profileId,
+            author_id: authorId,
             published_at: status === 'published' ? new Date().toISOString() : null,
             meta_description: meta_description?.trim() || null,
             keywords: keywords && keywords.length > 0 ? keywords : null,

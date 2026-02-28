@@ -26,7 +26,7 @@ export const metadata: Metadata = {
     template: `%s | ${SITE_CONFIG.name}`,
   },
   description: SITE_CONFIG.description,
-  keywords: ['Excel', 'Power BI', 'Power Query', 'VBA', 'SQL', 'Python', 'AI', 'Supply Chain', 'Data Analytics', 'ERX Blog'],
+  keywords: ['Excel', 'Power BI', 'Power Query', 'VBA', 'SQL', 'Python', 'AI', 'Supply Chain', 'Data Analytics', 'Trà Đá Data'],
   openGraph: {
     title: SITE_CONFIG.name,
     description: SITE_CONFIG.description,
@@ -46,9 +46,6 @@ export const metadata: Metadata = {
   },
   alternates: {
     canonical: '/',
-  },
-  verification: {
-    google: 'kPulyszUJeUuiZ-cS4GOwwPscVubpvbvuskD1OOCNgE',
   },
 };
 

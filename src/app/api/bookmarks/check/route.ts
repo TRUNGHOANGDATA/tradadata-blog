@@ -5,8 +5,8 @@ import { supabaseAdmin } from '@/lib/supabase/server';
 export async function GET(request: Request) {
     try {
         const session = await auth();
-        if (!session?.user?.profileId) {
-            return NextResponse.json({ isBookmarked: false }, { status: 401 });
+        if (!session?.user?.email) {
+            return NextResponse.json({ isBookmarked: false });
         }
 
         const { searchParams } = new URL(request.url);
@@ -17,13 +17,33 @@ export async function GET(request: Request) {
         }
 
         if (!supabaseAdmin) {
-            return NextResponse.json({ error: 'Database connection not string available' }, { status: 500 });
+            return NextResponse.json({ error: 'Database connection not available' }, { status: 500 });
+        }
+
+        // Resolve user profile ID — verify it exists in DB
+        let userId: string | undefined = session.user.profileId;
+        if (userId) {
+            const { data: profileCheck } = await supabaseAdmin
+                .from('profiles')
+                .select('id')
+                .eq('id', userId)
+                .single();
+            if (!profileCheck) userId = undefined;
+        }
+        if (!userId) {
+            const { data: profile } = await supabaseAdmin
+                .from('profiles')
+                .select('id')
+                .eq('email', session.user.email)
+                .single();
+            if (!profile) return NextResponse.json({ isBookmarked: false });
+            userId = profile.id;
         }
 
         const { data, error } = await supabaseAdmin
             .from('user_bookmarks')
             .select('id')
-            .eq('user_id', session.user.profileId)
+            .eq('user_id', userId)
             .eq('post_id', postId)
             .single();
 

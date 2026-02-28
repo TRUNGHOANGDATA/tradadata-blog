@@ -47,15 +47,15 @@ export function CartProvider({ children }: { children: ReactNode }) {
     useEffect(() => {
         setIsMounted(true);
         try {
-            const savedCart = localStorage.getItem('erx-cart');
+            const savedCart = localStorage.getItem('tdd-cart');
             if (savedCart) {
                 setItems(JSON.parse(savedCart));
             }
-            const savedCoupon = localStorage.getItem('erx-cart-coupon');
+            const savedCoupon = localStorage.getItem('tdd-cart-coupon');
             if (savedCoupon) {
                 setCoupon(JSON.parse(savedCoupon));
             }
-            const savedOrder = localStorage.getItem('erx-pending-order');
+            const savedOrder = localStorage.getItem('tdd-pending-order');
             if (savedOrder) {
                 setPendingOrderCode(savedOrder);
             }
@@ -67,16 +67,16 @@ export function CartProvider({ children }: { children: ReactNode }) {
     // Lưu vào localStorage khi có thay đổi
     useEffect(() => {
         if (isMounted) {
-            localStorage.setItem('erx-cart', JSON.stringify(items));
+            localStorage.setItem('tdd-cart', JSON.stringify(items));
         }
     }, [items, isMounted]);
 
     useEffect(() => {
         if (isMounted) {
             if (coupon) {
-                localStorage.setItem('erx-cart-coupon', JSON.stringify(coupon));
+                localStorage.setItem('tdd-cart-coupon', JSON.stringify(coupon));
             } else {
-                localStorage.removeItem('erx-cart-coupon');
+                localStorage.removeItem('tdd-cart-coupon');
             }
         }
     }, [coupon, isMounted]);
@@ -143,12 +143,12 @@ export function CartProvider({ children }: { children: ReactNode }) {
         setItems([]);
         setCoupon(null);
         setPendingOrderCode(null);
-        localStorage.removeItem('erx-pending-order');
+        localStorage.removeItem('tdd-pending-order');
     }, []);
 
     const setPendingOrder = useCallback((orderCode: string) => {
         setPendingOrderCode(orderCode);
-        localStorage.setItem('erx-pending-order', orderCode);
+        localStorage.setItem('tdd-pending-order', orderCode);
     }, []);
 
     // Poll pending order status — clear cart when approved

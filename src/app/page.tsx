@@ -14,8 +14,26 @@ export default async function HomePage() {
     getLatestPosts(7),
     getPosts({ limit: 1, page: 1 }),  // just for the count
   ]);
-  const featuredPost = recentPosts[0];
-  const otherPosts = recentPosts.slice(1);
+
+  // Check for a featured/pinned post first
+  let featuredPost = recentPosts[0];
+  let otherPosts = recentPosts.slice(1);
+
+  if (supabaseAdmin) {
+    const { data: pinnedPost } = await supabaseAdmin
+      .from('posts')
+      .select('*, category:categories(*), author:profiles(*)')
+      .eq('is_featured', true)
+      .eq('status', 'published')
+      .order('published_at', { ascending: false })
+      .limit(1)
+      .single();
+
+    if (pinnedPost) {
+      featuredPost = pinnedPost;
+      otherPosts = recentPosts.filter(p => p.id !== pinnedPost.id).slice(0, 6);
+    }
+  }
 
 
 
@@ -36,11 +54,11 @@ export default async function HomePage() {
       {/* ===== HERO SECTION ===== */}
       <section className="relative overflow-hidden">
         {/* Animated Background */}
-        <div className="absolute inset-0 bg-gradient-to-br from-brand-50 via-white to-cyan-50 dark:from-surface-950 dark:via-surface-900 dark:to-surface-950">
+        <div className="absolute inset-0 bg-gradient-to-br from-brand-50 via-white to-emerald-50 dark:from-surface-950 dark:via-surface-900 dark:to-surface-950">
           <div className="absolute inset-0 opacity-30 dark:opacity-20">
             <div className="absolute top-0 -left-4 w-72 h-72 bg-brand-300 dark:bg-brand-600 rounded-full mix-blend-multiply dark:mix-blend-screen filter blur-3xl animate-pulse" />
-            <div className="absolute top-0 -right-4 w-72 h-72 bg-cyan-300 dark:bg-cyan-600 rounded-full mix-blend-multiply dark:mix-blend-screen filter blur-3xl animate-pulse [animation-delay:2s]" />
-            <div className="absolute -bottom-8 left-20 w-72 h-72 bg-purple-300 dark:bg-purple-600 rounded-full mix-blend-multiply dark:mix-blend-screen filter blur-3xl animate-pulse [animation-delay:4s]" />
+            <div className="absolute top-0 -right-4 w-72 h-72 bg-emerald-300 dark:bg-emerald-600 rounded-full mix-blend-multiply dark:mix-blend-screen filter blur-3xl animate-pulse [animation-delay:2s]" />
+            <div className="absolute -bottom-8 left-20 w-72 h-72 bg-teal-300 dark:bg-teal-600 rounded-full mix-blend-multiply dark:mix-blend-screen filter blur-3xl animate-pulse [animation-delay:4s]" />
           </div>
         </div>
 
@@ -52,7 +70,7 @@ export default async function HomePage() {
             </div>
             <h1 className="text-4xl md:text-6xl font-bold text-surface-900 dark:text-white mb-6 leading-tight">
               Nâng tầm kỹ năng{' '}
-              <span className="bg-gradient-to-r from-brand-600 to-cyan-500 dark:from-cyan-300 dark:to-emerald-300 bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-brand-600 to-emerald-500 dark:from-emerald-300 dark:to-teal-300 bg-clip-text text-transparent">
                 Data & AI
               </span>
             </h1>

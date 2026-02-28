@@ -5,17 +5,17 @@
    ============================================ */
 
 @theme {
-  /* Brand Colors */
-  --color-brand-50: #eef2ff;
-  --color-brand-100: #e0e7ff;
-  --color-brand-200: #c7d2fe;
-  --color-brand-300: #a5b4fc;
-  --color-brand-400: #818cf8;
-  --color-brand-500: #6366f1;
-  --color-brand-600: #4f46e5;
-  --color-brand-700: #4338ca;
-  --color-brand-800: #3730a3;
-  --color-brand-900: #312e81;
+  /* Brand Colors — Green (Trà Đá Data) */
+  --color-brand-50: #f0fdf4;
+  --color-brand-100: #dcfce7;
+  --color-brand-200: #bbf7d0;
+  --color-brand-300: #86efac;
+  --color-brand-400: #4ade80;
+  --color-brand-500: #22c55e;
+  --color-brand-600: #16a34a;
+  --color-brand-700: #15803d;
+  --color-brand-800: #166534;
+  --color-brand-900: #14532d;
 
   /* Surface Colors */
   --color-surface-50: #f8fafc;
@@ -372,7 +372,7 @@ h6 {
 /* -- Blockquote -- */
 .prose blockquote {
   @apply border-l-4 border-brand-500 pl-5 my-6 py-3 rounded-r-xl;
-  background: linear-gradient(90deg, rgb(79 70 229 / 0.06) 0%, transparent 100%);
+  background: linear-gradient(90deg, rgb(22 163 74 / 0.06) 0%, transparent 100%);
   font-style: italic;
   color: #475569;
   position: relative;
@@ -382,7 +382,7 @@ h6 {
   content: '\201C';
   font-size: 3rem;
   line-height: 1;
-  color: rgb(79 70 229 / 0.2);
+  color: rgb(22 163 74 / 0.2);
   position: absolute;
   top: -0.25rem;
   left: 0.5rem;
@@ -435,7 +435,7 @@ h6 {
 }
 
 .prose tr:hover td {
-  background: rgb(79 70 229 / 0.04);
+  background: rgb(22 163 74 / 0.04);
 }
 
 /* -- Highlight -- */
@@ -476,11 +476,11 @@ h6 {
 
 .dark .prose blockquote {
   color: #94a3b8;
-  background: linear-gradient(90deg, rgb(79 70 229 / 0.1) 0%, transparent 100%);
+  background: linear-gradient(90deg, rgb(22 163 74 / 0.1) 0%, transparent 100%);
 }
 
 .dark .prose blockquote::before {
-  color: rgb(79 70 229 / 0.3);
+  color: rgb(22 163 74 / 0.3);
 }
 
 .dark .prose th {
@@ -498,7 +498,7 @@ h6 {
 }
 
 .dark .prose tr:hover td {
-  background: rgb(79 70 229 / 0.08);
+  background: rgb(22 163 74 / 0.08);
 }
 
 .dark .prose table {

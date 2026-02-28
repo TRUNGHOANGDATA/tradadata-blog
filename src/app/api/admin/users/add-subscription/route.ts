@@ -1,10 +1,10 @@
-import { NextResponse } from 'next/server';
+﻿import { NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
 import { supabaseAdmin } from '@/lib/supabase/server';
 
 function generateOrderCode() {
     const chars = 'ABCDEF0123456789';
-    let code = 'ERX-';
+    let code = 'TDD-';
     for (let i = 0; i < 6; i++) code += chars[Math.floor(Math.random() * chars.length)];
     return code;
 }

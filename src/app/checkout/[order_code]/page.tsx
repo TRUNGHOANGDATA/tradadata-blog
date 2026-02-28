@@ -5,7 +5,7 @@ import { CheckCircle2 } from 'lucide-react';
 import CheckoutClient from './CheckoutClient';
 
 export const metadata = {
-    title: 'Thanh toán đơn hàng | ERX Blog',
+    title: 'Thanh toán đơn hàng | Trà Đá Data',
 };
 
 export default async function CheckoutPage(props: { params: Promise<{ order_code: string }> }) {

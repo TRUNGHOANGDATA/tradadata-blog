@@ -4,7 +4,7 @@ import { SITE_CONFIG, DEFAULT_CATEGORIES } from '@/lib/constants';
 import { supabaseAdmin } from '@/lib/supabase/server';
 
 async function getFooterSettings() {
-    if (!supabaseAdmin) return { email: 'info@erx.vn', phone: '' };
+    if (!supabaseAdmin) return { email: 'trunghoangdata101091@gmail.com', phone: '' };
     try {
         const { data } = await supabaseAdmin
             .from('site_settings')
@@ -13,11 +13,11 @@ async function getFooterSettings() {
             .single();
         const links = data?.value as any;
         return {
-            email: links?.email || 'info@erx.vn',
+            email: links?.email || 'trunghoangdata101091@gmail.com',
             phone: links?.phone || '',
         };
     } catch {
-        return { email: 'info@erx.vn', phone: '' };
+        return { email: 'trunghoangdata101091@gmail.com', phone: '' };
     }
 }
 
@@ -45,8 +45,8 @@ export async function Footer() {
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-10">
                     {/* Brand */}
                     <div className="md:col-span-1">
-                        <Link href="/" className="flex items-center gap-2 mb-4 group dark:bg-white dark:p-1.5 dark:rounded-xl w-fit">
-                            <img src="/ERX_LOGO.png" alt={SITE_CONFIG.name} className="h-8 w-auto object-contain transition-transform group-hover:scale-105" />
+                        <Link href="/" className="flex items-center gap-2 mb-4 group w-fit">
+                            <img src="/LOGO_TRA_DA_DATA.jpg" alt={SITE_CONFIG.name} className="h-10 w-auto object-contain transition-transform group-hover:scale-105 rounded-full" />
                         </Link>
                         <p className="text-sm leading-relaxed">
                             {SITE_CONFIG.description}. Nơi chia sẻ kiến thức thực tế, bài viết chất lượng cho cộng đồng.
@@ -86,15 +86,9 @@ export async function Footer() {
                                 </Link>
                             </li>
                             <li>
-                                <a
-                                    href="https://khoahoc.erx.vn/"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="text-sm hover:text-white transition-colors flex items-center gap-1"
-                                >
-                                    Khoá học E-Learning
-                                    <ExternalLink className="h-3 w-3" />
-                                </a>
+                                <Link href="/courses" className="text-sm hover:text-white transition-colors flex items-center gap-1">
+                                    Khóa học
+                                </Link>
                             </li>
                             <li>
                                 <Link href="/terms" className="text-sm hover:text-white transition-colors">

@@ -61,7 +61,7 @@ export async function GET(request: Request) {
                         name: email.split('@')[0],
                         product_name: productName,
                         expires_at: expiresFormatted,
-                        url: process.env.NEXT_PUBLIC_APP_URL || 'https://go.erx.vn',
+                        url: process.env.NEXT_PUBLIC_APP_URL || 'https://tradadata.vercel.app',
                     });
 
                     await sendEmail(email, subject, html);

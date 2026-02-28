@@ -10,7 +10,7 @@ export const transporter = nodemailer.createTransport({
 
 export const sendEmail = async (to: string | string[], subject: string, html: string) => {
     const mailOptions = {
-        from: `"${process.env.NEWSLETTER_FROM_NAME || 'ERX Vietnam'}" <${process.env.EMAIL_USER}>`,
+        from: `"${process.env.NEWSLETTER_FROM_NAME || 'Trà Đá Data'}" <${process.env.EMAIL_USER}>`,
         to: Array.isArray(to) ? to.join(', ') : to,
         subject,
         html,
