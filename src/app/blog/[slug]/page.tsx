@@ -238,95 +238,115 @@ export default async function BlogPostPage({ params }: Props) {
 
     const session = await auth();
     const isAdminOrEditor = session?.user?.role === 'admin' || session?.user?.role === 'editor';
-    let isPremiumUnlocked = !post.is_premium;
 
-    // Bypass cached NextAuth session and query real-time profile status
-    if (!isPremiumUnlocked && session?.user?.email && supabaseAdmin) {
-        const { data: profile } = await supabaseAdmin
-            .from('profiles')
-            .select('is_subscribed')
-            .eq('email', session.user.email)
-            .single();
+    // Fetch tags, premium status, and cached content IN PARALLEL
+    const [postTags, isPremiumProfile] = await Promise.all([
+        // Tags query
+        (async () => {
+            if (!supabaseAdmin) return [];
+            const { data: ptData } = await supabaseAdmin
+                .from('post_tags')
+                .select('tag_id, tags(id, name, slug)')
+                .eq('post_id', post.id);
+            return ptData ? ptData.map((pt: any) => pt.tags).filter(Boolean) : [];
+        })(),
+        // Premium check
+        (async () => {
+            if (post.is_premium && session?.user?.email && supabaseAdmin) {
+                const { data: profile } = await supabaseAdmin
+                    .from('profiles')
+                    .select('is_subscribed')
+                    .eq('email', session.user.email)
+                    .single();
+                return profile?.is_subscribed || false;
+            }
+            return false;
+        })(),
+    ]);
 
-        isPremiumUnlocked = profile?.is_subscribed || false;
-    }
+    let isPremiumUnlocked = !post.is_premium || isPremiumProfile;
 
-    // Render HTML from Tiptap JSON content
+    // Render HTML from Tiptap JSON content (CACHED)
     let htmlContent = '';
     let toc: { id: string, text: string, level: number }[] = [];
 
-    if (post.content) {
-        const getCachedContent = unstable_cache(
-            async (contentRaw: any) => {
-                let parsedHtml = '';
-                let parsedToc: { id: string, text: string, level: number }[] = [];
-                try {
-                    const jsonContent = typeof contentRaw === 'string' ? JSON.parse(contentRaw) : contentRaw;
+    // Get related posts IN PARALLEL with content parsing
+    const tagIds = postTags.map((t: any) => t.id);
+    const [cachedContent, relatedPosts] = await Promise.all([
+        // Content parsing (cached)
+        post.content ? (async () => {
+            const getCachedContent = unstable_cache(
+                async (contentRaw: any) => {
+                    let parsedHtml = '';
+                    let parsedToc: { id: string, text: string, level: number }[] = [];
+                    try {
+                        const jsonContent = typeof contentRaw === 'string' ? JSON.parse(contentRaw) : contentRaw;
 
-                    // Extract TOC from JSON
-                    const slugify = (text: string) => {
-                        return text.toString().toLowerCase()
-                            .replace(/[àáạảãâầấậẩẫăằắặẳẵ]/g, "a")
-                            .replace(/[èéẹẻẽêềếệểễ]/g, "e")
-                            .replace(/[ìíịỉĩ]/g, "i")
-                            .replace(/[òóọỏõôồốộổỗơờớợởỡ]/g, "o")
-                            .replace(/[ùúụủũưừứựửữ]/g, "u")
-                            .replace(/[ỳýỵỷỹ]/g, "y")
-                            .replace(/đ/g, "d")
-                            .replace(/\s+/g, '-')
-                            .replace(/[^\w\-]+/g, '')
-                            .replace(/\-\-+/g, '-')
-                            .replace(/^-+/, '')
-                            .replace(/-+$/, '');
-                    };
+                        // Extract TOC from JSON
+                        const slugify = (text: string) => {
+                            return text.toString().toLowerCase()
+                                .replace(/[àáạảãâầấậẩẫăằắặẳẵ]/g, "a")
+                                .replace(/[èéẹẻẽêềếệểễ]/g, "e")
+                                .replace(/[ìíịỉĩ]/g, "i")
+                                .replace(/[òóọỏõôồốộổỗơờớợởỡ]/g, "o")
+                                .replace(/[ùúụủũưừứựửữ]/g, "u")
+                                .replace(/[ỳýỵỷỹ]/g, "y")
+                                .replace(/đ/g, "d")
+                                .replace(/\s+/g, '-')
+                                .replace(/[^\w\-]+/g, '')
+                                .replace(/\-\-+/g, '-')
+                                .replace(/^-+/, '')
+                                .replace(/-+$/, '');
+                        };
 
-                    const getText = (node: any): string => {
-                        if (node.type === 'text') return node.text || '';
-                        if (node.content) return node.content.map(getText).join('');
-                        return '';
-                    };
+                        const getText = (node: any): string => {
+                            if (node.type === 'text') return node.text || '';
+                            if (node.content) return node.content.map(getText).join('');
+                            return '';
+                        };
 
-                    if (jsonContent?.content) {
-                        jsonContent.content.forEach((node: any) => {
-                            if (node.type === 'heading' && node.attrs?.level) {
-                                const text = getText(node);
-                                if (text.trim()) {
-                                    const id = slugify(text) || `heading-${parsedToc.length}`;
-                                    parsedToc.push({ id, text, level: node.attrs.level });
+                        if (jsonContent?.content) {
+                            jsonContent.content.forEach((node: any) => {
+                                if (node.type === 'heading' && node.attrs?.level) {
+                                    const text = getText(node);
+                                    if (text.trim()) {
+                                        const id = slugify(text) || `heading-${parsedToc.length}`;
+                                        parsedToc.push({ id, text, level: node.attrs.level });
+                                    }
                                 }
-                            }
-                        });
-                    }
-
-                    let rawHtml = transformCodeBlocks(generateHTML(jsonContent, tiptapExtensions));
-
-                    // Inject IDs to HTML tags for TOC linking
-                    let tocIndex = 0;
-                    parsedHtml = rawHtml.replace(/<h([1-6])(.*?)>(.*?)<\/h\1>/g, (match, level, attrs, innerHtml) => {
-                        if (tocIndex < parsedToc.length) {
-                            const id = parsedToc[tocIndex].id;
-                            tocIndex++;
-                            const cleanAttrs = attrs.replace(/id="[^"]*"/g, '');
-                            return `<h${level}${cleanAttrs} id="${id}" class="scroll-mt-24 group relative">${innerHtml} <a href="#${id}" class="opacity-0 group-hover:opacity-100 absolute -left-6 top-1/2 -translate-y-1/2 text-surface-300 hover:text-brand-500 transition-opacity" aria-hidden="true">#</a></h${level}>`;
+                            });
                         }
-                        return match;
-                    });
-                } catch (e) {
-                    console.error('Error parsing post content:', e);
-                    parsedHtml = '<p>Error loading content.</p>';
-                }
-                return { html: parsedHtml, toc: parsedToc };
-            },
-            [`post-content-${post.id}`], // Tiêu chí Cache dựa trên ID bài viết
-            { revalidate: 3600, tags: [`post-${post.id}`] } // Tự làm mới bộ rác sau 1h
-        );
 
-        const cached = await getCachedContent(post.content);
-        htmlContent = cached.html;
-        toc = cached.toc;
-    } else {
-        htmlContent = '<p className="text-surface-500 italic">Bài viết này chưa có nội dung.</p>';
-    }
+                        let rawHtml = transformCodeBlocks(generateHTML(jsonContent, tiptapExtensions));
+
+                        // Inject IDs to HTML tags for TOC linking
+                        let tocIndex = 0;
+                        parsedHtml = rawHtml.replace(/<h([1-6])(.*?)>(.*?)<\/h\1>/g, (match, level, attrs, innerHtml) => {
+                            if (tocIndex < parsedToc.length) {
+                                const id = parsedToc[tocIndex].id;
+                                tocIndex++;
+                                const cleanAttrs = attrs.replace(/id="[^"]*"/g, '');
+                                return `<h${level}${cleanAttrs} id="${id}" class="scroll-mt-24 group relative">${innerHtml} <a href="#${id}" class="opacity-0 group-hover:opacity-100 absolute -left-6 top-1/2 -translate-y-1/2 text-surface-300 hover:text-brand-500 transition-opacity" aria-hidden="true">#</a></h${level}>`;
+                            }
+                            return match;
+                        });
+                    } catch (e) {
+                        console.error('Error parsing post content:', e);
+                        parsedHtml = '<p>Error loading content.</p>';
+                    }
+                    return { html: parsedHtml, toc: parsedToc };
+                },
+                [`post-content-${post.id}`],
+                { revalidate: 3600, tags: [`post-${post.id}`] }
+            );
+            return getCachedContent(post.content);
+        })() : Promise.resolve({ html: '<p class="text-surface-500 italic">Bài viết này chưa có nội dung.</p>', toc: [] as { id: string, text: string, level: number }[] }),
+        // Related posts (cached at data layer)
+        post.category_id ? getRelatedPosts(post.category_id, post.id, 2, tagIds) : Promise.resolve([]),
+    ]);
+
+    htmlContent = cachedContent.html;
+    toc = cachedContent.toc;
 
     // Protect Premium Content — only for subscribed users
     if (!isPremiumUnlocked) {
@@ -353,24 +373,6 @@ export default async function BlogPostPage({ params }: Props) {
     // Manually format date to avoid hydration mismatches between Server and Client
     const d = new Date(post.published_at || post.created_at);
     const formattedDate = `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}/${d.getFullYear()}`;
-
-    // Fetch post tags
-    let postTags: { id: string; name: string; slug: string }[] = [];
-    if (supabaseAdmin) {
-        const { data: ptData } = await supabaseAdmin
-            .from('post_tags')
-            .select('tag_id, tags(id, name, slug)')
-            .eq('post_id', post.id);
-        if (ptData) {
-            postTags = ptData.map((pt: any) => pt.tags).filter(Boolean);
-        }
-    }
-    const tagIds = postTags.map(t => t.id);
-
-    // Get related posts (tags priority > category fallback)
-    const relatedPosts = post.category_id
-        ? await getRelatedPosts(post.category_id, post.id, 2, tagIds)
-        : [];
 
     // JSON-LD Structured Data for Google Rich Results
     const jsonLd = {

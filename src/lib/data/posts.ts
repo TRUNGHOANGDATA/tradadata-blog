@@ -1,4 +1,5 @@
 import { supabaseAdmin } from '@/lib/supabase/server';
+import { unstable_cache } from 'next/cache';
 import type { Post } from '@/types';
 
 // Utility to calculate reading time based on content or excerpt length
@@ -61,50 +62,79 @@ export async function getPosts({
     };
 }
 
-export async function getPostBySlug(slug: string): Promise<Post | null> {
-    if (!supabaseAdmin) return null;
+// Cached version — prevents duplicate DB queries between generateMetadata and BlogPostPage
+export const getPostBySlug = unstable_cache(
+    async (slug: string): Promise<Post | null> => {
+        if (!supabaseAdmin) return null;
 
-    const { data, error } = await supabaseAdmin
-        .from('posts')
-        .select('*, author:profiles(*), category:categories(*)')
-        .eq('slug', slug)
-        .eq('status', 'published')
-        .single();
+        const { data, error } = await supabaseAdmin
+            .from('posts')
+            .select('*, author:profiles(*), category:categories(*)')
+            .eq('slug', slug)
+            .eq('status', 'published')
+            .single();
 
-    if (error) {
-        console.error(`Error fetching post ${slug}:`, error);
-        return null;
-    }
+        if (error) {
+            console.error(`Error fetching post ${slug}:`, error);
+            return null;
+        }
 
-    return formatPost(data);
-}
+        return formatPost(data);
+    },
+    ['post-by-slug'],
+    { revalidate: 300, tags: ['posts'] } // Cache 5 phút
+);
 
-export async function getRelatedPosts(categoryId: string, currentPostId: string, limit = 3, tagIds?: string[]): Promise<Post[]> {
-    if (!supabaseAdmin) return [];
+// Cached version — related posts don't change frequently
+export const getRelatedPosts = unstable_cache(
+    async (categoryId: string, currentPostId: string, limit = 3, tagIds?: string[]): Promise<Post[]> => {
+        if (!supabaseAdmin) return [];
 
-    const relatedPosts: Post[] = [];
-    const seenIds = new Set<string>([currentPostId]);
+        const relatedPosts: Post[] = [];
+        const seenIds = new Set<string>([currentPostId]);
 
-    // Priority 1: Posts sharing the same tags
-    if (tagIds && tagIds.length > 0) {
-        const { data: taggedPostIds } = await supabaseAdmin
-            .from('post_tags')
-            .select('post_id')
-            .in('tag_id', tagIds)
-            .neq('post_id', currentPostId);
+        // Priority 1: Posts sharing the same tags
+        if (tagIds && tagIds.length > 0) {
+            const { data: taggedPostIds } = await supabaseAdmin
+                .from('post_tags')
+                .select('post_id')
+                .in('tag_id', tagIds)
+                .neq('post_id', currentPostId);
 
-        if (taggedPostIds && taggedPostIds.length > 0) {
-            const uniqueIds = [...new Set(taggedPostIds.map(r => r.post_id))];
-            const { data: tagPosts } = await supabaseAdmin
+            if (taggedPostIds && taggedPostIds.length > 0) {
+                const uniqueIds = [...new Set(taggedPostIds.map(r => r.post_id))];
+                const { data: tagPosts } = await supabaseAdmin
+                    .from('posts')
+                    .select('*, author:profiles(*), category:categories(*)')
+                    .eq('status', 'published')
+                    .in('id', uniqueIds)
+                    .order('published_at', { ascending: false })
+                    .limit(limit);
+
+                if (tagPosts) {
+                    for (const p of tagPosts) {
+                        if (!seenIds.has(p.id) && relatedPosts.length < limit) {
+                            seenIds.add(p.id);
+                            relatedPosts.push(formatPost(p));
+                        }
+                    }
+                }
+            }
+        }
+
+        // Priority 2 (fallback): Posts in same category
+        if (relatedPosts.length < limit && categoryId) {
+            const { data: catPosts } = await supabaseAdmin
                 .from('posts')
                 .select('*, author:profiles(*), category:categories(*)')
                 .eq('status', 'published')
-                .in('id', uniqueIds)
+                .eq('category_id', categoryId)
+                .neq('id', currentPostId)
                 .order('published_at', { ascending: false })
                 .limit(limit);
 
-            if (tagPosts) {
-                for (const p of tagPosts) {
+            if (catPosts) {
+                for (const p of catPosts) {
                     if (!seenIds.has(p.id) && relatedPosts.length < limit) {
                         seenIds.add(p.id);
                         relatedPosts.push(formatPost(p));
@@ -112,31 +142,12 @@ export async function getRelatedPosts(categoryId: string, currentPostId: string,
                 }
             }
         }
-    }
 
-    // Priority 2 (fallback): Posts in same category
-    if (relatedPosts.length < limit && categoryId) {
-        const { data: catPosts } = await supabaseAdmin
-            .from('posts')
-            .select('*, author:profiles(*), category:categories(*)')
-            .eq('status', 'published')
-            .eq('category_id', categoryId)
-            .neq('id', currentPostId)
-            .order('published_at', { ascending: false })
-            .limit(limit);
-
-        if (catPosts) {
-            for (const p of catPosts) {
-                if (!seenIds.has(p.id) && relatedPosts.length < limit) {
-                    seenIds.add(p.id);
-                    relatedPosts.push(formatPost(p));
-                }
-            }
-        }
-    }
-
-    return relatedPosts;
-}
+        return relatedPosts;
+    },
+    ['related-posts'],
+    { revalidate: 600, tags: ['posts'] } // Cache 10 phút
+);
 
 export async function getLatestPosts(limit = 6): Promise<Post[]> {
     const { data } = await getPosts({ limit });
