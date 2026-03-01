@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase/server';
 import { sendEmail } from '@/lib/email/gmail';
-import { generateNewPostEmailHtml } from '@/lib/email/templates/new-post';
+import { getEmailTemplate } from '@/lib/email/template-engine';
 
 export async function POST(request: Request) {
     try {
@@ -40,8 +40,6 @@ export async function POST(request: Request) {
         // 3. Batching & Queueing (Mock implementation for simplicity, production should use real batches)
         const batchSize = 90;
         const totalSubscribers = subscribers.length;
-        const batches = Math.ceil(totalSubscribers / batchSize);
-
 
         // Chỉ xử lý và gửi liền lô 1 (trong giới hạn < 90/ngày của Gmail)
         const firstBatch = subscribers.slice(0, batchSize);
@@ -71,32 +69,42 @@ export async function POST(request: Request) {
             // Vẫn tiếp tục chạy để gửi mail cho dù queue lỗi
         }
 
-        // 4. Gửi thực tế cho lô 1
+        // 4. Chuẩn bị variables cho template
+        const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://tradadata.com';
+        const postUrl = `${appUrl}/blog/${post.slug}`;
+        const categoryName = post.categories ? (Array.isArray(post.categories) ? post.categories[0]?.name : post.categories.name) : '';
+        const coverImageHtml = post.cover_image
+            ? `<img src="${post.cover_image}" alt="${post.title}" style="width:100%;height:auto;max-height:280px;object-fit:cover;display:block;">`
+            : '';
+        const categoryHtml = categoryName
+            ? `<span class="badge">${categoryName}</span>`
+            : '';
+
+        // 5. Gửi thực tế cho lô 1
         let successCount = 0;
         let failCount = 0;
 
         for (const sub of firstBatch) {
-            const unsubscribeUrl = `${process.env.NEXT_PUBLIC_APP_URL}/api/newsletter/unsubscribe?email=${encodeURIComponent(sub.email)}`;
-            const postUrl = `${process.env.NEXT_PUBLIC_APP_URL}/blog/${post.slug}`;
+            const unsubscribeUrl = `${appUrl}/api/newsletter/unsubscribe?email=${encodeURIComponent(sub.email)}`;
 
-            const html = generateNewPostEmailHtml({
-                postTitle: post.title,
-                postExcerpt: post.excerpt,
-                postUrl: postUrl,
-                coverImage: post.cover_image,
-                categoryName: post.categories ? (Array.isArray(post.categories) ? post.categories[0].name : post.categories.name) : 'Cập nhật',
-                unsubscribeUrl
-            });
+            try {
+                const { subject, html } = await getEmailTemplate('new_post', {
+                    title: post.title,
+                    excerpt: post.excerpt || '',
+                    post_url: postUrl,
+                    cover_image: coverImageHtml,
+                    category: categoryHtml,
+                    unsubscribe_url: unsubscribeUrl,
+                });
 
-            const result = await sendEmail(
-                sub.email,
-                `🔥 Bài viết mới: ${post.title}`,
-                html
-            );
+                const result = await sendEmail(sub.email, subject, html);
 
-            if (result.success) {
-                successCount++;
-            } else {
+                if (result.success) {
+                    successCount++;
+                } else {
+                    failCount++;
+                }
+            } catch {
                 failCount++;
             }
         }

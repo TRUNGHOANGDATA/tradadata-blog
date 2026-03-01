@@ -46,7 +46,7 @@ export async function Footer() {
                     {/* Brand */}
                     <div className="md:col-span-1">
                         <Link href="/" className="flex items-center gap-2 mb-4 group w-fit">
-                            <img src="/LOGO_TRA_DA_DATA.jpg" alt={SITE_CONFIG.name} className="h-10 w-auto object-contain transition-transform group-hover:scale-105 rounded-full" />
+                            <img src="/LOGO_TRA_DA_DATA.jpg" alt={SITE_CONFIG.name} className="h-12 w-12 object-cover transition-transform group-hover:scale-105 rounded-full shadow-sm" />
                         </Link>
                         <p className="text-sm leading-relaxed">
                             {SITE_CONFIG.description}. Nơi chia sẻ kiến thức thực tế, bài viết chất lượng cho cộng đồng.

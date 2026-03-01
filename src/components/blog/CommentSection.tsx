@@ -49,6 +49,7 @@ function UserAvatar({ user }: { user?: CommentUser }) {
                 src={user.avatar_url}
                 alt={name}
                 className="w-9 h-9 rounded-full object-cover border-2 border-surface-200 dark:border-surface-700"
+                referrerPolicy="no-referrer"
             />
         );
     }

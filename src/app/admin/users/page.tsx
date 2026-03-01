@@ -265,7 +265,7 @@ export default function UsersPage() {
                                         <td className="px-6 py-4">
                                             <div className="flex items-center gap-3">
                                                 {user.avatar_url ? (
-                                                    <img src={user.avatar_url} alt="" className="w-9 h-9 rounded-xl object-cover" />
+                                                    <img src={user.avatar_url} alt="" className="w-9 h-9 rounded-xl object-cover" referrerPolicy="no-referrer" />
                                                 ) : (
                                                     <div className="w-9 h-9 rounded-xl bg-brand-100 dark:bg-brand-900/30 flex items-center justify-center">
                                                         <User className="h-4 w-4 text-brand-600" />

@@ -26,7 +26,7 @@ export function Header() {
                         <div className="flex items-center justify-between h-16">
                             {/* Logo */}
                             <Link href="/" className="flex items-center gap-2.5 group flex-shrink-0">
-                                <img src="/LOGO_TRA_DA_DATA.jpg" alt={SITE_CONFIG.name} className="h-12 w-12 object-cover transition-transform group-hover:scale-105 rounded-full ring-2 ring-brand-500/30" />
+                                <img src="/LOGO_TRA_DA_DATA.jpg" alt={SITE_CONFIG.name} className="h-14 w-14 object-cover transition-transform group-hover:scale-105 rounded-full shadow-sm" />
                                 <span className="hidden sm:block font-bold text-lg text-surface-900 dark:text-white tracking-tight group-hover:text-brand-600 dark:group-hover:text-brand-400 transition-colors">
                                     Trà Đá Data
                                 </span>
@@ -76,6 +76,7 @@ export function Header() {
                                                     src={session.user.image}
                                                     alt={session.user.name || ''}
                                                     className="w-8 h-8 rounded-lg object-cover"
+                                                    referrerPolicy="no-referrer"
                                                 />
                                             ) : (
                                                 <div className="w-8 h-8 rounded-lg bg-brand-100 dark:bg-brand-900 flex items-center justify-center">

@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { Search, CheckCircle2, Loader2, Link as LinkIcon, ExternalLink, Pencil, X, Ticket, Plus } from 'lucide-react';
@@ -196,7 +196,7 @@ export default function AdminOrdersPage() {
 
     const formatDate = (dateStr: string) => {
         const d = new Date(dateStr);
-        return `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')} ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
+        return `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}/${d.getFullYear()} ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}:${String(d.getSeconds()).padStart(2, '0')}`;
     };
 
     const formatCurrency = (amount: number) => {
@@ -298,14 +298,14 @@ export default function AdminOrdersPage() {
             )}
             <div className="bg-white dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-800 overflow-hidden">
                 <div className="overflow-x-auto">
-                    <table className="w-full">
+                    <table className="w-full table-fixed">
                         <thead>
                             <tr className="border-b border-surface-200 dark:border-surface-800 bg-surface-50 dark:bg-surface-800/50">
-                                <th className="text-left px-6 py-3 text-xs font-semibold text-surface-500 uppercase">Mã Đơn / Ngày tạo</th>
-                                <th className="text-left px-6 py-3 text-xs font-semibold text-surface-500 uppercase">Khách hàng</th>
-                                <th className="text-left px-6 py-3 text-xs font-semibold text-surface-500 uppercase">Sản phẩm / Tiền</th>
-                                <th className="text-center px-6 py-3 text-xs font-semibold text-surface-500 uppercase">Trạng thái</th>
-                                <th className="text-right px-6 py-3 text-xs font-semibold text-surface-500 uppercase">Thao tác</th>
+                                <th className="text-left px-4 py-3 text-xs font-semibold text-surface-500 uppercase w-[14%]">Mã Đơn / Ngày tạo</th>
+                                <th className="text-left px-4 py-3 text-xs font-semibold text-surface-500 uppercase w-[24%]">Khách hàng</th>
+                                <th className="text-left px-4 py-3 text-xs font-semibold text-surface-500 uppercase w-[24%]">Sản phẩm / Tiền</th>
+                                <th className="text-center px-3 py-3 text-xs font-semibold text-surface-500 uppercase w-[12%]">Trạng thái</th>
+                                <th className="text-center px-4 py-3 text-xs font-semibold text-surface-500 uppercase w-[26%]">Thao tác</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-surface-200 dark:divide-surface-800">
@@ -318,7 +318,7 @@ export default function AdminOrdersPage() {
                             ) : (
                                 filteredOrders.map((order) => (
                                     <tr key={order.id} className="hover:bg-surface-50 dark:hover:bg-surface-800/50 transition-colors">
-                                        <td className="px-6 py-4">
+                                        <td className="px-4 py-4">
                                             <div className="flex flex-col">
                                                 <Link
                                                     href={`/checkout/${order.order_code}`}
@@ -330,14 +330,14 @@ export default function AdminOrdersPage() {
                                                 <span className="text-xs text-surface-500 mt-1">{formatDate(order.created_at)}</span>
                                             </div>
                                         </td>
-                                        <td className="px-6 py-4">
+                                        <td className="px-4 py-4">
                                             <div className="flex flex-col">
                                                 <span className="font-medium text-surface-900 dark:text-surface-100">{order.full_name}</span>
                                                 <span className="text-sm text-surface-500">{order.email}</span>
                                                 <span className="text-sm text-surface-500">{order.phone}</span>
                                             </div>
                                         </td>
-                                        <td className="px-6 py-4">
+                                        <td className="px-4 py-4">
                                             <div className="flex flex-col">
                                                 <span className="font-medium text-surface-900 dark:text-surface-100">
                                                     {(order.products as any)?.name}
@@ -370,7 +370,7 @@ export default function AdminOrdersPage() {
                                                 </div>
                                             </div>
                                         </td>
-                                        <td className="px-6 py-4 text-center">
+                                        <td className="px-3 py-4 text-center">
                                             <span className={`inline-flex px-2.5 py-1 rounded-lg text-xs font-medium ${order.status === 'paid'
                                                 ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-900/20 dark:text-emerald-400'
                                                 : order.status === 'cancelled'
@@ -380,9 +380,9 @@ export default function AdminOrdersPage() {
                                                 {order.status === 'paid' ? 'Đã duyệt' : order.status === 'cancelled' ? 'Đã huỷ' : 'Chờ xác nhận'}
                                             </span>
                                         </td>
-                                        <td className="px-6 py-4 text-right">
+                                        <td className="px-4 py-3">
                                             {order.status === 'pending' ? (
-                                                <div className="flex justify-end gap-2 flex-nowrap">
+                                                <div className="flex items-center justify-center gap-1.5">
                                                     <button
                                                         onClick={() => setEditAmountModal({
                                                             isOpen: true,
@@ -394,46 +394,53 @@ export default function AdminOrdersPage() {
                                                             submitting: false
                                                         })}
                                                         disabled={approving[order.id]}
-                                                        className="inline-flex items-center gap-1.5 px-3 py-1.5 border border-surface-200 dark:border-surface-700 bg-white dark:bg-surface-800 text-surface-700 dark:text-surface-300 hover:bg-surface-50 dark:hover:bg-surface-700 text-sm font-medium rounded-xl transition-all shadow-sm disabled:opacity-50 whitespace-nowrap"
+                                                        className="inline-flex items-center gap-1 px-2.5 py-1.5 border border-surface-200 dark:border-surface-700 text-surface-600 dark:text-surface-300 hover:border-brand-300 hover:text-brand-600 dark:hover:text-brand-400 hover:bg-brand-50 dark:hover:bg-brand-900/10 hover:scale-105 hover:shadow-md text-xs font-medium rounded-lg transition-all whitespace-nowrap disabled:opacity-50"
                                                         title="Sửa giá (Khuyến mãi)"
                                                     >
-                                                        <Pencil className="w-3.5 h-3.5" /> Sửa giá
+                                                        <Pencil className="w-3 h-3" /> Sửa giá
                                                     </button>
                                                     <button
                                                         onClick={() => handleCancel(order.id)}
                                                         disabled={approving[order.id]}
-                                                        className="inline-flex items-center gap-1.5 px-3 py-1.5 border border-red-200 dark:border-red-900/50 bg-red-50/50 dark:bg-red-900/10 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 text-sm font-medium rounded-xl transition-all shadow-sm disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
+                                                        className="inline-flex items-center gap-1 px-2.5 py-1.5 border border-red-200 dark:border-red-900/50 text-red-500 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 hover:scale-105 hover:shadow-md text-xs font-medium rounded-lg transition-all whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed"
                                                         title="Từ chối đơn hàng"
                                                     >
-                                                        <X className="w-3.5 h-3.5" /> Từ chối
+                                                        <X className="w-3 h-3" /> Từ chối
                                                     </button>
                                                     <button
                                                         onClick={() => handleApprove(order.id)}
                                                         disabled={approving[order.id]}
-                                                        className="inline-flex items-center gap-1.5 px-4 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-medium rounded-xl transition-all shadow-md shadow-emerald-500/20 disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
+                                                        className="inline-flex items-center gap-1 px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold rounded-lg transition-all shadow-sm shadow-emerald-500/20 hover:scale-105 hover:shadow-lg hover:shadow-emerald-500/30 whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed"
                                                         title="Xác nhận đã thu tiền"
                                                     >
-                                                        {approving[order.id] ? <Loader2 className="w-4 h-4 animate-spin" /> : <CheckCircle2 className="w-4 h-4" />}
+                                                        {approving[order.id] ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <CheckCircle2 className="w-3.5 h-3.5" />}
                                                         Duyệt
                                                     </button>
                                                 </div>
                                             ) : order.status === 'paid' ? (
-                                                <div className="flex flex-col items-end gap-2">
-                                                    <span className="text-xs text-surface-400">
-                                                        Đã duyệt lúc {formatDate(order.paid_at || order.created_at)}
-                                                    </span>
+                                                <div className="flex flex-col items-center gap-1.5">
+                                                    <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-50 dark:bg-emerald-900/15 border border-emerald-200/60 dark:border-emerald-800/40">
+                                                        <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />
+                                                        <span className="text-xs font-medium text-emerald-700 dark:text-emerald-400">
+                                                            {formatDate(order.paid_at || order.created_at)}
+                                                        </span>
+                                                    </div>
                                                     <button
                                                         onClick={() => handleCancel(order.id)}
                                                         disabled={approving[order.id]}
-                                                        className="text-xs text-red-500 hover:text-red-700 hover:underline disabled:opacity-50"
+                                                        className="inline-flex items-center gap-1 px-2.5 py-1.5 border border-red-200 dark:border-red-900/50 text-red-500 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 hover:scale-105 hover:shadow-md text-xs font-medium rounded-lg transition-all whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed"
+                                                        title="Huỷ duyệt / Thu hồi"
                                                     >
-                                                        Huỷ duyệt / Thu hồi
+                                                        <X className="w-3 h-3" /> Thu hồi
                                                     </button>
                                                 </div>
                                             ) : (
-                                                <span className="text-xs text-surface-400">
-                                                    Khách/Admin đã huỷ
-                                                </span>
+                                                <div className="flex items-center justify-center">
+                                                    <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-surface-100 dark:bg-surface-800/50 border border-surface-200/60 dark:border-surface-700/40">
+                                                        <X className="w-3 h-3 text-surface-400" />
+                                                        <span className="text-xs text-surface-400">Đã huỷ</span>
+                                                    </div>
+                                                </div>
                                             )}
                                         </td>
                                     </tr>
@@ -605,8 +612,8 @@ export default function AdminOrdersPage() {
                                             type="button"
                                             onClick={() => setCreateModal(prev => ({ ...prev, status: 'paid' }))}
                                             className={`flex-1 py-2 px-3 rounded-xl text-sm font-medium transition-all ${createModal.status === 'paid'
-                                                    ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400 ring-2 ring-emerald-500/30'
-                                                    : 'bg-surface-100 dark:bg-surface-800 text-surface-600 dark:text-surface-400'
+                                                ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400 ring-2 ring-emerald-500/30'
+                                                : 'bg-surface-100 dark:bg-surface-800 text-surface-600 dark:text-surface-400'
                                                 }`}
                                         >
                                             Đã thanh toán
@@ -615,8 +622,8 @@ export default function AdminOrdersPage() {
                                             type="button"
                                             onClick={() => setCreateModal(prev => ({ ...prev, status: 'pending' }))}
                                             className={`flex-1 py-2 px-3 rounded-xl text-sm font-medium transition-all ${createModal.status === 'pending'
-                                                    ? 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400 ring-2 ring-amber-500/30'
-                                                    : 'bg-surface-100 dark:bg-surface-800 text-surface-600 dark:text-surface-400'
+                                                ? 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400 ring-2 ring-amber-500/30'
+                                                : 'bg-surface-100 dark:bg-surface-800 text-surface-600 dark:text-surface-400'
                                                 }`}
                                         >
                                             Chờ xác nhận

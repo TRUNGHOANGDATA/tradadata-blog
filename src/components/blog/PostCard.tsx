@@ -125,7 +125,7 @@ function FeaturedCard({ post }: { post: Post }) {
                         {post.author && (
                             <div className="flex items-center gap-2">
                                 {post.author.avatar_url && (
-                                    <img src={post.author.avatar_url} alt="" className="w-6 h-6 rounded-full" />
+                                    <img src={post.author.avatar_url} alt="" className="w-6 h-6 rounded-full" referrerPolicy="no-referrer" />
                                 )}
                                 <span>{post.author.full_name}</span>
                             </div>
