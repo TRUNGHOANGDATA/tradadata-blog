@@ -85,7 +85,7 @@ export default function NewPostPage() {
 
     // Debounced AI translation for cover image keywords
     useEffect(() => {
-        if (!title.trim() || coverImage) { setCoverKeyword(''); return; }
+        if (!title.trim()) { setCoverKeyword(''); return; }
         setLoadingKeyword(true);
         const timer = setTimeout(async () => {
             try {
@@ -96,7 +96,7 @@ export default function NewPostPage() {
             setLoadingKeyword(false);
         }, 800);
         return () => clearTimeout(timer);
-    }, [title, coverImage]);
+    }, [title]);
 
     const handleCoverUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
@@ -536,7 +536,7 @@ COVER_IMAGE: Tạo một bức ảnh bìa blog có chất lượng cao, tỉ l�
                                 </label>
                             </div>
                         )}
-                        {!coverImage && title.trim() && (
+                        {title.trim() && (
                             <div className="mt-2 p-2.5 rounded-lg bg-amber-50 dark:bg-amber-900/10 border border-amber-200 dark:border-amber-800/30">
                                 <p className="text-[11px] text-amber-700 dark:text-amber-400 mb-1.5">💡 Gợi ý tìm ảnh bìa:</p>
                                 {loadingKeyword ? (

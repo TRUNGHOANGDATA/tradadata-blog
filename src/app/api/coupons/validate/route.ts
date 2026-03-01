@@ -56,17 +56,54 @@ export async function POST(request: Request) {
             }
 
             if (email) {
-                const { count } = await supabaseAdmin
+                // Clean up orphan user_coupons from cancelled/deleted orders
+                const { data: userUsages } = await supabaseAdmin
                     .from('user_coupons')
-                    .select('id', { count: 'exact', head: true })
+                    .select('id')
                     .eq('coupon_id', coupon.id)
                     .eq('user_email', email);
 
-                if (count !== null && count >= coupon.per_user_limit) {
-                    return NextResponse.json(
-                        { error: `Bạn đã sử dụng mã này ${count} lần (tối đa ${coupon.per_user_limit} lần)` },
-                        { status: 400 }
-                    );
+                if (userUsages && userUsages.length > 0) {
+                    // Count active (non-cancelled) orders using this coupon
+                    const { data: activeOrders } = await supabaseAdmin
+                        .from('orders')
+                        .select('id')
+                        .eq('email', email)
+                        .eq('coupon_code', coupon.code)
+                        .neq('status', 'cancelled');
+
+                    const activeCount = activeOrders?.length || 0;
+
+                    // If orphan records exist, clean them up
+                    if (userUsages.length > activeCount) {
+                        await supabaseAdmin
+                            .from('user_coupons')
+                            .delete()
+                            .eq('coupon_id', coupon.id)
+                            .eq('user_email', email);
+
+                        if (activeCount > 0) {
+                            const inserts = Array.from({ length: activeCount }, () => ({
+                                coupon_id: coupon.id,
+                                user_email: email,
+                                used_at: new Date().toISOString(),
+                            }));
+                            await supabaseAdmin.from('user_coupons').insert(inserts);
+                        }
+
+                        // Fix used_count
+                        await supabaseAdmin
+                            .from('coupons')
+                            .update({ used_count: Math.max(0, activeCount) })
+                            .eq('id', coupon.id);
+                    }
+
+                    if (activeCount >= coupon.per_user_limit) {
+                        return NextResponse.json(
+                            { error: `Bạn đã sử dụng mã này ${activeCount} lần (tối đa ${coupon.per_user_limit} lần)` },
+                            { status: 400 }
+                        );
+                    }
                 }
             }
         }

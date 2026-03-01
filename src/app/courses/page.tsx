@@ -193,6 +193,7 @@ export default async function CoursesPage() {
                                                     productId={product.id}
                                                     productName={product.name}
                                                     productPrice={product.price}
+                                                    productImage={product.image_url}
                                                 />
                                             </div>
                                         </div>

@@ -54,6 +54,30 @@ export async function POST(
             }
         }
 
+        // Hoàn trả mã giảm giá nếu có
+        if (order.coupon_code) {
+            const { data: coupon } = await supabaseAdmin
+                .from('coupons')
+                .select('id, used_count')
+                .eq('code', order.coupon_code)
+                .single();
+
+            if (coupon) {
+                // Giảm used_count (không xuống dưới 0)
+                await supabaseAdmin
+                    .from('coupons')
+                    .update({ used_count: Math.max(0, (coupon.used_count || 0) - 1) })
+                    .eq('id', coupon.id);
+
+                // Xoá user_coupons record để khách dùng lại được
+                await supabaseAdmin
+                    .from('user_coupons')
+                    .delete()
+                    .eq('coupon_id', coupon.id)
+                    .eq('user_email', order.email);
+            }
+        }
+
         // 2. Cập nhật state order thành cancelled
         const { error: updateError } = await supabaseAdmin
             .from('orders')

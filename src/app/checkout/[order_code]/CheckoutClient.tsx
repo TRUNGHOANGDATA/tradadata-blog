@@ -1,16 +1,18 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import CouponSection from './CouponSection';
 import CopyButton from './CopyButton';
 import OrderChecker from './OrderChecker';
 import Link from 'next/link';
-import { ChevronRight } from 'lucide-react';
+import { ChevronRight, X } from 'lucide-react';
 
 interface CheckoutClientProps {
     order: {
         order_code: string;
         full_name: string;
+        email: string;
         amount: number;
         original_amount: number | null;
         coupon_code: string | null;
@@ -23,13 +25,17 @@ interface CheckoutClientProps {
         accountNo: string;
         accountName: string;
         contactUrl: string;
+        zaloUrl?: string;
+        facebookUrl?: string;
     };
 }
 
 export default function CheckoutClient({ order, productName, bankInfo }: CheckoutClientProps) {
+    const router = useRouter();
     const originalAmount = order.original_amount || order.amount;
     const [amount, setAmount] = useState(order.amount);
     const [couponCode, setCouponCode] = useState(order.coupon_code);
+    const [cancelling, setCancelling] = useState(false);
 
     const formatCurrency = (a: number) =>
         new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(a);
@@ -37,6 +43,29 @@ export default function CheckoutClient({ order, productName, bankInfo }: Checkou
     const handleAmountChange = (newAmount: number, newCoupon: string | null) => {
         setAmount(newAmount);
         setCouponCode(newCoupon);
+    };
+
+    const handleCancel = async () => {
+        if (!confirm('Bạn có chắc chắn muốn huỷ đơn hàng này? Thao tác này không thể hoàn tác.')) return;
+        setCancelling(true);
+        try {
+            const res = await fetch('/api/orders/cancel', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ order_code: order.order_code, email: order.email }),
+            });
+            if (res.ok) {
+                alert('Đã huỷ đơn hàng thành công!');
+                router.push('/');
+            } else {
+                const data = await res.json();
+                alert(data.error || 'Không thể huỷ đơn hàng');
+            }
+        } catch {
+            alert('Lỗi khi huỷ đơn hàng');
+        } finally {
+            setCancelling(false);
+        }
     };
 
     const qrUrl = `https://img.vietqr.io/image/${bankInfo.bankId}-${bankInfo.accountNo}-compact.png?amount=${amount}&addInfo=${order.order_code}&accountName=${encodeURIComponent(bankInfo.accountName)}`;
@@ -111,17 +140,53 @@ export default function CheckoutClient({ order, productName, bankInfo }: Checkou
                         <li>Đảm bảo số tiền và nội dung chuyển khoản chính xác: <strong>{order.order_code}</strong>.</li>
                         <li>Hoàn tất chuyển khoản và chụp lại màn hình biên lai.</li>
                         <li>
-                            Gửi biên lai cho Admin qua Zalo/Facebook để được duyệt đơn:{' '}
-                            <a
-                                href={bankInfo.contactUrl}
-                                target="_blank"
-                                rel="noreferrer"
-                                className="text-brand-600 font-medium hover:underline inline-flex items-center mt-2 group"
-                            >
-                                Liên hệ Admin <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                            </a>
+                            Gửi biên lai cho Admin qua Zalo/Facebook để được duyệt đơn:
+                            <div className="flex flex-wrap gap-2 mt-2">
+                                {bankInfo.zaloUrl && (
+                                    <a
+                                        href={bankInfo.zaloUrl}
+                                        target="_blank"
+                                        rel="noreferrer"
+                                        className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-medium rounded-lg transition-colors"
+                                    >
+                                        💬 Zalo
+                                    </a>
+                                )}
+                                {bankInfo.facebookUrl && (
+                                    <a
+                                        href={bankInfo.facebookUrl}
+                                        target="_blank"
+                                        rel="noreferrer"
+                                        className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#1877F2] hover:bg-[#166FE5] text-white text-xs font-medium rounded-lg transition-colors"
+                                    >
+                                        📘 Facebook
+                                    </a>
+                                )}
+                                {!bankInfo.zaloUrl && !bankInfo.facebookUrl && bankInfo.contactUrl && (
+                                    <a
+                                        href={bankInfo.contactUrl}
+                                        target="_blank"
+                                        rel="noreferrer"
+                                        className="text-brand-600 font-medium hover:underline inline-flex items-center group"
+                                    >
+                                        Liên hệ Admin <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                                    </a>
+                                )}
+                            </div>
                         </li>
                     </ol>
+                </div>
+
+                {/* Cancel Order */}
+                <div className="text-center">
+                    <button
+                        onClick={handleCancel}
+                        disabled={cancelling}
+                        className="inline-flex items-center gap-1.5 text-sm text-red-500 hover:text-red-600 dark:text-red-400 dark:hover:text-red-300 transition-colors disabled:opacity-50"
+                    >
+                        <X className="w-4 h-4" />
+                        {cancelling ? 'Đang huỷ...' : 'Huỷ đơn hàng'}
+                    </button>
                 </div>
             </div>
 

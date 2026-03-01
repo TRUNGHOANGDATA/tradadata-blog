@@ -34,7 +34,7 @@ const ADMIN_NAV = [
     { label: 'Tags', href: '/admin/tags', icon: Tags },
     { label: 'Media', href: '/admin/media', icon: Image },
     { label: 'Sản phẩm', href: '/admin/products', icon: Box },
-    { label: 'Đầu mục KH', href: '/admin/course-sections', icon: BookOpen },
+    { label: 'Đầu mục khách hàng', href: '/admin/course-sections', icon: BookOpen },
     { label: 'Đơn hàng', href: '/admin/orders', icon: ShoppingCart },
     { label: 'Theo dõi Premium', href: '/admin/subscriptions', icon: Crown },
     { label: 'Mã giảm giá', href: '/admin/coupons', icon: Ticket },

@@ -4,19 +4,21 @@ import { useSearchParams, useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { useCart } from '@/lib/cart/CartContext';
-import { ShoppingBag } from 'lucide-react';
+import { ShoppingBag, CheckCircle } from 'lucide-react';
 
 export default function CheckoutForm() {
     const searchParams = useSearchParams();
     const router = useRouter();
     const productIdFromUrl = searchParams.get('product_id');
     const { data: session } = useSession();
-    const { items, coupon, subTotal, discountAmount, total, setPendingOrder } = useCart();
+    const { items, coupon, subTotal, discountAmount, total, setPendingOrder, clearCart } = useCart();
 
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState('');
     const [savedName, setSavedName] = useState('');
     const [savedPhone, setSavedPhone] = useState('');
+    const [autoActivated, setAutoActivated] = useState(false);
+    const [activatedOrderCode, setActivatedOrderCode] = useState('');
 
     // Fetch previous order info for auto-fill
     useEffect(() => {
@@ -76,6 +78,14 @@ export default function CheckoutForm() {
                     throw new Error(result.error || 'Có lỗi xảy ra');
                 }
 
+                if (result.auto_activated) {
+                    clearCart();
+                    setAutoActivated(true);
+                    setActivatedOrderCode(result.order_code);
+                    setIsLoading(false);
+                    return;
+                }
+
                 setPendingOrder(result.order_code);
                 router.push(`/checkout/${result.order_code}`);
             } else {
@@ -98,6 +108,13 @@ export default function CheckoutForm() {
                     throw new Error(result.error || 'Có lỗi xảy ra');
                 }
 
+                if (result.auto_activated) {
+                    setAutoActivated(true);
+                    setActivatedOrderCode(result.order_code);
+                    setIsLoading(false);
+                    return;
+                }
+
                 setPendingOrder(result.order_code);
                 router.push(`/checkout/${result.order_code}`);
             }
@@ -106,6 +123,34 @@ export default function CheckoutForm() {
             setIsLoading(false);
         }
     };
+
+    // Show success screen when auto-activated (free order via coupon)
+    if (autoActivated) {
+        return (
+            <div className="text-center py-8">
+                <div className="w-20 h-20 bg-green-50 dark:bg-green-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <CheckCircle className="w-10 h-10 text-green-600 dark:text-green-400" />
+                </div>
+                <h3 className="text-xl font-bold text-surface-900 dark:text-surface-100 mb-2">
+                    🎉 Kích hoạt thành công!
+                </h3>
+                <p className="text-surface-600 dark:text-surface-400 mb-1">
+                    Đơn hàng <span className="font-semibold text-brand-600">{activatedOrderCode}</span> đã được kích hoạt tự động.
+                </p>
+                <p className="text-sm text-surface-500 mb-6">
+                    Khóa học đã được mở, bạn có thể truy cập ngay!
+                </p>
+                <div className="flex justify-center gap-3">
+                    <button type="button" onClick={() => router.push('/')} className="px-5 py-2.5 text-sm bg-brand-600 text-white rounded-xl hover:bg-brand-700 transition-colors">
+                        Về trang chủ
+                    </button>
+                    <button type="button" onClick={() => router.push('/courses')} className="px-5 py-2.5 text-sm border border-surface-200 dark:border-surface-700 text-surface-700 dark:text-surface-300 rounded-xl hover:bg-surface-50 dark:hover:bg-surface-800 transition-colors">
+                        Xem khóa học
+                    </button>
+                </div>
+            </div>
+        );
+    }
 
     if (!hasValidCheckout) {
         return (

@@ -7,6 +7,7 @@ export interface CartItem {
     name: string;
     price: number;
     quantity: number;
+    image_url?: string | null;
 }
 
 export interface CouponState {

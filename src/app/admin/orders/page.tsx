@@ -36,6 +36,11 @@ export default function AdminOrdersPage() {
     const [fromDate, setFromDate] = useState('');
     const [toDate, setToDate] = useState('');
     const [approving, setApproving] = useState<Record<string, boolean>>({});
+    const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
+    const showToast = (message: string, type: 'success' | 'error' = 'success') => {
+        setToast({ message, type });
+        setTimeout(() => setToast(null), 3000);
+    };
     const [editAmountModal, setEditAmountModal] = useState({
         isOpen: false,
         orderId: '',
@@ -101,14 +106,13 @@ export default function AdminOrdersPage() {
             const data = await res.json();
 
             if (res.ok) {
-                alert('Duyệt đơn thành công!');
-                // Refresh list
+                showToast('Duyệt đơn thành công!', 'success');
                 fetchOrders();
             } else {
-                alert(data.error || 'Có lỗi xảy ra');
+                showToast(data.error || 'Có lỗi xảy ra', 'error');
             }
         } catch (error) {
-            alert('Lỗi hệ thống khi duyệt đơn');
+            showToast('Lỗi hệ thống khi duyệt đơn', 'error');
         } finally {
             setApproving(prev => ({ ...prev, [id]: false }));
         }
@@ -123,13 +127,13 @@ export default function AdminOrdersPage() {
             const data = await res.json();
 
             if (res.ok) {
-                alert('Huỷ đơn thành công!');
+                showToast('Huỷ đơn thành công!', 'success');
                 fetchOrders();
             } else {
-                alert(data.error || 'Có lỗi xảy ra');
+                showToast(data.error || 'Có lỗi xảy ra', 'error');
             }
         } catch (error) {
-            alert('Lỗi hệ thống khi huỷ đơn');
+            showToast('Lỗi hệ thống khi huỷ đơn', 'error');
         } finally {
             setApproving(prev => ({ ...prev, [id]: false }));
         }
@@ -665,6 +669,19 @@ export default function AdminOrdersPage() {
                             </div>
                         </form>
                     </div>
+                </div>
+            )}
+
+            {/* Toast notification */}
+            {toast && (
+                <div className={`fixed bottom-6 right-6 z-50 px-4 py-3 rounded-xl shadow-lg border text-sm font-medium flex items-center gap-2 animate-in slide-in-from-bottom-4 fade-in duration-300
+                    ${toast.type === 'success'
+                        ? 'bg-emerald-50 dark:bg-emerald-900/80 border-emerald-200 dark:border-emerald-700 text-emerald-700 dark:text-emerald-300'
+                        : 'bg-red-50 dark:bg-red-900/80 border-red-200 dark:border-red-700 text-red-700 dark:text-red-300'
+                    }`}
+                >
+                    {toast.type === 'success' ? <CheckCircle2 className="w-4 h-4" /> : <X className="w-4 h-4" />}
+                    {toast.message}
                 </div>
             )}
         </>

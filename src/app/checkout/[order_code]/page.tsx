@@ -54,11 +54,23 @@ export default async function CheckoutPage(props: { params: Promise<{ order_code
         .eq('key', 'bank_info')
         .single();
 
-    const bankInfo = bankSetting?.value || {
+    // Lấy thông tin liên hệ (zalo, facebook)
+    const { data: socialSetting } = await supabaseAdmin
+        .from('site_settings')
+        .select('value')
+        .eq('key', 'social_links')
+        .single();
+
+    const socialLinks = socialSetting?.value || {};
+    const bankInfoBase = bankSetting?.value || {};
+    const bankInfo = {
         bankId: '970422',
         accountNo: '0123456',
         accountName: 'ADMIN',
         contactUrl: 'https://zalo.me/',
+        ...bankInfoBase,
+        zaloUrl: socialLinks.zalo || '',
+        facebookUrl: socialLinks.facebook || '',
     };
 
     return (
@@ -67,6 +79,7 @@ export default async function CheckoutPage(props: { params: Promise<{ order_code
                 order={{
                     order_code: order.order_code,
                     full_name: order.full_name,
+                    email: order.email,
                     amount: order.amount,
                     original_amount: order.original_amount || (order.products as any)?.price || order.amount,
                     coupon_code: order.coupon_code || null,

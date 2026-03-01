@@ -37,8 +37,8 @@ import {
     Bold, Italic, Strikethrough, Code, Heading1, Heading2, Heading3,
     List, ListOrdered, Quote, Minus, Undo, Redo, Link as LinkIcon,
     ImagePlus, Youtube as YoutubeIcon, Code2, Pilcrow,
-    AlignLeft, AlignCenter, AlignRight, Highlighter, UnderlineIcon,
-    Table as TableIcon, ListChecks, Palette, Type, Info, Sparkles, Loader2
+    AlignLeft, AlignCenter, AlignRight, AlignJustify, Highlighter, UnderlineIcon,
+    Table as TableIcon, ListChecks, Palette, Type, Info, Sparkles, Loader2, FileCode2
 } from 'lucide-react';
 import CodeBlockComponent from './CodeBlockComponent';
 
@@ -187,7 +187,7 @@ function FontSizeDropdown({ editor }: { editor: Editor }) {
 // ============================================
 // Toolbar Component
 // ============================================
-function EditorToolbar({ editor }: { editor: Editor }) {
+function EditorToolbar({ editor, onToggleHtml, isHtmlMode }: { editor: Editor; onToggleHtml: () => void; isHtmlMode: boolean }) {
     const fileInputRef = useRef<HTMLInputElement>(null);
     const [aiImageOpen, setAiImageOpen] = useState(false);
     const [aiImageDesc, setAiImageDesc] = useState('');
@@ -349,6 +349,9 @@ function EditorToolbar({ editor }: { editor: Editor }) {
             <ToolbarButton onClick={() => editor.chain().focus().setTextAlign('right').run()} isActive={editor.isActive({ textAlign: 'right' })} title="Căn phải">
                 <AlignRight className="h-4 w-4" />
             </ToolbarButton>
+            <ToolbarButton onClick={() => editor.chain().focus().setTextAlign('justify').run()} isActive={editor.isActive({ textAlign: 'justify' })} title="Căn đều">
+                <AlignJustify className="h-4 w-4" />
+            </ToolbarButton>
 
             <ToolbarDivider />
 
@@ -424,6 +427,13 @@ function EditorToolbar({ editor }: { editor: Editor }) {
 
             <ToolbarDivider />
 
+            {/* HTML Source */}
+            <ToolbarButton onClick={onToggleHtml} isActive={isHtmlMode} title="Chế độ HTML">
+                <FileCode2 className="h-4 w-4" />
+            </ToolbarButton>
+
+            <ToolbarDivider />
+
             {/* History */}
             <ToolbarButton onClick={() => editor.chain().focus().undo().run()} disabled={!editor.can().undo()} title="Hoàn tác (Ctrl+Z)">
                 <Undo className="h-4 w-4" />
@@ -471,6 +481,8 @@ interface TiptapEditorProps {
 }
 
 export function TiptapEditor({ content, onChange, placeholder = 'Bắt đầu viết bài...' }: TiptapEditorProps) {
+    const [isHtmlMode, setIsHtmlMode] = useState(false);
+    const [htmlSource, setHtmlSource] = useState('');
     const editor = useEditor({
         immediatelyRender: false,
         extensions: [
@@ -496,6 +508,7 @@ export function TiptapEditor({ content, onChange, placeholder = 'Bắt đầu vi
             }),
             TextAlign.configure({
                 types: ['heading', 'paragraph'],
+                alignments: ['left', 'center', 'right', 'justify'],
             }),
             Highlight.configure({
                 multicolor: false,
@@ -665,6 +678,24 @@ export function TiptapEditor({ content, onChange, placeholder = 'Bắt đầu vi
         }
     }, [editor, content]);
 
+    const handleToggleHtml = useCallback(() => {
+        if (!editor) return;
+        if (!isHtmlMode) {
+            // Switching TO HTML mode — get current HTML from editor
+            setHtmlSource(editor.getHTML());
+            setIsHtmlMode(true);
+        } else {
+            // Switching FROM HTML mode — parse HTML back into editor
+            editor.commands.setContent(htmlSource, { emitUpdate: true });
+            onChange?.(editor.getJSON() as Record<string, unknown>);
+            setIsHtmlMode(false);
+        }
+    }, [isHtmlMode, editor, htmlSource, onChange]);
+
+    const handleHtmlChange = useCallback((e: React.ChangeEvent<HTMLTextAreaElement>) => {
+        setHtmlSource(e.target.value);
+    }, []);
+
     if (!editor) {
         return (
             <div className="bg-white dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-700 overflow-hidden">
@@ -677,8 +708,32 @@ export function TiptapEditor({ content, onChange, placeholder = 'Bắt đầu vi
 
     return (
         <div className="bg-white dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-700 relative flex flex-col">
-            <EditorToolbar editor={editor} />
-            <EditorContent editor={editor} />
+            <EditorToolbar editor={editor} onToggleHtml={handleToggleHtml} isHtmlMode={isHtmlMode} />
+            {isHtmlMode ? (
+                <div className="relative">
+                    <div className="flex items-center justify-between px-4 py-2 bg-surface-100 dark:bg-surface-800 border-b border-surface-200 dark:border-surface-700">
+                        <span className="text-xs font-mono text-brand-600 dark:text-brand-400 flex items-center gap-1.5">
+                            <FileCode2 className="w-3.5 h-3.5" />
+                            Chế độ HTML — Chỉnh sửa mã nguồn trực tiếp
+                        </span>
+                        <button
+                            onClick={handleToggleHtml}
+                            className="text-xs px-3 py-1 rounded-lg bg-brand-600 text-white hover:bg-brand-700 transition-colors"
+                        >
+                            Áp dụng & Quay lại
+                        </button>
+                    </div>
+                    <textarea
+                        value={htmlSource}
+                        onChange={handleHtmlChange}
+                        className="w-full min-h-[400px] p-4 font-mono text-sm bg-surface-950 dark:bg-surface-950 text-green-400 focus:outline-none resize-y leading-relaxed"
+                        spellCheck={false}
+                        placeholder="Dán HTML vào đây..."
+                    />
+                </div>
+            ) : (
+                <EditorContent editor={editor} />
+            )}
         </div>
     );
 }

@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { Ticket, Plus, Trash2, Import, ToggleLeft, ToggleRight, Calendar, Hash, Percent, Banknote, Eye, X, Loader2 } from 'lucide-react';
+import DateTimePicker from '@/components/ui/DateTimePicker';
 
 interface Coupon {
     id: string;
@@ -318,11 +319,10 @@ export default function AdminCouponsPage() {
                         </div>
                         <div>
                             <label className="text-xs font-medium text-surface-500 mb-1 block">Hạn sử dụng</label>
-                            <input
-                                type="datetime-local"
+                            <DateTimePicker
                                 value={form.expires_at}
-                                onChange={(e) => setForm({ ...form, expires_at: e.target.value })}
-                                className="w-full px-3 py-2 bg-surface-50 dark:bg-surface-950 border border-surface-200 dark:border-surface-700 rounded-xl text-sm"
+                                onChange={(val) => setForm({ ...form, expires_at: val })}
+                                placeholder="Chọn ngày hết hạn"
                             />
                         </div>
 
@@ -434,11 +434,10 @@ export default function AdminCouponsPage() {
                         </div>
                         <div>
                             <label className="text-xs font-medium text-surface-500 mb-1 block">Hạn sử dụng</label>
-                            <input
-                                type="datetime-local"
+                            <DateTimePicker
                                 value={batchExpires}
-                                onChange={(e) => setBatchExpires(e.target.value)}
-                                className="w-full px-3 py-2 bg-surface-50 dark:bg-surface-950 border border-surface-200 dark:border-surface-700 rounded-xl text-sm"
+                                onChange={(val) => setBatchExpires(val)}
+                                placeholder="Chọn ngày hết hạn"
                             />
                         </div>
 

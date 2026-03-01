@@ -51,7 +51,16 @@ export async function POST(request: Request) {
                     .single();
 
                 if (coupon) {
-                    await supabaseAdmin.rpc('decrement_coupon_usage', { coupon_id_input: coupon.id });
+                    // Decrement used_count directly
+                    const { data: couponCount } = await supabaseAdmin
+                        .from('coupons')
+                        .select('used_count')
+                        .eq('id', coupon.id)
+                        .single();
+                    await supabaseAdmin
+                        .from('coupons')
+                        .update({ used_count: Math.max(0, (couponCount?.used_count || 0) - 1) })
+                        .eq('id', coupon.id);
 
                     // Remove user_coupons record
                     await supabaseAdmin
@@ -83,7 +92,16 @@ export async function POST(request: Request) {
                 .single();
 
             if (oldCoupon) {
-                await supabaseAdmin.rpc('decrement_coupon_usage', { coupon_id_input: oldCoupon.id });
+                // Decrement used_count directly
+                const { data: oldCount } = await supabaseAdmin
+                    .from('coupons')
+                    .select('used_count')
+                    .eq('id', oldCoupon.id)
+                    .single();
+                await supabaseAdmin
+                    .from('coupons')
+                    .update({ used_count: Math.max(0, (oldCount?.used_count || 0) - 1) })
+                    .eq('id', oldCoupon.id);
                 await supabaseAdmin
                     .from('user_coupons')
                     .delete()
@@ -116,13 +134,54 @@ export async function POST(request: Request) {
 
         // Check per-user limit
         if (coupon.per_user_limit) {
-            const { count } = await supabaseAdmin
+            // Clean up orphan user_coupons (from cancelled/deleted orders)
+            const { data: userUsages } = await supabaseAdmin
                 .from('user_coupons')
-                .select('id', { count: 'exact', head: true })
+                .select('id')
                 .eq('coupon_id', coupon.id)
                 .eq('user_email', session.user.email);
-            if (count !== null && count >= coupon.per_user_limit) {
-                return NextResponse.json({ error: 'Bạn đã sử dụng hết lượt cho mã này' }, { status: 400 });
+
+            if (userUsages && userUsages.length > 0) {
+                // Check if any related orders still exist and are active (not cancelled)
+                const { data: activeOrders } = await supabaseAdmin
+                    .from('orders')
+                    .select('id')
+                    .eq('email', session.user.email)
+                    .eq('coupon_code', coupon.code)
+                    .neq('status', 'cancelled');
+
+                const activeCount = activeOrders?.length || 0;
+
+                // If there are more user_coupons records than active orders, clean up orphans
+                if (userUsages.length > activeCount) {
+                    // Delete all user_coupons for this user+coupon and re-insert for active ones
+                    await supabaseAdmin
+                        .from('user_coupons')
+                        .delete()
+                        .eq('coupon_id', coupon.id)
+                        .eq('user_email', session.user.email);
+
+                    // Re-insert for active orders only
+                    if (activeCount > 0) {
+                        const inserts = Array.from({ length: activeCount }, () => ({
+                            coupon_id: coupon.id,
+                            user_email: session.user.email,
+                            used_at: new Date().toISOString(),
+                        }));
+                        await supabaseAdmin.from('user_coupons').insert(inserts);
+                    }
+
+                    // Also fix used_count on the coupon itself
+                    await supabaseAdmin
+                        .from('coupons')
+                        .update({ used_count: Math.max(0, activeCount) })
+                        .eq('id', coupon.id);
+                }
+
+                // Now recheck with cleaned data
+                if (activeCount >= coupon.per_user_limit) {
+                    return NextResponse.json({ error: 'Bạn đã sử dụng hết lượt cho mã này' }, { status: 400 });
+                }
             }
         }
 
@@ -162,8 +221,16 @@ export async function POST(request: Request) {
             .update({ amount: newAmount, coupon_code: coupon.code })
             .eq('id', order.id);
 
-        // Increment coupon usage
-        await supabaseAdmin.rpc('increment_coupon_usage', { coupon_id_input: coupon.id });
+        // Increment coupon usage directly
+        const { data: couponCount } = await supabaseAdmin
+            .from('coupons')
+            .select('used_count')
+            .eq('id', coupon.id)
+            .single();
+        await supabaseAdmin
+            .from('coupons')
+            .update({ used_count: (couponCount?.used_count || 0) + 1 })
+            .eq('id', coupon.id);
 
         // Record user usage
         await supabaseAdmin.from('user_coupons').insert({

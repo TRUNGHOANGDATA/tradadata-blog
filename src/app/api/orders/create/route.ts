@@ -4,6 +4,7 @@ import crypto from 'crypto';
 import { sendEmail } from '@/lib/email/gmail';
 import { getEmailTemplate } from '@/lib/email/template-engine';
 import { rateLimit, getClientIp } from '@/lib/rate-limit';
+import { logOrderToSheet } from '@/lib/google-sheets';
 
 export async function POST(request: Request) {
     try {
@@ -148,8 +149,16 @@ export async function POST(request: Request) {
 
         // If coupon was applied, increment used_count and record user usage
         if (appliedCouponId) {
-            // Increment used_count
-            await supabaseAdmin.rpc('increment_coupon_usage', { coupon_id_input: appliedCouponId });
+            // Increment used_count directly (avoid RPC dependency)
+            const { data: couponData } = await supabaseAdmin
+                .from('coupons')
+                .select('used_count')
+                .eq('id', appliedCouponId)
+                .single();
+            await supabaseAdmin
+                .from('coupons')
+                .update({ used_count: (couponData?.used_count || 0) + 1 })
+                .eq('id', appliedCouponId);
 
             // Record user usage
             if (email) {
@@ -159,6 +168,107 @@ export async function POST(request: Request) {
                     used_at: new Date().toISOString(),
                 });
             }
+        }
+
+        // AUTO-ACTIVATE: If coupon makes the order free (amount = 0), auto-approve
+        if (finalAmount <= 0) {
+            // Mark order as paid immediately
+            await supabaseAdmin
+                .from('orders')
+                .update({
+                    status: 'paid',
+                    paid_at: new Date().toISOString()
+                })
+                .eq('id', newOrder.id);
+
+            // Activate subscription if product is subscription type
+            const { data: productFull } = await supabaseAdmin
+                .from('products')
+                .select('product_type, duration_days')
+                .eq('id', product_id)
+                .single();
+
+            if (productFull?.product_type === 'subscription') {
+                // Create or update profile
+                const { data: profile } = await supabaseAdmin
+                    .from('profiles')
+                    .select('id')
+                    .eq('email', email)
+                    .single();
+
+                if (profile) {
+                    await supabaseAdmin
+                        .from('profiles')
+                        .update({ is_subscribed: true })
+                        .eq('id', profile.id);
+                } else {
+                    await supabaseAdmin
+                        .from('profiles')
+                        .insert({
+                            email,
+                            full_name: full_name || '',
+                            role: 'reader',
+                            is_subscribed: true
+                        });
+                }
+
+                // Create subscription record with stacking
+                const durationDays = productFull.duration_days || 30;
+                const { data: existingSub } = await supabaseAdmin
+                    .from('user_subscriptions')
+                    .select('expires_at')
+                    .eq('user_email', email)
+                    .order('expires_at', { ascending: false })
+                    .limit(1)
+                    .single();
+
+                const now = new Date();
+                let startsAt = now;
+                if (existingSub && new Date(existingSub.expires_at) > now) {
+                    startsAt = new Date(existingSub.expires_at);
+                }
+
+                const expiresAt = new Date(startsAt);
+                expiresAt.setDate(expiresAt.getDate() + durationDays);
+
+                await supabaseAdmin.from('user_subscriptions').insert({
+                    user_email: email,
+                    product_id,
+                    starts_at: startsAt.toISOString(),
+                    expires_at: expiresAt.toISOString(),
+                    order_id: newOrder.id,
+                });
+            }
+
+            // Send success email (background)
+            const sendAutoEmail = async () => {
+                try {
+                    const { subject, html } = await getEmailTemplate('payment_success', {
+                        name: full_name || email.split('@')[0],
+                        order_code: newOrder.order_code,
+                        product_name: product.name || 'Gói Premium',
+                        amount: 'Miễn phí (mã giảm giá)',
+                        url: process.env.NEXT_PUBLIC_APP_URL || 'https://tradadata.vercel.app'
+                    });
+                    await sendEmail(email, subject, html);
+                } catch (emailErr) {
+                    console.error('Lỗi gửi mail auto-activate:', emailErr);
+                }
+            };
+            sendAutoEmail();
+
+            // Log to Google Sheet (background)
+            logOrderToSheet(newOrder.order_code).catch(err =>
+                console.error('Lỗi ghi Sheet auto-activate:', err)
+            );
+
+            return NextResponse.json({
+                success: true,
+                order_code: newOrder.order_code,
+                applied_coupon: appliedCouponCode,
+                final_amount: 0,
+                auto_activated: true,
+            });
         }
 
         // Gửi email xác nhận lên đơn (chạy ngầm để không block UI)
