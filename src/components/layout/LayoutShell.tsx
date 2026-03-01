@@ -1,23 +1,17 @@
 'use client';
 
 import { usePathname } from 'next/navigation';
-import { Footer } from './Footer';
-import { FloatingActions } from './FloatingActions';
 
 /**
- * Wraps Footer & FloatingActions so they are hidden on /admin pages
- * where the admin layout manages its own chrome.
+ * Client wrapper that hides its children on /admin pages.
+ * Used to conditionally render Footer & FloatingActions
+ * without importing them directly (they may be server components).
  */
-export function LayoutShell() {
+export function LayoutShell({ children }: { children: React.ReactNode }) {
     const pathname = usePathname();
     const isAdmin = pathname.startsWith('/admin');
 
     if (isAdmin) return null;
 
-    return (
-        <>
-            <Footer />
-            <FloatingActions />
-        </>
-    );
+    return <>{children}</>;
 }
