@@ -9,6 +9,8 @@ export const metadata = {
     description: 'Khám phá tất cả các bài viết về Data & AI',
 };
 
+export const revalidate = 3600;
+
 export default async function BlogPage() {
     // Fetch all published posts and categories
     const [{ data: posts }, categories] = await Promise.all([

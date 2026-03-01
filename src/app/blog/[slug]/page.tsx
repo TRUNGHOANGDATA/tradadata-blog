@@ -2,6 +2,7 @@ import 'highlight.js/styles/vs2015.css';
 
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
+import { unstable_cache } from 'next/cache';
 import { auth } from '@/lib/auth';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -255,62 +256,74 @@ export default async function BlogPostPage({ params }: Props) {
     let toc: { id: string, text: string, level: number }[] = [];
 
     if (post.content) {
-        try {
-            const jsonContent = typeof post.content === 'string' ? JSON.parse(post.content) : post.content;
+        const getCachedContent = unstable_cache(
+            async (contentRaw: any) => {
+                let parsedHtml = '';
+                let parsedToc: { id: string, text: string, level: number }[] = [];
+                try {
+                    const jsonContent = typeof contentRaw === 'string' ? JSON.parse(contentRaw) : contentRaw;
 
-            // Extract TOC from JSON
-            const slugify = (text: string) => {
-                return text.toString().toLowerCase()
-                    .replace(/[àáạảãâầấậẩẫăằắặẳẵ]/g, "a")
-                    .replace(/[èéẹẻẽêềếệểễ]/g, "e")
-                    .replace(/[ìíịỉĩ]/g, "i")
-                    .replace(/[òóọỏõôồốộổỗơờớợởỡ]/g, "o")
-                    .replace(/[ùúụủũưừứựửữ]/g, "u")
-                    .replace(/[ỳýỵỷỹ]/g, "y")
-                    .replace(/đ/g, "d")
-                    .replace(/\s+/g, '-')
-                    .replace(/[^\w\-]+/g, '')
-                    .replace(/\-\-+/g, '-')
-                    .replace(/^-+/, '')
-                    .replace(/-+$/, '');
-            };
+                    // Extract TOC from JSON
+                    const slugify = (text: string) => {
+                        return text.toString().toLowerCase()
+                            .replace(/[àáạảãâầấậẩẫăằắặẳẵ]/g, "a")
+                            .replace(/[èéẹẻẽêềếệểễ]/g, "e")
+                            .replace(/[ìíịỉĩ]/g, "i")
+                            .replace(/[òóọỏõôồốộổỗơờớợởỡ]/g, "o")
+                            .replace(/[ùúụủũưừứựửữ]/g, "u")
+                            .replace(/[ỳýỵỷỹ]/g, "y")
+                            .replace(/đ/g, "d")
+                            .replace(/\s+/g, '-')
+                            .replace(/[^\w\-]+/g, '')
+                            .replace(/\-\-+/g, '-')
+                            .replace(/^-+/, '')
+                            .replace(/-+$/, '');
+                    };
 
-            const getText = (node: any): string => {
-                if (node.type === 'text') return node.text || '';
-                if (node.content) return node.content.map(getText).join('');
-                return '';
-            };
+                    const getText = (node: any): string => {
+                        if (node.type === 'text') return node.text || '';
+                        if (node.content) return node.content.map(getText).join('');
+                        return '';
+                    };
 
-            if (jsonContent?.content) {
-                jsonContent.content.forEach((node: any) => {
-                    if (node.type === 'heading' && node.attrs?.level) {
-                        const text = getText(node);
-                        if (text.trim()) {
-                            const id = slugify(text) || `heading-${toc.length}`;
-                            toc.push({ id, text, level: node.attrs.level });
-                        }
+                    if (jsonContent?.content) {
+                        jsonContent.content.forEach((node: any) => {
+                            if (node.type === 'heading' && node.attrs?.level) {
+                                const text = getText(node);
+                                if (text.trim()) {
+                                    const id = slugify(text) || `heading-${parsedToc.length}`;
+                                    parsedToc.push({ id, text, level: node.attrs.level });
+                                }
+                            }
+                        });
                     }
-                });
-            }
 
-            let rawHtml = transformCodeBlocks(generateHTML(jsonContent, tiptapExtensions));
+                    let rawHtml = transformCodeBlocks(generateHTML(jsonContent, tiptapExtensions));
 
-            // Inject IDs to HTML tags for TOC linking
-            let tocIndex = 0;
-            htmlContent = rawHtml.replace(/<h([1-6])(.*?)>(.*?)<\/h\1>/g, (match, level, attrs, innerHtml) => {
-                if (tocIndex < toc.length) {
-                    const id = toc[tocIndex].id;
-                    tocIndex++;
-                    const cleanAttrs = attrs.replace(/id="[^"]*"/g, '');
-                    return `<h${level}${cleanAttrs} id="${id}" class="scroll-mt-24 group relative">${innerHtml} <a href="#${id}" class="opacity-0 group-hover:opacity-100 absolute -left-6 top-1/2 -translate-y-1/2 text-surface-300 hover:text-brand-500 transition-opacity" aria-hidden="true">#</a></h${level}>`;
+                    // Inject IDs to HTML tags for TOC linking
+                    let tocIndex = 0;
+                    parsedHtml = rawHtml.replace(/<h([1-6])(.*?)>(.*?)<\/h\1>/g, (match, level, attrs, innerHtml) => {
+                        if (tocIndex < parsedToc.length) {
+                            const id = parsedToc[tocIndex].id;
+                            tocIndex++;
+                            const cleanAttrs = attrs.replace(/id="[^"]*"/g, '');
+                            return `<h${level}${cleanAttrs} id="${id}" class="scroll-mt-24 group relative">${innerHtml} <a href="#${id}" class="opacity-0 group-hover:opacity-100 absolute -left-6 top-1/2 -translate-y-1/2 text-surface-300 hover:text-brand-500 transition-opacity" aria-hidden="true">#</a></h${level}>`;
+                        }
+                        return match;
+                    });
+                } catch (e) {
+                    console.error('Error parsing post content:', e);
+                    parsedHtml = '<p>Error loading content.</p>';
                 }
-                return match;
-            });
+                return { html: parsedHtml, toc: parsedToc };
+            },
+            [`post-content-${post.id}`], // Tiêu chí Cache dựa trên ID bài viết
+            { revalidate: 3600, tags: [`post-${post.id}`] } // Tự làm mới bộ rác sau 1h
+        );
 
-        } catch (e) {
-            console.error('Error parsing post content:', e);
-            htmlContent = '<p>Error loading content.</p>';
-        }
+        const cached = await getCachedContent(post.content);
+        htmlContent = cached.html;
+        toc = cached.toc;
     } else {
         htmlContent = '<p className="text-surface-500 italic">Bài viết này chưa có nội dung.</p>';
     }

@@ -7,6 +7,8 @@ export const metadata = {
     description: 'Khám phá bài viết theo từng chủ đề',
 };
 
+export const revalidate = 3600;
+
 export default async function CategoriesPage() {
     // Fetch all categories and posts
     const [categories, { data: posts }] = await Promise.all([

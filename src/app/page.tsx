@@ -8,6 +8,8 @@ import { getLatestPosts, getPosts } from '@/lib/data/posts';
 import { getCategories } from '@/lib/data/categories';
 import { supabaseAdmin } from '@/lib/supabase/server';
 
+export const revalidate = 3600;
+
 export default async function HomePage() {
   const [categories, recentPosts, { count: totalPosts }] = await Promise.all([
     getCategories(),
