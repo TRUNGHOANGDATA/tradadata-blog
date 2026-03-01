@@ -644,7 +644,7 @@ COVER_IMAGE: Tạo một bức ảnh bìa blog có chất lượng cao, tỉ l�
                                 {title || 'Tiêu đề bài viết'} | Trà Đá Data
                             </p>
                             <p className="text-xs text-emerald-700 dark:text-emerald-500 truncate">
-                                tradadata.vercel.app/blog/{displaySlug || 'duong-dan-bai-viet'}
+                                tradadata.com/blog/{displaySlug || 'duong-dan-bai-viet'}
                             </p>
                             <p className="text-xs text-surface-500 dark:text-surface-400 mt-0.5 line-clamp-2">
                                 {metaDescription || excerpt || 'Mô tả bài viết sẽ hiển thị ở đây...'}

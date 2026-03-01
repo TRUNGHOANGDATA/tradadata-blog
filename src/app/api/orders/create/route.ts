@@ -248,7 +248,7 @@ export async function POST(request: Request) {
                         order_code: newOrder.order_code,
                         product_name: product.name || 'Gói Premium',
                         amount: 'Miễn phí (mã giảm giá)',
-                        url: process.env.NEXT_PUBLIC_APP_URL || 'https://tradadata.vercel.app'
+                        url: process.env.NEXT_PUBLIC_APP_URL || 'https://tradadata.com'
                     });
                     await sendEmail(email, subject, html);
                 } catch (emailErr) {
@@ -280,7 +280,7 @@ export async function POST(request: Request) {
                     order_code: newOrder.order_code,
                     product_name: product.name || 'Gói Premium',
                     amount: amountText,
-                    url: process.env.NEXT_PUBLIC_APP_URL || 'https://tradadata.vercel.app'
+                    url: process.env.NEXT_PUBLIC_APP_URL || 'https://tradadata.com'
                 });
                 await sendEmail(email, subject, html);
             } catch (emailErr) {

@@ -153,7 +153,7 @@ export default function PrivacyPage() {
                     </p>
                     <ul className="list-disc pl-6 space-y-1">
                         <li>Email: <a href="mailto:trunghoangdata101091@gmail.com" className="text-brand-600 dark:text-brand-400 hover:underline">trunghoangdata101091@gmail.com</a></li>
-                        <li>Website: <a href="https://tradadata.vercel.app" className="text-brand-600 dark:text-brand-400 hover:underline">tradadata.vercel.app</a></li>
+                        <li>Website: <a href="https://tradadata.com" className="text-brand-600 dark:text-brand-400 hover:underline">tradadata.com</a> | <a href="https://tradadata.vn" className="text-brand-600 dark:text-brand-400 hover:underline">tradadata.vn</a></li>
                     </ul>
                 </section>
             </div>
