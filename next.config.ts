@@ -1,6 +1,8 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  productionBrowserSourceMaps: false,
+  serverExternalPackages: ['googleapis', 'nodemailer', 'happy-dom'],
   devIndicators: false,
   images: {
     formats: ['image/avif', 'image/webp'],

@@ -75,7 +75,7 @@ export default async function TagPage({ params }: Props) {
         const postIds = postTagRows.map(r => r.post_id);
         const { data: postsData } = await supabaseAdmin
             .from('posts')
-            .select('*, author:profiles(full_name, avatar_url), category:categories(name, slug, icon)')
+            .select('*, author:profiles(full_name, avatar_url), category:categories!category_id(name, slug, icon)')
             .in('id', postIds)
             .eq('status', 'published')
             .order('published_at', { ascending: false });

@@ -37,7 +37,7 @@ export async function GET(request: Request) {
         // Recent posts
         const { data: recentPosts } = await supabaseAdmin
             .from('posts')
-            .select('id, title, status, view_count, created_at, category:categories(name, icon)')
+            .select('id, title, status, view_count, created_at, category:categories!category_id(name, icon)')
             .order('created_at', { ascending: false })
             .limit(5);
 

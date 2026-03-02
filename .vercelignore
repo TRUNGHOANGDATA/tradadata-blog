@@ -1,0 +1,9 @@
+# Migration and content generation scripts (not needed at runtime)
+scripts/
+*.md
+!README.md
+
+# Dev files
+.env.local
+*.js
+!next.config.js

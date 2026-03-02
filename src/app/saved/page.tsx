@@ -66,7 +66,7 @@ export default async function SavedPostsPage() {
                 const postIds = bookmarks.map(b => b.post_id);
                 const { data: posts, error: postsError } = await supabaseAdmin
                     .from('posts')
-                    .select('*, author:profiles(*), category:categories(*)')
+                    .select('*, author:profiles(*), category:categories!category_id(*)')
                     .in('id', postIds)
                     .eq('status', 'published');
 

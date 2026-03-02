@@ -16,7 +16,7 @@ export async function GET() {
 
         const { data, error } = await supabaseAdmin
             .from('posts')
-            .select('*, author:profiles(full_name, email), category:categories(name, slug, icon)')
+            .select('*, author:profiles(full_name, email), category:categories!category_id(name, slug, icon)')
             .order('created_at', { ascending: false });
 
         if (error) throw error;

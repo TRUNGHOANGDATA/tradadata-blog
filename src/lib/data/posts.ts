@@ -36,12 +36,22 @@ export async function getPosts({
 
     let query = supabaseAdmin
         .from('posts')
-        .select('*, author:profiles(*), category:categories(*)', { count: 'exact' })
+        .select('*, author:profiles(*), category:categories!category_id(*)', { count: 'exact' })
         .eq('status', 'published')
         .order('published_at', { ascending: false });
 
     if (categoryId) {
-        query = query.eq('category_id', categoryId);
+        // Use junction table for multi-category support
+        const { data: postIds } = await supabaseAdmin
+            .from('post_categories')
+            .select('post_id')
+            .eq('category_id', categoryId);
+
+        if (postIds && postIds.length > 0) {
+            query = query.in('id', postIds.map(r => r.post_id));
+        } else {
+            return { data: [], count: 0 };
+        }
     }
 
     // Pagination
@@ -69,7 +79,7 @@ export const getPostBySlug = unstable_cache(
 
         const { data, error } = await supabaseAdmin
             .from('posts')
-            .select('*, author:profiles(*), category:categories(*)')
+            .select('*, author:profiles(*), category:categories!category_id(*)')
             .eq('slug', slug)
             .eq('status', 'published')
             .single();
@@ -105,7 +115,7 @@ export const getRelatedPosts = unstable_cache(
                 const uniqueIds = [...new Set(taggedPostIds.map(r => r.post_id))];
                 const { data: tagPosts } = await supabaseAdmin
                     .from('posts')
-                    .select('*, author:profiles(*), category:categories(*)')
+                    .select('*, author:profiles(*), category:categories!category_id(*)')
                     .eq('status', 'published')
                     .in('id', uniqueIds)
                     .order('published_at', { ascending: false })
@@ -126,7 +136,7 @@ export const getRelatedPosts = unstable_cache(
         if (relatedPosts.length < limit && categoryId) {
             const { data: catPosts } = await supabaseAdmin
                 .from('posts')
-                .select('*, author:profiles(*), category:categories(*)')
+                .select('*, author:profiles(*), category:categories!category_id(*)')
                 .eq('status', 'published')
                 .eq('category_id', categoryId)
                 .neq('id', currentPostId)
@@ -159,7 +169,7 @@ export async function searchPosts(query: string): Promise<Post[]> {
 
     const { data, error } = await supabaseAdmin
         .from('posts')
-        .select('*, author:profiles(*), category:categories(*)')
+        .select('*, author:profiles(*), category:categories!category_id(*)')
         .eq('status', 'published')
         .ilike('title', `%${query}%`)
         .order('published_at', { ascending: false })

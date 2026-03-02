@@ -30,7 +30,7 @@ export default function EditPostPage() {
     const [content, setContent] = useState<Record<string, unknown> | null>(null);
     const [coverImage, setCoverImage] = useState('');
     const [status, setStatus] = useState('draft');
-    const [categoryId, setCategoryId] = useState('');
+    const [selectedCategoryIds, setSelectedCategoryIds] = useState<string[]>([]);
     const [isPremium, setIsPremium] = useState(false);
     const [isFeatured, setIsFeatured] = useState(false);
     const [categories, setCategories] = useState<Array<{ id: string; name: string; icon: string | null }>>([]);
@@ -91,7 +91,12 @@ export default function EditPostPage() {
                     setContent(parsedContent || null);
                     setCoverImage(data.post.cover_image || '');
                     setStatus(data.post.status || 'draft');
-                    setCategoryId(data.post.category_id || '');
+                    // Load categories from post_categories if available, fallback to category_id
+                    if (data.post.post_categories && Array.isArray(data.post.post_categories)) {
+                        setSelectedCategoryIds(data.post.post_categories.map((pc: any) => pc.category_id));
+                    } else if (data.post.category_id) {
+                        setSelectedCategoryIds([data.post.category_id]);
+                    }
                     setIsPremium(data.post.is_premium || false);
                     setIsFeatured(data.post.is_featured || false);
                     setCurrentSlug(data.post.slug || '');
@@ -198,7 +203,8 @@ export default function EditPostPage() {
                     excerpt,
                     content,
                     cover_image: coverImage,
-                    category_id: categoryId || null,
+                    category_id: selectedCategoryIds[0] || null,
+                    category_ids: selectedCategoryIds,
                     status: finalStatus,
                     is_premium: isPremium,
                     is_featured: isFeatured,
@@ -409,19 +415,42 @@ COVER_IMAGE: Tạo một bức ảnh bìa blog có chất lượng cao, tỉ l�
                     </div>
 
                     <div className="bg-white dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-700 p-5">
-                        <h3 className="font-semibold text-surface-900 dark:text-surface-100 mb-3">Chủ đề</h3>
-                        <select
-                            value={categoryId}
-                            onChange={(e) => setCategoryId(e.target.value)}
-                            className="w-full px-3 py-2.5 rounded-xl bg-surface-50 dark:bg-surface-800 border border-surface-200 dark:border-surface-700 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500/30"
-                        >
-                            <option value="">Chọn chủ đề</option>
-                            {categories.map((cat) => (
-                                <option key={cat.id} value={cat.id}>
-                                    {cat.icon} {cat.name}
-                                </option>
-                            ))}
-                        </select>
+                        <h3 className="font-semibold text-surface-900 dark:text-surface-100 mb-3">Chủ đề <span className="text-xs text-surface-400 font-normal">(chọn nhiều)</span></h3>
+                        <div className="space-y-1.5 max-h-48 overflow-y-auto">
+                            {categories.map((cat) => {
+                                const checked = selectedCategoryIds.includes(cat.id);
+                                return (
+                                    <label
+                                        key={cat.id}
+                                        className={`flex items-center gap-2.5 px-3 py-2 rounded-xl cursor-pointer transition-colors ${checked
+                                                ? 'bg-brand-50 dark:bg-brand-900/20 border border-brand-200 dark:border-brand-800'
+                                                : 'hover:bg-surface-50 dark:hover:bg-surface-800 border border-transparent'
+                                            }`}
+                                    >
+                                        <input
+                                            type="checkbox"
+                                            checked={checked}
+                                            onChange={() => {
+                                                setSelectedCategoryIds(prev =>
+                                                    checked
+                                                        ? prev.filter(id => id !== cat.id)
+                                                        : [...prev, cat.id]
+                                                );
+                                            }}
+                                            className="w-4 h-4 rounded border-surface-300 dark:border-surface-600 text-brand-600 focus:ring-brand-500/30"
+                                        />
+                                        <span className="text-sm text-surface-700 dark:text-surface-300">
+                                            {cat.icon} {cat.name}
+                                        </span>
+                                    </label>
+                                );
+                            })}
+                        </div>
+                        {selectedCategoryIds.length > 0 && (
+                            <p className="text-[10px] text-surface-400 mt-2">
+                                ✅ Đã chọn {selectedCategoryIds.length} chủ đề · Chủ đề chính: {categories.find(c => c.id === selectedCategoryIds[0])?.name || '—'}
+                            </p>
+                        )}
                     </div>
 
                     {/* Tags */}

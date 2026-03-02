@@ -34,7 +34,7 @@ export async function GET(_request: Request, { params }: RouteParams) {
 
         const { data: post, error } = await supabaseAdmin
             .from('posts')
-            .select('*, author:profiles(full_name, email), category:categories(id, name, slug, icon)')
+            .select('*, author:profiles(full_name, email), category:categories!category_id(id, name, slug, icon)')
             .eq('id', id)
             .single();
 
@@ -48,8 +48,18 @@ export async function GET(_request: Request, { params }: RouteParams) {
             .select('tag_id, tags(id, name, slug)')
             .eq('post_id', id);
 
+        // Get categories for this post from junction table
+        const { data: postCategories } = await supabaseAdmin
+            .from('post_categories')
+            .select('category_id')
+            .eq('post_id', id);
+
         return NextResponse.json({
-            post: { ...post, tags: postTags?.map((pt: any) => pt.tags) || [] }
+            post: {
+                ...post,
+                tags: postTags?.map((pt: any) => pt.tags) || [],
+                post_categories: postCategories || []
+            }
         });
     } catch (error: any) {
         console.error('Error fetching post:', error);
@@ -71,7 +81,7 @@ export async function PUT(request: Request, { params }: RouteParams) {
         }
 
         const body = await request.json();
-        const { title, excerpt, content, cover_image, category_id, status, is_premium, is_featured, tags, custom_slug, meta_description, keywords } = body;
+        const { title, excerpt, content, cover_image, category_id, category_ids, status, is_premium, is_featured, tags, custom_slug, meta_description, keywords } = body;
 
         // Get existing post to check status change
         const { data: existing } = await supabaseAdmin
@@ -135,6 +145,19 @@ export async function PUT(request: Request, { params }: RouteParams) {
                     tag_id: tagId,
                 }));
                 await supabaseAdmin.from('post_tags').insert(tagInserts);
+            }
+        }
+
+        // Update post_categories junction table if category_ids provided
+        if (category_ids !== undefined) {
+            await supabaseAdmin.from('post_categories').delete().eq('post_id', id);
+
+            if (category_ids.length > 0) {
+                const catInserts = category_ids.map((catId: string) => ({
+                    post_id: id,
+                    category_id: catId,
+                }));
+                await supabaseAdmin.from('post_categories').insert(catInserts);
             }
         }
 

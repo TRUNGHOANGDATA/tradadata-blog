@@ -8,7 +8,7 @@ import { getLatestPosts, getPosts } from '@/lib/data/posts';
 import { getCategories } from '@/lib/data/categories';
 import { supabaseAdmin } from '@/lib/supabase/server';
 
-export const revalidate = 3600;
+export const revalidate = 60;
 
 export default async function HomePage() {
   const [categories, recentPosts, { count: totalPosts }] = await Promise.all([
@@ -24,7 +24,7 @@ export default async function HomePage() {
   if (supabaseAdmin) {
     const { data: pinnedPost } = await supabaseAdmin
       .from('posts')
-      .select('*, category:categories(*), author:profiles(*)')
+      .select('*, category:categories!category_id(*), author:profiles(*)')
       .eq('is_featured', true)
       .eq('status', 'published')
       .order('published_at', { ascending: false })
@@ -39,14 +39,13 @@ export default async function HomePage() {
 
 
 
-  // Get post counts per category
+  // Get post counts per category (using junction table for multi-category)
   const { data: countData } = await supabaseAdmin
-    .from('posts')
-    .select('category_id')
-    .eq('status', 'published');
+    .from('post_categories')
+    .select('category_id');
   const categoryCounts: Record<string, number> = {};
-  (countData || []).forEach((p: any) => {
-    if (p.category_id) categoryCounts[p.category_id] = (categoryCounts[p.category_id] || 0) + 1;
+  (countData || []).forEach((pc: any) => {
+    if (pc.category_id) categoryCounts[pc.category_id] = (categoryCounts[pc.category_id] || 0) + 1;
   });
 
 
@@ -99,7 +98,7 @@ export default async function HomePage() {
           </div>
 
           {/* Stats */}
-          <div className="mt-16 grid grid-cols-3 gap-4 max-w-lg mx-auto">
+          <div className="mt-16 grid grid-cols-2 gap-8 max-w-xs mx-auto">
             {[
               { label: 'Bài viết', value: totalPosts && totalPosts > 0 ? `${totalPosts}+` : '0' },
               { label: 'Chủ đề', value: categories.length.toString() },
