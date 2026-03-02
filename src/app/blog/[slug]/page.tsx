@@ -319,6 +319,11 @@ export default async function BlogPostPage({ params }: Props) {
 
                         let rawHtml = transformCodeBlocks(generateHTML(jsonContent, tiptapExtensions));
 
+                        // Wrap <table> in responsive scroll wrapper
+                        rawHtml = rawHtml.replace(/<table([\s\S]*?)<\/table>/g, (match) => {
+                            return `<div class="table-wrapper">${match}</div>`;
+                        });
+
                         // Inject IDs to HTML tags for TOC linking
                         let tocIndex = 0;
                         parsedHtml = rawHtml.replace(/<h([1-6])(.*?)>(.*?)<\/h\1>/g, (match, level, attrs, innerHtml) => {
