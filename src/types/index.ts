@@ -53,6 +53,7 @@ export interface Post {
     // Relations (populated via join)
     author?: Profile;
     category?: Category;
+    categories?: Category[];  // All categories from junction table
     tags?: Tag[];
 }
 

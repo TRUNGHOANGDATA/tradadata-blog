@@ -34,7 +34,9 @@ export function BlogListClient({ initialPosts, categories, postsPerPage = 12 }: 
         return initialPosts.filter(post => {
             const matchesSearch = post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
                 (post.excerpt && post.excerpt.toLowerCase().includes(searchQuery.toLowerCase()));
-            const matchesCategory = selectedCategory === '' || post.category?.slug === selectedCategory;
+            const matchesCategory = selectedCategory === '' ||
+                (post.categories && post.categories.some((c: any) => c.slug === selectedCategory)) ||
+                post.category?.slug === selectedCategory;
             return matchesSearch && matchesCategory;
         });
     }, [searchQuery, selectedCategory, initialPosts]);

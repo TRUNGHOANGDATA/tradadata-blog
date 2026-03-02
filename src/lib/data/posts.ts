@@ -66,8 +66,27 @@ export async function getPosts({
         return { data: [], count: 0 };
     }
 
+    // Fetch all categories for these posts from junction table
+    const postIds = (data || []).map(p => p.id);
+    let postCategoriesMap: Record<string, any[]> = {};
+    if (postIds.length > 0) {
+        const { data: pcData } = await supabaseAdmin
+            .from('post_categories')
+            .select('post_id, category:categories(*)')
+            .in('post_id', postIds);
+        if (pcData) {
+            for (const pc of pcData) {
+                if (!postCategoriesMap[pc.post_id]) postCategoriesMap[pc.post_id] = [];
+                if (pc.category) postCategoriesMap[pc.post_id].push(pc.category);
+            }
+        }
+    }
+
     return {
-        data: (data || []).map(formatPost),
+        data: (data || []).map(p => formatPost({
+            ...p,
+            categories: postCategoriesMap[p.id] || (p.category ? [p.category] : []),
+        })),
         count: count || 0,
     };
 }
