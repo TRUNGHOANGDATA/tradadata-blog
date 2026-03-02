@@ -1,24 +1,25 @@
 'use client';
 
 // Shared table loading skeleton for admin list pages
+// Styles defined in globals.css (skeleton, admin-loading-* classes)
 function AdminTableLoading({ title = '', cols = 5, rows = 6, showStats = false, statsCount = 3 }: {
     title?: string; cols?: number; rows?: number; showStats?: boolean; statsCount?: number;
 }) {
     return (
         <div className="admin-loading">
             <div className="admin-loading-header">
-                <div className="skeleton skeleton-title" />
-                <div className="skeleton skeleton-btn" />
+                <div className="skeleton" style={{ width: 180, height: 32 }} />
+                <div className="skeleton" style={{ width: 140, height: 40, borderRadius: 10 }} />
             </div>
 
             {showStats && (
-                <div className="admin-loading-stats" style={{ gridTemplateColumns: `repeat(${statsCount}, 1fr)` }}>
+                <div style={{ display: 'grid', gridTemplateColumns: `repeat(${statsCount}, 1fr)`, gap: '1rem', marginBottom: '2rem' }}>
                     {[...Array(statsCount)].map((_, i) => (
                         <div key={i} className="admin-loading-stat-card">
-                            <div className="skeleton skeleton-icon" />
-                            <div className="admin-loading-stat-text">
-                                <div className="skeleton skeleton-label" />
-                                <div className="skeleton skeleton-value" />
+                            <div className="skeleton" style={{ width: 44, height: 44, borderRadius: 10, flexShrink: 0 }} />
+                            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 8 }}>
+                                <div className="skeleton" style={{ width: 80, height: 12 }} />
+                                <div className="skeleton" style={{ width: 100, height: 24 }} />
                             </div>
                         </div>
                     ))}
@@ -28,55 +29,18 @@ function AdminTableLoading({ title = '', cols = 5, rows = 6, showStats = false, 
             <div className="admin-loading-table">
                 <div className="admin-loading-table-header">
                     {[...Array(cols)].map((_, i) => (
-                        <div key={i} className="skeleton skeleton-col" />
+                        <div key={i} className="skeleton" style={{ height: 14, flex: 1, maxWidth: 120 }} />
                     ))}
                 </div>
                 {[...Array(rows)].map((_, i) => (
                     <div key={i} className="admin-loading-table-row">
-                        <div className="skeleton skeleton-cell-text" />
-                        <div className="skeleton skeleton-cell-short" />
-                        <div className="skeleton skeleton-cell-badge" />
-                        <div className="skeleton skeleton-cell-actions" />
+                        <div className="skeleton" style={{ flex: 2, height: 16 }} />
+                        <div className="skeleton" style={{ flex: 1, height: 14, maxWidth: 100 }} />
+                        <div className="skeleton" style={{ width: 70, height: 24, borderRadius: 9999 }} />
+                        <div className="skeleton" style={{ width: 80, height: 32, borderRadius: 8 }} />
                     </div>
                 ))}
             </div>
-
-            <style>{`
-                .admin-loading { padding: 2rem; max-width: 1200px; }
-                .admin-loading-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 2rem; }
-                .skeleton {
-                    background: linear-gradient(90deg, var(--color-surface-100, #f3f4f6) 25%, var(--color-surface-200, #e5e7eb) 50%, var(--color-surface-100, #f3f4f6) 75%);
-                    background-size: 200% 100%; animation: shimmer 1.5s ease-in-out infinite; border-radius: 8px;
-                }
-                :root[data-theme="dark"] .skeleton, @media (prefers-color-scheme: dark) {
-                    .skeleton { background: linear-gradient(90deg, rgba(255,255,255,0.06) 25%, rgba(255,255,255,0.12) 50%, rgba(255,255,255,0.06) 75%); background-size: 200% 100%; }
-                }
-                @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
-                .skeleton-title { width: 180px; height: 32px; }
-                .skeleton-btn { width: 140px; height: 40px; border-radius: 10px; }
-                .admin-loading-stats { display: grid; gap: 1rem; margin-bottom: 2rem; }
-                .admin-loading-stat-card {
-                    display: flex; align-items: center; gap: 1rem; padding: 1.25rem; border-radius: 12px;
-                    background: var(--color-surface-50, #f9fafb); border: 1px solid var(--color-surface-200, #e5e7eb);
-                }
-                :root[data-theme="dark"] .admin-loading-stat-card { background: rgba(255,255,255,0.03); border-color: rgba(255,255,255,0.08); }
-                .skeleton-icon { width: 44px; height: 44px; border-radius: 10px; flex-shrink: 0; }
-                .admin-loading-stat-text { flex: 1; display: flex; flex-direction: column; gap: 8px; }
-                .skeleton-label { width: 80px; height: 12px; }
-                .skeleton-value { width: 100px; height: 24px; }
-                .admin-loading-table { border-radius: 12px; border: 1px solid var(--color-surface-200, #e5e7eb); overflow: hidden; background: var(--color-surface-50, #fff); }
-                :root[data-theme="dark"] .admin-loading-table { background: rgba(255,255,255,0.02); border-color: rgba(255,255,255,0.08); }
-                .admin-loading-table-header { display: flex; gap: 1rem; padding: 1rem 1.25rem; border-bottom: 1px solid var(--color-surface-200, #e5e7eb); background: var(--color-surface-100, #f3f4f6); }
-                :root[data-theme="dark"] .admin-loading-table-header { background: rgba(255,255,255,0.04); border-color: rgba(255,255,255,0.08); }
-                .skeleton-col { height: 14px; flex: 1; max-width: 120px; }
-                .admin-loading-table-row { display: flex; align-items: center; gap: 1rem; padding: 1rem 1.25rem; border-bottom: 1px solid var(--color-surface-100, #f3f4f6); }
-                :root[data-theme="dark"] .admin-loading-table-row { border-color: rgba(255,255,255,0.05); }
-                .admin-loading-table-row:last-child { border-bottom: none; }
-                .skeleton-cell-text { flex: 2; height: 16px; }
-                .skeleton-cell-short { flex: 1; height: 14px; max-width: 100px; }
-                .skeleton-cell-badge { width: 70px; height: 24px; border-radius: 9999px; }
-                .skeleton-cell-actions { width: 80px; height: 32px; border-radius: 8px; }
-            `}</style>
         </div>
     );
 }

@@ -1,5 +1,6 @@
 'use client';
 import AdminTableLoading from '@/components/admin/AdminTableLoading';
+
 export default function ProductsLoading() {
-    return <AdminTableLoading showStats statsCount={3} cols={5} rows={6} />;
+    return <AdminTableLoading cols={5} rows={6} showStats={true} statsCount={3} />;
 }
