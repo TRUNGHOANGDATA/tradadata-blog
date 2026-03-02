@@ -243,88 +243,90 @@ export default async function BlogPostPage({ params }: Props) {
                 </nav>
             </div>
 
-            {/* Hero Section */}
-            <div className="relative w-full h-[50vh] min-h-[400px] max-h-[600px]">
-                <Image
-                    src={post.cover_image || 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=1600&h=900&fit=crop'}
-                    alt={post.title}
-                    fill
-                    className="object-cover"
-                    priority
-                />
-                {/* Gradient overlay */}
-                <div className="absolute inset-0 bg-gradient-to-t from-surface-900 via-surface-900/60 to-transparent" />
+            {/* Hero Section — contained like slider */}
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4">
+                <div className="relative w-full h-[380px] md:h-[420px] rounded-2xl overflow-hidden shadow-2xl">
+                    <Image
+                        src={post.cover_image || 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=1600&h=900&fit=crop'}
+                        alt={post.title}
+                        fill
+                        className="object-cover"
+                        priority
+                    />
+                    {/* Gradient overlay */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-surface-900 via-surface-900/60 to-transparent" />
 
-                {/* Header Content */}
-                <div className="absolute inset-0 flex flex-col justify-end">
-                    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 w-full pb-12">
+                    {/* Header Content */}
+                    <div className="absolute inset-0 flex flex-col justify-end">
+                        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 w-full pb-12">
 
-                        {/* Category Badge */}
-                        {post.category && (
-                            <Link
-                                href={`/category/${post.category.slug}`}
-                                className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-brand-600/20 text-brand-300 border border-brand-500/30 text-sm font-medium mb-4 hover:bg-brand-600/30 transition-colors backdrop-blur-sm"
-                            >
-                                {post.category.icon && <span>{post.category.icon}</span>}
-                                {post.category.name}
-                            </Link>
-                        )}
-
-                        <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white leading-tight mb-4">
-                            {post.title}
-                        </h1>
-
-                        {isAdminOrEditor && (
-                            <div className="flex items-center gap-2 mb-4">
+                            {/* Category Badge */}
+                            {post.category && (
                                 <Link
-                                    href={`/admin/posts/${post.id}/edit`}
-                                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/15 text-white border border-white/25 text-xs font-medium hover:bg-white/25 transition-colors backdrop-blur-sm"
+                                    href={`/category/${post.category.slug}`}
+                                    className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-brand-600/20 text-brand-300 border border-brand-500/30 text-sm font-medium mb-4 hover:bg-brand-600/30 transition-colors backdrop-blur-sm"
                                 >
-                                    <Pencil className="h-3 w-3" />
-                                    Sửa bài viết
+                                    {post.category.icon && <span>{post.category.icon}</span>}
+                                    {post.category.name}
                                 </Link>
-                                <PinButton postId={post.id} initialPinned={!!post.is_pinned} />
-                            </div>
-                        )}
+                            )}
 
-                        <div className="flex flex-wrap items-center gap-6 text-sm text-surface-300">
-                            {/* Author */}
-                            <div className="flex items-center gap-2">
-                                <div className="h-8 w-8 rounded-full bg-brand-600 border-2 border-surface-800 flex items-center justify-center text-white font-bold">
-                                    {post.author?.full_name?.charAt(0) || 'E'}
-                                </div>
-                                <span className="font-medium text-surface-200">{post.author?.full_name || 'Trà Đá Data'}</span>
-                            </div>
+                            <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white leading-tight mb-4">
+                                {post.title}
+                            </h1>
 
-                            {/* Meta info */}
-                            <div className="flex items-center gap-4">
-                                <div className="flex items-center gap-1.5">
-                                    <Calendar className="h-4 w-4" />
-                                    <span>{formattedDate}</span>
-                                </div>
-                                <div className="flex items-center gap-1.5">
-                                    <Clock className="h-4 w-4" />
-                                    <span>{post.reading_time} phút đọc</span>
-                                </div>
-
-                            </div>
-                        </div>
-
-                        {/* Tags */}
-                        {postTags.length > 0 && (
-                            <div className="flex flex-wrap gap-2 mt-4">
-                                {postTags.map(tag => (
+                            {isAdminOrEditor && (
+                                <div className="flex items-center gap-2 mb-4">
                                     <Link
-                                        key={tag.id}
-                                        href={`/tag/${tag.slug}`}
-                                        className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-white/10 text-surface-300 border border-white/20 text-xs font-medium hover:bg-white/20 hover:text-white transition-colors backdrop-blur-sm"
+                                        href={`/admin/posts/${post.id}/edit`}
+                                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/15 text-white border border-white/25 text-xs font-medium hover:bg-white/25 transition-colors backdrop-blur-sm"
                                     >
-                                        <Tag className="h-3 w-3" />
-                                        {tag.name}
+                                        <Pencil className="h-3 w-3" />
+                                        Sửa bài viết
                                     </Link>
-                                ))}
+                                    <PinButton postId={post.id} initialPinned={!!post.is_pinned} />
+                                </div>
+                            )}
+
+                            <div className="flex flex-wrap items-center gap-6 text-sm text-surface-300">
+                                {/* Author */}
+                                <div className="flex items-center gap-2">
+                                    <div className="h-8 w-8 rounded-full bg-brand-600 border-2 border-surface-800 flex items-center justify-center text-white font-bold">
+                                        {post.author?.full_name?.charAt(0) || 'E'}
+                                    </div>
+                                    <span className="font-medium text-surface-200">{post.author?.full_name || 'Trà Đá Data'}</span>
+                                </div>
+
+                                {/* Meta info */}
+                                <div className="flex items-center gap-4">
+                                    <div className="flex items-center gap-1.5">
+                                        <Calendar className="h-4 w-4" />
+                                        <span>{formattedDate}</span>
+                                    </div>
+                                    <div className="flex items-center gap-1.5">
+                                        <Clock className="h-4 w-4" />
+                                        <span>{post.reading_time} phút đọc</span>
+                                    </div>
+
+                                </div>
                             </div>
-                        )}
+
+                            {/* Tags */}
+                            {postTags.length > 0 && (
+                                <div className="flex flex-wrap gap-2 mt-4">
+                                    {postTags.map(tag => (
+                                        <Link
+                                            key={tag.id}
+                                            href={`/tag/${tag.slug}`}
+                                            className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-white/10 text-surface-300 border border-white/20 text-xs font-medium hover:bg-white/20 hover:text-white transition-colors backdrop-blur-sm"
+                                        >
+                                            <Tag className="h-3 w-3" />
+                                            {tag.name}
+                                        </Link>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
                     </div>
                 </div>
             </div>
