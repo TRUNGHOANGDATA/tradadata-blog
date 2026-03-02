@@ -239,7 +239,7 @@ export default async function BlogPostPage({ params }: Props) {
                         </>
                     )}
                     <ChevronRight className="h-4 w-4 text-surface-400" />
-                    <span className="text-surface-900 dark:text-surface-200 font-medium truncate max-w-[300px]">{post.title}</span>
+                    <span className="text-surface-900 dark:text-surface-200 font-medium line-clamp-1">{post.title}</span>
                 </nav>
             </div>
 

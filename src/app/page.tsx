@@ -3,41 +3,25 @@ import { ArrowRight, Sparkles, BookOpen, TrendingUp } from 'lucide-react';
 import { PostCard } from '@/components/blog/PostCard';
 import { Newsletter } from '@/components/blog/Newsletter';
 import { CategoryCard } from '@/components/blog/CategoryCard';
+import { PinnedSlider } from '@/components/blog/PinnedSlider';
 import { SITE_CONFIG } from '@/lib/constants';
-import { getLatestPosts, getPosts } from '@/lib/data/posts';
+import { getLatestPosts, getPosts, getPinnedPosts } from '@/lib/data/posts';
 import { getCategories } from '@/lib/data/categories';
 import { supabaseAdmin } from '@/lib/supabase/server';
 
 export const revalidate = 60;
 
 export default async function HomePage() {
-  const [categories, recentPosts, { count: totalPosts }] = await Promise.all([
+  const [categories, recentPosts, { count: totalPosts }, pinnedPosts] = await Promise.all([
     getCategories(),
     getLatestPosts(7),
     getPosts({ limit: 1, page: 1 }),  // just for the count
+    getPinnedPosts(5),
   ]);
 
-  // Check for a featured/pinned post first
-  let featuredPost = recentPosts[0];
-  let otherPosts = recentPosts.slice(1);
-
-  if (supabaseAdmin) {
-    const { data: pinnedPost } = await supabaseAdmin
-      .from('posts')
-      .select('*, category:categories!category_id(*), author:profiles(*)')
-      .eq('is_featured', true)
-      .eq('status', 'published')
-      .order('published_at', { ascending: false })
-      .limit(1)
-      .single();
-
-    if (pinnedPost) {
-      featuredPost = pinnedPost;
-      otherPosts = recentPosts.filter(p => p.id !== pinnedPost.id).slice(0, 6);
-    }
-  }
-
-
+  // Filter out pinned posts from the recent posts grid
+  const pinnedIds = new Set(pinnedPosts.map(p => p.id));
+  const otherPosts = recentPosts.filter(p => !pinnedIds.has(p.id)).slice(0, 6);
 
   // Get post counts per category (using junction table for multi-category)
   const { data: countData } = await supabaseAdmin
@@ -112,10 +96,10 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* ===== FEATURED POST ===== */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-10 relative z-10">
-        {featuredPost && <PostCard post={featuredPost} variant="featured" />}
-      </section>
+      {/* ===== PINNED POSTS SLIDER ===== */}
+      {pinnedPosts.length > 0 && (
+        <PinnedSlider posts={pinnedPosts} />
+      )}
 
       {/* ===== CATEGORIES ===== */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
