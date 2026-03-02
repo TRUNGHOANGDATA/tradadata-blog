@@ -1,25 +1,29 @@
 'use client';
 
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo } from 'react';
 import { Search, SlidersHorizontal } from 'lucide-react';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { PostCard } from '@/components/blog/PostCard';
 import type { Post, Category } from '@/types';
 
 interface BlogListClientProps {
     initialPosts: Post[];
     categories: Category[];
-    postsPerPage?: number;
+    currentPage: number;
+    totalPages: number;
+    currentCategory: string;
 }
 
-export function BlogListClient({ initialPosts, categories, postsPerPage = 12 }: BlogListClientProps) {
+export function BlogListClient({
+    initialPosts,
+    categories,
+    currentPage,
+    totalPages,
+    currentCategory,
+}: BlogListClientProps) {
     const [searchQuery, setSearchQuery] = useState('');
-    const [selectedCategory, setSelectedCategory] = useState('');
-    const [currentPage, setCurrentPage] = useState(1);
-
-    // Reset page to 1 when filters change
-    useEffect(() => {
-        setCurrentPage(1);
-    }, [searchQuery, selectedCategory]);
+    const router = useRouter();
 
     const filterCategories = [
         { name: 'Tất cả', slug: '' },
@@ -30,19 +34,46 @@ export function BlogListClient({ initialPosts, categories, postsPerPage = 12 }: 
         }))
     ];
 
+    // Client-side search filter (instant UX on current page)
     const filteredPosts = useMemo(() => {
+        if (!searchQuery) return initialPosts;
         return initialPosts.filter(post => {
-            const matchesSearch = post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            return post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
                 (post.excerpt && post.excerpt.toLowerCase().includes(searchQuery.toLowerCase()));
-            const matchesCategory = selectedCategory === '' ||
-                (post.categories && post.categories.some((c: any) => c.slug === selectedCategory)) ||
-                post.category?.slug === selectedCategory;
-            return matchesSearch && matchesCategory;
         });
-    }, [searchQuery, selectedCategory, initialPosts]);
+    }, [searchQuery, initialPosts]);
 
-    const totalPages = Math.max(1, Math.ceil(filteredPosts.length / postsPerPage));
-    const paginatedPosts = filteredPosts.slice((currentPage - 1) * postsPerPage, currentPage * postsPerPage);
+    // Build URL with params
+    const buildUrl = (page: number, category?: string) => {
+        const params = new URLSearchParams();
+        if (page > 1) params.set('page', String(page));
+        const cat = category !== undefined ? category : currentCategory;
+        if (cat) params.set('category', cat);
+        const qs = params.toString();
+        return qs ? `/blog?${qs}` : '/blog';
+    };
+
+    const handleCategoryChange = (slug: string) => {
+        // Reset to page 1 when changing category
+        router.push(buildUrl(1, slug));
+    };
+
+    // Generate page numbers with ellipsis for large page counts
+    const getPageNumbers = () => {
+        const pages: (number | '...')[] = [];
+        if (totalPages <= 7) {
+            for (let i = 1; i <= totalPages; i++) pages.push(i);
+        } else {
+            pages.push(1);
+            if (currentPage > 3) pages.push('...');
+            for (let i = Math.max(2, currentPage - 1); i <= Math.min(totalPages - 1, currentPage + 1); i++) {
+                pages.push(i);
+            }
+            if (currentPage < totalPages - 2) pages.push('...');
+            pages.push(totalPages);
+        }
+        return pages;
+    };
 
     return (
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -66,8 +97,8 @@ export function BlogListClient({ initialPosts, categories, postsPerPage = 12 }: 
                     {filterCategories.map((cat) => (
                         <button
                             key={cat.slug}
-                            onClick={() => setSelectedCategory(cat.slug)}
-                            className={`shrink-0 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors border ${selectedCategory === cat.slug
+                            onClick={() => handleCategoryChange(cat.slug)}
+                            className={`shrink-0 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors border ${currentCategory === cat.slug
                                 ? 'bg-brand-50 text-brand-700 border-brand-200 dark:bg-brand-900/30 dark:text-brand-300 dark:border-brand-800'
                                 : 'text-surface-600 dark:text-surface-400 hover:bg-surface-50 dark:hover:bg-surface-800 border-surface-200 dark:border-surface-700'
                                 }`}
@@ -80,9 +111,9 @@ export function BlogListClient({ initialPosts, categories, postsPerPage = 12 }: 
             </div>
 
             {/* Posts Grid */}
-            {paginatedPosts.length > 0 ? (
+            {filteredPosts.length > 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {paginatedPosts.map((post) => (
+                    {filteredPosts.map((post) => (
                         <PostCard key={post.id} post={post} />
                     ))}
                 </div>
@@ -92,7 +123,7 @@ export function BlogListClient({ initialPosts, categories, postsPerPage = 12 }: 
                     <h3 className="text-lg font-medium text-surface-900 dark:text-surface-100 mb-1">Không tìm thấy kết quả</h3>
                     <p className="text-surface-500 text-sm">Vui lòng thử lại với từ khóa hoặc chủ đề khác.</p>
                     <button
-                        onClick={() => { setSearchQuery(''); setSelectedCategory(''); }}
+                        onClick={() => { setSearchQuery(''); handleCategoryChange(''); }}
                         className="mt-4 px-4 py-2 text-sm font-medium text-brand-600 dark:text-brand-400 hover:bg-brand-50 dark:hover:bg-brand-900/20 rounded-lg transition-colors"
                     >
                         Xóa bộ lọc
@@ -100,21 +131,46 @@ export function BlogListClient({ initialPosts, categories, postsPerPage = 12 }: 
                 </div>
             )}
 
-            {/* Pagination */}
-            {totalPages > 1 && (
+            {/* Server-side Pagination */}
+            {totalPages > 1 && !searchQuery && (
                 <div className="flex items-center justify-center gap-2 mt-12">
-                    {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-                        <button
-                            key={page}
-                            onClick={() => setCurrentPage(page)}
-                            className={`px-4 py-2 rounded-xl text-sm font-medium border transition-colors ${currentPage === page
-                                ? 'bg-brand-600 text-white border-brand-600'
-                                : 'bg-white dark:bg-surface-900 text-surface-600 dark:text-surface-400 border-surface-200 dark:border-surface-700 hover:bg-surface-50 dark:hover:bg-surface-800'
-                                }`}
+                    {/* Previous */}
+                    {currentPage > 1 && (
+                        <Link
+                            href={buildUrl(currentPage - 1)}
+                            className="px-4 py-2 rounded-xl text-sm font-medium border bg-white dark:bg-surface-900 text-surface-600 dark:text-surface-400 border-surface-200 dark:border-surface-700 hover:bg-surface-50 dark:hover:bg-surface-800 transition-colors"
                         >
-                            {page}
-                        </button>
-                    ))}
+                            ← Trước
+                        </Link>
+                    )}
+
+                    {/* Page numbers */}
+                    {getPageNumbers().map((page, i) =>
+                        page === '...' ? (
+                            <span key={`ellipsis-${i}`} className="px-2 py-2 text-surface-400 text-sm">…</span>
+                        ) : (
+                            <Link
+                                key={page}
+                                href={buildUrl(page)}
+                                className={`px-4 py-2 rounded-xl text-sm font-medium border transition-colors ${currentPage === page
+                                    ? 'bg-brand-600 text-white border-brand-600'
+                                    : 'bg-white dark:bg-surface-900 text-surface-600 dark:text-surface-400 border-surface-200 dark:border-surface-700 hover:bg-surface-50 dark:hover:bg-surface-800'
+                                    }`}
+                            >
+                                {page}
+                            </Link>
+                        )
+                    )}
+
+                    {/* Next */}
+                    {currentPage < totalPages && (
+                        <Link
+                            href={buildUrl(currentPage + 1)}
+                            className="px-4 py-2 rounded-xl text-sm font-medium border bg-white dark:bg-surface-900 text-surface-600 dark:text-surface-400 border-surface-200 dark:border-surface-700 hover:bg-surface-50 dark:hover:bg-surface-800 transition-colors"
+                        >
+                            Tiếp →
+                        </Link>
+                    )}
                 </div>
             )}
         </div>

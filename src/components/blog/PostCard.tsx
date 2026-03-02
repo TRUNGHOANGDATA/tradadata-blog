@@ -31,6 +31,10 @@ export function PostCard({ post, variant = 'default' }: PostCardProps) {
                         <img
                             src={post.cover_image}
                             alt={post.title}
+                            loading="lazy"
+                            decoding="async"
+                            width={640}
+                            height={360}
                             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                         />
                         {post.is_premium && (
@@ -96,6 +100,9 @@ function FeaturedCard({ post }: { post: Post }) {
                     <img
                         src={post.cover_image}
                         alt={post.title}
+                        loading="eager"
+                        decoding="async"
+                        fetchPriority="high"
                         className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                     />
                 )}
@@ -153,6 +160,10 @@ function CompactCard({ post }: { post: Post }) {
                     <img
                         src={post.cover_image}
                         alt={post.title}
+                        loading="lazy"
+                        decoding="async"
+                        width={80}
+                        height={80}
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                     />
                 </div>

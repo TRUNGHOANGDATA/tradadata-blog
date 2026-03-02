@@ -3,7 +3,7 @@ import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowLeft, Filter } from 'lucide-react';
 import { PostCard } from '@/components/blog/PostCard';
-import { getCategoryBySlug } from '@/lib/data/categories';
+import { getCategoryBySlug, getCategories } from '@/lib/data/categories';
 import { getPosts } from '@/lib/data/posts';
 import { SITE_CONFIG } from '@/lib/constants';
 
@@ -13,6 +13,12 @@ export const revalidate = 3600; // revalidate every hour
 type Props = {
     params: Promise<{ slug: string }>;
 };
+
+// Pre-build all category pages at build time
+export async function generateStaticParams() {
+    const categories = await getCategories();
+    return categories.map((cat: { slug: string }) => ({ slug: cat.slug }));
+}
 
 // Dynamic SEO Metadata for Category pages
 export async function generateMetadata({ params }: Props): Promise<Metadata> {

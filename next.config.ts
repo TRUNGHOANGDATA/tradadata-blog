@@ -60,6 +60,10 @@ const nextConfig: NextConfig = {
             key: 'Permissions-Policy',
             value: 'camera=(), microphone=(), geolocation=()',
           },
+          {
+            key: 'Link',
+            value: '<https://lh3.googleusercontent.com>; rel=preconnect, <https://images.unsplash.com>; rel=preconnect',
+          },
         ],
       },
     ];

@@ -6,9 +6,19 @@ import { Tag } from 'lucide-react';
 import Link from 'next/link';
 import { SITE_CONFIG } from '@/lib/constants';
 
+// ISR: revalidate every hour
+export const revalidate = 3600;
+
 type Props = {
     params: Promise<{ slug: string }>;
 };
+
+// Pre-build all tag pages at build time
+export async function generateStaticParams() {
+    if (!supabaseAdmin) return [];
+    const { data } = await supabaseAdmin.from('tags').select('slug');
+    return (data || []).map((tag) => ({ slug: tag.slug }));
+}
 
 // Format post into the shape PostCard expects
 function formatPost(raw: any) {

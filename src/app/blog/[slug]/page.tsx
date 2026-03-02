@@ -7,7 +7,7 @@ import { auth } from '@/lib/auth';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Calendar, Clock, ArrowLeft, ChevronRight, BookOpen, Sparkles, ArrowRight, Tag, Pencil } from 'lucide-react';
-import { getPostBySlug, getRelatedPosts } from '@/lib/data/posts';
+import { getPostBySlug, getRelatedPosts, getAllPublishedSlugs } from '@/lib/data/posts';
 import { SITE_CONFIG } from '@/lib/constants';
 import { PostCard } from '@/components/blog/PostCard';
 import { ShareButtons } from '@/components/blog/ShareButtons';
@@ -17,172 +17,24 @@ import CopyProtection from '@/components/blog/CopyProtection';
 import { CommentSection } from '@/components/blog/CommentSection';
 import { CodeBlockClient } from '@/components/blog/CodeBlockClient';
 import { ReadingProgress } from '@/components/blog/ReadingProgress';
+import { PinButton } from '@/components/blog/PinButton';
 import { ViewTracker } from '@/components/blog/ViewTracker';
-import { generateHTML } from '@tiptap/html';
-import StarterKit from '@tiptap/starter-kit';
-import ImageExtension from '@tiptap/extension-image';
-import LinkExtension from '@tiptap/extension-link';
-import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight';
-import Youtube from '@tiptap/extension-youtube';
-import TextAlign from '@tiptap/extension-text-align';
-import Highlight from '@tiptap/extension-highlight';
-import Underline from '@tiptap/extension-underline';
-import { TextStyle } from '@tiptap/extension-text-style';
-import { Table } from '@tiptap/extension-table';
-import TableRow from '@tiptap/extension-table-row';
-import TableCell from '@tiptap/extension-table-cell';
-import TableHeader from '@tiptap/extension-table-header';
-import TaskList from '@tiptap/extension-task-list';
-import TaskItem from '@tiptap/extension-task-item';
-import { common, createLowlight } from 'lowlight';
-import r_lang from 'highlight.js/lib/languages/r';
-import powershell from 'highlight.js/lib/languages/powershell';
-import csharp from 'highlight.js/lib/languages/csharp';
-import yaml_lang from 'highlight.js/lib/languages/yaml';
-import vbnet from 'highlight.js/lib/languages/vbnet';
-import { registerCustomLanguages, LANGUAGE_DISPLAY_NAMES } from '@/lib/highlight-languages';
-
-const lowlight = createLowlight(common);
-lowlight.register('r', r_lang);
-lowlight.register('powershell', powershell);
-lowlight.register('csharp', csharp);
-lowlight.register('yaml', yaml_lang);
-lowlight.register('vb', vbnet);
-registerCustomLanguages(lowlight);
-
-const tiptapExtensions = [
-    StarterKit.configure({ codeBlock: false }),
-    ImageExtension.configure({ HTMLAttributes: { class: 'rounded-lg max-w-full mx-auto' } }),
-    LinkExtension.configure({ openOnClick: false, HTMLAttributes: { class: 'text-brand-600 dark:text-brand-400 underline hover:no-underline' } }),
-    CodeBlockLowlight.configure({ lowlight }),
-    Youtube.configure({ HTMLAttributes: { class: 'rounded-xl overflow-hidden mx-auto' }, width: 640, height: 360 }),
-    TextAlign.configure({ types: ['heading', 'paragraph'] }),
-    Highlight.configure({ multicolor: false }),
-    Underline,
-    TextStyle,
-    Table.configure({ resizable: false }),
-    TableRow,
-    TableCell,
-    TableHeader,
-    TaskList,
-    TaskItem.configure({ nested: true }),
-];
-
-// Helper: convert lowlight HAST nodes to HTML string
-function hastToHtml(nodes: any[]): string {
-    return nodes.map((node: any) => {
-        if (node.type === 'text') return node.value;
-        if (node.type === 'element') {
-            const cls = node.properties?.className?.join(' ');
-            const tag = node.tagName || 'span';
-            const inner = node.children ? hastToHtml(node.children) : '';
-            return cls ? `<${tag} class="${cls}">${inner}</${tag}>` : `<${tag}>${inner}</${tag}>`;
-        }
-        return '';
-    }).join('');
-}
-
-// Decode HTML entities back to plain text for lowlight processing
-function decodeHtmlEntities(html: string): string {
-    return html
-        .replace(/&amp;/g, '&')
-        .replace(/&lt;/g, '<')
-        .replace(/&gt;/g, '>')
-        .replace(/&quot;/g, '"')
-        .replace(/&#39;/g, "'")
-        .replace(/&#x27;/g, "'")
-        .replace(/&#x2F;/g, '/');
-}
-
-// Transform <pre><code> (and raw <pre>) into beautiful code blocks with macOS header + copy button
-function transformCodeBlocks(html: string): string {
-    // Use a robust approach: find all <pre...> blocks and wrap them
-    const result: string[] = [];
-    let remaining = html;
-
-    while (remaining.length > 0) {
-        // Find next <pre tag
-        const preStart = remaining.indexOf('<pre');
-        if (preStart === -1) {
-            result.push(remaining);
-            break;
-        }
-
-        // Push everything before the <pre>
-        result.push(remaining.substring(0, preStart));
-
-        // Find the closing </pre>
-        const preEnd = remaining.indexOf('</pre>', preStart);
-        if (preEnd === -1) {
-            result.push(remaining.substring(preStart));
-            break;
-        }
-
-        const fullPreBlock = remaining.substring(preStart, preEnd + 6);
-        remaining = remaining.substring(preEnd + 6);
-
-        // Extract language from class="language-xxx" in the <code> tag
-        let language = 'code';
-        const langMatch = fullPreBlock.match(/class="language-(\w+)"/);
-        if (langMatch) {
-            language = langMatch[1];
-        }
-
-        // Extract the code content (inside <code>...</code> or directly in <pre>)
-        let codeContent = '';
-        const codeTagMatch = fullPreBlock.match(/<code[^>]*>([\s\S]*?)<\/code>/);
-        if (codeTagMatch) {
-            codeContent = codeTagMatch[1];
-        } else {
-            // Raw <pre> without <code>
-            const preTagEnd = fullPreBlock.indexOf('>');
-            codeContent = fullPreBlock.substring(preTagEnd + 1, fullPreBlock.length - 6);
-        }
-
-        // Apply syntax highlighting using lowlight
-        let highlightedCode = codeContent;
-        try {
-            // Strip existing hljs spans if any, decode HTML entities for lowlight
-            const plainText = decodeHtmlEntities(codeContent.replace(/<[^>]*>/g, ''));
-            const langAlias = language === 'vba' ? 'vb' : language;
-
-            let highlighted;
-            if (language !== 'code' && lowlight.registered(langAlias)) {
-                highlighted = lowlight.highlight(langAlias, plainText);
-            } else {
-                highlighted = lowlight.highlightAuto(plainText);
-            }
-
-            if (highlighted?.children) {
-                highlightedCode = hastToHtml(highlighted.children);
-            }
-        } catch (e) {
-            // If highlighting fails, use the original content
-            console.error('Lowlight highlighting failed:', e);
-        }
-
-        const displayLang = LANGUAGE_DISPLAY_NAMES[language] || language.charAt(0).toUpperCase() + language.slice(1);
-
-        // Build the beautiful code block
-        result.push(
-            `<div class="code-block-wrapper">` +
-            `<div class="code-header">` +
-            `<div class="dots"><span class="dot dot-red"></span><span class="dot dot-yellow"></span><span class="dot dot-green"></span><span class="lang-label">${displayLang}</span></div>` +
-            `<button data-copy-btn title="Copy code"><span class="copy-icon">📋 Copy</span><span class="check-icon hidden">✅ Copied!</span></button>` +
-            `</div>` +
-            `<pre><code class="language-${language}">${highlightedCode}</code></pre>` +
-            `</div>`
-        );
-    }
-
-    return result.join('');
-}
+import { InternalLinks } from '@/components/blog/InternalLinks';
+import { renderPostContent } from '@/lib/highlight-utils';
 
 import { supabaseAdmin } from '@/lib/supabase/server';
 
 type Props = {
     params: Promise<{ slug: string }>;
 };
+
+// ==============================
+// Static Generation — Pre-build all blog pages at build time
+// ==============================
+export async function generateStaticParams() {
+    const slugs = await getAllPublishedSlugs();
+    return slugs.map((slug) => ({ slug }));
+}
 
 // ==============================
 // Dynamic SEO Metadata
@@ -273,81 +125,17 @@ export default async function BlogPostPage({ params }: Props) {
     // Get related posts IN PARALLEL with content parsing
     const tagIds = postTags.map((t: any) => t.id);
     const [cachedContent, relatedPosts] = await Promise.all([
-        // Content parsing (cached)
+        // Content parsing (cached via renderPostContent)
         post.content ? (async () => {
             const getCachedContent = unstable_cache(
-                async (contentRaw: any) => {
-                    let parsedHtml = '';
-                    let parsedToc: { id: string, text: string, level: number }[] = [];
-                    try {
-                        const jsonContent = typeof contentRaw === 'string' ? JSON.parse(contentRaw) : contentRaw;
-
-                        // Extract TOC from JSON
-                        const slugify = (text: string) => {
-                            return text.toString().toLowerCase()
-                                .replace(/[àáạảãâầấậẩẫăằắặẳẵ]/g, "a")
-                                .replace(/[èéẹẻẽêềếệểễ]/g, "e")
-                                .replace(/[ìíịỉĩ]/g, "i")
-                                .replace(/[òóọỏõôồốộổỗơờớợởỡ]/g, "o")
-                                .replace(/[ùúụủũưừứựửữ]/g, "u")
-                                .replace(/[ỳýỵỷỹ]/g, "y")
-                                .replace(/đ/g, "d")
-                                .replace(/\s+/g, '-')
-                                .replace(/[^\w\-]+/g, '')
-                                .replace(/\-\-+/g, '-')
-                                .replace(/^-+/, '')
-                                .replace(/-+$/, '');
-                        };
-
-                        const getText = (node: any): string => {
-                            if (node.type === 'text') return node.text || '';
-                            if (node.content) return node.content.map(getText).join('');
-                            return '';
-                        };
-
-                        if (jsonContent?.content) {
-                            jsonContent.content.forEach((node: any) => {
-                                if (node.type === 'heading' && node.attrs?.level) {
-                                    const text = getText(node);
-                                    if (text.trim()) {
-                                        const id = slugify(text) || `heading-${parsedToc.length}`;
-                                        parsedToc.push({ id, text, level: node.attrs.level });
-                                    }
-                                }
-                            });
-                        }
-
-                        let rawHtml = transformCodeBlocks(generateHTML(jsonContent, tiptapExtensions));
-
-                        // Wrap <table> in responsive scroll wrapper
-                        rawHtml = rawHtml.replace(/<table([\s\S]*?)<\/table>/g, (match) => {
-                            return `<div class="table-wrapper">${match}</div>`;
-                        });
-
-                        // Inject IDs to HTML tags for TOC linking
-                        let tocIndex = 0;
-                        parsedHtml = rawHtml.replace(/<h([1-6])(.*?)>(.*?)<\/h\1>/g, (match, level, attrs, innerHtml) => {
-                            if (tocIndex < parsedToc.length) {
-                                const id = parsedToc[tocIndex].id;
-                                tocIndex++;
-                                const cleanAttrs = attrs.replace(/id="[^"]*"/g, '');
-                                return `<h${level}${cleanAttrs} id="${id}" class="scroll-mt-24 group relative">${innerHtml} <a href="#${id}" class="opacity-0 group-hover:opacity-100 absolute -left-6 top-1/2 -translate-y-1/2 text-surface-300 hover:text-brand-500 transition-opacity" aria-hidden="true">#</a></h${level}>`;
-                            }
-                            return match;
-                        });
-                    } catch (e) {
-                        console.error('Error parsing post content:', e);
-                        parsedHtml = '<p>Error loading content.</p>';
-                    }
-                    return { html: parsedHtml, toc: parsedToc };
-                },
+                async (contentRaw: any) => renderPostContent(contentRaw),
                 [`post-content-${post.id}`],
                 { revalidate: 3600, tags: [`post-${post.id}`] }
             );
             return getCachedContent(post.content);
         })() : Promise.resolve({ html: '<p class="text-surface-500 italic">Bài viết này chưa có nội dung.</p>', toc: [] as { id: string, text: string, level: number }[] }),
         // Related posts (cached at data layer)
-        post.category_id ? getRelatedPosts(post.category_id, post.id, 2, tagIds) : Promise.resolve([]),
+        post.category_id ? getRelatedPosts(post.category_id, post.id, 3, tagIds) : Promise.resolve([]),
     ]);
 
     htmlContent = cachedContent.html;
@@ -405,18 +193,58 @@ export default async function BlogPostPage({ params }: Props) {
         keywords: ((post as any).keywords || []).join(', ') || post.category?.name || '',
     };
 
+    // BreadcrumbList JSON-LD for Google Rich Results
+    const breadcrumbLd = {
+        '@context': 'https://schema.org',
+        '@type': 'BreadcrumbList',
+        itemListElement: [
+            { '@type': 'ListItem', position: 1, name: 'Trang chủ', item: SITE_CONFIG.url },
+            { '@type': 'ListItem', position: 2, name: 'Bài viết', item: `${SITE_CONFIG.url}/blog` },
+            ...(post.category ? [{ '@type': 'ListItem', position: 3, name: post.category.name, item: `${SITE_CONFIG.url}/category/${post.category.slug}` }] : []),
+            { '@type': 'ListItem', position: post.category ? 4 : 3, name: post.title, item: `${SITE_CONFIG.url}/blog/${post.slug}` },
+        ],
+    };
+
     return (
         <article className="min-h-screen bg-surface-50 dark:bg-surface-950 pb-16">
+            {/* Preconnect to image CDNs for faster loading */}
+            <link rel="preconnect" href="https://lh3.googleusercontent.com" />
+            <link rel="preconnect" href="https://images.unsplash.com" />
             {/* JSON-LD for SEO */}
             <script
                 type="application/ld+json"
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
             />
+            {/* BreadcrumbList JSON-LD */}
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }}
+            />
             <ReadingProgress />
             <CodeBlockClient />
             <ViewTracker slug={post.slug} />
+
+            {/* Breadcrumbs — above cover image */}
+            <div className="bg-surface-50 dark:bg-surface-950 border-b border-surface-200 dark:border-surface-800 mt-16 md:mt-20">
+                <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex items-center gap-2 text-sm text-surface-500 dark:text-surface-400">
+                    <Link href="/" className="hover:text-brand-600 dark:hover:text-brand-400 transition-colors">Trang chủ</Link>
+                    <ChevronRight className="h-4 w-4 text-surface-400" />
+                    <Link href="/blog" className="hover:text-brand-600 dark:hover:text-brand-400 transition-colors">Bài viết</Link>
+                    {post.category && (
+                        <>
+                            <ChevronRight className="h-4 w-4 text-surface-400" />
+                            <Link href={`/category/${post.category.slug}`} className="hover:text-brand-600 dark:hover:text-brand-400 transition-colors">
+                                {post.category.icon} {post.category.name}
+                            </Link>
+                        </>
+                    )}
+                    <ChevronRight className="h-4 w-4 text-surface-400" />
+                    <span className="text-surface-900 dark:text-surface-200 font-medium truncate max-w-[300px]">{post.title}</span>
+                </nav>
+            </div>
+
             {/* Hero Section */}
-            <div className="relative w-full h-[50vh] min-h-[400px] max-h-[600px] mt-16 md:mt-20">
+            <div className="relative w-full h-[50vh] min-h-[400px] max-h-[600px]">
                 <Image
                     src={post.cover_image || 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=1600&h=900&fit=crop'}
                     alt={post.title}
@@ -430,14 +258,6 @@ export default async function BlogPostPage({ params }: Props) {
                 {/* Header Content */}
                 <div className="absolute inset-0 flex flex-col justify-end">
                     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 w-full pb-12">
-                        {/* Breadcrumbs */}
-                        <nav className="flex items-center gap-2 text-sm text-surface-300 mb-6">
-                            <Link href="/" className="hover:text-white transition-colors">Trang chủ</Link>
-                            <ChevronRight className="h-4 w-4" />
-                            <Link href="/blog" className="hover:text-white transition-colors">Bài viết</Link>
-                            <ChevronRight className="h-4 w-4" />
-                            <span className="text-white truncate max-w-[200px] md:max-w-none">{post.title}</span>
-                        </nav>
 
                         {/* Category Badge */}
                         {post.category && (
@@ -455,13 +275,16 @@ export default async function BlogPostPage({ params }: Props) {
                         </h1>
 
                         {isAdminOrEditor && (
-                            <Link
-                                href={`/admin/posts/${post.id}/edit`}
-                                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/15 text-white border border-white/25 text-xs font-medium mb-4 hover:bg-white/25 transition-colors backdrop-blur-sm"
-                            >
-                                <Pencil className="h-3 w-3" />
-                                Sửa bài viết
-                            </Link>
+                            <div className="flex items-center gap-2 mb-4">
+                                <Link
+                                    href={`/admin/posts/${post.id}/edit`}
+                                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/15 text-white border border-white/25 text-xs font-medium hover:bg-white/25 transition-colors backdrop-blur-sm"
+                                >
+                                    <Pencil className="h-3 w-3" />
+                                    Sửa bài viết
+                                </Link>
+                                <PinButton postId={post.id} initialPinned={!!post.is_pinned} />
+                            </div>
                         )}
 
                         <div className="flex flex-wrap items-center gap-6 text-sm text-surface-300">
@@ -551,6 +374,9 @@ export default async function BlogPostPage({ params }: Props) {
                                 className="prose prose-lg dark:prose-invert prose-brand max-w-none prose-img:rounded-xl prose-pre:bg-surface-900 prose-pre:text-surface-100"
                                 dangerouslySetInnerHTML={{ __html: htmlContent }}
                             />
+
+                            {/* Internal Links — related posts within article body */}
+                            <InternalLinks relatedPosts={relatedPosts} />
                         </CopyProtection>
 
                         {/* Tag List */}

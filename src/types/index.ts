@@ -55,6 +55,8 @@ export interface Post {
     category?: Category;
     categories?: Category[];  // All categories from junction table
     tags?: Tag[];
+    is_pinned?: boolean;
+    pinned_at?: string | null;
 }
 
 export interface PostTag {
