@@ -23,13 +23,21 @@ export default async function HomePage() {
   const pinnedIds = new Set(pinnedPosts.map(p => p.id));
   const otherPosts = recentPosts.filter(p => !pinnedIds.has(p.id)).slice(0, 6);
 
-  // Get post counts per category (using junction table for multi-category)
+  // Get post counts per category (only published posts, using junction table)
+  const { data: publishedPosts } = await supabaseAdmin
+    .from('posts')
+    .select('id')
+    .eq('status', 'published');
+  const publishedIds = new Set((publishedPosts || []).map((p: any) => p.id));
+
   const { data: countData } = await supabaseAdmin
     .from('post_categories')
-    .select('category_id');
+    .select('category_id, post_id');
   const categoryCounts: Record<string, number> = {};
   (countData || []).forEach((pc: any) => {
-    if (pc.category_id) categoryCounts[pc.category_id] = (categoryCounts[pc.category_id] || 0) + 1;
+    if (pc.category_id && publishedIds.has(pc.post_id)) {
+      categoryCounts[pc.category_id] = (categoryCounts[pc.category_id] || 0) + 1;
+    }
   });
 
 

@@ -1,6 +1,6 @@
 import { getCategories } from '@/lib/data/categories';
-import { getPosts } from '@/lib/data/posts';
 import { CategoryCard } from '@/components/blog/CategoryCard';
+import { supabaseAdmin } from '@/lib/supabase/server';
 
 export const metadata = {
     title: 'Chủ đề | Trà Đá Data',
@@ -10,11 +10,24 @@ export const metadata = {
 export const revalidate = 3600;
 
 export default async function CategoriesPage() {
-    // Fetch all categories and posts
-    const [categories, { data: posts }] = await Promise.all([
-        getCategories(),
-        getPosts({ limit: 1000 })
-    ]);
+    const categories = await getCategories();
+
+    // Count published posts per category via junction table
+    const { data: publishedPosts } = await supabaseAdmin!
+        .from('posts')
+        .select('id')
+        .eq('status', 'published');
+    const publishedIds = new Set((publishedPosts || []).map((p: any) => p.id));
+
+    const { data: pcData } = await supabaseAdmin!
+        .from('post_categories')
+        .select('category_id, post_id');
+    const categoryCounts: Record<string, number> = {};
+    (pcData || []).forEach((pc: any) => {
+        if (pc.category_id && publishedIds.has(pc.post_id)) {
+            categoryCounts[pc.category_id] = (categoryCounts[pc.category_id] || 0) + 1;
+        }
+    });
 
     return (
         <article className="min-h-screen bg-surface-50 dark:bg-surface-950 pb-16">
@@ -34,7 +47,7 @@ export default async function CategoriesPage() {
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {categories.map((category) => {
-                        const postCount = posts.filter(p => p.category_id === category.id).length;
+                        const postCount = categoryCounts[category.id] || 0;
                         return <CategoryCard key={category.id} category={category} postCount={postCount} />;
                     })}
                 </div>
