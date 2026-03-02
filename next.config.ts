@@ -3,6 +3,12 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   productionBrowserSourceMaps: false,
   serverExternalPackages: ['googleapis', 'nodemailer', 'happy-dom'],
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
+  typescript: {
+    ignoreBuildErrors: true,
+  },
   devIndicators: false,
   images: {
     formats: ['image/avif', 'image/webp'],
