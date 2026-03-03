@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
-import { Plus, Search, Edit, Trash2, Eye, Send, Loader2, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Plus, Search, Edit, Trash2, Eye, Send, Loader2, ChevronLeft, ChevronRight, Globe, CheckCircle2, XCircle } from 'lucide-react';
 
 const POSTS_PER_PAGE = 15;
 
@@ -13,6 +13,7 @@ interface AdminPost {
     status: string;
     created_at: string;
     published_at: string | null;
+    indexed_at: string | null;
     category: { name: string; icon: string | null } | null;
     author: { full_name: string } | null;
 }
@@ -23,13 +24,15 @@ export default function PostsPage() {
     const [search, setSearch] = useState('');
     const [statusFilter, setStatusFilter] = useState('all');
     const [sendingState, setSendingState] = useState<Record<string, string>>({});
+    const [indexingState, setIndexingState] = useState<Record<string, 'idle' | 'loading' | 'success' | 'error'>>({});
     const [currentPage, setCurrentPage] = useState(1);
+    const [bulkIndexing, setBulkIndexing] = useState(false);
+    const [bulkResult, setBulkResult] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
 
     useEffect(() => {
         fetchPosts();
     }, []);
 
-    // Reset to page 1 when filters change
     useEffect(() => {
         setCurrentPage(1);
     }, [search, statusFilter]);
@@ -82,6 +85,72 @@ export default function PostsPage() {
         }
     };
 
+    const handleIndexSingle = async (slug: string) => {
+        setIndexingState(prev => ({ ...prev, [slug]: 'loading' }));
+        try {
+            const res = await fetch('/api/admin/index-url', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ postSlugs: [slug] }),
+            });
+            const data = await res.json();
+            if (res.ok && data.successCount > 0) {
+                setIndexingState(prev => ({ ...prev, [slug]: 'success' }));
+                // Update local state to mark as indexed
+                setPosts(prev => prev.map(p =>
+                    p.slug === slug ? { ...p, indexed_at: new Date().toISOString() } : p
+                ));
+            } else {
+                setIndexingState(prev => ({ ...prev, [slug]: 'error' }));
+                const errMsg = data.results?.[0]?.message || data.error || 'Lỗi không xác định';
+                alert(`Lỗi index: ${errMsg}`);
+            }
+        } catch (error: any) {
+            setIndexingState(prev => ({ ...prev, [slug]: 'error' }));
+            alert(`Lỗi: ${error.message}`);
+        } finally {
+            setTimeout(() => setIndexingState(prev => ({ ...prev, [slug]: 'idle' })), 5000);
+        }
+    };
+
+    const handleBulkIndex = async () => {
+        // Only index published posts that haven't been indexed yet
+        const postsToIndex = paginatedPosts.filter(p => p.status === 'published' && !p.indexed_at);
+        if (postsToIndex.length === 0) {
+            alert('Tất cả bài viết trên trang này đã được index rồi! 🎉');
+            return;
+        }
+        if (!confirm(`Gửi yêu cầu index cho ${postsToIndex.length} bài viết chưa index trên trang này?`)) return;
+
+        setBulkIndexing(true);
+        setBulkResult(null);
+        try {
+            const res = await fetch('/api/admin/index-url', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    postSlugs: postsToIndex.map(p => p.slug),
+                }),
+            });
+            const data = await res.json();
+            if (res.ok) {
+                setBulkResult({ message: data.message, type: 'success' });
+                // Update local state
+                const now = new Date().toISOString();
+                setPosts(prev => prev.map(p =>
+                    postsToIndex.some(pi => pi.slug === p.slug) ? { ...p, indexed_at: now } : p
+                ));
+            } else {
+                setBulkResult({ message: data.error || 'Có lỗi xảy ra', type: 'error' });
+            }
+        } catch (error: any) {
+            setBulkResult({ message: error.message, type: 'error' });
+        } finally {
+            setBulkIndexing(false);
+            setTimeout(() => setBulkResult(null), 8000);
+        }
+    };
+
     const formatDate = (dateStr: string) => {
         const d = new Date(dateStr);
         return `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}/${d.getFullYear()}`;
@@ -100,6 +169,8 @@ export default function PostsPage() {
         (currentPage - 1) * POSTS_PER_PAGE,
         currentPage * POSTS_PER_PAGE
     );
+    const indexedCount = posts.filter(p => p.indexed_at).length;
+    const publishedCount = posts.filter(p => p.status === 'published').length;
 
     const getPageNumbers = (): (number | '...')[] => {
         const pages: (number | '...')[] = [];
@@ -129,14 +200,40 @@ export default function PostsPage() {
         <>
             <div className="flex items-center justify-between mb-6">
                 <h1 className="text-2xl font-bold text-surface-900 dark:text-surface-100">Quản lý bài viết</h1>
-                <Link
-                    href="/admin/posts/new"
-                    className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-brand-600 text-white text-sm font-medium hover:bg-brand-700 transition-colors shadow-lg shadow-brand-600/25"
-                >
-                    <Plus className="h-4 w-4" />
-                    Viết bài mới
-                </Link>
+                <div className="flex items-center gap-3">
+                    <button
+                        onClick={handleBulkIndex}
+                        disabled={bulkIndexing}
+                        className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-blue-600 text-white text-sm font-medium hover:bg-blue-700 transition-colors shadow-lg shadow-blue-600/25 disabled:opacity-50 disabled:cursor-not-allowed"
+                        title="Gửi yêu cầu index tất cả bài viết chưa index trên trang hiện tại"
+                    >
+                        {bulkIndexing ? (
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                        ) : (
+                            <Globe className="h-4 w-4" />
+                        )}
+                        {bulkIndexing ? 'Đang gửi...' : 'Index trang này'}
+                    </button>
+                    <Link
+                        href="/admin/posts/new"
+                        className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-brand-600 text-white text-sm font-medium hover:bg-brand-700 transition-colors shadow-lg shadow-brand-600/25"
+                    >
+                        <Plus className="h-4 w-4" />
+                        Viết bài mới
+                    </Link>
+                </div>
             </div>
+
+            {/* Bulk index result */}
+            {bulkResult && (
+                <div className={`flex items-center gap-2 mb-4 px-4 py-3 rounded-xl text-sm font-medium ${bulkResult.type === 'success'
+                        ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-900/20 dark:text-emerald-400'
+                        : 'bg-red-50 text-red-700 dark:bg-red-900/20 dark:text-red-400'
+                    }`}>
+                    {bulkResult.type === 'success' ? <CheckCircle2 className="h-4 w-4" /> : <XCircle className="h-4 w-4" />}
+                    {bulkResult.message}
+                </div>
+            )}
 
             {/* Filter */}
             <div className="flex gap-3 mb-6">
@@ -167,6 +264,10 @@ export default function PostsPage() {
                     Hiển thị <span className="font-semibold text-surface-700 dark:text-surface-300">{paginatedPosts.length}</span> / <span className="font-semibold text-surface-700 dark:text-surface-300">{filteredPosts.length}</span> bài viết
                     {totalPages > 1 && <span className="ml-1">(Trang {currentPage}/{totalPages})</span>}
                 </p>
+                <p className="text-sm text-surface-500">
+                    <Globe className="h-3.5 w-3.5 inline-block mr-1 text-blue-500" />
+                    Đã index: <span className="font-semibold text-blue-600 dark:text-blue-400">{indexedCount}</span>/<span className="font-semibold">{publishedCount}</span> bài xuất bản
+                </p>
             </div>
 
             {/* Table */}
@@ -193,12 +294,24 @@ export default function PostsPage() {
                                 paginatedPosts.map((post) => (
                                     <tr key={post.id} className="hover:bg-surface-50 dark:hover:bg-surface-800/50 transition-colors">
                                         <td className="px-6 py-4">
-                                            <Link
-                                                href={`/admin/posts/${post.id}/edit`}
-                                                className="text-sm font-medium text-surface-900 dark:text-surface-100 hover:text-brand-600 dark:hover:text-brand-400 transition-colors"
-                                            >
-                                                {post.title}
-                                            </Link>
+                                            <div className="flex items-center gap-2">
+                                                <Link
+                                                    href={`/admin/posts/${post.id}/edit`}
+                                                    className="text-sm font-medium text-surface-900 dark:text-surface-100 hover:text-brand-600 dark:hover:text-brand-400 transition-colors"
+                                                >
+                                                    {post.title}
+                                                </Link>
+                                                {/* Indexed badge */}
+                                                {post.indexed_at && (
+                                                    <span
+                                                        className="shrink-0 inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[10px] font-semibold bg-blue-50 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400 border border-blue-200/50 dark:border-blue-800/50"
+                                                        title={`Đã index lúc: ${formatDate(post.indexed_at)}`}
+                                                    >
+                                                        <Globe className="h-2.5 w-2.5" />
+                                                        Indexed
+                                                    </span>
+                                                )}
+                                            </div>
                                         </td>
                                         <td className="px-6 py-4 text-sm text-surface-600 dark:text-surface-400">
                                             {post.category ? `${post.category.icon || ''} ${post.category.name}` : '—'}
@@ -216,6 +329,34 @@ export default function PostsPage() {
                                         </td>
                                         <td className="px-6 py-4 text-right">
                                             <div className="flex items-center justify-end gap-1">
+                                                {/* Google Index button */}
+                                                {post.status === 'published' && (
+                                                    <button
+                                                        onClick={() => handleIndexSingle(post.slug)}
+                                                        disabled={indexingState[post.slug] === 'loading'}
+                                                        className={`p-2 rounded-lg transition-colors ${post.indexed_at
+                                                                ? 'bg-blue-50 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400'
+                                                                : indexingState[post.slug] === 'loading'
+                                                                    ? 'bg-blue-50 text-blue-600 dark:bg-blue-900/20'
+                                                                    : indexingState[post.slug] === 'error'
+                                                                        ? 'bg-red-50 text-red-600 dark:bg-red-900/20 dark:text-red-400'
+                                                                        : 'hover:bg-blue-50 text-surface-400 hover:text-blue-600 dark:hover:bg-blue-900/20'
+                                                            }`}
+                                                        title={post.indexed_at
+                                                            ? `Đã index lúc ${formatDate(post.indexed_at)} — Bấm để index lại`
+                                                            : 'Yêu cầu Google index bài viết này'
+                                                        }
+                                                    >
+                                                        {indexingState[post.slug] === 'loading' ? (
+                                                            <Loader2 className="h-4 w-4 animate-spin" />
+                                                        ) : post.indexed_at ? (
+                                                            <CheckCircle2 className="h-4 w-4" />
+                                                        ) : (
+                                                            <Globe className="h-4 w-4" />
+                                                        )}
+                                                    </button>
+                                                )}
+                                                {/* Newsletter button */}
                                                 {post.status === 'published' && (
                                                     <button
                                                         onClick={() => handleSendNewsletter(post.id)}
@@ -264,7 +405,6 @@ export default function PostsPage() {
             {/* Pagination */}
             {totalPages > 1 && (
                 <div className="flex items-center justify-center gap-2 mt-6">
-                    {/* Previous */}
                     <button
                         onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
                         disabled={currentPage === 1}
@@ -274,7 +414,6 @@ export default function PostsPage() {
                         Trước
                     </button>
 
-                    {/* Page numbers */}
                     {getPageNumbers().map((page, i) =>
                         page === '...' ? (
                             <span key={`ellipsis-${i}`} className="px-2 py-2 text-surface-400 text-sm">…</span>
@@ -292,7 +431,6 @@ export default function PostsPage() {
                         )
                     )}
 
-                    {/* Next */}
                     <button
                         onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
                         disabled={currentPage === totalPages}
