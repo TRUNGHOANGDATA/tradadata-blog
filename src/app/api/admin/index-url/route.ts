@@ -9,7 +9,7 @@ const supabase = createClient(
 // Google Service Account credentials
 const CREDENTIALS = JSON.parse(process.env.GOOGLE_DRIVE_CREDENTIALS || '{}');
 const SCOPES = ['https://www.googleapis.com/auth/indexing'];
-const SITE_URL = 'https://www.tradadata.com';
+const SITE_URL = 'https://tradadata.com';
 
 // Get access token using service account
 async function getAccessToken(): Promise<string> {
