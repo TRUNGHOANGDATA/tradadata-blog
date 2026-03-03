@@ -42,8 +42,46 @@ export default async function HomePage() {
 
 
 
+  // JSON-LD: WebSite (enables sitelinks search box in Google)
+  const websiteJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    name: SITE_CONFIG.name,
+    url: SITE_CONFIG.url,
+    description: SITE_CONFIG.description,
+    inLanguage: 'vi',
+    potentialAction: {
+      '@type': 'SearchAction',
+      target: `${SITE_CONFIG.url}/blog?q={search_term_string}`,
+      'query-input': 'required name=search_term_string',
+    },
+  };
+
+  // JSON-LD: Organization (for Google Knowledge Panel)
+  const orgJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Organization',
+    name: SITE_CONFIG.name,
+    url: SITE_CONFIG.url,
+    logo: `${SITE_CONFIG.url}/logo.png`,
+    description: SITE_CONFIG.description,
+    sameAs: [
+      'https://www.youtube.com/@tradadata',
+      'https://www.facebook.com/TRADADATA1010/',
+      'https://www.facebook.com/thaytrungdata/',
+    ],
+    contactPoint: {
+      '@type': 'ContactPoint',
+      email: 'trunghoangdata101091@gmail.com',
+      contactType: 'customer service',
+    },
+  };
+
   return (
     <>
+      {/* JSON-LD Structured Data */}
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(orgJsonLd) }} />
       {/* ===== HERO SECTION ===== */}
       <section className="relative overflow-hidden">
         {/* Animated Background */}
