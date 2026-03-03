@@ -1,7 +1,7 @@
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
-import { ArrowLeft, Filter } from 'lucide-react';
+import { ArrowLeft, Filter, ChevronLeft, ChevronRight } from 'lucide-react';
 import { PostCard } from '@/components/blog/PostCard';
 import { getCategoryBySlug, getCategories } from '@/lib/data/categories';
 import { getPosts } from '@/lib/data/posts';
@@ -10,8 +10,11 @@ import { SITE_CONFIG } from '@/lib/constants';
 // Enable ISR if needed, or dynamic rendering
 export const revalidate = 3600; // revalidate every hour
 
+const POSTS_PER_PAGE = 9;
+
 type Props = {
     params: Promise<{ slug: string }>;
+    searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 };
 
 // Pre-build all category pages at build time
@@ -53,8 +56,26 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     };
 }
 
-export default async function CategoryPage({ params }: Props) {
+function getPageNumbers(currentPage: number, totalPages: number): (number | '...')[] {
+    const pages: (number | '...')[] = [];
+    if (totalPages <= 7) {
+        for (let i = 1; i <= totalPages; i++) pages.push(i);
+    } else {
+        pages.push(1);
+        if (currentPage > 3) pages.push('...');
+        for (let i = Math.max(2, currentPage - 1); i <= Math.min(totalPages - 1, currentPage + 1); i++) {
+            pages.push(i);
+        }
+        if (currentPage < totalPages - 2) pages.push('...');
+        pages.push(totalPages);
+    }
+    return pages;
+}
+
+export default async function CategoryPage({ params, searchParams }: Props) {
     const { slug } = await params;
+    const resolvedSearchParams = await searchParams;
+    const currentPage = Math.max(1, parseInt(resolvedSearchParams.page as string) || 1);
 
     const category = await getCategoryBySlug(slug);
 
@@ -62,8 +83,19 @@ export default async function CategoryPage({ params }: Props) {
         notFound();
     }
 
-    // Fetch posts for this category
-    const { data: categoryPosts } = await getPosts({ categoryId: category.id, limit: 50 });
+    // Fetch posts for this category with pagination
+    const { data: categoryPosts, count: totalPosts } = await getPosts({
+        categoryId: category.id,
+        limit: POSTS_PER_PAGE,
+        page: currentPage,
+    });
+
+    const totalPages = Math.ceil(totalPosts / POSTS_PER_PAGE);
+
+    const buildUrl = (page: number) => {
+        if (page === 1) return `/category/${slug}`;
+        return `/category/${slug}?page=${page}`;
+    };
 
     return (
         <div className="min-h-screen bg-surface-50 dark:bg-surface-950 pb-16">
@@ -86,7 +118,12 @@ export default async function CategoryPage({ params }: Props) {
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
                 <div className="flex items-center justify-between mb-8">
                     <p className="text-surface-600 dark:text-surface-400 font-medium">
-                        Có <span className="font-bold text-brand-600 dark:text-brand-400">{categoryPosts.length}</span> bài viết trong danh mục này.
+                        Có <span className="font-bold text-brand-600 dark:text-brand-400">{totalPosts}</span> bài viết trong danh mục này.
+                        {totalPages > 1 && (
+                            <span className="text-surface-400 text-sm ml-2">
+                                (Trang {currentPage}/{totalPages})
+                            </span>
+                        )}
                     </p>
                     <Link
                         href="/categories"
@@ -116,6 +153,51 @@ export default async function CategoryPage({ params }: Props) {
                         >
                             Khám phá chủ đề khác
                         </Link>
+                    </div>
+                )}
+
+                {/* Pagination */}
+                {totalPages > 1 && (
+                    <div className="flex items-center justify-center gap-2 mt-12">
+                        {/* Previous */}
+                        {currentPage > 1 && (
+                            <Link
+                                href={buildUrl(currentPage - 1)}
+                                className="px-4 py-2 rounded-xl text-sm font-medium border bg-white dark:bg-surface-900 text-surface-600 dark:text-surface-400 border-surface-200 dark:border-surface-700 hover:bg-surface-50 dark:hover:bg-surface-800 transition-colors inline-flex items-center gap-1"
+                            >
+                                <ChevronLeft className="h-4 w-4" />
+                                Trước
+                            </Link>
+                        )}
+
+                        {/* Page numbers */}
+                        {getPageNumbers(currentPage, totalPages).map((page, i) =>
+                            page === '...' ? (
+                                <span key={`ellipsis-${i}`} className="px-2 py-2 text-surface-400 text-sm">…</span>
+                            ) : (
+                                <Link
+                                    key={page}
+                                    href={buildUrl(page)}
+                                    className={`px-4 py-2 rounded-xl text-sm font-medium border transition-colors ${currentPage === page
+                                        ? 'bg-brand-600 text-white border-brand-600'
+                                        : 'bg-white dark:bg-surface-900 text-surface-600 dark:text-surface-400 border-surface-200 dark:border-surface-700 hover:bg-surface-50 dark:hover:bg-surface-800'
+                                        }`}
+                                >
+                                    {page}
+                                </Link>
+                            )
+                        )}
+
+                        {/* Next */}
+                        {currentPage < totalPages && (
+                            <Link
+                                href={buildUrl(currentPage + 1)}
+                                className="px-4 py-2 rounded-xl text-sm font-medium border bg-white dark:bg-surface-900 text-surface-600 dark:text-surface-400 border-surface-200 dark:border-surface-700 hover:bg-surface-50 dark:hover:bg-surface-800 transition-colors inline-flex items-center gap-1"
+                            >
+                                Tiếp
+                                <ChevronRight className="h-4 w-4" />
+                            </Link>
+                        )}
                     </div>
                 )}
             </div>
