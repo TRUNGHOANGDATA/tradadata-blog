@@ -1,8 +1,10 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
-import { Plus, Search, Edit, Trash2, Eye, Send, Loader2 } from 'lucide-react';
+import { Plus, Search, Edit, Trash2, Eye, Send, Loader2, ChevronLeft, ChevronRight } from 'lucide-react';
+
+const POSTS_PER_PAGE = 15;
 
 interface AdminPost {
     id: string;
@@ -21,10 +23,16 @@ export default function PostsPage() {
     const [search, setSearch] = useState('');
     const [statusFilter, setStatusFilter] = useState('all');
     const [sendingState, setSendingState] = useState<Record<string, string>>({});
+    const [currentPage, setCurrentPage] = useState(1);
 
     useEffect(() => {
         fetchPosts();
     }, []);
+
+    // Reset to page 1 when filters change
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [search, statusFilter]);
 
     const fetchPosts = async () => {
         try {
@@ -79,11 +87,35 @@ export default function PostsPage() {
         return `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}/${d.getFullYear()}`;
     };
 
-    const filteredPosts = posts.filter(post => {
-        const matchSearch = post.title.toLowerCase().includes(search.toLowerCase());
-        const matchStatus = statusFilter === 'all' || post.status === statusFilter;
-        return matchSearch && matchStatus;
-    });
+    const filteredPosts = useMemo(() => {
+        return posts.filter(post => {
+            const matchSearch = post.title.toLowerCase().includes(search.toLowerCase());
+            const matchStatus = statusFilter === 'all' || post.status === statusFilter;
+            return matchSearch && matchStatus;
+        });
+    }, [posts, search, statusFilter]);
+
+    const totalPages = Math.ceil(filteredPosts.length / POSTS_PER_PAGE);
+    const paginatedPosts = filteredPosts.slice(
+        (currentPage - 1) * POSTS_PER_PAGE,
+        currentPage * POSTS_PER_PAGE
+    );
+
+    const getPageNumbers = (): (number | '...')[] => {
+        const pages: (number | '...')[] = [];
+        if (totalPages <= 7) {
+            for (let i = 1; i <= totalPages; i++) pages.push(i);
+        } else {
+            pages.push(1);
+            if (currentPage > 3) pages.push('...');
+            for (let i = Math.max(2, currentPage - 1); i <= Math.min(totalPages - 1, currentPage + 1); i++) {
+                pages.push(i);
+            }
+            if (currentPage < totalPages - 2) pages.push('...');
+            pages.push(totalPages);
+        }
+        return pages;
+    };
 
     if (loading) {
         return (
@@ -129,6 +161,14 @@ export default function PostsPage() {
                 </select>
             </div>
 
+            {/* Info bar */}
+            <div className="flex items-center justify-between mb-3">
+                <p className="text-sm text-surface-500">
+                    Hiển thị <span className="font-semibold text-surface-700 dark:text-surface-300">{paginatedPosts.length}</span> / <span className="font-semibold text-surface-700 dark:text-surface-300">{filteredPosts.length}</span> bài viết
+                    {totalPages > 1 && <span className="ml-1">(Trang {currentPage}/{totalPages})</span>}
+                </p>
+            </div>
+
             {/* Table */}
             <div className="bg-white dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-800 overflow-hidden">
                 <div className="overflow-x-auto">
@@ -143,14 +183,14 @@ export default function PostsPage() {
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-surface-200 dark:divide-surface-800">
-                            {filteredPosts.length === 0 ? (
+                            {paginatedPosts.length === 0 ? (
                                 <tr>
                                     <td colSpan={6} className="px-6 py-12 text-center text-surface-400">
                                         {posts.length === 0 ? 'Chưa có bài viết nào. Hãy viết bài đầu tiên!' : 'Không tìm thấy bài viết phù hợp.'}
                                     </td>
                                 </tr>
                             ) : (
-                                filteredPosts.map((post) => (
+                                paginatedPosts.map((post) => (
                                     <tr key={post.id} className="hover:bg-surface-50 dark:hover:bg-surface-800/50 transition-colors">
                                         <td className="px-6 py-4">
                                             <Link
@@ -220,6 +260,49 @@ export default function PostsPage() {
                     </table>
                 </div>
             </div>
+
+            {/* Pagination */}
+            {totalPages > 1 && (
+                <div className="flex items-center justify-center gap-2 mt-6">
+                    {/* Previous */}
+                    <button
+                        onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                        disabled={currentPage === 1}
+                        className="px-3 py-2 rounded-xl text-sm font-medium border bg-white dark:bg-surface-900 text-surface-600 dark:text-surface-400 border-surface-200 dark:border-surface-700 hover:bg-surface-50 dark:hover:bg-surface-800 transition-colors disabled:opacity-40 disabled:cursor-not-allowed inline-flex items-center gap-1"
+                    >
+                        <ChevronLeft className="h-4 w-4" />
+                        Trước
+                    </button>
+
+                    {/* Page numbers */}
+                    {getPageNumbers().map((page, i) =>
+                        page === '...' ? (
+                            <span key={`ellipsis-${i}`} className="px-2 py-2 text-surface-400 text-sm">…</span>
+                        ) : (
+                            <button
+                                key={page}
+                                onClick={() => setCurrentPage(page)}
+                                className={`px-4 py-2 rounded-xl text-sm font-medium border transition-colors ${currentPage === page
+                                    ? 'bg-brand-600 text-white border-brand-600'
+                                    : 'bg-white dark:bg-surface-900 text-surface-600 dark:text-surface-400 border-surface-200 dark:border-surface-700 hover:bg-surface-50 dark:hover:bg-surface-800'
+                                    }`}
+                            >
+                                {page}
+                            </button>
+                        )
+                    )}
+
+                    {/* Next */}
+                    <button
+                        onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                        disabled={currentPage === totalPages}
+                        className="px-3 py-2 rounded-xl text-sm font-medium border bg-white dark:bg-surface-900 text-surface-600 dark:text-surface-400 border-surface-200 dark:border-surface-700 hover:bg-surface-50 dark:hover:bg-surface-800 transition-colors disabled:opacity-40 disabled:cursor-not-allowed inline-flex items-center gap-1"
+                    >
+                        Tiếp
+                        <ChevronRight className="h-4 w-4" />
+                    </button>
+                </div>
+            )}
         </>
     );
 }
