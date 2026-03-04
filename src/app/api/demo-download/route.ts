@@ -122,10 +122,9 @@ export async function POST(request: Request) {
             throw new Error('Invalid Google Drive URL: ' + post.demo_url);
         }
 
-        const oauth2Client = new google.auth.OAuth2(
-            process.env.GOOGLE_OAUTH_CLIENT_ID,
-            process.env.GOOGLE_OAUTH_CLIENT_SECRET,
-        );
+        const clientId = process.env.AUTH_GOOGLE_ID || process.env.GOOGLE_OAUTH_CLIENT_ID;
+        const clientSecret = process.env.AUTH_GOOGLE_SECRET || process.env.GOOGLE_OAUTH_CLIENT_SECRET;
+        const oauth2Client = new google.auth.OAuth2(clientId, clientSecret);
         oauth2Client.setCredentials({
             refresh_token: process.env.GOOGLE_OAUTH_REFRESH_TOKEN,
         });
