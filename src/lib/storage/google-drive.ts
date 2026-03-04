@@ -1,8 +1,9 @@
 import { google } from 'googleapis';
 import { Readable } from 'stream';
 
-// Google Drive API wrapper for blog image uploads
+// Google Drive API wrapper for blog uploads
 // Uses OAuth2 with Refresh Token (files owned by user's account, using their 15GB quota)
+// Fallback to Service Account if OAuth2 not configured
 
 const SCOPES = ['https://www.googleapis.com/auth/drive.file'];
 
@@ -34,7 +35,7 @@ function getAuthClient() {
         }
     }
 
-    console.warn('No Google Drive credentials configured. Image uploads will be disabled.');
+    console.warn('No Google Drive credentials configured. Uploads will be disabled.');
     return null;
 }
 
@@ -44,7 +45,8 @@ function getDriveClient() {
     return google.drive({ version: 'v3', auth });
 }
 
-const FOLDER_ID = process.env.GOOGLE_DRIVE_FOLDER_ID || '';
+const IMAGE_FOLDER_ID = process.env.GOOGLE_DRIVE_FOLDER_ID || '';
+const FILES_FOLDER_ID = process.env.GOOGLE_DRIVE_FILES_FOLDER_ID || '';
 
 export interface UploadResult {
     id: string;
@@ -53,36 +55,53 @@ export interface UploadResult {
 }
 
 /**
- * Upload a file buffer to Google Drive
+ * Upload an image to Google Drive (images folder)
  */
 export async function uploadToGoogleDrive(
     buffer: Buffer,
     fileName: string,
     mimeType: string
 ): Promise<UploadResult | null> {
-    const drive = getDriveClient();
+    return uploadToDriveFolder(buffer, `${Date.now()}_${fileName}`, mimeType, IMAGE_FOLDER_ID);
+}
 
+/**
+ * Upload a demo file to Google Drive (files folder)
+ */
+export async function uploadFileToDrive(
+    buffer: Buffer,
+    fileName: string,
+    mimeType: string
+): Promise<UploadResult | null> {
+    return uploadToDriveFolder(buffer, fileName, mimeType, FILES_FOLDER_ID);
+}
+
+/**
+ * Core upload function — same auth, just different folder
+ */
+async function uploadToDriveFolder(
+    buffer: Buffer,
+    fileName: string,
+    mimeType: string,
+    folderId: string
+): Promise<UploadResult | null> {
+    const drive = getDriveClient();
     if (!drive) {
         console.error('Google Drive client not available');
         return null;
     }
 
     try {
-        // Create a readable stream from the buffer
         const stream = new Readable();
         stream.push(buffer);
         stream.push(null);
 
-        // Upload file to Google Drive
         const response = await drive.files.create({
             requestBody: {
-                name: `${Date.now()}_${fileName}`,
-                parents: FOLDER_ID ? [FOLDER_ID] : undefined,
+                name: fileName,
+                parents: folderId ? [folderId] : undefined,
             },
-            media: {
-                mimeType,
-                body: stream,
-            },
+            media: { mimeType, body: stream },
             fields: 'id, name, webViewLink',
         });
 
@@ -92,13 +111,9 @@ export async function uploadToGoogleDrive(
         // Set file to be publicly accessible
         await drive.permissions.create({
             fileId,
-            requestBody: {
-                role: 'reader',
-                type: 'anyone',
-            },
+            requestBody: { role: 'reader', type: 'anyone' },
         });
 
-        // Google Drive direct access URL
         const url = `https://lh3.googleusercontent.com/d/${fileId}=s0`;
 
         return {
@@ -132,7 +147,7 @@ export async function deleteFromGoogleDrive(fileId: string): Promise<boolean> {
 }
 
 /**
- * List all images in the blog folder
+ * List images in the images folder
  */
 export async function listGoogleDriveImages(pageSize = 50): Promise<Array<{
     id: string;
@@ -146,8 +161,8 @@ export async function listGoogleDriveImages(pageSize = 50): Promise<Array<{
     if (!drive) return [];
 
     try {
-        const query = FOLDER_ID
-            ? `'${FOLDER_ID}' in parents and mimeType contains 'image/' and trashed = false`
+        const query = IMAGE_FOLDER_ID
+            ? `'${IMAGE_FOLDER_ID}' in parents and mimeType contains 'image/' and trashed = false`
             : `mimeType contains 'image/' and trashed = false`;
 
         const response = await drive.files.list({
@@ -167,6 +182,48 @@ export async function listGoogleDriveImages(pageSize = 50): Promise<Array<{
         }));
     } catch (error) {
         console.error('Error listing Google Drive images:', error);
+        return [];
+    }
+}
+
+/**
+ * List demo files in the files folder
+ */
+export async function listGoogleDriveFiles(pageSize = 200): Promise<Array<{
+    id: string;
+    name: string;
+    downloadUrl: string;
+    webViewLink: string;
+    createdTime: string;
+    size: string;
+    mimeType: string;
+}>> {
+    const drive = getDriveClient();
+    if (!drive) return [];
+
+    try {
+        const query = FILES_FOLDER_ID
+            ? `'${FILES_FOLDER_ID}' in parents and trashed = false`
+            : `trashed = false`;
+
+        const response = await drive.files.list({
+            q: query,
+            pageSize,
+            fields: 'files(id, name, createdTime, size, mimeType, webViewLink)',
+            orderBy: 'name',
+        });
+
+        return (response.data.files || []).map(file => ({
+            id: file.id || '',
+            name: file.name || '',
+            downloadUrl: `https://drive.google.com/uc?export=download&id=${file.id}`,
+            webViewLink: file.webViewLink || `https://drive.google.com/file/d/${file.id}/view`,
+            createdTime: file.createdTime || '',
+            size: file.size || '0',
+            mimeType: file.mimeType || '',
+        }));
+    } catch (error) {
+        console.error('Error listing Google Drive files:', error);
         return [];
     }
 }
