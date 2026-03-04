@@ -19,7 +19,7 @@ import { CodeBlockClient } from '@/components/blog/CodeBlockClient';
 import { ReadingProgress } from '@/components/blog/ReadingProgress';
 import { PinButton } from '@/components/blog/PinButton';
 import { ViewTracker } from '@/components/blog/ViewTracker';
-import { InternalLinks } from '@/components/blog/InternalLinks';
+
 import { DemoDownloadButton } from '@/components/blog/DemoDownloadButton';
 import { renderPostContent } from '@/lib/highlight-utils';
 
@@ -378,8 +378,7 @@ export default async function BlogPostPage({ params }: Props) {
                                 dangerouslySetInnerHTML={{ __html: htmlContent }}
                             />
 
-                            {/* Internal Links — related posts within article body */}
-                            <InternalLinks relatedPosts={relatedPosts} />
+
 
                             {/* Demo File Download Button — self-checks availability client-side */}
                             <DemoDownloadButton

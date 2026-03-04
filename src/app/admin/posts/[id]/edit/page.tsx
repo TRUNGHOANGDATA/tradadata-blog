@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
-import { Save, ArrowLeft, ImagePlus, Lock, Loader2, Check, Trash2, Globe, FileText, Tag, X, Search, Sparkles, Copy, ClipboardCheck, Pin } from 'lucide-react';
+import { Save, ArrowLeft, ImagePlus, Lock, Loader2, Check, Trash2, Globe, FileText, Tag, X, Search, Sparkles, Copy, ClipboardCheck, Pin, FileDown, Link2 } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter, useParams } from 'next/navigation';
 import dynamic from 'next/dynamic';
@@ -44,6 +44,12 @@ export default function EditPostPage() {
     const [uploadingCover, setUploadingCover] = useState(false);
     const [coverKeyword, setCoverKeyword] = useState('');
     const [loadingKeyword, setLoadingKeyword] = useState(false);
+
+    // Demo file fields
+    const [demoUrl, setDemoUrl] = useState('');
+    const [demoFilename, setDemoFilename] = useState('');
+    const [demoLabel, setDemoLabel] = useState('');
+    const [showDemoFields, setShowDemoFields] = useState(false);
 
     // AI Prompt Generator
     const [aiWriteOpen, setAiWriteOpen] = useState(false);
@@ -102,6 +108,11 @@ export default function EditPostPage() {
                     setCurrentSlug(data.post.slug || '');
                     setMetaDescription(data.post.meta_description || '');
                     setKeywords(data.post.keywords ? data.post.keywords.join(', ') : '');
+                    // Demo file fields
+                    setDemoUrl(data.post.demo_url || '');
+                    setDemoFilename(data.post.demo_filename || '');
+                    setDemoLabel(data.post.demo_label || '');
+                    if (data.post.demo_url) setShowDemoFields(true);
                     // Load tags
                     if (data.post.tags && Array.isArray(data.post.tags)) {
                         setSelectedTagIds(data.post.tags.map((t: any) => t.id));
@@ -212,6 +223,9 @@ export default function EditPostPage() {
                     custom_slug: customSlug || null,
                     meta_description: metaDescription || null,
                     keywords: keywords ? keywords.split(',').map(k => k.trim()).filter(Boolean) : null,
+                    demo_url: demoUrl || null,
+                    demo_filename: demoFilename || null,
+                    demo_label: demoLabel || null,
                 }),
             });
 
@@ -423,8 +437,8 @@ COVER_IMAGE: Tạo một bức ảnh bìa blog có chất lượng cao, tỉ l�
                                     <label
                                         key={cat.id}
                                         className={`flex items-center gap-2.5 px-3 py-2 rounded-xl cursor-pointer transition-colors ${checked
-                                                ? 'bg-brand-50 dark:bg-brand-900/20 border border-brand-200 dark:border-brand-800'
-                                                : 'hover:bg-surface-50 dark:hover:bg-surface-800 border border-transparent'
+                                            ? 'bg-brand-50 dark:bg-brand-900/20 border border-brand-200 dark:border-brand-800'
+                                            : 'hover:bg-surface-50 dark:hover:bg-surface-800 border border-transparent'
                                             }`}
                                     >
                                         <input
@@ -709,6 +723,105 @@ COVER_IMAGE: Tạo một bức ảnh bìa blog có chất lượng cao, tỉ l�
                             </div>
                             <p className="text-xs text-surface-500 mt-1">Hiển thị bài viết lớn ở đầu trang chủ</p>
                         </div>
+                    </div>
+
+                    {/* Demo File */}
+                    <div className="bg-white dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-700 p-5">
+                        <div className="flex items-center justify-between mb-3">
+                            <div className="flex items-center gap-2">
+                                <FileDown className="h-4 w-4 text-emerald-500" />
+                                <h3 className="font-semibold text-surface-900 dark:text-surface-100">File Demo</h3>
+                            </div>
+                            {!showDemoFields && (
+                                <button
+                                    onClick={() => setShowDemoFields(true)}
+                                    className="text-xs text-brand-600 dark:text-brand-400 hover:text-brand-700 font-medium"
+                                >
+                                    + Thêm file
+                                </button>
+                            )}
+                        </div>
+
+                        {showDemoFields ? (
+                            <div className="space-y-3">
+                                {demoUrl && (
+                                    <div className="flex items-center gap-2 p-2.5 rounded-xl bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800">
+                                        <FileDown className="h-4 w-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
+                                        <span className="text-xs text-emerald-700 dark:text-emerald-300 font-medium truncate flex-1">
+                                            {demoFilename || 'File đã đính kèm'}
+                                        </span>
+                                        <button
+                                            onClick={() => { setDemoUrl(''); setDemoFilename(''); setDemoLabel(''); setShowDemoFields(false); }}
+                                            className="text-red-400 hover:text-red-600 shrink-0"
+                                            title="Gỡ file"
+                                        >
+                                            <X className="h-3.5 w-3.5" />
+                                        </button>
+                                    </div>
+                                )}
+
+                                <div>
+                                    <label className="text-xs font-medium text-surface-600 dark:text-surface-400 mb-1 block">
+                                        Google Drive URL <span className="text-red-400">*</span>
+                                    </label>
+                                    <div className="flex items-center gap-1">
+                                        <Link2 className="h-3.5 w-3.5 text-surface-400 shrink-0" />
+                                        <input
+                                            type="url"
+                                            value={demoUrl}
+                                            onChange={(e) => setDemoUrl(e.target.value)}
+                                            placeholder="https://drive.google.com/file/d/..."
+                                            className="w-full px-2 py-1.5 rounded-lg bg-surface-50 dark:bg-surface-800 border border-surface-200 dark:border-surface-700 text-xs focus:outline-none focus:ring-2 focus:ring-brand-500/30"
+                                        />
+                                    </div>
+                                    <a
+                                        href="/admin/files"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="inline-flex items-center gap-1 text-[10px] text-brand-500 hover:text-brand-600 mt-1"
+                                    >
+                                        📁 Mở thư viện Files để lấy link
+                                    </a>
+                                </div>
+
+                                <div>
+                                    <label className="text-xs font-medium text-surface-600 dark:text-surface-400 mb-1 block">
+                                        Tên file hiển thị
+                                    </label>
+                                    <input
+                                        type="text"
+                                        value={demoFilename}
+                                        onChange={(e) => setDemoFilename(e.target.value)}
+                                        placeholder="vba-loop-demo.xlsm"
+                                        className="w-full px-2 py-1.5 rounded-lg bg-surface-50 dark:bg-surface-800 border border-surface-200 dark:border-surface-700 text-xs focus:outline-none focus:ring-2 focus:ring-brand-500/30"
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className="text-xs font-medium text-surface-600 dark:text-surface-400 mb-1 block">
+                                        Mô tả <span className="text-surface-400 font-normal">— tùy chọn</span>
+                                    </label>
+                                    <input
+                                        type="text"
+                                        value={demoLabel}
+                                        onChange={(e) => setDemoLabel(e.target.value)}
+                                        placeholder="File thực hành kèm bài viết"
+                                        className="w-full px-2 py-1.5 rounded-lg bg-surface-50 dark:bg-surface-800 border border-surface-200 dark:border-surface-700 text-xs focus:outline-none focus:ring-2 focus:ring-brand-500/30"
+                                    />
+                                </div>
+
+                                {!demoUrl && (
+                                    <button
+                                        onClick={() => setShowDemoFields(false)}
+                                        className="text-[10px] text-surface-400 hover:text-surface-600"
+                                    >
+                                        Huỷ
+                                    </button>
+                                )}
+                            </div>
+                        ) : (
+                            <p className="text-xs text-surface-400">Chưa có file demo đính kèm</p>
+                        )}
                     </div>
 
                     {/* SEO & Metadata */}

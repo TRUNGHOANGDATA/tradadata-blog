@@ -81,7 +81,7 @@ export async function PUT(request: Request, { params }: RouteParams) {
         }
 
         const body = await request.json();
-        const { title, excerpt, content, cover_image, category_id, category_ids, status, is_premium, is_featured, tags, custom_slug, meta_description, keywords } = body;
+        const { title, excerpt, content, cover_image, category_id, category_ids, status, is_premium, is_featured, tags, custom_slug, meta_description, keywords, demo_url, demo_filename, demo_label } = body;
 
         // Get existing post to check status change
         const { data: existing } = await supabaseAdmin
@@ -102,6 +102,11 @@ export async function PUT(request: Request, { params }: RouteParams) {
         if (status !== undefined) updateData.status = status;
         if (is_premium !== undefined) updateData.is_premium = is_premium;
         if (is_featured !== undefined) updateData.is_featured = is_featured;
+
+        // Demo file fields
+        if (demo_url !== undefined) updateData.demo_url = demo_url?.trim() || null;
+        if (demo_filename !== undefined) updateData.demo_filename = demo_filename?.trim() || null;
+        if (demo_label !== undefined) updateData.demo_label = demo_label?.trim() || null;
 
         // SEO fields
         if (custom_slug) updateData.slug = custom_slug.trim();
