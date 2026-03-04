@@ -5,7 +5,7 @@ import { Readable } from 'stream';
 // Uses OAuth2 with Refresh Token (files owned by user's account, using their 15GB quota)
 // Fallback to Service Account if OAuth2 not configured
 
-const SCOPES = ['https://www.googleapis.com/auth/drive.file'];
+const SCOPES = ['https://www.googleapis.com/auth/drive'];
 
 function getAuthClient() {
     // Method 1: OAuth2 with Refresh Token (uses user's 15GB quota)
@@ -49,6 +49,7 @@ function getDriveClient() {
 
 const IMAGE_FOLDER_ID = process.env.GOOGLE_DRIVE_FOLDER_ID || '';
 const FILES_FOLDER_ID = process.env.GOOGLE_DRIVE_FILES_FOLDER_ID || '';
+const VIDEOS_FOLDER_ID = process.env.GOOGLE_DRIVE_VIDEOS_FOLDER_ID || '';
 
 export interface UploadResult {
     id: string;
@@ -226,6 +227,59 @@ export async function listGoogleDriveFiles(pageSize = 200): Promise<Array<{
         }));
     } catch (error) {
         console.error('Error listing Google Drive files:', error);
+        return [];
+    }
+}
+
+/**
+ * Upload a video to Google Drive (videos folder)
+ */
+export async function uploadVideoToDrive(
+    buffer: Buffer,
+    fileName: string,
+    mimeType: string
+): Promise<UploadResult | null> {
+    return uploadToDriveFolder(buffer, `${Date.now()}_${fileName}`, mimeType, VIDEOS_FOLDER_ID);
+}
+
+/**
+ * List videos in the videos folder
+ */
+export async function listGoogleDriveVideos(pageSize = 50): Promise<Array<{
+    id: string;
+    name: string;
+    url: string;
+    thumbnailUrl: string;
+    createdTime: string;
+    size: string;
+    mimeType: string;
+}>> {
+    const drive = getDriveClient();
+    if (!drive) return [];
+
+    try {
+        const query = VIDEOS_FOLDER_ID
+            ? `'${VIDEOS_FOLDER_ID}' in parents and mimeType contains 'video/' and trashed = false`
+            : `mimeType contains 'video/' and trashed = false`;
+
+        const response = await drive.files.list({
+            q: query,
+            pageSize,
+            fields: 'files(id, name, createdTime, size, mimeType, thumbnailLink)',
+            orderBy: 'createdTime desc',
+        });
+
+        return (response.data.files || []).map(file => ({
+            id: file.id || '',
+            name: file.name || '',
+            url: `https://drive.google.com/file/d/${file.id}/preview`,
+            thumbnailUrl: file.thumbnailLink || `https://drive.google.com/thumbnail?id=${file.id}&sz=w400`,
+            createdTime: file.createdTime || '',
+            size: file.size || '0',
+            mimeType: file.mimeType || '',
+        }));
+    } catch (error) {
+        console.error('Error listing Google Drive videos:', error);
         return [];
     }
 }

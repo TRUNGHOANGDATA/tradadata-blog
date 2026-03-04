@@ -25,6 +25,7 @@ import {
     BookOpen,
     Menu,
     X,
+    Film,
 } from 'lucide-react';
 
 const ADMIN_NAV = [
@@ -35,6 +36,7 @@ const ADMIN_NAV = [
     { label: 'Tags', href: '/admin/tags', icon: Tags },
     { label: 'Media', href: '/admin/media', icon: Image },
     { label: 'Files', href: '/admin/files', icon: FileSpreadsheet },
+    { label: 'Video', href: '/admin/videos', icon: Film },
     { label: 'Sản phẩm', href: '/admin/products', icon: Box },
     { label: 'Đầu mục khách hàng', href: '/admin/course-sections', icon: BookOpen },
     { label: 'Đơn hàng', href: '/admin/orders', icon: ShoppingCart },

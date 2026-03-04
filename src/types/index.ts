@@ -57,6 +57,8 @@ export interface Post {
     tags?: Tag[];
     is_pinned?: boolean;
     pinned_at?: string | null;
+    demo_url?: string | null;
+    demo_label?: string | null;
 }
 
 export interface PostTag {
