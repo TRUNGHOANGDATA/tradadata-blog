@@ -8,12 +8,14 @@ import { Readable } from 'stream';
 const SCOPES = ['https://www.googleapis.com/auth/drive.file'];
 
 function getAuthClient() {
-    // Method 1: OAuth2 with Refresh Token (RECOMMENDED - uses user's 15GB quota)
-    const clientId = process.env.GOOGLE_OAUTH_CLIENT_ID;
-    const clientSecret = process.env.GOOGLE_OAUTH_CLIENT_SECRET;
+    // Method 1: OAuth2 with Refresh Token (uses user's 15GB quota)
+    // Try AUTH_GOOGLE_* first (correct GCP project), then GOOGLE_OAUTH_* as fallback
+    const clientId = process.env.AUTH_GOOGLE_ID || process.env.GOOGLE_OAUTH_CLIENT_ID;
+    const clientSecret = process.env.AUTH_GOOGLE_SECRET || process.env.GOOGLE_OAUTH_CLIENT_SECRET;
     const refreshToken = process.env.GOOGLE_OAUTH_REFRESH_TOKEN;
 
     if (clientId && clientSecret && refreshToken) {
+        console.log('Using OAuth2 for Google Drive with client:', clientId.substring(0, 20) + '...');
         const oauth2Client = new google.auth.OAuth2(clientId, clientSecret);
         oauth2Client.setCredentials({ refresh_token: refreshToken });
         return oauth2Client;
