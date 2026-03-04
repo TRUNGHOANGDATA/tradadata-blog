@@ -19,35 +19,13 @@ function extractFileId(url: string): string | null {
     return null;
 }
 
-// GET — verify auth + phone (used for pre-check before POST)
+// GET — check demo existence + verify auth/phone
 export async function GET(request: Request) {
-    const session = await auth();
-    if (!session?.user?.email) {
-        return NextResponse.json(
-            { error: 'Vui lòng đăng nhập để tải file demo' },
-            { status: 401 }
-        );
-    }
-
     if (!supabaseAdmin) {
         return NextResponse.json({ error: 'Server error' }, { status: 500 });
     }
 
-    // Phone check
-    const { data: profile } = await supabaseAdmin
-        .from('profiles')
-        .select('phone')
-        .eq('email', session.user.email)
-        .single();
-
-    if (!profile?.phone) {
-        return NextResponse.json(
-            { error: 'Vui lòng cập nhật số điện thoại trước khi tải file' },
-            { status: 403 }
-        );
-    }
-
-    // Slug check
+    // 1. Check slug + demo existence first (no auth required)
     const { searchParams } = new URL(request.url);
     const slug = searchParams.get('slug');
     if (!slug) {
@@ -63,6 +41,30 @@ export async function GET(request: Request) {
     if (!post?.demo_url) {
         return NextResponse.json({ error: 'File demo không tồn tại' }, { status: 404 });
     }
+
+    // 2. Auth check
+    const session = await auth();
+    if (!session?.user?.email) {
+        return NextResponse.json(
+            { error: 'Vui lòng đăng nhập để tải file demo', hasDemo: true },
+            { status: 401 }
+        );
+    }
+
+    // 3. Phone check
+    const { data: profile } = await supabaseAdmin
+        .from('profiles')
+        .select('phone')
+        .eq('email', session.user.email)
+        .single();
+
+    if (!profile?.phone) {
+        return NextResponse.json(
+            { error: 'Vui lòng cập nhật số điện thoại trước khi tải file', hasDemo: true },
+            { status: 403 }
+        );
+    }
+
 
     return NextResponse.json({ success: true, filename: post.demo_filename });
 }

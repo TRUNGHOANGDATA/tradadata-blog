@@ -1,11 +1,11 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useSession, signIn } from 'next-auth/react';
 import { Download, LogIn, Phone, FileSpreadsheet, Loader2, CheckCircle } from 'lucide-react';
 
 interface Props {
-    demoUrl: string;
+    demoUrl?: string;
     demoLabel?: string;
     postSlug: string;
 }
@@ -17,12 +17,36 @@ export function DemoDownloadButton({ demoUrl, demoLabel, postSlug }: Props) {
     const [phoneError, setPhoneError] = useState('');
     const [loading, setLoading] = useState(false);
     const [phoneUpdated, setPhoneUpdated] = useState(false);
+    const [hasDemo, setHasDemo] = useState(!!demoUrl);
+    const [checkedDemo, setCheckedDemo] = useState(!!demoUrl);
 
     // API endpoint for sharing file + getting Drive URL
     const downloadUrl = `/api/demo-download?slug=${encodeURIComponent(postSlug)}`;
 
+    // Client-side check: if demoUrl not provided by server, check via API
+    useEffect(() => {
+        if (demoUrl) {
+            setHasDemo(true);
+            setCheckedDemo(true);
+            return;
+        }
+        // Check if this post has a demo file
+        fetch(downloadUrl)
+            .then(res => {
+                // 404 = no demo file, anything else = has demo (even 401/403 = has demo but needs auth/phone)
+                setHasDemo(res.status !== 404);
+                setCheckedDemo(true);
+            })
+            .catch(() => {
+                setCheckedDemo(true);
+            });
+    }, [demoUrl, downloadUrl]);
+
     // Determine file type for display
     const isExcel = true; // all demo files are Excel for now
+
+    // Don't render if no demo file
+    if (!checkedDemo || !hasDemo) return null;
 
     const handleDownload = async () => {
         if (status !== 'authenticated') {

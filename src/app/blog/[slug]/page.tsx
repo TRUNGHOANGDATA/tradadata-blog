@@ -20,6 +20,7 @@ import { ReadingProgress } from '@/components/blog/ReadingProgress';
 import { PinButton } from '@/components/blog/PinButton';
 import { ViewTracker } from '@/components/blog/ViewTracker';
 import { InternalLinks } from '@/components/blog/InternalLinks';
+import { DemoDownloadButton } from '@/components/blog/DemoDownloadButton';
 import { renderPostContent } from '@/lib/highlight-utils';
 
 import { supabaseAdmin } from '@/lib/supabase/server';
@@ -379,6 +380,13 @@ export default async function BlogPostPage({ params }: Props) {
 
                             {/* Internal Links — related posts within article body */}
                             <InternalLinks relatedPosts={relatedPosts} />
+
+                            {/* Demo File Download Button — self-checks availability client-side */}
+                            <DemoDownloadButton
+                                demoUrl={(post as any).demo_url || undefined}
+                                demoLabel={(post as any).demo_label || undefined}
+                                postSlug={post.slug}
+                            />
                         </CopyProtection>
 
                         {/* Tag List */}
