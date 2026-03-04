@@ -116,7 +116,7 @@ export const getPostBySlug = unstable_cache(
 
         return formatPost(data);
     },
-    ['post-by-slug'],
+    ['post-by-slug-v2'],
     { revalidate: 300, tags: ['posts'] } // Cache 5 phút
 );
 
