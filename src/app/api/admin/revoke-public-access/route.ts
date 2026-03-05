@@ -15,8 +15,9 @@ function extractFileId(url: string): string | null {
     return null;
 }
 
-// POST — revoke 'Anyone with the link' permission from all demo files
-export async function POST() {
+// POST — revoke 'Anyone with the link' permission from demo files (batched)
+// Query params: ?offset=0&limit=20
+export async function POST(request: Request) {
     // Auth check — admin only
     const session = await auth();
     if (!session?.user?.email) {
@@ -38,14 +39,20 @@ export async function POST() {
         return NextResponse.json({ error: 'Admin only' }, { status: 403 });
     }
 
-    // Get all demo URLs
-    const { data: posts } = await supabaseAdmin
-        .from('posts')
-        .select('slug, demo_url')
-        .not('demo_url', 'is', null);
+    // Parse batch params
+    const { searchParams } = new URL(request.url);
+    const offset = parseInt(searchParams.get('offset') || '0');
+    const limit = parseInt(searchParams.get('limit') || '15');
 
-    if (!posts || posts.length === 0) {
-        return NextResponse.json({ message: 'No demo files found' });
+    // Get demo URLs with pagination
+    const { data: allPosts, count } = await supabaseAdmin
+        .from('posts')
+        .select('slug, demo_url', { count: 'exact' })
+        .not('demo_url', 'is', null)
+        .range(offset, offset + limit - 1);
+
+    if (!allPosts || allPosts.length === 0) {
+        return NextResponse.json({ message: 'No more files to process', total: count, offset, done: true });
     }
 
     // Build Drive client
@@ -59,7 +66,7 @@ export async function POST() {
 
     const results: { slug: string; status: string; details?: string }[] = [];
 
-    for (const post of posts) {
+    for (const post of allPosts) {
         const fileId = extractFileId(post.demo_url);
         if (!fileId) {
             results.push({ slug: post.slug, status: 'error', details: 'Invalid URL' });
@@ -103,13 +110,16 @@ export async function POST() {
         }
     }
 
-    const summary = {
-        total: posts.length,
+    const hasMore = offset + limit < (count || 0);
+
+    return NextResponse.json({
+        batch: { offset, limit, processed: allPosts.length },
+        total: count,
+        hasMore,
+        nextOffset: hasMore ? offset + limit : null,
         revoked: results.filter((r) => r.status === 'revoked').length,
         already_private: results.filter((r) => r.status === 'already_private').length,
         errors: results.filter((r) => r.status === 'error').length,
         details: results,
-    };
-
-    return NextResponse.json(summary);
+    });
 }
