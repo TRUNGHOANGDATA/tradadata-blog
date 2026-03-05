@@ -120,6 +120,24 @@ export const getPostBySlug = unstable_cache(
     { revalidate: 300, tags: ['posts'] } // Cache 5 phút
 );
 
+// Uncached — loads ANY post by slug (draft or published), for admin preview
+export async function getPostBySlugForPreview(slug: string): Promise<Post | null> {
+    if (!supabaseAdmin) return null;
+
+    const { data, error } = await supabaseAdmin
+        .from('posts')
+        .select('*, author:profiles(*), category:categories!category_id(*)')
+        .eq('slug', slug)
+        .single();
+
+    if (error) {
+        console.error(`Error fetching post preview ${slug}:`, error);
+        return null;
+    }
+
+    return formatPost(data);
+}
+
 // Cached version — related posts don't change frequently
 export const getRelatedPosts = unstable_cache(
     async (categoryId: string, currentPostId: string, limit = 3, tagIds?: string[]): Promise<Post[]> => {

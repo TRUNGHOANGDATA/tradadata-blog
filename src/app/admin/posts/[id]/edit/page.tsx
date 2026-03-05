@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
-import { Save, ArrowLeft, ImagePlus, Lock, Loader2, Check, Trash2, Globe, FileText, Tag, X, Search, Sparkles, Copy, ClipboardCheck, Pin, FileDown, Link2 } from 'lucide-react';
+import { Save, ArrowLeft, ImagePlus, Lock, Loader2, Check, Trash2, Globe, FileText, Tag, X, Search, Sparkles, Copy, ClipboardCheck, Pin, FileDown, Link2, Eye } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter, useParams } from 'next/navigation';
 import dynamic from 'next/dynamic';
@@ -335,6 +335,17 @@ COVER_IMAGE: Tạo một bức ảnh bìa blog có chất lượng cao, tỉ l�
                     >
                         <Sparkles className="h-4 w-4" />
                         Tạo Prompt AI
+                    </button>
+                    <button
+                        onClick={async () => {
+                            await handleSave();
+                            const slug = displaySlug;
+                            if (slug) window.open(`/blog/${slug}?preview=true`, '_blank');
+                        }}
+                        className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white dark:bg-surface-800 border border-surface-200 dark:border-surface-700 text-sm font-medium text-surface-700 dark:text-surface-300 hover:bg-surface-50 dark:hover:bg-surface-700 transition-colors"
+                    >
+                        <Eye className="h-4 w-4" />
+                        Xem trước
                     </button>
                     <button
                         onClick={handleDelete}

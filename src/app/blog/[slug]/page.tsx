@@ -7,7 +7,7 @@ import { auth } from '@/lib/auth';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Calendar, Clock, ArrowLeft, ChevronRight, BookOpen, Sparkles, ArrowRight, Tag, Pencil } from 'lucide-react';
-import { getPostBySlug, getRelatedPosts, getAllPublishedSlugs } from '@/lib/data/posts';
+import { getPostBySlug, getPostBySlugForPreview, getRelatedPosts, getAllPublishedSlugs } from '@/lib/data/posts';
 import { SITE_CONFIG } from '@/lib/constants';
 import { PostCard } from '@/components/blog/PostCard';
 import { ShareButtons } from '@/components/blog/ShareButtons';
@@ -28,6 +28,7 @@ import { supabaseAdmin } from '@/lib/supabase/server';
 
 type Props = {
     params: Promise<{ slug: string }>;
+    searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 };
 
 // ==============================
@@ -80,11 +81,18 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     };
 }
 
-export default async function BlogPostPage({ params }: Props) {
+export default async function BlogPostPage({ params, searchParams }: Props) {
     const { slug } = await params;
+    const sp = await searchParams;
+    const isPreview = sp?.preview === 'true';
 
-    // Fetch post from Supabase
-    const post = await getPostBySlug(slug);
+    // Fetch post — use preview function for drafts (admin only)
+    let post = await getPostBySlug(slug);
+
+    if (!post && isPreview) {
+        // Try loading draft/unpublished post for preview
+        post = await getPostBySlugForPreview(slug);
+    }
 
     if (!post) {
         notFound();
@@ -92,6 +100,11 @@ export default async function BlogPostPage({ params }: Props) {
 
     const session = await auth();
     const isAdminOrEditor = session?.user?.role === 'admin' || session?.user?.role === 'editor';
+
+    // Only admins/editors can preview unpublished posts
+    if (isPreview && post.status !== 'published' && !isAdminOrEditor) {
+        notFound();
+    }
 
     // Fetch tags, premium status, and cached content IN PARALLEL
     const [postTags, isPremiumProfile] = await Promise.all([
@@ -244,6 +257,24 @@ export default async function BlogPostPage({ params }: Props) {
                     <span className="text-surface-900 dark:text-surface-200 font-medium line-clamp-1">{post.title}</span>
                 </nav>
             </div>
+
+            {/* Preview Banner */}
+            {isPreview && post.status !== 'published' && (
+                <div className="bg-amber-50 dark:bg-amber-900/20 border-b border-amber-200 dark:border-amber-800">
+                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex items-center justify-between">
+                        <div className="flex items-center gap-2 text-amber-700 dark:text-amber-400 text-sm font-medium">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" /><circle cx="12" cy="12" r="3" /></svg>
+                            Chế độ xem trước — Bài viết này chưa được xuất bản
+                        </div>
+                        <a
+                            href={`/admin/posts/${post.id}/edit`}
+                            className="text-xs px-3 py-1.5 rounded-lg bg-amber-200 dark:bg-amber-800 text-amber-800 dark:text-amber-200 hover:bg-amber-300 dark:hover:bg-amber-700 transition-colors font-medium"
+                        >
+                            ← Quay lại chỉnh sửa
+                        </a>
+                    </div>
+                </div>
+            )}
 
             {/* Hero Section — contained like slider */}
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4">
