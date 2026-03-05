@@ -59,34 +59,38 @@ export interface UploadResult {
 
 /**
  * Upload an image to Google Drive (images folder)
+ * Images are made PUBLIC for display in blog posts
  */
 export async function uploadToGoogleDrive(
     buffer: Buffer,
     fileName: string,
     mimeType: string
 ): Promise<UploadResult | null> {
-    return uploadToDriveFolder(buffer, `${Date.now()}_${fileName}`, mimeType, IMAGE_FOLDER_ID);
+    return uploadToDriveFolder(buffer, `${Date.now()}_${fileName}`, mimeType, IMAGE_FOLDER_ID, true);
 }
 
 /**
  * Upload a demo file to Google Drive (files folder)
+ * Demo files are PRIVATE — only shared via API when user logs in
  */
 export async function uploadFileToDrive(
     buffer: Buffer,
     fileName: string,
     mimeType: string
 ): Promise<UploadResult | null> {
-    return uploadToDriveFolder(buffer, fileName, mimeType, FILES_FOLDER_ID);
+    return uploadToDriveFolder(buffer, fileName, mimeType, FILES_FOLDER_ID, false);
 }
 
 /**
  * Core upload function — same auth, just different folder
+ * @param makePublic - if true, set 'Anyone with the link' permission (for images)
  */
 async function uploadToDriveFolder(
     buffer: Buffer,
     fileName: string,
     mimeType: string,
-    folderId: string
+    folderId: string,
+    makePublic: boolean = true
 ): Promise<UploadResult | null> {
     const drive = getDriveClient();
     if (!drive) {
@@ -111,13 +115,17 @@ async function uploadToDriveFolder(
         const fileId = response.data.id;
         if (!fileId) throw new Error('No file ID returned');
 
-        // Set file to be publicly accessible
-        await drive.permissions.create({
-            fileId,
-            requestBody: { role: 'reader', type: 'anyone' },
-        });
+        // Only set public access for images, NOT for demo files
+        if (makePublic) {
+            await drive.permissions.create({
+                fileId,
+                requestBody: { role: 'reader', type: 'anyone' },
+            });
+        }
 
-        const url = `https://lh3.googleusercontent.com/d/${fileId}=s0`;
+        const url = makePublic
+            ? `https://lh3.googleusercontent.com/d/${fileId}=s0`
+            : `https://drive.google.com/file/d/${fileId}/view`;
 
         return {
             id: fileId,

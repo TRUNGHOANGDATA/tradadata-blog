@@ -21,6 +21,7 @@ import { PinButton } from '@/components/blog/PinButton';
 import { ViewTracker } from '@/components/blog/ViewTracker';
 
 import { DemoDownloadButton } from '@/components/blog/DemoDownloadButton';
+import { ArticleContent } from '@/components/blog/ArticleContent';
 import { renderPostContent } from '@/lib/highlight-utils';
 
 import { supabaseAdmin } from '@/lib/supabase/server';
@@ -373,9 +374,9 @@ export default async function BlogPostPage({ params }: Props) {
                                 </p>
                             )}
 
-                            <div
+                            <ArticleContent
+                                htmlContent={htmlContent}
                                 className="prose prose-lg dark:prose-invert prose-brand max-w-none prose-img:rounded-xl prose-pre:bg-surface-900 prose-pre:text-surface-100"
-                                dangerouslySetInnerHTML={{ __html: htmlContent }}
                             />
 
 

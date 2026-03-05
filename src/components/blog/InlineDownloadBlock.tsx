@@ -1,64 +1,37 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useSession, signIn } from 'next-auth/react';
 import { Download, LogIn, Phone, FileSpreadsheet, Loader2, CheckCircle } from 'lucide-react';
 
 interface Props {
-    demoUrl?: string;
-    demoLabel?: string;
-    postSlug: string;
+    driveUrl: string;
+    filename: string;
+    label?: string;
 }
 
-export function DemoDownloadButton({ demoUrl, demoLabel, postSlug }: Props) {
+export function InlineDownloadBlock({ driveUrl, filename, label }: Props) {
     const { data: session, status } = useSession();
     const [showPhoneModal, setShowPhoneModal] = useState(false);
     const [phone, setPhone] = useState('');
     const [phoneError, setPhoneError] = useState('');
     const [loading, setLoading] = useState(false);
     const [phoneUpdated, setPhoneUpdated] = useState(false);
-    const [hasDemo, setHasDemo] = useState(!!demoUrl);
-    const [checkedDemo, setCheckedDemo] = useState(!!demoUrl);
-
-    // API endpoint for sharing file + getting Drive URL
-    const downloadUrl = `/api/demo-download?slug=${encodeURIComponent(postSlug)}`;
-
-    // Client-side check: if demoUrl not provided by server, check via API
-    useEffect(() => {
-        if (demoUrl) {
-            setHasDemo(true);
-            setCheckedDemo(true);
-            return;
-        }
-        // Check if this post has a demo file
-        fetch(downloadUrl)
-            .then(res => {
-                // 404 = no demo file, anything else = has demo (even 401/403 = has demo but needs auth/phone)
-                setHasDemo(res.status !== 404);
-                setCheckedDemo(true);
-            })
-            .catch(() => {
-                setCheckedDemo(true);
-            });
-    }, [demoUrl, downloadUrl]);
-
-    // Determine file type for display
-    const isExcel = true; // all demo files are Excel for now
-
-    // Don't render if no demo file
-    if (!checkedDemo || !hasDemo) return null;
 
     const handleDownload = async () => {
         if (status !== 'authenticated') {
-            signIn('google', { callbackUrl: `/blog/${postSlug}` });
+            signIn('google', { callbackUrl: window.location.pathname });
             return;
         }
 
         try {
             setLoading(true);
 
-            // POST to API — shares file with user's email + returns Drive URL
-            const res = await fetch(downloadUrl, { method: 'POST' });
+            const res = await fetch('/api/demo-download/inline', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ driveUrl }),
+            });
 
             if (res.status === 403) {
                 setShowPhoneModal(true);
@@ -67,19 +40,17 @@ export function DemoDownloadButton({ demoUrl, demoLabel, postSlug }: Props) {
             }
 
             if (res.status === 401) {
-                signIn('google', { callbackUrl: `/blog/${postSlug}` });
+                signIn('google', { callbackUrl: window.location.pathname });
                 return;
             }
 
             const data = await res.json();
-
             if (!res.ok) {
                 alert(data.error || 'Có lỗi xảy ra khi tải file');
                 setLoading(false);
                 return;
             }
 
-            // Open Google Drive link in new tab — file is shared with user's email
             if (data.driveUrl) {
                 window.open(data.driveUrl, '_blank');
             }
@@ -94,7 +65,6 @@ export function DemoDownloadButton({ demoUrl, demoLabel, postSlug }: Props) {
         e.preventDefault();
         setPhoneError('');
 
-        // Validate
         const cleaned = phone.replace(/\D/g, '');
         if (cleaned.length !== 10 || !cleaned.startsWith('0')) {
             setPhoneError('Số điện thoại phải có 10 chữ số, bắt đầu bằng 0');
@@ -114,7 +84,6 @@ export function DemoDownloadButton({ demoUrl, demoLabel, postSlug }: Props) {
                 setTimeout(() => {
                     setShowPhoneModal(false);
                     setPhoneUpdated(false);
-                    // Trigger download after phone update
                     handleDownload();
                 }, 1000);
             } else {
@@ -130,54 +99,48 @@ export function DemoDownloadButton({ demoUrl, demoLabel, postSlug }: Props) {
 
     return (
         <>
-            {/* Download Button */}
-            <div className="mt-10 mb-6 p-6 bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-emerald-950/30 dark:to-teal-950/30 border-2 border-emerald-200 dark:border-emerald-800 rounded-2xl">
-                <div className="flex items-start gap-4">
-                    <div className="flex-shrink-0 w-14 h-14 bg-emerald-100 dark:bg-emerald-900/50 rounded-xl flex items-center justify-center">
-                        <FileSpreadsheet className="w-7 h-7 text-emerald-600 dark:text-emerald-400" />
+            <div className="my-6 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950/30 dark:to-indigo-950/30 border border-blue-200 dark:border-blue-800 rounded-xl not-prose">
+                <div className="flex items-center gap-3">
+                    <div className="flex-shrink-0 w-10 h-10 bg-blue-100 dark:bg-blue-900/50 rounded-lg flex items-center justify-center">
+                        <FileSpreadsheet className="w-5 h-5 text-blue-600 dark:text-blue-400" />
                     </div>
                     <div className="flex-1 min-w-0">
-                        <h3 className="text-lg font-bold text-surface-900 dark:text-surface-100 mb-1">
-                            📥 Tải File Demo
-                        </h3>
-                        <p className="text-sm text-surface-600 dark:text-surface-400 mb-4">
-                            {demoLabel || 'File thực hành kèm bài viết — tải về để thực hành ngay.'}
+                        <p className="text-sm font-semibold text-surface-900 dark:text-surface-100 truncate">
+                            📎 {filename}
                         </p>
-                        <button
-                            onClick={handleDownload}
-                            disabled={loading}
-                            className="inline-flex items-center gap-2 px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-xl transition-all shadow-lg shadow-emerald-600/25 hover:shadow-emerald-600/40 disabled:opacity-60 disabled:cursor-not-allowed"
-                        >
-                            {loading ? (
-                                <Loader2 className="w-5 h-5 animate-spin" />
-                            ) : status !== 'authenticated' ? (
-                                <LogIn className="w-5 h-5" />
-                            ) : (
-                                <Download className="w-5 h-5" />
-                            )}
-                            {status !== 'authenticated'
-                                ? 'Đăng nhập để tải xuống'
-                                : loading
-                                    ? 'Đang tải file...'
-                                    : 'Tải xuống miễn phí'
-                            }
-                        </button>
-                        {isExcel && (
-                            <p className="text-xs text-surface-500 dark:text-surface-500 mt-2">
-                                📎 File đính kèm bài viết — chứa đầy đủ dữ liệu mẫu
-                            </p>
+                        {label && (
+                            <p className="text-xs text-surface-500 dark:text-surface-400 mt-0.5">{label}</p>
                         )}
                     </div>
+                    <button
+                        onClick={handleDownload}
+                        disabled={loading}
+                        className="inline-flex items-center gap-1.5 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-all shadow-sm hover:shadow-md disabled:opacity-60 disabled:cursor-not-allowed whitespace-nowrap"
+                    >
+                        {loading ? (
+                            <Loader2 className="w-4 h-4 animate-spin" />
+                        ) : status !== 'authenticated' ? (
+                            <LogIn className="w-4 h-4" />
+                        ) : (
+                            <Download className="w-4 h-4" />
+                        )}
+                        {status !== 'authenticated'
+                            ? 'Đăng nhập'
+                            : loading
+                                ? 'Đang tải...'
+                                : 'Tải xuống'
+                        }
+                    </button>
                 </div>
             </div>
 
-            {/* Phone Update Modal */}
+            {/* Phone Modal */}
             {showPhoneModal && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
                     <div className="bg-white dark:bg-surface-900 rounded-2xl shadow-2xl max-w-md w-full p-8 relative">
                         <button
                             onClick={() => setShowPhoneModal(false)}
-                            className="absolute top-4 right-4 text-surface-400 hover:text-surface-600 dark:hover:text-surface-300 text-xl leading-none"
+                            className="absolute top-4 right-4 text-surface-400 hover:text-surface-600 dark:hover:text-surface-300 text-xl"
                         >
                             ✕
                         </button>
@@ -203,7 +166,7 @@ export function DemoDownloadButton({ demoUrl, demoLabel, postSlug }: Props) {
                                             Cập nhật số điện thoại
                                         </h3>
                                         <p className="text-sm text-surface-500 dark:text-surface-400">
-                                            Để tải file demo miễn phí
+                                            Để tải file miễn phí
                                         </p>
                                     </div>
                                 </div>
@@ -225,9 +188,8 @@ export function DemoDownloadButton({ demoUrl, demoLabel, postSlug }: Props) {
                                         <p className="text-red-500 text-sm mt-2">{phoneError}</p>
                                     )}
                                     <p className="text-xs text-surface-500 mt-2">
-                                        Chúng tôi không spam. SĐT chỉ dùng để xác thực và gửi thông tin khóa học khi có yêu cầu.
+                                        Chúng tôi không spam. SĐT chỉ dùng để xác thực.
                                     </p>
-
                                     <button
                                         type="submit"
                                         disabled={loading || !phone}

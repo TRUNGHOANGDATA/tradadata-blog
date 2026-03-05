@@ -38,7 +38,8 @@ import {
     List, ListOrdered, Quote, Minus, Undo, Redo, Link as LinkIcon,
     ImagePlus, Youtube as YoutubeIcon, Code2, Pilcrow,
     AlignLeft, AlignCenter, AlignRight, AlignJustify, Highlighter, UnderlineIcon,
-    Table as TableIcon, ListChecks, Palette, Type, Info, Sparkles, Loader2, FileCode2
+    Table as TableIcon, ListChecks, Palette, Type, Info, Sparkles, Loader2, FileCode2,
+    Download
 } from 'lucide-react';
 import CodeBlockComponent from './CodeBlockComponent';
 
@@ -192,6 +193,10 @@ function EditorToolbar({ editor, onToggleHtml, isHtmlMode }: { editor: Editor; o
     const [aiImageOpen, setAiImageOpen] = useState(false);
     const [aiImageDesc, setAiImageDesc] = useState('');
     const [aiImageLoading, setAiImageLoading] = useState(false);
+    const [fileDownloadOpen, setFileDownloadOpen] = useState(false);
+    const [fdUrl, setFdUrl] = useState('');
+    const [fdFilename, setFdFilename] = useState('');
+    const [fdLabel, setFdLabel] = useState('');
 
     const setLink = useCallback(() => {
         const previousUrl = editor.getAttributes('link').href;
@@ -294,6 +299,24 @@ function EditorToolbar({ editor, onToggleHtml, isHtmlMode }: { editor: Editor; o
             setAiImageOpen(false);
         }
     }, [aiImageDesc]);
+
+    const insertFileDownload = useCallback(() => {
+        if (!fdUrl.trim() || !fdFilename.trim()) return;
+        // Insert an HTML block that will be hydrated on the blog page
+        editor.chain().focus().insertContent({
+            type: 'paragraph',
+            content: [
+                {
+                    type: 'text',
+                    text: `[FILE_DOWNLOAD url="${fdUrl.trim()}" filename="${fdFilename.trim()}"${fdLabel.trim() ? ` label="${fdLabel.trim()}"` : ''}]`,
+                },
+            ],
+        }).run();
+        setFdUrl('');
+        setFdFilename('');
+        setFdLabel('');
+        setFileDownloadOpen(false);
+    }, [editor, fdUrl, fdFilename, fdLabel]);
 
     return (
         <div className="sticky top-0 z-10 flex items-center gap-0.5 px-3 py-2 border-b border-surface-200 dark:border-surface-700 bg-surface-50 dark:bg-surface-800 flex-wrap rounded-t-[calc(1rem-1px)]">
@@ -424,6 +447,48 @@ function EditorToolbar({ editor, onToggleHtml, isHtmlMode }: { editor: Editor; o
             <ToolbarButton onClick={addYoutube} title="YouTube Video">
                 <YoutubeIcon className="h-4 w-4" />
             </ToolbarButton>
+            <div className="relative">
+                <ToolbarButton onClick={() => setFileDownloadOpen(!fileDownloadOpen)} title="Chèn File Download">
+                    <Download className="h-4 w-4" />
+                </ToolbarButton>
+                {fileDownloadOpen && (
+                    <div className="absolute top-full right-0 mt-1 w-80 bg-white dark:bg-surface-800 rounded-xl border border-surface-200 dark:border-surface-700 shadow-xl z-50 p-4">
+                        <p className="text-sm font-medium text-surface-700 dark:text-surface-300 mb-2">📎 Chèn File Download <span className="text-xs text-surface-400 font-normal">(Esc để đóng)</span></p>
+                        <input
+                            type="text"
+                            value={fdUrl}
+                            onChange={(e) => setFdUrl(e.target.value)}
+                            onKeyDown={(e) => { if (e.key === 'Escape') setFileDownloadOpen(false); }}
+                            placeholder="Google Drive share link..."
+                            className="w-full px-3 py-2 text-sm rounded-lg bg-surface-50 dark:bg-surface-900 border border-surface-200 dark:border-surface-700 mb-2"
+                            autoFocus
+                        />
+                        <input
+                            type="text"
+                            value={fdFilename}
+                            onChange={(e) => setFdFilename(e.target.value)}
+                            onKeyDown={(e) => { if (e.key === 'Enter') insertFileDownload(); if (e.key === 'Escape') setFileDownloadOpen(false); }}
+                            placeholder="Tên file (VD: bao-cao-doanh-so.xlsx)"
+                            className="w-full px-3 py-2 text-sm rounded-lg bg-surface-50 dark:bg-surface-900 border border-surface-200 dark:border-surface-700 mb-2"
+                        />
+                        <input
+                            type="text"
+                            value={fdLabel}
+                            onChange={(e) => setFdLabel(e.target.value)}
+                            onKeyDown={(e) => { if (e.key === 'Enter') insertFileDownload(); if (e.key === 'Escape') setFileDownloadOpen(false); }}
+                            placeholder="Mô tả (tuỳ chọn)"
+                            className="w-full px-3 py-2 text-sm rounded-lg bg-surface-50 dark:bg-surface-900 border border-surface-200 dark:border-surface-700 mb-2"
+                        />
+                        <button
+                            onClick={insertFileDownload}
+                            disabled={!fdUrl.trim() || !fdFilename.trim()}
+                            className="w-full flex items-center justify-center gap-2 px-3 py-2 text-sm rounded-lg bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50 transition-colors"
+                        >
+                            <Download className="w-4 h-4" /> Chèn
+                        </button>
+                    </div>
+                )}
+            </div>
 
             <ToolbarDivider />
 
