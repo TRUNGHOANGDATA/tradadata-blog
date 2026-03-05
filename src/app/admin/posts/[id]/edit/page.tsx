@@ -197,12 +197,13 @@ export default function EditPostPage() {
         }
     };
 
-    const handleSave = async (publishStatus?: string) => {
+    const handleSave = async (publishStatus?: string, options?: { silent?: boolean }) => {
         if (!title.trim()) {
             alert('Vui lòng nhập tiêu đề bài viết');
-            return;
+            return false;
         }
 
+        const silent = options?.silent ?? false;
         setSaving(true);
         try {
             const finalStatus = publishStatus || status;
@@ -232,12 +233,15 @@ export default function EditPostPage() {
             const data = await res.json();
 
             if (res.ok) {
-                alert('Đã lưu thành công!');
+                if (!silent) alert('Đã lưu thành công!');
+                return true;
             } else {
                 alert('Lỗi: ' + (data.error || 'Unknown error'));
+                return false;
             }
         } catch (error) {
             alert('Có lỗi xảy ra. Vui lòng thử lại.');
+            return false;
         } finally {
             setSaving(false);
         }
@@ -338,9 +342,11 @@ COVER_IMAGE: Tạo một bức ảnh bìa blog có chất lượng cao, tỉ l�
                     </button>
                     <button
                         onClick={async () => {
-                            await handleSave();
-                            const slug = displaySlug;
-                            if (slug) window.open(`/blog/${slug}?preview=true`, '_blank');
+                            const saved = await handleSave(undefined, { silent: true });
+                            if (saved) {
+                                const slug = displaySlug;
+                                if (slug) window.open(`/blog/${slug}?preview=true`, '_blank');
+                            }
                         }}
                         className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white dark:bg-surface-800 border border-surface-200 dark:border-surface-700 text-sm font-medium text-surface-700 dark:text-surface-300 hover:bg-surface-50 dark:hover:bg-surface-700 transition-colors"
                     >
