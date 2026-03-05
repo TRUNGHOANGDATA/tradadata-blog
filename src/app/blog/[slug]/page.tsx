@@ -259,16 +259,18 @@ export default async function BlogPostPage({ params, searchParams }: Props) {
             </div>
 
             {/* Preview Banner */}
-            {isPreview && post.status !== 'published' && (
-                <div className="bg-amber-50 dark:bg-amber-900/20 border-b border-amber-200 dark:border-amber-800">
+            {isPreview && isAdminOrEditor && (
+                <div className={`border-b ${post.status !== 'published' ? 'bg-amber-50 dark:bg-amber-900/20 border-amber-200 dark:border-amber-800' : 'bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800'}`}>
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex items-center justify-between">
-                        <div className="flex items-center gap-2 text-amber-700 dark:text-amber-400 text-sm font-medium">
+                        <div className={`flex items-center gap-2 text-sm font-medium ${post.status !== 'published' ? 'text-amber-700 dark:text-amber-400' : 'text-blue-700 dark:text-blue-400'}`}>
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" /><circle cx="12" cy="12" r="3" /></svg>
-                            Chế độ xem trước — Bài viết này chưa được xuất bản
+                            {post.status !== 'published'
+                                ? 'Chế độ xem trước — Bài viết này chưa được xuất bản'
+                                : 'Chế độ xem trước — Bài viết đã xuất bản'}
                         </div>
                         <a
                             href={`/admin/posts/${post.id}/edit`}
-                            className="text-xs px-3 py-1.5 rounded-lg bg-amber-200 dark:bg-amber-800 text-amber-800 dark:text-amber-200 hover:bg-amber-300 dark:hover:bg-amber-700 transition-colors font-medium"
+                            className={`text-xs px-3 py-1.5 rounded-lg font-medium transition-colors ${post.status !== 'published' ? 'bg-amber-200 dark:bg-amber-800 text-amber-800 dark:text-amber-200 hover:bg-amber-300 dark:hover:bg-amber-700' : 'bg-blue-200 dark:bg-blue-800 text-blue-800 dark:text-blue-200 hover:bg-blue-300 dark:hover:bg-blue-700'}`}
                         >
                             ← Quay lại chỉnh sửa
                         </a>
