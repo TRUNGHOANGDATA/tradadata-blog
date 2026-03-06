@@ -11,7 +11,7 @@ const CREDENTIALS = JSON.parse(credLine.replace('GOOGLE_DRIVE_CREDENTIALS=', '')
 const supabaseUrl = envContent.split('\n').find(l => l.startsWith('NEXT_PUBLIC_SUPABASE_URL=')).replace('NEXT_PUBLIC_SUPABASE_URL=', '').trim();
 const supabaseKey = envContent.split('\n').find(l => l.startsWith('SUPABASE_SERVICE_ROLE_KEY=')).replace('SUPABASE_SERVICE_ROLE_KEY=', '').trim();
 
-const SITE_URL = 'https://tradadata.com';
+const SITE_URL = 'https://www.tradadata.com';
 const BATCH_SIZE = 100; // Google allows 200/day, stay safe
 
 function base64url(data) {

@@ -5,8 +5,8 @@ import { auth } from '@/lib/auth';
 export async function middleware(request: NextRequest) {
     const hostname = request.headers.get('host') || '';
 
-    // Redirect .vn domain to .com
-    if (hostname.includes('tradadata.vn')) {
+    // Redirect .vn domain and non-www to www.tradadata.com
+    if (hostname.includes('tradadata.vn') || hostname === 'tradadata.com') {
         const url = new URL(request.url);
         url.hostname = 'www.tradadata.com';
         url.port = '';

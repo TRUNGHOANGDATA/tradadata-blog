@@ -5,7 +5,7 @@
 export const SITE_CONFIG = {
     name: 'Trà Đá Data',
     description: 'Chia sẻ kiến thức về Data, AI & Supply Chain',
-    url: process.env.NEXT_PUBLIC_APP_URL || 'https://tradadata.com',
+    url: process.env.NEXT_PUBLIC_APP_URL || 'https://www.tradadata.com',
     ogImage: '/images/og-default.png',
     author: 'Trà Đá Data',
 };
