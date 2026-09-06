@@ -32,15 +32,14 @@
 
 name: deploy
 
+# ⚠️ ĐANG TẮT TỰ ĐỘNG. Deploy thật hiện chạy từ repo `ke-truyen`
+# (workflow `deploy-blog`), vì bộ secret SSH vào cụm chỉ có ở đó và repo đó
+# public nên Actions miễn phí. Repo này private, mỗi lần chạy đều trừ vào
+# hạn mức 2.000 phút/tháng.
+#
+# Workflow này chỉ chạy khi bấm tay, và CHỈ chạy được sau khi đã khai đủ
+# các secret liệt kê ở trên. Chưa có thì nó sẽ dừng ở bước deploy.
 on:
-  push:
-    branches: [main]
-    # Sửa mỗi tài liệu thì không cần build lại image
-    paths-ignore:
-      - '**.md'
-      - 'k8s/**'
-      - 'docs/**'
-  pull_request:
   workflow_dispatch:
 
 env:
