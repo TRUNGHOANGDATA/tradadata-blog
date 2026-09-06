@@ -12,6 +12,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         { url: `${baseUrl}/blog`, lastModified: now, changeFrequency: 'daily', priority: 0.9 },
         { url: `${baseUrl}/categories`, lastModified: now, changeFrequency: 'weekly', priority: 0.8 },
         { url: `${baseUrl}/courses`, lastModified: now, changeFrequency: 'weekly', priority: 0.8 },
+        { url: `${baseUrl}/phan-mem-ban-hang`, lastModified: now, changeFrequency: 'monthly', priority: 0.9 },
         { url: `${baseUrl}/about`, lastModified: now, changeFrequency: 'monthly', priority: 0.5 },
         { url: `${baseUrl}/pricing`, lastModified: now, changeFrequency: 'weekly', priority: 0.7 },
         { url: `${baseUrl}/search`, lastModified: now, changeFrequency: 'weekly', priority: 0.4 },

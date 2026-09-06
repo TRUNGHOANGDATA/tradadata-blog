@@ -19,6 +19,7 @@ export const NAV_ITEMS = [
     { label: 'Bài viết', href: '/blog' },
     { label: 'Chủ đề', href: '/categories' },
     { label: 'Khóa học', href: '/courses' },
+    { label: 'Phần mềm bán hàng', href: '/phan-mem-ban-hang' },
     { label: 'Giới thiệu', href: '/about' },
 ];
 
