@@ -39,17 +39,30 @@ export async function POST(
         if (order.status === 'paid') {
             const productType = (order.products as any)?.product_type;
             if (productType === 'subscription') {
-                const { data: profile } = await supabaseAdmin
-                    .from('profiles')
-                    .select('id')
-                    .eq('email', order.email)
-                    .single();
+                // Xoá đúng subscription sinh ra từ đơn này, tránh để lại bản ghi mồ côi
+                // khiến trang Theo dõi Premium vẫn hiển thị là còn hạn.
+                await supabaseAdmin
+                    .from('user_subscriptions')
+                    .delete()
+                    .eq('order_id', order.id);
 
-                if (profile) {
+                // Chỉ tắt Premium khi khách KHÔNG còn gói nào khác còn hạn —
+                // khách mua nhiều đơn thì huỷ 1 đơn không được cắt quyền của các đơn còn lại.
+                const { count: remainingActive, error: countError } = await supabaseAdmin
+                    .from('user_subscriptions')
+                    .select('id', { count: 'exact', head: true })
+                    .eq('user_email', order.email)
+                    .gt('expires_at', new Date().toISOString());
+
+                // Chỉ cắt khi chắc chắn đếm được và bằng 0. Nếu query lỗi thì giữ nguyên quyền —
+                // để nhầm quyền vài phút vẫn hơn cắt nhầm Premium của khách đang trả tiền.
+                if (countError) {
+                    console.error('Không đếm được subscription còn hạn, giữ nguyên quyền:', countError);
+                } else if (remainingActive === 0) {
                     await supabaseAdmin
                         .from('profiles')
                         .update({ is_subscribed: false })
-                        .eq('id', profile.id);
+                        .eq('email', order.email);
                 }
             }
         }
