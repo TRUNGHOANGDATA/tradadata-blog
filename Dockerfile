@@ -9,7 +9,10 @@
 # ─────────────────────────────────────────────────────────────
 FROM node:20-alpine AS deps
 WORKDIR /app
-COPY package.json package-lock.json ./
+# .npmrc BẮT BUỘC phải có: nó đặt legacy-peer-deps=true, mà không có nó thì
+# `npm ci` chết vì next-auth@5-beta khai peerOptional nodemailer@^7 trong khi
+# repo dùng nodemailer@^8.
+COPY package.json package-lock.json .npmrc ./
 RUN npm ci --no-audit --no-fund
 
 # ─────────────────────────────────────────────────────────────
