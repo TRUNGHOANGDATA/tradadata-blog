@@ -106,7 +106,6 @@ kubectl rollout status deployment/tradadata -n bizflow
 
 ## Sau khi deploy xong
 
-1. Thêm `BATCH_UPLOAD_API_KEY` vào Secret của cụm, nếu không `/api/admin/files/batch` trả 401.
-2. Áp lịch chạy nền (email bài mới + nhắc gia hạn hiện đang KHÔNG chạy):
+1. Áp lịch chạy nền (email bài mới + nhắc gia hạn hiện đang KHÔNG chạy):
    sửa `secretKeyRef.name` trong `k8s/cronjobs.yaml` cho khớp Secret thật rồi
    `kubectl apply -f k8s/cronjobs.yaml`. Xem `k8s/README.md`.

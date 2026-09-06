@@ -43,7 +43,7 @@ Cần file `.env.local` (không có trong repo). Các biến đang được dùn
 `GOOGLE_DRIVE_FOLDER_ID` / `_FILES_FOLDER_ID` / `_VIDEOS_FOLDER_ID`,
 `EMAIL_USER`, `EMAIL_PASS` (Gmail app password), `NEWSLETTER_FROM_NAME`,
 `GEMINI_API_KEY`, `CRON_SECRET`, `NEXT_PUBLIC_SERVICE_ACCOUNT_EMAIL`,
-`BATCH_UPLOAD_API_KEY`, `UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN`.
+`UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN`.
 
 ## Kiến trúc
 
@@ -129,7 +129,6 @@ trong khi luồng auto-activate ở `orders/create` lại đọc đúng `product
   Mọi hàm trả về danh sách trong `src/lib/data/posts.ts` phải dùng `formatPostForList`
   (đã bỏ `content`); chỉ `getPostBySlug`/`getPostBySlugForPreview` mới giữ `content`.
   Thêm hàm danh sách mới mà quên là lộ sạch nội dung bài Premium.
-- Batch upload dùng env riêng `BATCH_UPLOAD_API_KEY` (không dùng service role key nữa).
 - Các fallback `|| 'https://tradadata.com'` trong email/order route vẫn là non-www,
   chỉ dùng khi thiếu `NEXT_PUBLIC_APP_URL`. Không ảnh hưởng nếu env được set đúng.
 - **Secret**: đã gỡ hết secret hardcode khỏi working tree (commit `e610833`), các script gốc repo
