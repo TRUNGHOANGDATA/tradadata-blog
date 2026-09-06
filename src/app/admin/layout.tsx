@@ -26,6 +26,7 @@ import {
     Menu,
     X,
     Film,
+    Inbox,
 } from 'lucide-react';
 
 const ADMIN_NAV = [
@@ -42,6 +43,7 @@ const ADMIN_NAV = [
     { label: 'Đơn hàng', href: '/admin/orders', icon: ShoppingCart },
     { label: 'Theo dõi Premium', href: '/admin/subscriptions', icon: Crown },
     { label: 'Mã giảm giá', href: '/admin/coupons', icon: Ticket },
+    { label: 'Khách quan tâm PM', href: '/admin/leads', icon: Inbox },
     { label: 'Khách hàng', href: '/admin/customers', icon: UserCircle },
     { label: 'Người dùng', href: '/admin/users', icon: Users },
     { label: 'Cài đặt', href: '/admin/settings', icon: SettingsIcon },
