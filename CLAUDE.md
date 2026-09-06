@@ -93,10 +93,18 @@ trong khi luồng auto-activate ở `orders/create` lại đọc đúng `product
   Đừng gọi trong route đếm lượt xem (`/api/posts/[slug]/view`) — sẽ phá cache mỗi lượt đọc.
 - `src/lib/rate-limit.ts` là in-memory Map ⇒ trên Vercel serverless mỗi instance một bộ đếm,
   chỉ chặn được spam thô. Muốn chặt hơn phải chuyển sang Redis/Upstash.
-- Premium gating chỉ là rào UI: nội dung đầy đủ vẫn render ở server rồi mới làm mờ.
-  Ai xem HTML source vẫn đọc được. Muốn chặn thật thì phải cắt content trước khi render.
+- **Premium gating**: nội dung bị CẮT ở server (`truncateContent`, `PREMIUM_PREVIEW_BLOCKS`
+  block đầu) trước khi render, không phải làm mờ bằng CSS. Hai biến thể dùng cache key
+  khác nhau (`post-content-<id>` và `post-content-preview-<id>`).
+- **Danh sách bài viết KHÔNG được mang theo `content`.** `BlogListClient` và `PinnedSlider`
+  là Client Component, props của chúng bị Next serialize vào RSC payload gửi cho trình duyệt.
+  Mọi hàm trả về danh sách trong `src/lib/data/posts.ts` phải dùng `formatPostForList`
+  (đã bỏ `content`); chỉ `getPostBySlug`/`getPostBySlugForPreview` mới giữ `content`.
+  Thêm hàm danh sách mới mà quên là lộ sạch nội dung bài Premium.
 - Batch upload dùng env riêng `BATCH_UPLOAD_API_KEY` (không dùng service role key nữa).
 - Các fallback `|| 'https://tradadata.com'` trong email/order route vẫn là non-www,
   chỉ dùng khi thiếu `NEXT_PUBLIC_APP_URL`. Không ảnh hưởng nếu env được set đúng.
-- File `tradadata-blog-auth-32c37c2e6637.json` (private key service account) vẫn đang bị commit
-  trong repo public — cần thu hồi key trên Google Cloud rồi mới xoá khỏi git history.
+- **Secret**: đã gỡ hết secret hardcode khỏi working tree (commit `e610833`), các script gốc repo
+  đọc từ `.env.local` qua `scripts-env.js`. Nhưng git history của repo public vẫn còn
+  credential cũ ⇒ toàn bộ key trong đó phải coi là đã lộ và bắt buộc xoay vòng.
+  Tuyệt đối không hardcode secret vào bất kỳ file nào trong repo.

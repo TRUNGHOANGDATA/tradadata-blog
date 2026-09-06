@@ -190,6 +190,24 @@ export interface RenderResult {
     toc: { id: string; text: string; level: number }[];
 }
 
+/**
+ * Cắt Tiptap JSON còn `maxBlocks` block đầu tiên.
+ *
+ * Dùng cho bài Premium khi người đọc chưa mở khoá. BẮT BUỘC cắt trước khi render:
+ * nếu chỉ làm mờ bằng CSS thì toàn bộ nội dung trả phí vẫn nằm trong HTML,
+ * ai xem View Source hoặc tắt CSS là đọc được hết.
+ */
+export function truncateContent(content: any, maxBlocks = 3): any {
+    try {
+        const json = typeof content === 'string' ? JSON.parse(content) : content;
+        if (!json?.content || !Array.isArray(json.content)) return json;
+        return { ...json, content: json.content.slice(0, maxBlocks) };
+    } catch (e) {
+        console.error('Error truncating post content:', e);
+        return null;
+    }
+}
+
 export function renderPostContent(content: any): RenderResult {
     try {
         const jsonContent = typeof content === 'string' ? JSON.parse(content) : content;

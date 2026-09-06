@@ -10,18 +10,35 @@ function calculateReadingTime(text: string): number {
 }
 
 // Enhance post with computed fields if necessary
-function formatPost(post: any): Post {
+//
+// `stripContent` BẮT BUỘC bật cho mọi hàm trả về DANH SÁCH bài viết.
+// Lý do: các query dùng select('*') nên kéo về cả cột `content`. Danh sách bài
+// được truyền xuống Client Component (BlogListClient, PinnedSlider), mà props của
+// Client Component thì Next serialize vào RSC payload gửi thẳng cho trình duyệt.
+// Không cắt ở đây thì toàn bộ nội dung bài Premium tải được từ /blog dù có paywall.
+// Danh sách cũng không cần `content` — chỉ dùng title/excerpt/cover.
+function formatPost(post: any, { stripContent = false }: { stripContent?: boolean } = {}): Post {
     let textForReadingTime = post.excerpt || '';
     if (post.content && typeof post.content === 'object') {
         // Rough estimate if tiptap json
         textForReadingTime += JSON.stringify(post.content);
     }
 
-    return {
+    // Tính reading_time TRƯỚC khi bỏ content
+    const formatted = {
         ...post,
         reading_time: calculateReadingTime(textForReadingTime) || 3, // Default 3 mins
-    } as Post;
+    };
+
+    if (stripContent) {
+        delete formatted.content;
+    }
+
+    return formatted as Post;
 }
+
+// Alias cho các hàm trả về danh sách — khó quên hơn là truyền option bằng tay
+const formatPostForList = (post: any): Post => formatPost(post, { stripContent: true });
 
 export async function getPosts({
     page = 1,
@@ -87,7 +104,7 @@ export async function getPosts({
             const junctionCategories = postCategoriesMap[p.id] || [];
             // Use junction table category as primary if post.category is null
             const primaryCategory = p.category || junctionCategories[0] || null;
-            return formatPost({
+            return formatPostForList({
                 ...p,
                 category: primaryCategory,
                 categories: junctionCategories.length > 0 ? junctionCategories : (p.category ? [p.category] : []),
@@ -168,7 +185,7 @@ export const getRelatedPosts = unstable_cache(
                     for (const p of tagPosts) {
                         if (!seenIds.has(p.id) && relatedPosts.length < limit) {
                             seenIds.add(p.id);
-                            relatedPosts.push(formatPost(p));
+                            relatedPosts.push(formatPostForList(p));
                         }
                     }
                 }
@@ -190,7 +207,7 @@ export const getRelatedPosts = unstable_cache(
                 for (const p of catPosts) {
                     if (!seenIds.has(p.id) && relatedPosts.length < limit) {
                         seenIds.add(p.id);
-                        relatedPosts.push(formatPost(p));
+                        relatedPosts.push(formatPostForList(p));
                     }
                 }
             }
@@ -237,7 +254,7 @@ export async function getPinnedPosts(limit = 5): Promise<Post[]> {
 
     return data.map(p => {
         const jCats = catMap[p.id] || [];
-        return formatPost({
+        return formatPostForList({
             ...p,
             category: p.category || jCats[0] || null,
             categories: jCats.length > 0 ? jCats : (p.category ? [p.category] : []),
@@ -281,5 +298,5 @@ export async function searchPosts(query: string): Promise<Post[]> {
         return [];
     }
 
-    return (data || []).map(formatPost);
+    return (data || []).map(formatPostForList);
 }
