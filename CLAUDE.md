@@ -16,8 +16,8 @@ Domain chuẩn: `https://www.tradadata.com`.
   → **đối chiếu `/api/health` trả đúng commit SHA** mới coi là thành công.
   Image chạy Next.js standalone bằng `node server.js` (KHÔNG phải `next start`).
   Deployment mà khai `command:`/`args:` kiểu `npm start` là container không boot được.
-- Env đọc từ Secret/env của k8s, KHÔNG phải từ Vercel. `add-vercel-env.js` và
-  `upload-env.js` là script chết, giữ lại chỉ vì lịch sử.
+- Env đọc từ Secret/env của k8s, KHÔNG phải từ Vercel. Các script đẩy env lên Vercel
+  đã xoá; `upload-env.js` còn sót lại cũng là script chết.
 
 ## Chạy dự án
 
