@@ -1,9 +1,9 @@
 import type { Metadata } from 'next';
 import Image from 'next/image';
 import {
-    ShoppingCart, Warehouse, Wallet, Users, BarChart3, Bell,
+    ShoppingCart, Warehouse, Wallet, Users, BarChart3,
     ShieldCheck, PackageCheck, Monitor, Database, Check, X,
-    Files, EyeOff, CalendarClock, Boxes,
+    Files, EyeOff, CalendarClock, Boxes, Sparkles,
 } from 'lucide-react';
 import { SITE_CONFIG } from '@/lib/constants';
 import { ContactButtons, LeadForm } from './ContactBlock';
@@ -63,36 +63,96 @@ const PAIN_POINTS = [
     },
 ];
 
+// `rare: true` = nghiệp vụ mà phần mềm bán hàng phổ thông thường không có,
+// rút từ tài liệu hướng dẫn 45 trang.
 const FEATURE_GROUPS = [
     {
         icon: ShoppingCart,
         title: 'Bán hàng & báo giá',
-        items: ['Phiếu bán hàng, phụ phí, chiết khấu', 'Lập báo giá rồi import thẳng thành đơn', 'Trả hàng, xuất huỷ', 'Theo dõi trạng thái từng đơn'],
+        items: [
+            { t: 'Phiếu bán hàng có phụ phí, chiết khấu, VAT theo từng dòng' },
+            { t: 'Lập báo giá rồi import thẳng thành đơn, không nhập lại', rare: true },
+            { t: 'Thu tiền ngay trên phiếu bán — tự sinh phiếu thu và trừ vào đơn', rare: true },
+            { t: 'In báo giá khổ A4 và A5' },
+            { t: 'Trả hàng khách và trả hàng nhà cung cấp, chặn trả quá số đã bán', rare: true },
+        ],
     },
     {
         icon: Warehouse,
-        title: 'Kho hàng',
-        items: ['Nhập hàng, điều chuyển giữa các kho', 'Kiểm kê, tồn đầu kỳ', 'Nhập xuất tồn theo số lượng và giá trị', 'Truy vết bút toán gây âm kho'],
+        title: 'Kho & hàng hoá',
+        items: [
+            { t: 'Nhiều kho, điều chuyển nội bộ giữa các kho' },
+            { t: 'Đơn vị quy đổi nhiều cấp, mỗi cấp một giá riêng (1 hộp = 6 viên)', rare: true },
+            { t: 'Đơn vị bắt buộc làm tròn — hàng không xé lẻ được như viên gạch', rare: true },
+            { t: 'Tồn đầu kỳ và giá vốn đầu kỳ riêng cho từng kho' },
+            { t: 'Kiểm kê, điều chỉnh chênh lệch và quản lý phiếu kiểm kê' },
+            { t: 'Xuất huỷ, có tra cứu lại phiếu' },
+        ],
+    },
+    {
+        icon: PackageCheck,
+        title: 'Hàng ký gửi',
+        items: [
+            { t: 'Xuất ký gửi chỉ giảm tồn, chưa ghi doanh thu và giá vốn', rare: true },
+            { t: 'Phiếu bán ký gửi tự sinh phiếu bán hàng tương ứng', rare: true },
+            { t: 'Xoá một phiếu là xoá cả cặp, không để lệch sổ', rare: true },
+            { t: 'Tra cứu từng đại lý còn giữ bao nhiêu hàng chưa bán', rare: true },
+        ],
     },
     {
         icon: Wallet,
         title: 'Công nợ',
-        items: ['Công nợ khách hàng và nhà cung cấp', 'Thu theo từng hoá đơn hoặc công nợ đầu kỳ', 'Đối trừ công nợ hai chiều', 'Chi tiết phát sinh từng khách'],
+        items: [
+            { t: 'Báo cáo công nợ theo tuổi nợ, hạn nợ đặt riêng từng khách', rare: true },
+            { t: 'Thu theo từng hoá đơn, trừ tự động theo FIFO khi thu dư', rare: true },
+            { t: 'Đối trừ công nợ khi một đơn vị vừa là khách vừa là nhà cung cấp', rare: true },
+            { t: 'Thu riêng phần công nợ đầu kỳ, không lẫn với phát sinh trong kỳ' },
+        ],
     },
     {
         icon: Database,
-        title: 'Thu chi & sổ quỹ',
-        items: ['Phiếu thu, phiếu chi theo loại', 'Sổ quỹ tiền mặt và ngân hàng', 'Chuyển tiền nội bộ giữa các tài khoản'],
+        title: 'Tiền & sổ quỹ',
+        items: [
+            { t: 'Phiếu thu, phiếu chi theo hạng mục tự khai báo' },
+            { t: 'Phân biệt chi phí thật và chi trả công nợ — bỏ trống hạng mục là chi công nợ', rare: true },
+            { t: 'Sổ quỹ tiền mặt và từng tài khoản ngân hàng' },
+            { t: 'Chuyển tiền nội bộ, chỉ ảnh hưởng quỹ chứ không đụng doanh thu chi phí', rare: true },
+        ],
     },
     {
         icon: Users,
-        title: 'KPI & hoa hồng',
-        items: ['Hoa hồng theo từng sản phẩm', 'KPI theo khoảng doanh thu', 'KPI dạng "thu đủ" — thu hết tiền mới tính doanh số', 'Xếp hạng doanh thu, lợi nhuận theo nhân viên'],
+        title: 'Nhân viên & KPI',
+        items: [
+            { t: 'KPI dạng "thu đủ" — thu hết tiền hoá đơn mới được tính hoa hồng', rare: true },
+            { t: 'KPI theo khoảng doanh thu, tự cấu hình từng bậc' },
+            { t: 'Hoa hồng khai theo từng sản phẩm và theo khoảng thời gian', rare: true },
+            { t: 'Mỗi khách có Sales phụ trách, lập đơn là gợi ý sẵn' },
+        ],
     },
     {
         icon: BarChart3,
         title: 'Báo cáo',
-        items: ['Dashboard doanh thu – chi phí – lợi nhuận', 'Kết quả kinh doanh, lợi nhuận theo từng đơn', 'Lịch sử giá bán, giá nhập', 'Xuất Excel mọi báo cáo'],
+        items: [
+            { t: 'Dashboard doanh thu – chi phí – lợi nhuận, cơ cấu doanh thu theo sản phẩm' },
+            { t: 'Lợi nhuận từng đơn hàng, kèm % lợi nhuận trên doanh thu', rare: true },
+            { t: 'Nhập xuất tồn theo cả số lượng và giá trị, chi tiết tới từng kho' },
+            { t: 'Lịch sử giá mua và giá bán phát sinh trong kỳ', rare: true },
+            { t: 'Xếp hạng doanh thu, lợi nhuận theo nhân viên và theo nhóm hàng' },
+            { t: 'Mọi báo cáo đều xuất được ra Excel' },
+        ],
+    },
+    {
+        icon: ShieldCheck,
+        title: 'Kiểm soát & quản trị',
+        items: [
+            { t: 'Khoá sổ theo giờ trong ngày — sau giờ chốt muốn sửa phải xin duyệt', rare: true },
+            { t: 'Thủ kho xác nhận xuất kho, xác nhận rồi thì Sales hết quyền sửa đơn', rare: true },
+            { t: 'Truy vết đúng bút toán làm âm kho khiến giá vốn về 0', rare: true },
+            { t: 'Công cụ tính lại giá vốn toàn hệ thống' },
+            { t: 'Cảnh báo khách lâu không mua và hàng dưới tồn tối thiểu', rare: true },
+            { t: 'Phân quyền 4 vai trò, tuỳ biến được từng quyền' },
+            { t: 'Tự sao lưu database ra file .bak' },
+        ],
     },
 ];
 
@@ -229,22 +289,30 @@ export default function PhanMemBanHangPage() {
                         <h2 className="text-2xl md:text-4xl font-extrabold! text-surface-900 dark:text-surface-100 mb-4">
                             Đủ nghiệp vụ để chạy cả công ty
                         </h2>
-                        <p className="text-lg text-surface-600 dark:text-surface-400">
-                            Không phải phần mềm bán hàng đơn thuần — bao trọn từ lúc nhập hàng tới lúc chốt lãi lỗ.
+                        <p className="text-lg text-surface-600 dark:text-surface-400 mb-6">
+                            40 nghiệp vụ, bao trọn từ lúc nhập hàng tới lúc chốt lãi lỗ.
+                        </p>
+                        <p className="inline-flex items-center gap-2 text-sm text-amber-700 dark:text-amber-500 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-900/40 rounded-full px-4 py-1.5">
+                            <Sparkles className="h-4 w-4" />
+                            Mục có dấu này là nghiệp vụ phần mềm phổ thông thường không có
                         </p>
                     </div>
-                    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
                         {FEATURE_GROUPS.map((g) => (
-                            <div key={g.title}>
+                            <div key={g.title} className="p-6 rounded-2xl bg-surface-50 dark:bg-surface-950 border border-surface-200 dark:border-surface-800">
                                 <div className="w-11 h-11 rounded-xl bg-brand-50 dark:bg-brand-900/20 text-brand-600 dark:text-brand-400 flex items-center justify-center mb-4">
                                     <g.icon className="h-6 w-6" />
                                 </div>
                                 <h3 className="text-lg font-bold text-surface-900 dark:text-surface-100 mb-3">{g.title}</h3>
-                                <ul className="space-y-2">
+                                <ul className="space-y-2.5">
                                     {g.items.map((it) => (
-                                        <li key={it} className="flex items-start gap-2 text-sm text-surface-600 dark:text-surface-400">
-                                            <Check className="h-4 w-4 text-brand-600 dark:text-brand-400 shrink-0 mt-0.5" />
-                                            {it}
+                                        <li key={it.t} className="flex items-start gap-2 text-sm text-surface-600 dark:text-surface-400 leading-snug">
+                                            {it.rare ? (
+                                                <Sparkles className="h-4 w-4 text-amber-500 shrink-0 mt-0.5" aria-label="Nghiệp vụ ít phần mềm có" />
+                                            ) : (
+                                                <Check className="h-4 w-4 text-brand-600 dark:text-brand-400 shrink-0 mt-0.5" />
+                                            )}
+                                            <span>{it.t}</span>
                                         </li>
                                     ))}
                                 </ul>
@@ -252,20 +320,6 @@ export default function PhanMemBanHangPage() {
                         ))}
                     </div>
 
-                    {/* Điểm khác biệt */}
-                    <div className="grid md:grid-cols-3 gap-6 mt-14 pt-12 border-t border-surface-200 dark:border-surface-800">
-                        {[
-                            { icon: PackageCheck, title: 'Quản lý hàng ký gửi', body: 'Xuất ký gửi, phiếu bán và phiếu trả ký gửi, tra cứu tình hình từng đại lý. Nghiệp vụ mà hầu hết phần mềm phổ thông không có.' },
-                            { icon: Bell, title: 'Cảnh báo chủ động', body: 'Tự chỉ ra khách lâu rồi không quay lại và mặt hàng sắp hết, thay vì đợi bạn phát hiện.' },
-                            { icon: ShieldCheck, title: 'Phân quyền 4 vai trò', body: 'Admin, Kế toán, Sales, Thủ kho — mỗi vai trò chỉ thấy phần việc của mình. Sales không xem được giá vốn.' },
-                        ].map((b) => (
-                            <div key={b.title} className="p-6 rounded-2xl bg-surface-50 dark:bg-surface-950 border border-surface-200 dark:border-surface-800">
-                                <b.icon className="h-6 w-6 text-brand-600 dark:text-brand-400 mb-3" />
-                                <h3 className="font-bold text-surface-900 dark:text-surface-100 mb-2">{b.title}</h3>
-                                <p className="text-sm text-surface-600 dark:text-surface-400 leading-relaxed">{b.body}</p>
-                            </div>
-                        ))}
-                    </div>
                 </div>
             </section>
 
