@@ -18,9 +18,6 @@ k8s
 supabase/.temp
 
 # Script chạy tay ở máy dev, không dùng lúc build/chạy
-add-vercel-env.js
-add-vercel-env-auth.js
-upload-env.js
 scripts-env.js
 check-users.js
 set-admin.js

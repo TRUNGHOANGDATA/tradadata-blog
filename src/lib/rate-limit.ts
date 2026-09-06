@@ -1,10 +1,10 @@
 /**
  * Rate limiter dùng chung cho các API route công khai.
  *
- * Ưu tiên Upstash Redis (bộ đếm dùng chung cho mọi serverless instance).
+ * Ưu tiên Upstash Redis (bộ đếm dùng chung cho mọi instance của app).
  * Nếu chưa cấu hình Upstash thì tự động rơi về bộ đếm in-memory — chỉ đủ dùng
- * cho local dev, KHÔNG chặn được spam thật trên Vercel vì mỗi instance giữ
- * một Map riêng và instance bị huỷ liên tục.
+ * cho local dev: mỗi instance giữ một Map riêng, và Map mất sạch mỗi lần
+ * pod restart (deploy blog hay deploy truyện đều làm pod restart).
  *
  * Cấu hình: đặt UPSTASH_REDIS_REST_URL và UPSTASH_REDIS_REST_TOKEN trong env.
  */
@@ -129,7 +129,7 @@ export async function rateLimit(
             warnedMissingUpstash = true;
             console.warn(
                 '[rate-limit] Thiếu UPSTASH_REDIS_REST_URL/TOKEN — đang dùng bộ đếm in-memory, ' +
-                'không chặn được spam trên serverless.'
+                'chỉ chặn được trong phạm vi một instance và mất khi pod restart.'
             );
         }
         return rateLimitInMemory(identifier, config);
@@ -151,7 +151,7 @@ export async function rateLimit(
 }
 
 /**
- * Get client IP from request headers (works with Vercel, Cloudflare, etc.)
+ * Lấy IP client từ header do reverse proxy đặt (nginx ở gateway, Cloudflare...)
  */
 export function getClientIp(request: Request): string {
     return (
