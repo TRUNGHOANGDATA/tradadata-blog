@@ -1,7 +1,17 @@
 # Trà Đá Data — Blog + Bán khóa học
 
 Next.js 15 (App Router) + React 19 + Tailwind 4 + Supabase (Postgres) + NextAuth v5.
-Deploy trên Vercel, domain chuẩn: `https://www.tradadata.com`.
+Domain chuẩn: `https://www.tradadata.com`.
+
+**Hạ tầng: cụm Kubernetes tự dựng, KHÔNG phải Vercel** (dù repo còn `vercel.json`).
+- Namespace `bizflow`, Deployment `tradadata`, container tên `blog`.
+- Container `blog` nằm CHUNG POD với `ke-truyen` (trang truyen.tradadata.com) và Deployment
+  dùng `strategy: Recreate` ⇒ deploy bên nào thì bên kia cũng downtime ~1-2 phút.
+- Gateway public `125.212.235.148` chạy nginx 1.18.0 làm reverse proxy; control plane
+  `192.168.1.250` chỉ tới được qua gateway (ProxyJump).
+- Manifest k8s KHÔNG nằm trong repo này — chúng ở trên control plane.
+- Env đọc từ Secret/env của k8s, KHÔNG phải từ Vercel. `add-vercel-env.js` và
+  `upload-env.js` là script chết, giữ lại chỉ vì lịch sử.
 
 ## Chạy dự án
 
@@ -39,8 +49,10 @@ Cần file `.env.local` (không có trong repo). Các biến đang được dùn
   (dùng quota 15GB của user); service account chỉ là fallback và **có 0 quota**.
 - **Email**: Nodemailer + Gmail (`src/lib/email/gmail.ts`). Template lưu trong bảng `email_templates`,
   thay biến `{{ten_bien}}` bằng `src/lib/email/template-engine.ts`.
-- **Cron** (`vercel.json`): `/api/cron/process-email-queue` (00:00) và
-  `/api/cron/check-subscriptions` (01:00). Cả hai yêu cầu header `Authorization: Bearer $CRON_SECRET`.
+- **Cron**: 2 endpoint `/api/cron/process-email-queue` và `/api/cron/check-subscriptions`,
+  cả hai yêu cầu header `Authorization: Bearer $CRON_SECRET`.
+  Khai báo `crons` trong `vercel.json` **chỉ Vercel mới đọc** ⇒ trên k8s nó KHÔNG chạy.
+  Lịch thật đặt bằng CronJob của k8s, manifest ở `k8s/cronjobs.yaml`.
 
 ## Bảng DB đang dùng
 
