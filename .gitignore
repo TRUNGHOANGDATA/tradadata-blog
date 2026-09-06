@@ -42,3 +42,11 @@ next-env.d.ts
 
 .vercel
 .env*.local
+
+# Secrets — không bao giờ commit
+# Service account key của Google Cloud (dạng <project>-<keyid>.json)
+*-[0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f].json
+service-account*.json
+credentials*.json
+client_secret*.json
+.env_tmp_val
