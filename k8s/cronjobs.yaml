@@ -1,0 +1,124 @@
+# CronJob thay cho khai báo `crons` trong vercel.json.
+#
+# vercel.json CHỈ Vercel mới đọc. Site đang chạy trên cụm k8s tự dựng nên hai lịch
+# trong đó chưa bao giờ chạy — email bài mới nằm lại trong bảng email_queue và
+# email nhắc gia hạn không được gửi.
+#
+# Áp dụng:
+#   kubectl apply -f k8s/cronjobs.yaml
+#
+# TRƯỚC KHI APPLY, kiểm tra 2 thứ:
+#   1. Tên Secret chứa CRON_SECRET. Xem bằng:
+#        kubectl get secret -n bizflow
+#        kubectl get deploy tradadata -n bizflow -o yaml | grep -A5 CRON_SECRET
+#      rồi sửa `secretKeyRef.name` bên dưới cho khớp.
+#   2. Nếu muốn gọi thẳng trong cụm thay vì vòng ra internet, đổi BASE_URL sang
+#      DNS nội bộ của Service (dạng http://<ten-service>.bizflow.svc.cluster.local:<port>).
+#      Gọi qua domain public cũng chạy, chỉ tốn một vòng ra gateway.
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: tradadata-blog-email-queue
+  namespace: bizflow
+  labels:
+    app: tradadata
+    component: cron
+spec:
+  # Vercel Hobby chỉ cho cron chạy 1 lần/ngày nên lịch cũ là "0 0 * * *".
+  # Cụm nhà không bị giới hạn đó, mà route chỉ xử lý tối đa 90 email/lần
+  # => chạy mỗi 10 phút để hàng đợi thoát kịp thay vì kẹt 90 email/ngày.
+  # Muốn giữ y như cũ thì đổi lại thành "0 0 * * *".
+  schedule: "*/10 * * * *"
+  timeZone: "Etc/UTC"
+  # Không cho 2 lần chạy chồng nhau — tránh gửi trùng email.
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  startingDeadlineSeconds: 300
+  jobTemplate:
+    spec:
+      backoffLimit: 2
+      # Job treo quá 5 phút thì cắt, để lần sau còn chạy được
+      activeDeadlineSeconds: 300
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
+            - name: curl
+              image: curlimages/curl:8.11.1
+              env:
+                - name: CRON_SECRET
+                  valueFrom:
+                    secretKeyRef:
+                      name: tradadata-blog-secrets # ⚠️ sửa cho khớp Secret thật
+                      key: CRON_SECRET
+                - name: BASE_URL
+                  value: "https://www.tradadata.com"
+              command:
+                - sh
+                - -c
+                # --fail-with-body: HTTP >=400 thì thoát khác 0 để Job báo đỏ,
+                # nhưng vẫn in body ra log để biết vì sao hỏng.
+                - >
+                  curl --fail-with-body -sS -m 120
+                  -H "Authorization: Bearer $CRON_SECRET"
+                  "$BASE_URL/api/cron/process-email-queue"
+              resources:
+                requests:
+                  cpu: 10m
+                  memory: 16Mi
+                limits:
+                  cpu: 200m
+                  memory: 64Mi
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: tradadata-blog-check-subscriptions
+  namespace: bizflow
+  labels:
+    app: tradadata
+    component: cron
+spec:
+  # Giữ nguyên lịch cũ: 01:00 UTC = 08:00 giờ Việt Nam.
+  # Route này gửi email nhắc gia hạn nên chạy 1 lần/ngày là đủ; chạy dày hơn
+  # sẽ spam khách vì nó không đánh dấu "đã nhắc".
+  schedule: "0 1 * * *"
+  timeZone: "Etc/UTC"
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  startingDeadlineSeconds: 300
+  jobTemplate:
+    spec:
+      backoffLimit: 2
+      activeDeadlineSeconds: 300
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
+            - name: curl
+              image: curlimages/curl:8.11.1
+              env:
+                - name: CRON_SECRET
+                  valueFrom:
+                    secretKeyRef:
+                      name: tradadata-blog-secrets # ⚠️ sửa cho khớp Secret thật
+                      key: CRON_SECRET
+                - name: BASE_URL
+                  value: "https://www.tradadata.com"
+              command:
+                - sh
+                - -c
+                - >
+                  curl --fail-with-body -sS -m 120
+                  -H "Authorization: Bearer $CRON_SECRET"
+                  "$BASE_URL/api/cron/check-subscriptions"
+              resources:
+                requests:
+                  cpu: 10m
+                  memory: 16Mi
+                limits:
+                  cpu: 200m
+                  memory: 64Mi
