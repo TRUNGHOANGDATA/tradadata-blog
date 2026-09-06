@@ -45,7 +45,7 @@ spec:
       activeDeadlineSeconds: 900
       template:
         spec:
-          restartPolicy: OnFailure
+          restartPolicy: Never
           containers:
             - name: curl
               image: curlimages/curl:8.11.1
@@ -98,7 +98,7 @@ spec:
       activeDeadlineSeconds: 900
       template:
         spec:
-          restartPolicy: OnFailure
+          restartPolicy: Never
           containers:
             - name: curl
               image: curlimages/curl:8.11.1
