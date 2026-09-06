@@ -9,7 +9,13 @@ Domain chuẩn: `https://www.tradadata.com`.
   dùng `strategy: Recreate` ⇒ deploy bên nào thì bên kia cũng downtime ~1-2 phút.
 - Gateway public `125.212.235.148` chạy nginx 1.18.0 làm reverse proxy; control plane
   `192.168.1.250` chỉ tới được qua gateway (ProxyJump).
-- Manifest k8s KHÔNG nằm trong repo này — chúng ở trên control plane.
+- Manifest Deployment/Service KHÔNG nằm trong repo này — chúng ở trên control plane.
+  Repo chỉ giữ `k8s/cronjobs.yaml` (lịch chạy nền).
+- **Deploy**: `.github/workflows/deploy.yml` — push vào `main` là tự động
+  typecheck → build image → push ghcr → `kubectl set image ... blog=<image>` → chờ rollout
+  → **đối chiếu `/api/health` trả đúng commit SHA** mới coi là thành công.
+  Image chạy Next.js standalone bằng `node server.js` (KHÔNG phải `next start`).
+  Deployment mà khai `command:`/`args:` kiểu `npm start` là container không boot được.
 - Env đọc từ Secret/env của k8s, KHÔNG phải từ Vercel. `add-vercel-env.js` và
   `upload-env.js` là script chết, giữ lại chỉ vì lịch sử.
 
