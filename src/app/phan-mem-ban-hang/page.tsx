@@ -3,6 +3,7 @@ import Image from 'next/image';
 import {
     ShoppingCart, Warehouse, Wallet, Users, BarChart3, Bell,
     ShieldCheck, PackageCheck, Monitor, Database, Check, X,
+    Files, EyeOff, CalendarClock, Boxes,
 } from 'lucide-react';
 import { SITE_CONFIG } from '@/lib/constants';
 import { ContactButtons, LeadForm } from './ContactBlock';
@@ -41,18 +42,22 @@ export const metadata: Metadata = {
 
 const PAIN_POINTS = [
     {
+        icon: Files,
         title: 'Mỗi người một file Excel',
         body: 'Kế toán một file, sales một file, thủ kho một file. Cuối tháng ngồi đối chiếu, số nào cũng lệch mà không biết số nào đúng.',
     },
     {
+        icon: EyeOff,
         title: 'Không biết lãi thật là bao nhiêu',
         body: 'Doanh thu thì thấy, nhưng giá vốn từng đơn thì mù. Bán xong mới phát hiện đơn đó lỗ.',
     },
     {
+        icon: CalendarClock,
         title: 'Công nợ theo trí nhớ',
         body: 'Ai nợ bao nhiêu, quá hạn mấy ngày, đã trả đơn nào — ghi sổ tay rồi quên đòi.',
     },
     {
+        icon: Boxes,
         title: 'Nhiều kho, không biết tồn thật',
         body: 'Hàng nằm ở kho nào, còn bao nhiêu, ai điều chuyển lúc nào. Đến lúc khách hỏi mới chạy đi đếm.',
     },
@@ -125,7 +130,7 @@ const FAQ = [
     },
     {
         q: 'Có được hướng dẫn sử dụng không?',
-        a: 'Có tài liệu hướng dẫn chi tiết hơn 300 trang kèm ảnh minh hoạ cho từng nghiệp vụ, và được hỗ trợ trong quá trình cài đặt, khởi tạo dữ liệu.',
+        a: 'Có tài liệu hướng dẫn 45 trang với 87 ảnh minh hoạ, đi qua từng nghiệp vụ một. Ngoài ra được hỗ trợ trực tiếp trong quá trình cài đặt và khởi tạo dữ liệu ban đầu.',
     },
     {
         q: 'Chạy được trên máy Mac không?',
@@ -155,60 +160,63 @@ export default function PhanMemBanHangPage() {
 
             {/* ===== HERO ===== */}
             <section className="relative overflow-hidden bg-gradient-to-br from-surface-900 via-surface-900 to-brand-900 layout-pt">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24">
-                    <div className="grid lg:grid-cols-2 gap-12 items-center">
-                        <div>
-                            <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/20 text-brand-300 text-sm font-medium mb-6">
-                                <PackageCheck className="h-4 w-4" />
-                                Dành cho doanh nghiệp thương mại vừa và nhỏ
-                            </span>
-                            <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white leading-tight mb-6">
-                                Quản lý bán hàng, kho và công nợ{' '}
-                                <span className="text-brand-400">trên một cơ sở dữ liệu duy nhất</span>
-                            </h1>
-                            <p className="text-lg text-surface-300 mb-8 leading-relaxed">
-                                Giao diện Excel quen thuộc, dữ liệu tập trung trên SQL Server. Cả công ty
-                                cùng nhập liệu vào một chỗ — hết cảnh mỗi người một file, cuối tháng ngồi
-                                đối chiếu số lệch.
-                            </p>
+                <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24">
+                    <div className="text-center max-w-3xl mx-auto">
+                        <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/20 text-brand-300 text-sm font-medium mb-6">
+                            <PackageCheck className="h-4 w-4" />
+                            Dành cho doanh nghiệp thương mại vừa và nhỏ
+                        </span>
+                        <h1 className="text-3xl md:text-5xl font-extrabold! text-white leading-tight mb-6">
+                            Quản lý bán hàng, kho và công nợ{' '}
+                            <span className="text-brand-400">trên một cơ sở dữ liệu duy nhất</span>
+                        </h1>
+                        <p className="text-lg text-surface-300 mb-8 leading-relaxed">
+                            Giao diện Excel quen thuộc, dữ liệu tập trung trên SQL Server. Cả công ty
+                            cùng nhập liệu vào một chỗ — hết cảnh mỗi người một file, cuối tháng ngồi
+                            đối chiếu số lệch.
+                        </p>
+                        <div className="flex justify-center">
                             <ContactButtons variant="dark" />
-                            <p className="text-sm text-surface-400 mt-6">
-                                Tư vấn miễn phí · Khảo sát nghiệp vụ trước khi báo giá
-                            </p>
                         </div>
-                        <div className="relative rounded-2xl overflow-hidden shadow-2xl ring-1 ring-white/10">
-                            <Image
-                                src="/images/phan-mem/dashboard.webp"
-                                alt="Dashboard quản trị kinh doanh của phần mềm"
-                                width={1200}
-                                height={460}
-                                className="w-full h-auto"
-                                priority
-                                unoptimized
-                            />
-                        </div>
+                        <p className="text-sm text-surface-400 mt-6">
+                            Tư vấn miễn phí · Khảo sát nghiệp vụ trước khi báo giá
+                        </p>
+                    </div>
+
+                    {/* Ảnh dashboard tỉ lệ 2.66:1 — đặt full width bên dưới thì hợp
+                        khổ ảnh, kẹp cạnh khối chữ sẽ bị dẹt như sợi chỉ. */}
+                    <div className="mt-14 rounded-2xl overflow-hidden shadow-2xl ring-1 ring-white/10">
+                        <Image
+                            src="/images/phan-mem/dashboard.webp"
+                            alt="Dashboard quản trị kinh doanh của phần mềm"
+                            width={1200}
+                            height={451}
+                            className="w-full h-auto"
+                            priority
+                            unoptimized
+                        />
                     </div>
                 </div>
             </section>
 
             {/* ===== VẤN ĐỀ ===== */}
             <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-20">
-                <div className="max-w-2xl mb-12">
-                    <h2 className="text-2xl md:text-3xl font-bold text-surface-900 dark:text-surface-100 mb-4">
+                <div className="text-center max-w-3xl mx-auto mb-12">
+                    <h2 className="text-2xl md:text-4xl font-extrabold! text-surface-900 dark:text-surface-100 mb-4">
                         Bạn có đang gặp những chuyện này?
                     </h2>
-                    <p className="text-surface-600 dark:text-surface-400">
-                        Đây là bốn vấn đề gặp đi gặp lại ở các doanh nghiệp thương mại còn quản lý bằng Excel rời.
+                    <p className="text-lg text-surface-600 dark:text-surface-400">
+                        Bốn vấn đề gặp đi gặp lại ở các doanh nghiệp thương mại còn quản lý bằng Excel rời.
                     </p>
                 </div>
                 <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
                     {PAIN_POINTS.map((p) => (
                         <div key={p.title} className="p-6 rounded-2xl bg-white dark:bg-surface-900 border border-surface-200 dark:border-surface-800">
-                            <div className="w-10 h-10 rounded-xl bg-red-50 dark:bg-red-900/20 text-red-500 flex items-center justify-center mb-4">
-                                <X className="h-5 w-5" />
+                            <div className="w-11 h-11 rounded-xl bg-red-50 dark:bg-red-900/20 text-red-500 flex items-center justify-center mb-4 mx-auto">
+                                <p.icon className="h-5 w-5" />
                             </div>
-                            <h3 className="font-bold text-surface-900 dark:text-surface-100 mb-2">{p.title}</h3>
-                            <p className="text-sm text-surface-600 dark:text-surface-400 leading-relaxed">{p.body}</p>
+                            <h3 className="font-bold text-surface-900 dark:text-surface-100 mb-2 text-center">{p.title}</h3>
+                            <p className="text-sm text-surface-600 dark:text-surface-400 leading-relaxed text-center">{p.body}</p>
                         </div>
                     ))}
                 </div>
@@ -217,11 +225,11 @@ export default function PhanMemBanHangPage() {
             {/* ===== TÍNH NĂNG ===== */}
             <section className="bg-white dark:bg-surface-900 border-y border-surface-200 dark:border-surface-800">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-20">
-                    <div className="max-w-2xl mb-12">
-                        <h2 className="text-2xl md:text-3xl font-bold text-surface-900 dark:text-surface-100 mb-4">
+                    <div className="text-center max-w-3xl mx-auto mb-12">
+                        <h2 className="text-2xl md:text-4xl font-extrabold! text-surface-900 dark:text-surface-100 mb-4">
                             Đủ nghiệp vụ để chạy cả công ty
                         </h2>
-                        <p className="text-surface-600 dark:text-surface-400">
+                        <p className="text-lg text-surface-600 dark:text-surface-400">
                             Không phải phần mềm bán hàng đơn thuần — bao trọn từ lúc nhập hàng tới lúc chốt lãi lỗ.
                         </p>
                     </div>
@@ -263,29 +271,29 @@ export default function PhanMemBanHangPage() {
 
             {/* ===== ẢNH MÀN HÌNH ===== */}
             <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-20">
-                <div className="max-w-2xl mb-12">
-                    <h2 className="text-2xl md:text-3xl font-bold text-surface-900 dark:text-surface-100 mb-4">
+                <div className="text-center max-w-3xl mx-auto mb-12">
+                    <h2 className="text-2xl md:text-4xl font-extrabold! text-surface-900 dark:text-surface-100 mb-4">
                         Giao diện thực tế
                     </h2>
-                    <p className="text-surface-600 dark:text-surface-400">
+                    <p className="text-lg text-surface-600 dark:text-surface-400">
                         Ảnh chụp từ tài liệu hướng dẫn sử dụng. Số liệu trong ảnh là dữ liệu mẫu.
                     </p>
                 </div>
                 <div className="grid md:grid-cols-2 gap-8">
                     {SCREENSHOTS.map((s) => (
                         <figure key={s.src} className="group">
-                            <div className="rounded-xl overflow-hidden border border-surface-200 dark:border-surface-800 bg-white shadow-sm">
+                            <div className="relative aspect-[16/9] rounded-xl overflow-hidden border border-surface-200 dark:border-surface-800 bg-white shadow-sm">
                                 <Image
                                     src={s.src}
                                     alt={s.alt}
-                                    width={1200}
-                                    height={700}
-                                    className="w-full h-auto"
+                                    fill
+                                    sizes="(max-width: 768px) 100vw, 50vw"
+                                    className="object-contain"
                                     loading="lazy"
                                     unoptimized
                                 />
                             </div>
-                            <figcaption className="mt-3 text-sm text-surface-600 dark:text-surface-400">{s.caption}</figcaption>
+                            <figcaption className="mt-3 text-sm text-surface-600 dark:text-surface-400 text-center">{s.caption}</figcaption>
                         </figure>
                     ))}
                 </div>
@@ -294,12 +302,14 @@ export default function PhanMemBanHangPage() {
             {/* ===== YÊU CẦU HỆ THỐNG ===== */}
             <section className="bg-white dark:bg-surface-900 border-y border-surface-200 dark:border-surface-800">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-                    <h2 className="text-2xl md:text-3xl font-bold text-surface-900 dark:text-surface-100 mb-4">
-                        Yêu cầu hệ thống
-                    </h2>
-                    <p className="text-surface-600 dark:text-surface-400 mb-8 max-w-2xl">
-                        Nói trước cho rõ để bạn khỏi mất thời gian nếu không phù hợp.
-                    </p>
+                    <div className="text-center max-w-3xl mx-auto mb-12">
+                        <h2 className="text-2xl md:text-4xl font-extrabold! text-surface-900 dark:text-surface-100 mb-4">
+                            Yêu cầu hệ thống
+                        </h2>
+                        <p className="text-lg text-surface-600 dark:text-surface-400">
+                            Nói trước cho rõ để bạn khỏi mất thời gian nếu không phù hợp.
+                        </p>
+                    </div>
                     <div className="grid md:grid-cols-3 gap-6">
                         <div className="p-6 rounded-2xl border border-surface-200 dark:border-surface-800">
                             <Monitor className="h-6 w-6 text-brand-600 dark:text-brand-400 mb-3" />
@@ -322,7 +332,7 @@ export default function PhanMemBanHangPage() {
 
             {/* ===== FAQ ===== */}
             <section className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-20">
-                <h2 className="text-2xl md:text-3xl font-bold text-surface-900 dark:text-surface-100 mb-10">
+                <h2 className="text-2xl md:text-4xl font-extrabold! text-surface-900 dark:text-surface-100 mb-10 text-center">
                     Câu hỏi thường gặp
                 </h2>
                 <div className="space-y-4">
@@ -343,7 +353,7 @@ export default function PhanMemBanHangPage() {
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-20">
                     <div className="grid lg:grid-cols-2 gap-12">
                         <div>
-                            <h2 className="text-2xl md:text-3xl font-bold text-surface-900 dark:text-surface-100 mb-4">
+                            <h2 className="text-2xl md:text-3xl font-extrabold! text-surface-900 dark:text-surface-100 mb-4">
                                 Để lại thông tin, mình gọi lại tư vấn
                             </h2>
                             <p className="text-surface-600 dark:text-surface-400 mb-6 leading-relaxed">
