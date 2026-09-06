@@ -22,7 +22,7 @@ export async function GET(request: Request) {
                 id, 
                 post_id, 
                 subscriber_id,
-                posts ( title, excerpt, slug, cover_image, categories (name) ),
+                posts ( title, excerpt, slug, cover_image, categories!category_id (name) ),
                 subscribers ( email, status )
             `)
             .eq('status', 'pending')
