@@ -1,7 +1,10 @@
 const { createClient } = require('@supabase/supabase-js');
+const { requireEnv } = require('./scripts-env');
 
-const NEXT_PUBLIC_SUPABASE_URL = "https://gxqmqmjqigswmfttammi.supabase.co";
-const SUPABASE_SERVICE_ROLE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd4cW1xbWpxaWdzd21mdHRhbW1pIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3MTk1MTk0MSwiZXhwIjoyMDg3NTI3OTQxfQ.sZfyV8kYH8jOfKEP1p_yP14f1XUFefLPC3e_OwGYnI4";
+const [NEXT_PUBLIC_SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY] = requireEnv(
+    'NEXT_PUBLIC_SUPABASE_URL',
+    'SUPABASE_SERVICE_ROLE_KEY'
+);
 
 const supabase = createClient(
     NEXT_PUBLIC_SUPABASE_URL,

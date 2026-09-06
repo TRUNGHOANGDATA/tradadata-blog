@@ -1,9 +1,12 @@
+// KHÔNG hardcode secret vào file này — repo là public.
+// Token Vercel đọc từ biến VERCEL_TOKEN (env hoặc .env.local).
 const { execSync } = require('child_process');
 const fs = require('fs');
+const { requireEnv } = require('./scripts-env');
 
-const TOKEN = 'vcp_5kDZL3AsV3KwFMc6yrKxUft8nrc7TNOeTljwyYxgsuO67q64wr1Ry11K';
+const [TOKEN] = requireEnv('VERCEL_TOKEN');
 const envVars = {
-    'AUTH_URL': 'https://tradadata.com'
+    'AUTH_URL': process.env.NEXT_PUBLIC_APP_URL || 'https://www.tradadata.com'
 };
 
 const tmpFile = `${__dirname}/.env_tmp_val`;
