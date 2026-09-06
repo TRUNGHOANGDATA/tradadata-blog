@@ -38,7 +38,6 @@ export async function POST(request: Request) {
 
         const formData = await request.formData();
         const file = formData.get('file') as File | null;
-        const subfolder = formData.get('subfolder') as string | null;
 
         if (!file) {
             return NextResponse.json({ error: 'No file provided' }, { status: 400 });
@@ -49,7 +48,7 @@ export async function POST(request: Request) {
         }
 
         const buffer = Buffer.from(await file.arrayBuffer());
-        const result = await uploadFileToDrive(buffer, file.name, file.type, subfolder || undefined);
+        const result = await uploadFileToDrive(buffer, file.name, file.type);
 
         if (!result) {
             return NextResponse.json({ error: 'Upload failed. Check Google Drive configuration.' }, { status: 500 });

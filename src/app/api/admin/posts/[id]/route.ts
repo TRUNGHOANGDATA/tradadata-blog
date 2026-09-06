@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
 import { supabaseAdmin } from '@/lib/supabase/server';
+import { revalidatePost } from '@/lib/cache';
 
 type RouteParams = { params: Promise<{ id: string }> };
 
@@ -166,6 +167,9 @@ export async function PUT(request: Request, { params }: RouteParams) {
             }
         }
 
+        // Truyền cả slug cũ lẫn slug mới — nếu admin đổi slug thì trang cũ cũng phải bị xoá cache
+        revalidatePost([existing?.slug, post?.slug], id);
+
         return NextResponse.json({ post });
     } catch (error: any) {
         console.error('Error updating post:', error);
@@ -186,12 +190,21 @@ export async function DELETE(_request: Request, { params }: RouteParams) {
             return NextResponse.json({ error: 'Database not configured' }, { status: 500 });
         }
 
+        // Lấy slug trước khi xoá để còn xoá cache trang chi tiết
+        const { data: existing } = await supabaseAdmin
+            .from('posts')
+            .select('slug')
+            .eq('id', id)
+            .single();
+
         // Delete post tags first (foreign key)
         await supabaseAdmin.from('post_tags').delete().eq('post_id', id);
 
         // Delete post
         const { error } = await supabaseAdmin.from('posts').delete().eq('id', id);
         if (error) throw error;
+
+        revalidatePost([existing?.slug], id);
 
         return NextResponse.json({ success: true });
     } catch (error: any) {

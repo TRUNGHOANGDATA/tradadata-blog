@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
 import { supabaseAdmin } from '@/lib/supabase/server';
+import { revalidatePost } from '@/lib/cache';
 
 // GET /api/admin/posts — List all posts (including drafts) for admin
 export async function GET() {
@@ -147,6 +148,8 @@ export async function POST(request: Request) {
 
             await supabaseAdmin.from('post_tags').insert(tagInserts);
         }
+
+        revalidatePost([post?.slug], post?.id);
 
         return NextResponse.json({ post }, { status: 201 });
     } catch (error: any) {

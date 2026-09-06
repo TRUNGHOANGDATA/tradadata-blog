@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
 import { supabaseAdmin } from '@/lib/supabase/server';
+import { revalidatePost } from '@/lib/cache';
 
 type RouteParams = { params: Promise<{ id: string }> };
 
@@ -22,7 +23,7 @@ export async function PATCH(_request: Request, { params }: RouteParams) {
         // Get current pin status
         const { data: post, error: fetchError } = await supabaseAdmin
             .from('posts')
-            .select('id, is_pinned')
+            .select('id, is_pinned, slug')
             .eq('id', id)
             .single();
 
@@ -65,6 +66,9 @@ export async function PATCH(_request: Request, { params }: RouteParams) {
             .select('id', { count: 'exact', head: true })
             .eq('is_pinned', true)
             .eq('status', 'published');
+
+        // Slider bài ghim nằm ở trang chủ — phải xoá cache thì mới thấy đổi
+        revalidatePost([post.slug], id);
 
         return NextResponse.json({
             is_pinned: newPinned,
