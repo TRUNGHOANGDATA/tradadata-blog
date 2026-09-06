@@ -51,7 +51,7 @@ spec:
                 - name: CRON_SECRET
                   valueFrom:
                     secretKeyRef:
-                      name: tradadata-blog-secrets # ⚠️ sửa cho khớp Secret thật
+                      name: tradadata-blog-secret # tên Secret thật trên cụm (đã xác minh)
                       key: CRON_SECRET
                 - name: BASE_URL
                   value: "https://www.tradadata.com"
@@ -104,7 +104,7 @@ spec:
                 - name: CRON_SECRET
                   valueFrom:
                     secretKeyRef:
-                      name: tradadata-blog-secrets # ⚠️ sửa cho khớp Secret thật
+                      name: tradadata-blog-secret # tên Secret thật trên cụm (đã xác minh)
                       key: CRON_SECRET
                 - name: BASE_URL
                   value: "https://www.tradadata.com"
