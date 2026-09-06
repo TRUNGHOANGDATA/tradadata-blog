@@ -35,6 +35,11 @@ name: deploy
 on:
   push:
     branches: [main]
+    # Sửa mỗi tài liệu thì không cần build lại image
+    paths-ignore:
+      - '**.md'
+      - 'k8s/**'
+      - 'docs/**'
   pull_request:
   workflow_dispatch:
 
@@ -65,6 +70,10 @@ jobs:
 
   build-push:
     needs: check
+    # Không build Docker khi mở PR — build image Next.js tốn vài phút mỗi lần,
+    # trong khi hạn mức Actions của tài khoản chỉ có 2.000 phút/tháng.
+    # PR vẫn được chặn bởi job `check` (typecheck) ở trên.
+    if: github.event_name != 'pull_request'
     runs-on: ubuntu-latest
     permissions:
       contents: read
