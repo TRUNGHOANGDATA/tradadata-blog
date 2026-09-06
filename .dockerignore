@@ -1,0 +1,40 @@
+# Giảm build context và tránh lọt thứ không nên vào image
+node_modules
+.next
+.git
+.github
+.vercel
+
+# Env — tuyệt đối không đưa vào image
+.env
+.env.*
+!.env.example
+
+# Tài liệu và script vận hành, không cần lúc build
+*.md
+!README.md
+docs
+k8s
+supabase/.temp
+
+# Script chạy tay ở máy dev, không dùng lúc build/chạy
+add-vercel-env.js
+add-vercel-env-auth.js
+upload-env.js
+scripts-env.js
+check-users.js
+set-admin.js
+migrate.js
+check.js
+seed-email-templates.js
+test-*.js
+scrape-hocexcel.js
+inject-excel-images.js
+upload-*.js
+create-favicon.js
+get-google-token.js
+submit-index.mjs
+
+# File tạm
+.env_tmp_val
+*.log

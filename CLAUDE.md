@@ -19,7 +19,14 @@ Domain chuẩn: `https://www.tradadata.com`.
 npm install
 npm run dev      # next dev
 npm run build    # next build
-npm run lint     # eslint
+npm run lint     # eslint (đang có sẵn ~37 lỗi no-explicit-any, chưa dọn)
+npx tsc --noEmit # cổng chắn thật, vì next.config bật ignoreBuildErrors
+```
+
+Build image như CI:
+
+```bash
+docker build -t tradadata-blog:local   --build-arg NEXT_PUBLIC_SUPABASE_URL=...   --build-arg NEXT_PUBLIC_SUPABASE_ANON_KEY=...   --secret id=supabase_service_role_key,src=./.srk .
 ```
 
 Cần file `.env.local` (không có trong repo). Các biến đang được dùng:

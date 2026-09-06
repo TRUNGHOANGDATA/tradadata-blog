@@ -1,6 +1,9 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  // Đóng gói server tối giản vào .next/standalone để image Docker nhẹ
+  // (chỉ chép node_modules thực sự được dùng thay vì toàn bộ).
+  output: 'standalone',
   productionBrowserSourceMaps: false,
   serverExternalPackages: ['googleapis', 'nodemailer', 'happy-dom'],
   eslint: {
