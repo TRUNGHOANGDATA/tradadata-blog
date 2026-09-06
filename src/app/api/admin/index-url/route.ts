@@ -1,13 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { google } from 'googleapis';
+import { auth } from '@/lib/auth';
+import { SITE_CONFIG } from '@/lib/constants';
 
 const supabase = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.SUPABASE_SERVICE_ROLE_KEY!
 );
 
-const SITE_URL = 'https://tradadata.com';
+// Phải dùng đúng domain chuẩn (www) — middleware 301 non-www sang www,
+// nếu submit non-www thì Google báo lỗi redirect và không index.
+const SITE_URL = SITE_CONFIG.url;
 
 // Build auth client from service account credentials
 function getAuthClient() {
@@ -69,6 +73,11 @@ async function pingSitemap(): Promise<void> {
 // POST: Submit URL(s) for indexing
 export async function POST(req: NextRequest) {
     try {
+        const session = await auth();
+        if (!session?.user || (session.user.role !== 'admin' && session.user.role !== 'editor')) {
+            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+        }
+
         const { postSlugs } = await req.json();
 
         if (!postSlugs || !Array.isArray(postSlugs) || postSlugs.length === 0) {
