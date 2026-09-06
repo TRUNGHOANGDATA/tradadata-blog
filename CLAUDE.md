@@ -1,0 +1,102 @@
+# Trà Đá Data — Blog + Bán khóa học
+
+Next.js 15 (App Router) + React 19 + Tailwind 4 + Supabase (Postgres) + NextAuth v5.
+Deploy trên Vercel, domain chuẩn: `https://www.tradadata.com`.
+
+## Chạy dự án
+
+```bash
+npm install
+npm run dev      # next dev
+npm run build    # next build
+npm run lint     # eslint
+```
+
+Cần file `.env.local` (không có trong repo). Các biến đang được dùng:
+
+`NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`,
+`AUTH_GOOGLE_ID`, `AUTH_GOOGLE_SECRET`, `NEXT_PUBLIC_APP_URL`,
+`GOOGLE_DRIVE_CREDENTIALS` (service account JSON dạng string), `GOOGLE_OAUTH_REFRESH_TOKEN`,
+`GOOGLE_DRIVE_FOLDER_ID` / `_FILES_FOLDER_ID` / `_VIDEOS_FOLDER_ID`,
+`EMAIL_USER`, `EMAIL_PASS` (Gmail app password), `NEWSLETTER_FROM_NAME`,
+`GEMINI_API_KEY`, `CRON_SECRET`, `NEXT_PUBLIC_SERVICE_ACCOUNT_EMAIL`.
+
+## Kiến trúc
+
+- **Data access**: hầu như MỌI truy vấn DB đi qua `supabaseAdmin` (service role key, bypass RLS)
+  trong `src/lib/supabase/server.ts`. Client browser (`src/lib/supabase/client.ts`) gần như không dùng.
+  ⇒ Phân quyền nằm ở tầng API route, KHÔNG dựa vào RLS.
+- **Auth**: NextAuth v5 (`src/lib/auth.ts`), chỉ Google provider, session JWT.
+  `jwt` callback đọc `profiles` để nhét `role` + `is_subscribed` vào token.
+  Role: `admin` | `editor` | `reader`.
+- **Middleware** (`src/middleware.ts`): redirect `tradadata.vn`/apex → `www.tradadata.com`,
+  và chạy `auth()` cho `/admin/*`. Matcher loại trừ `api/` ⇒ **API routes tự kiểm tra quyền**.
+- **Nội dung bài viết**: Tiptap JSON lưu ở `posts.content` (text). Render server-side bằng
+  `renderPostContent()` trong `src/lib/highlight-utils.ts` (dùng `@tiptap/html` + happy-dom + lowlight),
+  bọc trong `unstable_cache`.
+- **File/ảnh**: upload lên Google Drive (`src/lib/storage/google-drive.ts`), ưu tiên OAuth2 refresh token
+  (dùng quota 15GB của user); service account chỉ là fallback và **có 0 quota**.
+- **Email**: Nodemailer + Gmail (`src/lib/email/gmail.ts`). Template lưu trong bảng `email_templates`,
+  thay biến `{{ten_bien}}` bằng `src/lib/email/template-engine.ts`.
+- **Cron** (`vercel.json`): `/api/cron/process-email-queue` (00:00) và
+  `/api/cron/check-subscriptions` (01:00). Cả hai yêu cầu header `Authorization: Bearer $CRON_SECRET`.
+
+## Bảng DB đang dùng
+
+`profiles`, `posts`, `categories`, `tags`, `post_tags`, `post_categories` (junction, cho phép 1 bài nhiều chủ đề),
+`comments`, `user_bookmarks`, `subscribers`, `email_queue`, `email_templates`, `site_settings`,
+`products`, `course_sections`, `orders`, `coupons`, `coupon_products`, `user_coupons`, `user_subscriptions`.
+
+⚠️ `setup.sql`, `schema.json` và `supabase/migrations/` đã **lỗi thời** — không có migration cho
+orders/products/coupons/subscriptions/site_settings… Schema thật được sửa trực tiếp trên Supabase.
+Khi cần biết cột nào có thật, đọc code hoặc query DB, đừng tin mấy file này.
+
+## Luồng nghiệp vụ chính
+
+**Bán hàng (chuyển khoản thủ công, không cổng thanh toán):**
+1. `/courses` hoặc `/pricing` → thêm giỏ (`CartContext`, localStorage `tdd-cart`).
+2. `/checkout/create` → `POST /api/orders/create`: kiểm tra product, áp coupon
+   (hạn dùng, `usage_limit`, `per_user_limit`, giới hạn theo product qua `coupon_products`),
+   sinh `order_code` = `TDD-XXXXXX`, hạn 24h, status `pending`, gửi mail `payment_pending`.
+   Nếu coupon làm giá = 0 ⇒ tự động `paid` + kích hoạt subscription luôn.
+3. Khách chuyển khoản → admin vào `/admin/orders` bấm duyệt →
+   `POST /api/admin/orders/[id]/approve`: set `paid`, bật `profiles.is_subscribed`,
+   tạo `user_subscriptions` với **subscription stacking** (`starts_at = max(now, expires_at hiện tại)`),
+   gửi mail `payment_success`, ghi log Google Sheet.
+4. Client poll `/api/orders/status?order_code=...` mỗi 15s để tự xoá giỏ khi đơn được duyệt.
+
+⚠️ Duration khi admin duyệt tay bị **hardcode 30 ngày** trong `approve/route.ts`,
+trong khi luồng auto-activate ở `orders/create` lại đọc đúng `products.duration_days`.
+
+**Premium gating**: `posts.is_premium` + `profiles.is_subscribed`. Nếu chưa mở khoá,
+`src/app/blog/[slug]/page.tsx` làm mờ HTML và chèn CTA. Nội dung đầy đủ vẫn được render
+ở server rồi mới cắt ⇒ chỉ là rào UI, không phải rào bảo mật thật.
+
+**Newsletter**: `subscribers` → admin gửi bài mới → đẩy vào `email_queue` → cron gửi tối đa 90 mail/lần.
+
+## Quy ước code
+
+- Comment và message trả về người dùng viết **tiếng Việt**.
+- Indent 4 space trong `src/`.
+- API route: luôn mở đầu bằng `const session = await auth()` rồi check
+  `session.user.role !== 'admin'` (một số route cho phép cả `editor`).
+- `next.config.ts` đang bật `eslint.ignoreDuringBuilds` và `typescript.ignoreBuildErrors`
+  ⇒ **lỗi type không chặn deploy**. Chạy `npx tsc --noEmit` thủ công trước khi push.
+- Ảnh remote phải khai báo hostname trong `next.config.ts` → `images.remotePatterns`.
+
+## Điểm cần lưu ý khi phát triển tiếp
+
+- **Cache**: `/blog/[slug]` là SSG (pre-render lúc build, không có `revalidate`) nên trang đã
+  publish sẽ đóng băng cho tới lần deploy sau nếu không invalidate thủ công.
+  Dùng `revalidatePost(slugs, postId)` / `revalidateTaxonomy()` trong `src/lib/cache.ts` —
+  **bắt buộc gọi ở mọi API route ghi vào posts / post_tags / post_categories / categories / tags**.
+  Đừng gọi trong route đếm lượt xem (`/api/posts/[slug]/view`) — sẽ phá cache mỗi lượt đọc.
+- `src/lib/rate-limit.ts` là in-memory Map ⇒ trên Vercel serverless mỗi instance một bộ đếm,
+  chỉ chặn được spam thô. Muốn chặt hơn phải chuyển sang Redis/Upstash.
+- Premium gating chỉ là rào UI: nội dung đầy đủ vẫn render ở server rồi mới làm mờ.
+  Ai xem HTML source vẫn đọc được. Muốn chặn thật thì phải cắt content trước khi render.
+- Batch upload dùng env riêng `BATCH_UPLOAD_API_KEY` (không dùng service role key nữa).
+- Các fallback `|| 'https://tradadata.com'` trong email/order route vẫn là non-www,
+  chỉ dùng khi thiếu `NEXT_PUBLIC_APP_URL`. Không ảnh hưởng nếu env được set đúng.
+- File `tradadata-blog-auth-32c37c2e6637.json` (private key service account) vẫn đang bị commit
+  trong repo public — cần thu hồi key trên Google Cloud rồi mới xoá khỏi git history.
