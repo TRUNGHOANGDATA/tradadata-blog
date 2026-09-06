@@ -3,7 +3,7 @@
 Next.js 15 (App Router) + React 19 + Tailwind 4 + Supabase (Postgres) + NextAuth v5.
 Domain chuẩn: `https://www.tradadata.com`.
 
-**Hạ tầng: cụm Kubernetes tự dựng, KHÔNG phải Vercel** (dù repo còn `vercel.json`).
+**Hạ tầng: cụm Kubernetes tự dựng, KHÔNG phải Vercel.**
 - Namespace `bizflow`, Deployment `tradadata`, container tên `blog`.
 - Container `blog` nằm CHUNG POD với `ke-truyen` (trang truyen.tradadata.com) và Deployment
   dùng `strategy: Recreate` ⇒ deploy bên nào thì bên kia cũng downtime ~1-2 phút.
@@ -64,8 +64,9 @@ Cần file `.env.local` (không có trong repo). Các biến đang được dùn
   thay biến `{{ten_bien}}` bằng `src/lib/email/template-engine.ts`.
 - **Cron**: 2 endpoint `/api/cron/process-email-queue` và `/api/cron/check-subscriptions`,
   cả hai yêu cầu header `Authorization: Bearer $CRON_SECRET`.
-  Khai báo `crons` trong `vercel.json` **chỉ Vercel mới đọc** ⇒ trên k8s nó KHÔNG chạy.
-  Lịch thật đặt bằng CronJob của k8s, manifest ở `k8s/cronjobs.yaml`.
+  Lịch chạy bằng CronJob của k8s, manifest ở `k8s/cronjobs.yaml`.
+  (Trước đây lịch khai trong `vercel.json` — file đó chỉ Vercel mới đọc nên trên cụm
+  chưa bao giờ chạy; đã xoá để khỏi gây hiểu nhầm.)
 
 ## Bảng DB đang dùng
 

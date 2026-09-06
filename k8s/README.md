@@ -1,8 +1,8 @@
 # k8s — lịch chạy nền cho blog
 
 Site chạy trên cụm Kubernetes tự dựng (namespace `bizflow`, Deployment `tradadata`,
-container `blog`), **không phải Vercel**. Phần `crons` trong `vercel.json` chỉ Vercel
-mới đọc, nên trên cụm này nó chưa bao giờ chạy.
+container `blog`), **không phải Vercel**. Lịch cũ khai trong `vercel.json` chỉ Vercel
+mới đọc nên trên cụm này chưa bao giờ chạy; file đó đã được xoá.
 
 Hệ quả của việc thiếu lịch:
 - Email báo bài mới nằm lại trong bảng `email_queue` với `status = 'pending'` mà không được gửi.

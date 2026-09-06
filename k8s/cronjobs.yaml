@@ -1,8 +1,8 @@
-# CronJob thay cho khai báo `crons` trong vercel.json.
+# Lịch chạy nền của blog.
 #
-# vercel.json CHỈ Vercel mới đọc. Site đang chạy trên cụm k8s tự dựng nên hai lịch
-# trong đó chưa bao giờ chạy — email bài mới nằm lại trong bảng email_queue và
-# email nhắc gia hạn không được gửi.
+# Trước đây khai trong `vercel.json`, mà file đó chỉ Vercel mới đọc — site chạy trên
+# cụm k8s tự dựng nên hai lịch chưa bao giờ chạy: email bài mới nằm lại trong bảng
+# email_queue và email nhắc gia hạn không được gửi. vercel.json đã được xoá.
 #
 # Áp dụng:
 #   kubectl apply -f k8s/cronjobs.yaml
