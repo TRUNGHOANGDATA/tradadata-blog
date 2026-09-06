@@ -7,6 +7,12 @@ import {
 import { SITE_CONFIG } from '@/lib/constants';
 import { ContactButtons, LeadForm } from './ContactBlock';
 
+// Ảnh đã được nén sẵn sang WebP và resize về 1200px, nên dùng `unoptimized`
+// để BỎ QUA bộ tối ưu ảnh lúc chạy của Next.
+// Vì sao: pod nhỏ và dùng chung với ke-truyen. Lần đầu mở trang, 13 ảnh PNG lớn
+// được tối ưu cùng lúc làm nghẽn CPU — cả site chậm 17-20 giây, kể cả file tĩnh.
+// Cache pod mất mỗi lần deploy nên sự cố lặp lại sau mỗi lần deploy.
+
 const TITLE = 'Phần mềm quản lý bán hàng cho doanh nghiệp thương mại';
 const DESCRIPTION =
     'Quản lý bán hàng, kho, công nợ, thu chi và KPI trên nền Excel quen thuộc, dữ liệu tập trung trên SQL Server. Nhiều máy dùng chung một cơ sở dữ liệu.';
@@ -86,18 +92,18 @@ const FEATURE_GROUPS = [
 ];
 
 const SCREENSHOTS = [
-    { src: '/images/phan-mem/dashboard.png', alt: 'Dashboard quản trị kinh doanh', caption: 'Dashboard: doanh thu, chi phí, lợi nhuận và cơ cấu doanh thu theo sản phẩm' },
-    { src: '/images/phan-mem/ban-hang.png', alt: 'Màn hình phiếu bán hàng', caption: 'Phiếu bán hàng — tra cứu báo giá cũ, tự tính công nợ còn phải thu' },
-    { src: '/images/phan-mem/cong-no.png', alt: 'Màn hình quản lý công nợ', caption: 'Quản lý công nợ khách hàng và nhà cung cấp' },
-    { src: '/images/phan-mem/nhap-xuat-ton.png', alt: 'Báo cáo nhập xuất tồn', caption: 'Nhập xuất tồn chi tiết tới từng kho' },
-    { src: '/images/phan-mem/ket-qua-kinh-doanh.png', alt: 'Báo cáo kết quả kinh doanh', caption: 'Báo cáo kết quả kinh doanh theo kỳ' },
-    { src: '/images/phan-mem/loi-nhuan-don-hang.png', alt: 'Báo cáo lợi nhuận theo đơn hàng', caption: 'Lợi nhuận từng đơn hàng — biết ngay đơn nào lỗ' },
-    { src: '/images/phan-mem/kpi.png', alt: 'Báo cáo KPI nhân viên', caption: 'KPI và hoa hồng nhân viên' },
-    { src: '/images/phan-mem/so-quy.png', alt: 'Sổ quỹ tiền mặt và ngân hàng', caption: 'Sổ quỹ tiền mặt / ngân hàng' },
-    { src: '/images/phan-mem/canh-bao-thieu-hang.png', alt: 'Cảnh báo thiếu hàng', caption: 'Cảnh báo thiếu hàng và khách lâu không mua' },
-    { src: '/images/phan-mem/ky-gui.png', alt: 'Tra cứu tình hình ký gửi', caption: 'Theo dõi hàng ký gửi tại từng đại lý' },
-    { src: '/images/phan-mem/nhap-hang.png', alt: 'Màn hình nhập hàng', caption: 'Phiếu nhập hàng từ nhà cung cấp' },
-    { src: '/images/phan-mem/xep-hang-nhan-vien.png', alt: 'Bảng xếp hạng nhân viên', caption: 'Xếp hạng doanh thu, lợi nhuận theo nhân viên' },
+    { src: '/images/phan-mem/dashboard.webp', alt: 'Dashboard quản trị kinh doanh', caption: 'Dashboard: doanh thu, chi phí, lợi nhuận và cơ cấu doanh thu theo sản phẩm' },
+    { src: '/images/phan-mem/ban-hang.webp', alt: 'Màn hình phiếu bán hàng', caption: 'Phiếu bán hàng — tra cứu báo giá cũ, tự tính công nợ còn phải thu' },
+    { src: '/images/phan-mem/cong-no.webp', alt: 'Màn hình quản lý công nợ', caption: 'Quản lý công nợ khách hàng và nhà cung cấp' },
+    { src: '/images/phan-mem/nhap-xuat-ton.webp', alt: 'Báo cáo nhập xuất tồn', caption: 'Nhập xuất tồn chi tiết tới từng kho' },
+    { src: '/images/phan-mem/ket-qua-kinh-doanh.webp', alt: 'Báo cáo kết quả kinh doanh', caption: 'Báo cáo kết quả kinh doanh theo kỳ' },
+    { src: '/images/phan-mem/loi-nhuan-don-hang.webp', alt: 'Báo cáo lợi nhuận theo đơn hàng', caption: 'Lợi nhuận từng đơn hàng — biết ngay đơn nào lỗ' },
+    { src: '/images/phan-mem/kpi.webp', alt: 'Báo cáo KPI nhân viên', caption: 'KPI và hoa hồng nhân viên' },
+    { src: '/images/phan-mem/so-quy.webp', alt: 'Sổ quỹ tiền mặt và ngân hàng', caption: 'Sổ quỹ tiền mặt / ngân hàng' },
+    { src: '/images/phan-mem/canh-bao-thieu-hang.webp', alt: 'Cảnh báo thiếu hàng', caption: 'Cảnh báo thiếu hàng và khách lâu không mua' },
+    { src: '/images/phan-mem/ky-gui.webp', alt: 'Tra cứu tình hình ký gửi', caption: 'Theo dõi hàng ký gửi tại từng đại lý' },
+    { src: '/images/phan-mem/nhap-hang.webp', alt: 'Màn hình nhập hàng', caption: 'Phiếu nhập hàng từ nhà cung cấp' },
+    { src: '/images/phan-mem/xep-hang-nhan-vien.webp', alt: 'Bảng xếp hạng nhân viên', caption: 'Xếp hạng doanh thu, lợi nhuận theo nhân viên' },
 ];
 
 const FAQ = [
@@ -172,12 +178,13 @@ export default function PhanMemBanHangPage() {
                         </div>
                         <div className="relative rounded-2xl overflow-hidden shadow-2xl ring-1 ring-white/10">
                             <Image
-                                src="/images/phan-mem/dashboard.png"
+                                src="/images/phan-mem/dashboard.webp"
                                 alt="Dashboard quản trị kinh doanh của phần mềm"
                                 width={1200}
                                 height={460}
                                 className="w-full h-auto"
                                 priority
+                                unoptimized
                             />
                         </div>
                     </div>
@@ -275,6 +282,7 @@ export default function PhanMemBanHangPage() {
                                     height={700}
                                     className="w-full h-auto"
                                     loading="lazy"
+                                    unoptimized
                                 />
                             </div>
                             <figcaption className="mt-3 text-sm text-surface-600 dark:text-surface-400">{s.caption}</figcaption>
