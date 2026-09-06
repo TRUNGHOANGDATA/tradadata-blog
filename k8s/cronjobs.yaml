@@ -38,9 +38,11 @@ spec:
   startingDeadlineSeconds: 300
   jobTemplate:
     spec:
-      backoffLimit: 2
-      # Job treo quá 5 phút thì cắt, để lần sau còn chạy được
-      activeDeadlineSeconds: 300
+      backoffLimit: 0
+      # Route gui toi 90 email/lan nen co the chay lau; cat o 15 phut.
+      # backoffLimit 0: KHONG thu lai — lan truoc co the van dang gui do phia
+      # server, thu lai la rui ro gui trung. Cu de lan chay sau (10 phut nua) lam not.
+      activeDeadlineSeconds: 900
       template:
         spec:
           restartPolicy: OnFailure
@@ -61,7 +63,7 @@ spec:
                 # --fail-with-body: HTTP >=400 thì thoát khác 0 để Job báo đỏ,
                 # nhưng vẫn in body ra log để biết vì sao hỏng.
                 - >
-                  curl --fail-with-body -sS -m 120
+                  curl --fail-with-body -sS -m 540
                   -H "Authorization: Bearer $CRON_SECRET"
                   "$BASE_URL/api/cron/process-email-queue"
               resources:
@@ -92,8 +94,8 @@ spec:
   startingDeadlineSeconds: 300
   jobTemplate:
     spec:
-      backoffLimit: 2
-      activeDeadlineSeconds: 300
+      backoffLimit: 0
+      activeDeadlineSeconds: 900
       template:
         spec:
           restartPolicy: OnFailure
@@ -112,7 +114,7 @@ spec:
                 - sh
                 - -c
                 - >
-                  curl --fail-with-body -sS -m 120
+                  curl --fail-with-body -sS -m 540
                   -H "Authorization: Bearer $CRON_SECRET"
                   "$BASE_URL/api/cron/check-subscriptions"
               resources:
