@@ -23,9 +23,12 @@ import { PreviewBanner } from '@/components/blog/PreviewBanner';
 
 import { DemoDownloadButton } from '@/components/blog/DemoDownloadButton';
 import { ArticleContent } from '@/components/blog/ArticleContent';
-import { renderPostContent } from '@/lib/highlight-utils';
+import { renderPostContent, truncateContent } from '@/lib/highlight-utils';
 
 import { supabaseAdmin } from '@/lib/supabase/server';
+
+// Số block đầu bài cho người chưa mở khoá đọc thử
+const PREMIUM_PREVIEW_BLOCKS = 3;
 
 type Props = {
     params: Promise<{ slug: string }>;
@@ -138,17 +141,24 @@ export default async function BlogPostPage({ params, searchParams }: Props) {
     let htmlContent = '';
     let toc: { id: string, text: string, level: number }[] = [];
 
+    // Bài Premium chưa mở khoá: CẮT nội dung trước khi render, không chỉ làm mờ bằng CSS.
+    // Chỉ phần preview mới được đưa vào HTML trả về client.
+    const contentToRender = isPremiumUnlocked
+        ? post.content
+        : truncateContent(post.content, PREMIUM_PREVIEW_BLOCKS);
+
     // Get related posts IN PARALLEL with content parsing
     const tagIds = postTags.map((t: any) => t.id);
     const [cachedContent, relatedPosts] = await Promise.all([
         // Content parsing (cached via renderPostContent)
-        post.content ? (async () => {
+        // Cache key tách riêng 2 biến thể, tránh phục vụ nhầm bản đầy đủ cho người chưa mở khoá
+        contentToRender ? (async () => {
             const getCachedContent = unstable_cache(
                 async (contentRaw: any) => renderPostContent(contentRaw),
-                [`post-content-${post.id}`],
+                [isPremiumUnlocked ? `post-content-${post.id}` : `post-content-preview-${post.id}`],
                 { revalidate: 3600, tags: [`post-${post.id}`] }
             );
-            return getCachedContent(post.content);
+            return getCachedContent(contentToRender);
         })() : Promise.resolve({ html: '<p class="text-surface-500 italic">Bài viết này chưa có nội dung.</p>', toc: [] as { id: string, text: string, level: number }[] }),
         // Related posts (cached at data layer)
         post.category_id ? getRelatedPosts(post.category_id, post.id, 3, tagIds) : Promise.resolve([]),
@@ -157,19 +167,23 @@ export default async function BlogPostPage({ params, searchParams }: Props) {
     htmlContent = cachedContent.html;
     toc = cachedContent.toc;
 
-    // Protect Premium Content — only for subscribed users
+    // Bài Premium chưa mở khoá: htmlContent lúc này CHỈ chứa phần preview đã cắt ở trên.
+    // Phần còn lại không tồn tại trong HTML, nên không thể lấy bằng View Source / tắt CSS.
     if (!isPremiumUnlocked) {
+        // TOC dựng từ preview nên cũng không lộ cấu trúc phần trả phí
+        toc = [];
         htmlContent = `
-            <div class="relative mb-16">
-                <div class="pointer-events-none select-none blur-sm opacity-60 h-64 overflow-hidden">
+            <div class="mb-16">
+                <div class="relative">
                     ${htmlContent}
+                    <div class="pointer-events-none absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-surface-50 dark:from-surface-950 to-transparent"></div>
                 </div>
-                <div class="absolute inset-0 flex flex-col items-center justify-center bg-gradient-to-t from-surface-50 dark:from-surface-950 via-surface-50/80 dark:via-surface-950/80 to-transparent p-6 text-center">
-                    <div class="p-4 bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 rounded-full mb-4 mt-20">
+                <div class="mt-2 flex flex-col items-center justify-center rounded-2xl border border-amber-200 dark:border-amber-900/40 bg-amber-50/60 dark:bg-amber-900/10 p-8 text-center">
+                    <div class="p-4 bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 rounded-full mb-4">
                         <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
                     </div>
-                    <h3 class="text-2xl font-bold text-surface-900 dark:text-surface-100 mb-2">Nội dung Premium</h3>
-                    <p class="text-surface-600 dark:text-surface-400 max-w-md mb-8">Bài viết này dành cho thành viên Premium. Đăng ký gói Premium để truy cập toàn bộ nội dung chất lượng cao.</p>
+                    <h3 class="text-2xl font-bold text-surface-900 dark:text-surface-100 mb-2">Phần còn lại dành cho thành viên Premium</h3>
+                    <p class="text-surface-600 dark:text-surface-400 max-w-md mb-8">Đăng ký gói Premium để đọc trọn bài viết và toàn bộ nội dung chất lượng cao khác.</p>
                     ${session?.user
                 ? `<a href="/pricing" class="inline-flex items-center justify-center px-6 py-3 bg-amber-500 hover:bg-amber-600 !text-white !no-underline font-medium rounded-xl transition-colors shadow-lg">Nâng cấp Premium</a>`
                 : `<a href="/login?callbackUrl=/blog/${post.slug}" class="inline-flex items-center justify-center px-6 py-3 bg-brand-600 hover:bg-brand-700 !text-white !no-underline font-medium rounded-xl transition-colors shadow-lg">Đăng nhập để tiếp tục</a>`
