@@ -25,7 +25,7 @@ export async function POST(
         // 1. Lấy thông tin đơn hàng
         const { data: order, error: fetchError } = await supabaseAdmin
             .from('orders')
-            .select('*, products(name, product_type)')
+            .select('*, products(name, product_type, duration_days)')
             .eq('id', id)
             .single();
 
@@ -79,7 +79,8 @@ export async function POST(
             }
 
             // Subscription stacking: starts_at = max(now, current_expires_at)
-            const durationDays = 30; // Default 30 days
+            // Lấy đúng thời hạn của gói; chỉ fallback 30 ngày khi sản phẩm không khai báo
+            const durationDays = (order.products as any)?.duration_days || 30;
 
             // Check if user has an existing active subscription
             const { data: existingSub } = await supabaseAdmin
