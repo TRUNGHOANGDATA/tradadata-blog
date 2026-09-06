@@ -37,6 +37,8 @@ const KEYS = [
     'GEMINI_API_KEY',
     'CRON_SECRET',
     'BATCH_UPLOAD_API_KEY',
+    'UPSTASH_REDIS_REST_URL',
+    'UPSTASH_REDIS_REST_TOKEN',
 ];
 
 async function fixAll() {

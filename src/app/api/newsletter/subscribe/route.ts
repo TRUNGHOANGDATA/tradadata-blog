@@ -8,7 +8,7 @@ export async function POST(request: Request) {
     try {
         // Rate limit: 5 subscribe requests per minute per IP
         const ip = getClientIp(request);
-        const limiter = rateLimit(`subscribe:${ip}`, { maxRequests: 5, windowSizeSeconds: 60 });
+        const limiter = await rateLimit(`subscribe:${ip}`, { maxRequests: 5, windowSizeSeconds: 60 });
         if (!limiter.success) {
             return NextResponse.json(
                 { error: 'Quá nhiều yêu cầu, vui lòng thử lại sau.' },

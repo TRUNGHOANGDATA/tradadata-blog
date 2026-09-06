@@ -10,7 +10,7 @@ export async function POST(request: Request) {
     try {
         // Rate limit: 10 order requests per minute per IP
         const ip = getClientIp(request);
-        const limiter = rateLimit(`order:${ip}`, { maxRequests: 10, windowSizeSeconds: 60 });
+        const limiter = await rateLimit(`order:${ip}`, { maxRequests: 10, windowSizeSeconds: 60 });
         if (!limiter.success) {
             return NextResponse.json(
                 { error: 'Quá nhiều yêu cầu, vui lòng thử lại sau.' },

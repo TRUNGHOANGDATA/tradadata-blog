@@ -19,7 +19,8 @@ Cần file `.env.local` (không có trong repo). Các biến đang được dùn
 `GOOGLE_DRIVE_CREDENTIALS` (service account JSON dạng string), `GOOGLE_OAUTH_REFRESH_TOKEN`,
 `GOOGLE_DRIVE_FOLDER_ID` / `_FILES_FOLDER_ID` / `_VIDEOS_FOLDER_ID`,
 `EMAIL_USER`, `EMAIL_PASS` (Gmail app password), `NEWSLETTER_FROM_NAME`,
-`GEMINI_API_KEY`, `CRON_SECRET`, `NEXT_PUBLIC_SERVICE_ACCOUNT_EMAIL`.
+`GEMINI_API_KEY`, `CRON_SECRET`, `NEXT_PUBLIC_SERVICE_ACCOUNT_EMAIL`,
+`BATCH_UPLOAD_API_KEY`, `UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN`.
 
 ## Kiến trúc
 
@@ -91,8 +92,10 @@ trong khi luồng auto-activate ở `orders/create` lại đọc đúng `product
   Dùng `revalidatePost(slugs, postId)` / `revalidateTaxonomy()` trong `src/lib/cache.ts` —
   **bắt buộc gọi ở mọi API route ghi vào posts / post_tags / post_categories / categories / tags**.
   Đừng gọi trong route đếm lượt xem (`/api/posts/[slug]/view`) — sẽ phá cache mỗi lượt đọc.
-- `src/lib/rate-limit.ts` là in-memory Map ⇒ trên Vercel serverless mỗi instance một bộ đếm,
-  chỉ chặn được spam thô. Muốn chặt hơn phải chuyển sang Redis/Upstash.
+- `src/lib/rate-limit.ts` dùng Upstash Redis (sliding window) khi có
+  `UPSTASH_REDIS_REST_URL` + `UPSTASH_REDIS_REST_TOKEN`; thiếu env thì tự rơi về bộ đếm
+  in-memory (chỉ đủ cho local dev). Hàm `rateLimit()` là **async** — phải `await`.
+  Redis lỗi thì fail open, không chặn người dùng thật.
 - **Premium gating**: nội dung bị CẮT ở server (`truncateContent`, `PREMIUM_PREVIEW_BLOCKS`
   block đầu) trước khi render, không phải làm mờ bằng CSS. Hai biến thể dùng cache key
   khác nhau (`post-content-<id>` và `post-content-preview-<id>`).

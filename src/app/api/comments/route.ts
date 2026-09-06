@@ -42,7 +42,7 @@ export async function POST(request: Request) {
 
         // Rate limit: 10 comments per minute per IP
         const ip = getClientIp(request);
-        const limiter = rateLimit(`comment:${ip}`, { maxRequests: 10, windowSizeSeconds: 60 });
+        const limiter = await rateLimit(`comment:${ip}`, { maxRequests: 10, windowSizeSeconds: 60 });
         if (!limiter.success) {
             return NextResponse.json(
                 { error: 'Quá nhiều bình luận, vui lòng thử lại sau.' },
