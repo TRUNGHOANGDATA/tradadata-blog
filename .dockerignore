@@ -21,7 +21,6 @@ supabase/.temp
 scripts-env.js
 check-users.js
 set-admin.js
-check.js
 seed-email-templates.js
 test-*.js
 scrape-hocexcel.js
