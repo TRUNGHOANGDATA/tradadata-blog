@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
 import { supabaseAdmin } from '@/lib/supabase/server';
+import { revalidateTaxonomy } from '@/lib/cache';
 
 // GET /api/admin/categories — List all categories
 export async function GET() {
@@ -65,6 +66,8 @@ export async function POST(request: Request) {
 
         if (error) throw error;
 
+        revalidateTaxonomy();
+
         return NextResponse.json({ category: data }, { status: 201 });
     } catch (error: any) {
         console.error('Error creating category:', error);
@@ -102,6 +105,8 @@ export async function PUT(request: Request) {
 
         if (error) throw error;
 
+        revalidateTaxonomy();
+
         return NextResponse.json({ category: data });
     } catch (error: any) {
         console.error('Error updating category:', error);
@@ -130,6 +135,8 @@ export async function DELETE(request: Request) {
 
         const { error } = await supabaseAdmin.from('categories').delete().eq('id', id);
         if (error) throw error;
+
+        revalidateTaxonomy();
 
         return NextResponse.json({ success: true });
     } catch (error: any) {
