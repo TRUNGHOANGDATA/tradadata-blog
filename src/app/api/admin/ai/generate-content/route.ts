@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { loiThanhChu } from '@/lib/errors';
 import { auth } from '@/lib/auth';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 
@@ -69,16 +70,16 @@ KEYWORDS: [Liệt kê 5-8 từ khóa SEO, phân cách bằng dấu phẩy]`;
             excerpt,
             keywords,
         });
-    } catch (error: any) {
+    } catch (error) {
         console.error('AI generate content error:', error);
-        if (error?.message?.includes('429')) {
+        if (loiThanhChu(error).includes('429')) {
             return NextResponse.json(
                 { error: 'API Key đã vượt quá giới hạn (Quota Exceeded) hoặc request quá nhanh. Vui lòng kiểm tra lại Google AI Studio.' },
                 { status: 429 }
             );
         }
         return NextResponse.json(
-            { error: error.message || 'Failed to generate content' },
+            { error: loiThanhChu(error) || 'Failed to generate content' },
             { status: 500 }
         );
     }

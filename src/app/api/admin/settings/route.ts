@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { loiThanhChu } from '@/lib/errors';
 import { revalidateSettings } from '@/lib/cache';
 import { auth } from '@/lib/auth';
 import { supabaseAdmin } from '@/lib/supabase/server';
@@ -18,14 +19,14 @@ export async function GET() {
         if (error) throw error;
 
         // Convert array to object key-value
-        const settings = data?.reduce((acc: any, curr: any) => {
+        const settings = data?.reduce((acc: Record<string, unknown>, curr: { key: string; value: unknown }) => {
             acc[curr.key] = curr.value;
             return acc;
         }, {});
 
         return NextResponse.json({ settings });
-    } catch (error: any) {
-        return NextResponse.json({ error: error.message }, { status: 500 });
+    } catch (error) {
+        return NextResponse.json({ error: loiThanhChu(error) }, { status: 500 });
     }
 }
 
@@ -59,8 +60,8 @@ export async function POST(request: Request) {
         revalidateSettings();
 
         return NextResponse.json({ success: true, message: 'Settings updated' });
-    } catch (error: any) {
+    } catch (error) {
         console.error('Error updating settings:', error);
-        return NextResponse.json({ error: error.message }, { status: 500 });
+        return NextResponse.json({ error: loiThanhChu(error) }, { status: 500 });
     }
 }

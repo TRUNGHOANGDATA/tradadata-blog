@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { loiThanhChu } from '@/lib/errors';
 import { supabaseAdmin } from '@/lib/supabase/server';
 
 type RouteParams = { params: Promise<{ slug: string }> };
@@ -33,8 +34,8 @@ export async function POST(_request: Request, { params }: RouteParams) {
         if (error) throw error;
 
         return NextResponse.json({ success: true, view_count: (post.view_count || 0) + 1 });
-    } catch (error: any) {
+    } catch (error) {
         console.error('Error incrementing view:', error);
-        return NextResponse.json({ error: error.message }, { status: 500 });
+        return NextResponse.json({ error: loiThanhChu(error) }, { status: 500 });
     }
 }

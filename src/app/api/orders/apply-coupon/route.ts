@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import type { SanPhamNhung } from '@/types';
 import { supabaseAdmin } from '@/lib/supabase/server';
 import { auth } from '@/lib/auth';
 
@@ -32,7 +33,7 @@ export async function POST(request: Request) {
             return NextResponse.json({ error: 'Không tìm thấy đơn hàng' }, { status: 404 });
         }
 
-        const originalAmount = order.original_amount || (order.products as any)?.price || order.amount;
+        const originalAmount = order.original_amount || (order.products as SanPhamNhung)?.price || order.amount;
 
         // ====== REMOVE COUPON ======
         if (action === 'remove') {
@@ -191,7 +192,7 @@ export async function POST(request: Request) {
             .select('product_id')
             .eq('coupon_id', coupon.id);
 
-        const restrictedIds = (restrictions || []).map((r: any) => r.product_id);
+        const restrictedIds = (restrictions || []).map((r: { product_id: string }) => r.product_id);
         if (restrictedIds.length > 0 && !restrictedIds.includes(order.product_id)) {
             return NextResponse.json({ error: 'Mã giảm giá không áp dụng cho sản phẩm này' }, { status: 400 });
         }

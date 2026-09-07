@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { loiThanhChu } from '@/lib/errors';
 import { auth } from '@/lib/auth';
 import { listGoogleDriveImages, deleteFromGoogleDrive } from '@/lib/storage/google-drive';
 
@@ -32,9 +33,9 @@ export async function GET(request: Request) {
                 hasMore: page < totalPages,
             },
         });
-    } catch (error: any) {
+    } catch (error) {
         console.error('Error listing media:', error);
-        return NextResponse.json({ error: error.message }, { status: 500 });
+        return NextResponse.json({ error: loiThanhChu(error) }, { status: 500 });
     }
 }
 
@@ -56,7 +57,7 @@ export async function DELETE(request: Request) {
         }
 
         return NextResponse.json({ success: true });
-    } catch (error: any) {
-        return NextResponse.json({ error: error.message }, { status: 500 });
+    } catch (error) {
+        return NextResponse.json({ error: loiThanhChu(error) }, { status: 500 });
     }
 }

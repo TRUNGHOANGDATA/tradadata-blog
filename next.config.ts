@@ -7,10 +7,14 @@ const nextConfig: NextConfig = {
   productionBrowserSourceMaps: false,
   serverExternalPackages: ['googleapis', 'nodemailer', 'happy-dom'],
   eslint: {
-    // VAN phai bo qua: repo dang co 59 loi eslint co san (no-explicit-any,
-    // react-hooks/set-state-in-effect). Bat len la khong build duoc. Don dan roi
-    // hay doi thanh false.
-    ignoreDuringBuilds: true,
+    // Da don sach LOI eslint (189 -> 0) nen bat cong chan len duoc.
+    // Next chi chan build khi co ERROR, con WARNING thi khong — hien con 94
+    // canh bao (69 bien khong dung, 24 no-img-element, 1 exhaustive-deps).
+    //
+    // 24 canh bao `no-img-element` la CO Y: dung `<img>` de khong di qua
+    // /_next/image. Do tren cum cho thay optimizer ton 1,3-6 giay moi anh khi
+    // cache lanh, nen voi anh trong danh sach bai viet thi `<img>` nhanh hon han.
+    ignoreDuringBuilds: false,
   },
   typescript: {
     // KHONG duoc bat lai thanh true.

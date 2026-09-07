@@ -40,7 +40,7 @@ export async function GET(request: Request) {
             .trim();
 
         return NextResponse.json({ keyword: keyword || title });
-    } catch (error: any) {
+    } catch (error) {
         console.error('Translation error:', error);
         // Fallback: strip diacritics
         const { searchParams } = new URL(request.url);

@@ -1,4 +1,5 @@
 import StarterKit from '@tiptap/starter-kit';
+import type { NodeTiptap } from '@/types';
 import ImageExtension from '@tiptap/extension-image';
 import LinkExtension from '@tiptap/extension-link';
 import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight';
@@ -58,9 +59,21 @@ const tiptapExtensions = [
 // Helper functions
 // ==============================
 
+/**
+ * Node HAST do lowlight tra ve. Thu vien khong xuat kieu nay ra ngoai nen khai
+ * lai o day dung nhung truong code doc — du de bo `any`.
+ */
+type NodeHast = {
+    type?: string;
+    value?: string;
+    tagName?: string;
+    properties?: { className?: string[] };
+    children?: NodeHast[];
+};
+
 /** Convert lowlight HAST nodes to HTML string */
-function hastToHtml(nodes: any[]): string {
-    return nodes.map((node: any) => {
+function hastToHtml(nodes: NodeHast[]): string {
+    return nodes.map((node: NodeHast) => {
         if (node.type === 'text') return node.value;
         if (node.type === 'element') {
             const cls = node.properties?.className?.join(' ');
@@ -176,7 +189,7 @@ function slugify(text: string): string {
         .replace(/-+$/, '');
 }
 
-function getText(node: any): string {
+function getText(node: NodeTiptap): string {
     if (node.type === 'text') return node.text || '';
     if (node.content) return node.content.map(getText).join('');
     return '';
@@ -197,7 +210,7 @@ export interface RenderResult {
  * nếu chỉ làm mờ bằng CSS thì toàn bộ nội dung trả phí vẫn nằm trong HTML,
  * ai xem View Source hoặc tắt CSS là đọc được hết.
  */
-export function truncateContent(content: any, maxBlocks = 3): any {
+export function truncateContent(content: unknown, maxBlocks = 3): NodeTiptap | null {
     try {
         const json = typeof content === 'string' ? JSON.parse(content) : content;
         if (!json?.content || !Array.isArray(json.content)) return json;
@@ -208,19 +221,19 @@ export function truncateContent(content: any, maxBlocks = 3): any {
     }
 }
 
-export function renderPostContent(content: any): RenderResult {
+export function renderPostContent(content: unknown): RenderResult {
     try {
         const jsonContent = typeof content === 'string' ? JSON.parse(content) : content;
         const toc: { id: string; text: string; level: number }[] = [];
 
         // Extract TOC from JSON
         if (jsonContent?.content) {
-            jsonContent.content.forEach((node: any) => {
+            jsonContent.content.forEach((node: NodeTiptap) => {
                 if (node.type === 'heading' && node.attrs?.level) {
                     const text = getText(node);
                     if (text.trim()) {
                         const id = slugify(text) || `heading-${toc.length}`;
-                        toc.push({ id, text, level: node.attrs.level });
+                        toc.push({ id, text, level: Number(node.attrs?.level) || 2 });
                     }
                 }
             });

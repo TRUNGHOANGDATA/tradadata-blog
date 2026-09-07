@@ -13,6 +13,9 @@ export function SearchBar() {
 
     // Detect OS on mount
     useEffect(() => {
+        // Doc `navigator` chi co o trinh duyet. Tinh trong lan render dau se lech giua
+        // server va client (hydration mismatch), nen BUOC phai doc sau khi mount.
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setIsMac(/(Mac|iPhone|iPod|iPad)/i.test(navigator.platform));
     }, []);
 

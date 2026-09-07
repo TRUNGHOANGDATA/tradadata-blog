@@ -1,6 +1,7 @@
 ﻿'use client';
 
 import { useState, useEffect, useRef, useCallback } from 'react';
+import type { SanPhamNhung } from '@/types';
 import { Search, CheckCircle2, Loader2, Link as LinkIcon, ExternalLink, Pencil, X, Ticket, Plus } from 'lucide-react';
 import Link from 'next/link';
 
@@ -111,7 +112,7 @@ export default function AdminOrdersPage() {
             } else {
                 showToast(data.error || 'Có lỗi xảy ra', 'error');
             }
-        } catch (error) {
+        } catch {
             showToast('Lỗi hệ thống khi duyệt đơn', 'error');
         } finally {
             setApproving(prev => ({ ...prev, [id]: false }));
@@ -132,7 +133,7 @@ export default function AdminOrdersPage() {
             } else {
                 showToast(data.error || 'Có lỗi xảy ra', 'error');
             }
-        } catch (error) {
+        } catch {
             showToast('Lỗi hệ thống khi huỷ đơn', 'error');
         } finally {
             setApproving(prev => ({ ...prev, [id]: false }));
@@ -159,7 +160,7 @@ export default function AdminOrdersPage() {
             } else {
                 alert(data.error || 'Có lỗi xảy ra');
             }
-        } catch (error) {
+        } catch {
             alert('Lỗi hệ thống khi cập nhật giá');
         } finally {
             setEditAmountModal(prev => ({ ...prev, submitting: false }));
@@ -191,7 +192,7 @@ export default function AdminOrdersPage() {
             } else {
                 alert(data.error || 'Có lỗi xảy ra');
             }
-        } catch (error) {
+        } catch {
             alert('Lỗi hệ thống khi tạo đơn hàng');
         } finally {
             setCreateModal(prev => ({ ...prev, submitting: false }));
@@ -344,7 +345,7 @@ export default function AdminOrdersPage() {
                                         <td className="px-4 py-4">
                                             <div className="flex flex-col">
                                                 <span className="font-medium text-fg">
-                                                    {(order.products as any)?.name}
+                                                    {(order.products as SanPhamNhung)?.name}
                                                 </span>
                                                 <div className="flex flex-col mt-1">
                                                     {order.coupon_code && order.original_amount && order.original_amount !== order.amount ? (

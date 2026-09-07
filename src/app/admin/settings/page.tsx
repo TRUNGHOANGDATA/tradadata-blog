@@ -68,7 +68,7 @@ export default function SettingsPage() {
             });
             if (res.ok) alert('Đã lưu cấu hình chung!');
             else alert('Có lỗi xảy ra khi lưu.');
-        } catch (error) {
+        } catch {
             alert('Lỗi hệ thống');
         } finally {
             setSaving(false);
@@ -90,7 +90,7 @@ export default function SettingsPage() {
             });
             if (res.ok) alert('Đã lưu mẫu Email!');
             else alert('Có lỗi xảy ra khi lưu.');
-        } catch (error) {
+        } catch {
             alert('Lỗi hệ thống');
         } finally {
             setSaving(false);

@@ -1,6 +1,7 @@
 'use client';
 
 import { useSearchParams, useRouter } from 'next/navigation';
+import { loiThanhChu } from '@/lib/errors';
 import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { useCart } from '@/lib/cart/CartContext';
@@ -118,8 +119,8 @@ export default function CheckoutForm() {
                 setPendingOrder(result.order_code);
                 router.push(`/checkout/${result.order_code}`);
             }
-        } catch (err: any) {
-            setError(err.message);
+        } catch (err) {
+            setError(loiThanhChu(err));
             setIsLoading(false);
         }
     };

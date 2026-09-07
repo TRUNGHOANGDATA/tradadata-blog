@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { loiThanhChu, thuocTinhLoi } from '@/lib/errors';
 import { auth } from '@/lib/auth';
 import { supabaseAdmin } from '@/lib/supabase/server';
 import { google } from 'googleapis';
@@ -152,9 +153,9 @@ export async function POST(request: Request) {
             driveUrl,
             filename: post.demo_filename,
         });
-    } catch (err: any) {
+    } catch (err) {
         // If permission already exists, still return the URL
-        if (err?.code === 409 || err?.message?.includes('already has access')) {
+        if (thuocTinhLoi(err, 'code') === 409 || loiThanhChu(err).includes('already has access')) {
             const fileId = extractFileId(post.demo_url);
             const driveUrl = `https://drive.google.com/file/d/${fileId}/view?usp=sharing`;
             return NextResponse.json({
@@ -164,7 +165,7 @@ export async function POST(request: Request) {
             });
         }
 
-        console.error('Demo download error:', err?.message || err);
+        console.error('Demo download error:', loiThanhChu(err));
         return NextResponse.json(
             { error: 'Không thể chia sẻ file. Vui lòng thử lại sau.' },
             { status: 502 }

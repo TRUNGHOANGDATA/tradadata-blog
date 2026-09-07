@@ -20,8 +20,8 @@ export async function GET() {
         if (error) throw error;
 
         // Fetch product restrictions for all coupons
-        const couponIds = (data || []).map((c: any) => c.id);
-        let productMap: Record<string, any[]> = {};
+        const couponIds = (data || []).map((c: { id: string }) => c.id);
+        const productMap: Record<string, { id: string; name: string }[]> = {};
 
         if (couponIds.length > 0) {
             const { data: cpData } = await supabaseAdmin
@@ -30,16 +30,25 @@ export async function GET() {
                 .in('coupon_id', couponIds);
 
             if (cpData) {
-                for (const cp of cpData) {
+                // `products(id, name)` la quan he nhieu-mot. Supabase suy ra kieu MANG
+                // (no khong luon biet luc lieu), con runtime tra ve MOT object. Code cu
+                // dung `any` nen che mat cho nay va push ca mang vao mang -> long nhau.
+                // Chuan hoa ca hai dang cho chac.
+                type HangNoi = {
+                    coupon_id: string;
+                    products: { id: string; name: string } | { id: string; name: string }[] | null;
+                };
+                for (const cp of cpData as unknown as HangNoi[]) {
+                    const sp = Array.isArray(cp.products) ? cp.products : cp.products ? [cp.products] : [];
                     if (!productMap[cp.coupon_id]) productMap[cp.coupon_id] = [];
-                    productMap[cp.coupon_id].push(cp.products);
+                    productMap[cp.coupon_id].push(...sp);
                 }
             }
         }
 
         // Attach product restrictions to each coupon
         // Also fetch latest user emails who used each coupon
-        let emailMap: Record<string, string[]> = {};
+        const emailMap: Record<string, string[]> = {};
         if (couponIds.length > 0) {
             const { data: ucData } = await supabaseAdmin
                 .from('user_coupons')
@@ -57,7 +66,7 @@ export async function GET() {
             }
         }
 
-        const enriched = (data || []).map((c: any) => ({
+        const enriched = (data || []).map((c: Record<string, unknown> & { id: string }) => ({
             ...c,
             applicable_products: productMap[c.id] || [],
             latest_user_emails: emailMap[c.id] || [],
@@ -104,7 +113,7 @@ export async function POST(request: Request) {
 
             // If product restrictions specified for batch
             if (body.applicable_product_ids?.length > 0 && data?.length) {
-                const cpRows = data.flatMap((coupon: any) =>
+                const cpRows = data.flatMap((coupon: { id: string; product_ids?: string[] }) =>
                     body.applicable_product_ids.map((pid: string) => ({
                         coupon_id: coupon.id,
                         product_id: pid,

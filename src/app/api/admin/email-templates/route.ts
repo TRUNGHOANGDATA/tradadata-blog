@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { loiThanhChu } from '@/lib/errors';
 import { auth } from '@/lib/auth';
 import { supabaseAdmin } from '@/lib/supabase/server';
 
@@ -14,14 +15,14 @@ export async function GET() {
         const { data, error } = await supabaseAdmin.from('email_templates').select('*');
         if (error) throw error;
 
-        const templates = data?.reduce((acc: any, curr: any) => {
+        const templates = data?.reduce((acc: Record<string, unknown>, curr: { id: string; subject: string | null; body_html: string | null }) => {
             acc[curr.id] = { subject: curr.subject, html_content: curr.body_html };
             return acc;
         }, {});
 
         return NextResponse.json({ templates });
-    } catch (error: any) {
-        return NextResponse.json({ error: error.message }, { status: 500 });
+    } catch (error) {
+        return NextResponse.json({ error: loiThanhChu(error) }, { status: 500 });
     }
 }
 
@@ -45,8 +46,8 @@ export async function POST(request: Request) {
         if (error) throw error;
 
         return NextResponse.json({ success: true, message: 'Template updated' });
-    } catch (error: any) {
+    } catch (error) {
         console.error('Error updating email template:', error);
-        return NextResponse.json({ error: error.message }, { status: 500 });
+        return NextResponse.json({ error: loiThanhChu(error) }, { status: 500 });
     }
 }

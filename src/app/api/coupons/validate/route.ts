@@ -114,7 +114,7 @@ export async function POST(request: Request) {
             .select('product_id')
             .eq('coupon_id', coupon.id);
 
-        const restrictedProductIds = (restrictedProducts || []).map((r: any) => r.product_id);
+        const restrictedProductIds = (restrictedProducts || []).map((r: { product_id: string }) => r.product_id);
 
         // If coupon has product restrictions, check if at least one cart product matches
         if (restrictedProductIds.length > 0 && product_ids && product_ids.length > 0) {

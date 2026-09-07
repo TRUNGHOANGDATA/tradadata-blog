@@ -59,6 +59,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
     // Close mobile menu on navigation
     useEffect(() => {
+        // Dong menu mobile khi dieu huong. Day dung la "phan ung voi thay doi ben ngoai"
+        // (pathname), khong phai tinh gia tri dan xuat. Cach thay the la key lai ca
+        // component theo pathname — dat hon nhieu chi de tranh mot canh bao.
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setMobileOpen(false);
     }, [pathname]);
 

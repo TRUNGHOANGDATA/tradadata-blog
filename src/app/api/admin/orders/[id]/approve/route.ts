@@ -1,4 +1,6 @@
 import { NextResponse } from 'next/server';
+import type { SanPhamNhung } from '@/types';
+import { loiThanhChu } from '@/lib/errors';
 import { auth } from '@/lib/auth';
 import { supabaseAdmin } from '@/lib/supabase/server';
 import { logOrderToSheet } from '@/lib/google-sheets';
@@ -49,8 +51,8 @@ export async function POST(
         if (updateError) throw updateError;
 
         // 3. Xử lý cấp quyền cho User
-        const productType = (order.products as any)?.product_type;
-        const productName = (order.products as any)?.name;
+        const productType = (order.products as SanPhamNhung)?.product_type;
+        const productName = (order.products as SanPhamNhung)?.name;
 
         if (productType === 'subscription') {
             // Kiểm tra xem profile đã tồn tại chưa
@@ -80,7 +82,7 @@ export async function POST(
 
             // Subscription stacking: starts_at = max(now, current_expires_at)
             // Lấy đúng thời hạn của gói; chỉ fallback 30 ngày khi sản phẩm không khai báo
-            const durationDays = (order.products as any)?.duration_days || 30;
+            const durationDays = (order.products as SanPhamNhung)?.duration_days || 30;
 
             // Check if user has an existing active subscription
             const { data: existingSub } = await supabaseAdmin
@@ -135,8 +137,8 @@ export async function POST(
 
         return NextResponse.json({ success: true, message: 'Đã duyệt đơn hàng thành công' });
 
-    } catch (error: any) {
+    } catch (error) {
         console.error('Error approving order:', error);
-        return NextResponse.json({ error: error.message || 'Lỗi hệ thống' }, { status: 500 });
+        return NextResponse.json({ error: loiThanhChu(error) || 'Lỗi hệ thống' }, { status: 500 });
     }
 }

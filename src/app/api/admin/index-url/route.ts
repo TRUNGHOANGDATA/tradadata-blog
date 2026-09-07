@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { loiThanhChu } from '@/lib/errors';
 import { createClient } from '@supabase/supabase-js';
 import { google } from 'googleapis';
 import { auth } from '@/lib/auth';
@@ -54,8 +55,8 @@ async function submitToGoogleIndexing(
                 message: data.error?.message || `Lỗi: ${res.status}`,
             };
         }
-    } catch (error: any) {
-        return { success: false, message: error.message };
+    } catch (error) {
+        return { success: false, message: loiThanhChu(error) };
     }
 }
 
@@ -100,9 +101,9 @@ export async function POST(req: NextRequest) {
         if (authClient) {
             try {
                 const tokenRes = await authClient.authorize();
-                accessToken = (tokenRes as any).access_token || null;
-            } catch (authError: any) {
-                console.error('Google auth failed:', authError.message);
+                accessToken = (tokenRes as { access_token?: string }).access_token || null;
+            } catch (authError) {
+                console.error('Google auth failed:', loiThanhChu(authError));
             }
         }
 
@@ -160,10 +161,10 @@ export async function POST(req: NextRequest) {
             successCount,
             failCount,
         });
-    } catch (error: any) {
+    } catch (error) {
         console.error('Index URL error:', error);
         return NextResponse.json(
-            { error: error.message || 'Lỗi hệ thống' },
+            { error: loiThanhChu(error) || 'Lỗi hệ thống' },
             { status: 500 }
         );
     }

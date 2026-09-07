@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { loiThanhChu } from '@/lib/errors';
 import { auth } from '@/lib/auth';
 import { uploadFileToDrive, listGoogleDriveFiles, deleteFromGoogleDrive } from '@/lib/storage/google-drive';
 
@@ -22,9 +23,9 @@ export async function GET(request: Request) {
 
         const files = await listGoogleDriveFiles(200);
         return NextResponse.json({ files, total: files.length });
-    } catch (error: any) {
+    } catch (error) {
         console.error('Error listing files:', error);
-        return NextResponse.json({ error: error.message }, { status: 500 });
+        return NextResponse.json({ error: loiThanhChu(error) }, { status: 500 });
     }
 }
 
@@ -61,9 +62,9 @@ export async function POST(request: Request) {
             url: result.url,
             downloadUrl: `https://drive.google.com/uc?export=download&id=${result.id}`,
         });
-    } catch (error: any) {
+    } catch (error) {
         console.error('Upload error:', error);
-        return NextResponse.json({ error: error.message }, { status: 500 });
+        return NextResponse.json({ error: loiThanhChu(error) }, { status: 500 });
     }
 }
 
@@ -81,7 +82,7 @@ export async function DELETE(request: Request) {
 
         const success = await deleteFromGoogleDrive(id);
         return NextResponse.json({ success });
-    } catch (error: any) {
-        return NextResponse.json({ error: error.message }, { status: 500 });
+    } catch (error) {
+        return NextResponse.json({ error: loiThanhChu(error) }, { status: 500 });
     }
 }

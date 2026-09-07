@@ -1,6 +1,10 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+
+// Kieu cua form soan nhom khoa hoc — dung chung cho ca `form` va `setForm`,
+// truoc day `setForm` khai `any` nen doi hinh form la khong ai biet.
+type DangForm = { name: string; description: string; sort_order: number; is_active: boolean };
 import { Plus, Edit, Trash2, Loader2, GripVertical, Eye, EyeOff, Save, X } from 'lucide-react';
 
 interface Section {
@@ -29,6 +33,8 @@ export default function AdminCourseSectionsPage() {
         setLoading(false);
     };
 
+    // Tai du lieu khi mount — xem chu thich cung loai o admin/coupons/page.tsx.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     useEffect(() => { fetchSections(); }, []);
 
     const handleSave = async () => {
@@ -186,8 +192,8 @@ function EditForm({
     onCancel,
     saving,
 }: {
-    form: { name: string; description: string; sort_order: number; is_active: boolean };
-    setForm: (f: any) => void;
+    form: DangForm;
+    setForm: (f: DangForm) => void;
     onSave: () => void;
     onCancel: () => void;
     saving: boolean;

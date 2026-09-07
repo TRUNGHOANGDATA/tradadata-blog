@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { loiThanhChu } from '@/lib/errors';
 import { auth } from '@/lib/auth';
 import { supabaseAdmin } from '@/lib/supabase/server';
 
@@ -30,7 +31,19 @@ export async function GET(request: Request) {
         if (profilesError) throw profilesError;
 
         // Build customers map — start with profiles
-        const customersMap = new Map<string, any>();
+        // Khai kieu that thay vi `any`: truoc day `customer.total_orders += 1` khong
+        // duoc kiem gi ca, va `customersMap.get()` tra ve co the undefined cung bi bo qua.
+        type BanGhiKhach = {
+            email: string;
+            full_name: string;
+            phone: string;
+            total_orders: number;
+            total_spent: number;
+            last_order_at: string | null;
+            is_subscribed: boolean;
+            created_at: string | null;
+        };
+        const customersMap = new Map<string, BanGhiKhach>();
 
         // Add profiles first (so manually added users appear)
         (profiles || []).forEach(profile => {
@@ -65,6 +78,9 @@ export async function GET(request: Request) {
             }
 
             const customer = customersMap.get(email);
+            // Ngay tren vua `set` neu chua co, nen den day chac chan ton tai —
+            // nhung van phai chan de TypeScript khong phai doan.
+            if (!customer) return;
             customer.total_orders += 1;
 
             // Update name/phone from order if profile didn't have it
@@ -89,8 +105,8 @@ export async function GET(request: Request) {
         const customers = Array.from(customersMap.values());
 
         return NextResponse.json({ customers });
-    } catch (error: any) {
+    } catch (error) {
         console.error('Error fetching customers:', error);
-        return NextResponse.json({ error: error.message }, { status: 500 });
+        return NextResponse.json({ error: loiThanhChu(error) }, { status: 500 });
     }
 }

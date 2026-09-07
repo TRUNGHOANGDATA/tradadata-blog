@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import type { SanPhamNhung } from '@/types';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
@@ -326,7 +327,7 @@ export default function ProfilePage() {
                                                 </div>
                                                 <div>
                                                     <p className="font-bold text-fg">Đang hoạt động</p>
-                                                    <p className="text-sm text-fg-subtle">{(activeSub.products as any)?.name || 'Gói Premium'}</p>
+                                                    <p className="text-sm text-fg-subtle">{(activeSub.products as SanPhamNhung)?.name || 'Gói Premium'}</p>
                                                 </div>
                                             </div>
                                             <div className="grid grid-cols-2 gap-3 mt-4">
@@ -361,7 +362,7 @@ export default function ProfilePage() {
                                             <div className="space-y-2">
                                                 {subscriptions.map(sub => (
                                                     <div key={sub.id} className="flex items-center justify-between py-2 px-3 bg-surface-50 dark:bg-surface-800/50 rounded-lg text-sm">
-                                                        <span className="text-surface-600 dark:text-surface-400">{(sub.products as any)?.name || 'Premium'}</span>
+                                                        <span className="text-surface-600 dark:text-surface-400">{(sub.products as SanPhamNhung)?.name || 'Premium'}</span>
                                                         <span className="text-fg-subtle">{formatDate(sub.starts_at)} → {formatDate(sub.expires_at)}</span>
                                                     </div>
                                                 ))}

@@ -75,7 +75,7 @@ export default function CategoriesPage() {
                 const data = await res.json();
                 alert('Lỗi: ' + (data.error || 'Unknown'));
             }
-        } catch (error) {
+        } catch {
             alert('Có lỗi xảy ra');
         } finally {
             setSaving(false);
@@ -89,7 +89,7 @@ export default function CategoriesPage() {
             if (res.ok) {
                 setCategories(prev => prev.filter(c => c.id !== id));
             }
-        } catch (error) {
+        } catch {
             alert('Có lỗi xảy ra');
         }
     };

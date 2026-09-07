@@ -85,7 +85,7 @@ export default function UsersPage() {
                 const data = await res.json();
                 alert('Lỗi: ' + (data.error || 'Unknown'));
             }
-        } catch (error) {
+        } catch {
             alert('Có lỗi xảy ra');
         }
     };
@@ -109,7 +109,7 @@ export default function UsersPage() {
                 const data = await res.json();
                 alert('Lỗi: ' + (data.error || 'Unknown'));
             }
-        } catch (error) {
+        } catch {
             alert('Có lỗi xảy ra');
         }
     };
@@ -150,7 +150,7 @@ export default function UsersPage() {
                 alert(data.error || 'Có lỗi xảy ra');
                 setCreateModal(prev => ({ ...prev, submitting: false }));
             }
-        } catch (error) {
+        } catch {
             alert('Lỗi hệ thống');
             setCreateModal(prev => ({ ...prev, submitting: false }));
         }
@@ -177,7 +177,7 @@ export default function UsersPage() {
             } else {
                 alert(data.error || 'Có lỗi xảy ra');
             }
-        } catch (error) {
+        } catch {
             alert('Lỗi hệ thống');
         } finally {
             setSubModal(prev => ({ ...prev, submitting: false }));

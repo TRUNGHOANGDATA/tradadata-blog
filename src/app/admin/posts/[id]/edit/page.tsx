@@ -1,6 +1,8 @@
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
+import type { NodeTiptap } from '@/types';
+import { laLoiHuy } from '@/lib/errors';
 import { Save, ArrowLeft, ImagePlus, Lock, Loader2, Check, Trash2, Globe, FileText, Tag, X, Search, Sparkles, Copy, ClipboardCheck, Pin, FileDown, Link2, Eye } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter, useParams } from 'next/navigation';
@@ -99,7 +101,7 @@ export default function EditPostPage() {
                     setStatus(data.post.status || 'draft');
                     // Load categories from post_categories if available, fallback to category_id
                     if (data.post.post_categories && Array.isArray(data.post.post_categories)) {
-                        setSelectedCategoryIds(data.post.post_categories.map((pc: any) => pc.category_id));
+                        setSelectedCategoryIds(data.post.post_categories.map((pc: { category_id: string }) => pc.category_id));
                     } else if (data.post.category_id) {
                         setSelectedCategoryIds([data.post.category_id]);
                     }
@@ -115,7 +117,7 @@ export default function EditPostPage() {
                     if (data.post.demo_url) setShowDemoFields(true);
                     // Load tags
                     if (data.post.tags && Array.isArray(data.post.tags)) {
-                        setSelectedTagIds(data.post.tags.map((t: any) => t.id));
+                        setSelectedTagIds(data.post.tags.map((t: { id: string }) => t.id));
                     }
                 }
             } catch (error) {
@@ -185,8 +187,8 @@ export default function EditPostPage() {
             } else {
                 alert('Upload failed: ' + (data.error || 'Unknown error'));
             }
-        } catch (error: any) {
-            if (error.name === 'AbortError') {
+        } catch (error) {
+            if (laLoiHuy(error)) {
                 alert('Upload timeout. Please try again with a smaller file or better connection.');
             } else {
                 alert('Upload failed. Please try again.');
@@ -239,7 +241,7 @@ export default function EditPostPage() {
                 alert('Lỗi: ' + (data.error || 'Unknown error'));
                 return false;
             }
-        } catch (error) {
+        } catch {
             alert('Có lỗi xảy ra. Vui lòng thử lại.');
             return false;
         } finally {
@@ -259,7 +261,7 @@ export default function EditPostPage() {
                 const data = await res.json();
                 alert('Lỗi: ' + (data.error || 'Unknown error'));
             }
-        } catch (error) {
+        } catch {
             alert('Có lỗi xảy ra.');
         }
     };
@@ -303,8 +305,8 @@ COVER_IMAGE: Tạo một bức ảnh bìa blog có chất lượng cao, tỉ l�
         setPromptCopied(true);
         setTimeout(() => setPromptCopied(false), 3000);
     };
-    function pInline(text: string): any[] {
-        const r: any[] = []; const rx = /(\*\*(.+?)\*\*|\*(.+?)\*|`(.+?)`)/g; let li = 0; let m;
+    function pInline(text: string): NodeTiptap[] {
+        const r: NodeTiptap[] = []; const rx = /(\*\*(.+?)\*\*|\*(.+?)\*|`(.+?)`)/g; let li = 0; let m;
         while ((m = rx.exec(text)) !== null) { if (m.index > li) r.push({ type: 'text', text: text.slice(li, m.index) }); if (m[2]) r.push({ type: 'text', marks: [{ type: 'bold' }], text: m[2] }); else if (m[3]) r.push({ type: 'text', marks: [{ type: 'italic' }], text: m[3] }); else if (m[4]) r.push({ type: 'text', marks: [{ type: 'code' }], text: m[4] }); li = rx.lastIndex; }
         if (li < text.length) r.push({ type: 'text', text: text.slice(li) }); return r.length > 0 ? r : [{ type: 'text', text }];
     }
@@ -408,10 +410,10 @@ COVER_IMAGE: Tạo một bức ảnh bìa blog có chất lượng cao, tỉ l�
 
                     {/* Word count & Reading time */}
                     {content && (() => {
-                        const extractText = (node: any): string => {
+                        const extractText = (node: NodeTiptap): string => {
                             let t = '';
                             if (node.text) t += node.text + ' ';
-                            if (node.content) node.content.forEach((n: any) => { t += extractText(n); });
+                            if (node.content) node.content.forEach((n) => { t += extractText(n); });
                             return t;
                         };
                         const text = extractText(content);
@@ -964,8 +966,8 @@ COVER_IMAGE: Tạo một bức ảnh bìa blog có chất lượng cao, tỉ l�
                                         <li>Copy prompt ở trên</li>
                                         <li>Dán vào <strong>Gemini</strong>, <strong>ChatGPT</strong>, hoặc <strong>Antigravity Chat</strong></li>
                                         <li>Copy kết quả và dán trực tiếp vào Editor</li>
-                                        <li>Dòng <code>EXCERPT:</code> → dán vào "Mô tả ngắn"</li>
-                                        <li>Dòng <code>KEYWORDS:</code> → dán vào "Từ khóa SEO"</li>
+                                        <li>Dòng <code>EXCERPT:</code> → dán vào &quot;Mô tả ngắn&quot;</li>
+                                        <li>Dòng <code>KEYWORDS:</code> → dán vào &quot;Từ khóa SEO&quot;</li>
                                         <li>Dòng <code>COVER_IMAGE:</code> → dùng mô tả để tạo ảnh bìa</li>
                                     </ol>
                                 </div>

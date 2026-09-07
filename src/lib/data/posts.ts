@@ -1,6 +1,6 @@
 import { supabaseAdmin } from '@/lib/supabase/server';
 import { unstable_cache } from 'next/cache';
-import type { Post } from '@/types';
+import type { Post, Category, HangBaiVietTho } from '@/types';
 
 // Utility to calculate reading time based on content or excerpt length
 function calculateReadingTime(text: string): number {
@@ -17,7 +17,7 @@ function calculateReadingTime(text: string): number {
 // Client Component thì Next serialize vào RSC payload gửi thẳng cho trình duyệt.
 // Không cắt ở đây thì toàn bộ nội dung bài Premium tải được từ /blog dù có paywall.
 // Danh sách cũng không cần `content` — chỉ dùng title/excerpt/cover.
-function formatPost(post: any, { stripContent = false }: { stripContent?: boolean } = {}): Post {
+function formatPost(post: HangBaiVietTho, { stripContent = false }: { stripContent?: boolean } = {}): Post {
     let textForReadingTime = post.excerpt || '';
     if (post.content && typeof post.content === 'object') {
         // Rough estimate if tiptap json
@@ -38,7 +38,17 @@ function formatPost(post: any, { stripContent = false }: { stripContent?: boolea
 }
 
 // Alias cho các hàm trả về danh sách — khó quên hơn là truyền option bằng tay
-const formatPostForList = (post: any): Post => formatPost(post, { stripContent: true });
+const formatPostForList = (post: HangBaiVietTho): Post => formatPost(post, { stripContent: true });
+
+/**
+ * `category:categories(*)` la quan he nhieu-mot: Supabase suy ra kieu MANG (no
+ * khong luon biet luc lieu) con runtime tra ve MOT object. Chuan hoa ca hai dang
+ * de khong phai cast `any`, va de neu Supabase co doi cach tra thi khong vo.
+ */
+function chuanHoaDanhMuc(v: unknown): Category[] {
+    if (!v) return [];
+    return (Array.isArray(v) ? v : [v]) as Category[];
+}
 
 /**
  * Truy van danh sach bai viet.
@@ -96,7 +106,7 @@ async function getPostsUncached({
 
     // Fetch all categories for these posts from junction table
     const postIds = (data || []).map(p => p.id);
-    let postCategoriesMap: Record<string, any[]> = {};
+    const postCategoriesMap: Record<string, Category[]> = {};
     if (postIds.length > 0) {
         const { data: pcData } = await supabaseAdmin
             .from('post_categories')
@@ -105,7 +115,7 @@ async function getPostsUncached({
         if (pcData) {
             for (const pc of pcData) {
                 if (!postCategoriesMap[pc.post_id]) postCategoriesMap[pc.post_id] = [];
-                if (pc.category) postCategoriesMap[pc.post_id].push(pc.category);
+                postCategoriesMap[pc.post_id].push(...chuanHoaDanhMuc(pc.category));
             }
         }
     }
@@ -261,11 +271,11 @@ async function getPinnedPostsUncached(limit = 5): Promise<Post[]> {
         .select('post_id, category:categories(*)')
         .in('post_id', postIds);
 
-    const catMap: Record<string, any[]> = {};
+    const catMap: Record<string, Category[]> = {};
     if (pcData) {
         for (const pc of pcData) {
             if (!catMap[pc.post_id]) catMap[pc.post_id] = [];
-            if (pc.category) catMap[pc.post_id].push(pc.category);
+            catMap[pc.post_id].push(...chuanHoaDanhMuc(pc.category));
         }
     }
 

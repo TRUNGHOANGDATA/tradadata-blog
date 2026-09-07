@@ -1,6 +1,7 @@
 'use client';
 
 import 'highlight.js/styles/vs2015.css';
+import { DOMParser as PMDOMParser } from '@tiptap/pm/model';
 
 import { useEffect, useCallback, useRef, useState } from 'react';
 import { useEditor, EditorContent, ReactNodeViewRenderer, type Editor } from '@tiptap/react';
@@ -527,7 +528,7 @@ const CustomTextStyle = TextStyle.extend({
             fontSize: {
                 default: null,
                 parseHTML: (element: HTMLElement) => element.style.fontSize || null,
-                renderHTML: (attributes: Record<string, any>) => {
+                renderHTML: (attributes: Record<string, unknown>) => {
                     if (!attributes.fontSize) return {};
                     return { style: `font-size: ${attributes.fontSize}` };
                 },
@@ -717,7 +718,6 @@ export function TiptapEditor({ content, onChange, placeholder = 'Bắt đầu vi
                 tempDiv.innerHTML = convertedHtml;
 
                 // Use ProseMirror's DOMParser to parse the HTML into a document slice
-                const { DOMParser: PMDOMParser } = require('@tiptap/pm/model');
                 const slice = PMDOMParser.fromSchema(view.state.schema).parseSlice(tempDiv);
                 const newTr = view.state.tr.replaceSelection(slice);
                 view.dispatch(newTr);

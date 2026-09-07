@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { loiThanhChu } from '@/lib/errors';
 import { auth } from '@/lib/auth';
 import { supabaseAdmin } from '@/lib/supabase/server';
 import { logOrderToSheet } from '@/lib/google-sheets';
@@ -144,8 +145,8 @@ export async function POST(request: Request) {
                 : 'Đã tạo đơn hàng (chờ xác nhận)'
         });
 
-    } catch (error: any) {
+    } catch (error) {
         console.error('Error creating order:', error);
-        return NextResponse.json({ error: error.message || 'Lỗi hệ thống' }, { status: 500 });
+        return NextResponse.json({ error: loiThanhChu(error) || 'Lỗi hệ thống' }, { status: 500 });
     }
 }

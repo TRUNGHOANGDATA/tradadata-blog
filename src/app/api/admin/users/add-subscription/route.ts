@@ -1,5 +1,6 @@
 ﻿import { NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
+import { loiThanhChu } from '@/lib/errors';
 import { supabaseAdmin } from '@/lib/supabase/server';
 
 function generateOrderCode() {
@@ -139,8 +140,8 @@ export async function POST(request: Request) {
             message: `Đã cấp ${product.name} cho ${user_email} (${days} ngày, hết hạn ${expiresAt.toLocaleDateString('vi-VN')}). Đơn: ${orderCode}`
         });
 
-    } catch (error: any) {
+    } catch (error) {
         console.error('Error adding subscription:', error);
-        return NextResponse.json({ error: error.message || 'Lỗi hệ thống' }, { status: 500 });
+        return NextResponse.json({ error: loiThanhChu(error) || 'Lỗi hệ thống' }, { status: 500 });
     }
 }

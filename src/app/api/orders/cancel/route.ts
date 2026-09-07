@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { loiThanhChu } from '@/lib/errors';
 import { supabaseAdmin } from '@/lib/supabase/server';
 
 export async function POST(request: Request) {
@@ -70,8 +71,8 @@ export async function POST(request: Request) {
 
         return NextResponse.json({ success: true, message: 'Đã huỷ đơn hàng thành công' });
 
-    } catch (error: any) {
+    } catch (error) {
         console.error('Error cancelling order:', error);
-        return NextResponse.json({ error: error.message || 'Lỗi hệ thống' }, { status: 500 });
+        return NextResponse.json({ error: loiThanhChu(error) || 'Lỗi hệ thống' }, { status: 500 });
     }
 }

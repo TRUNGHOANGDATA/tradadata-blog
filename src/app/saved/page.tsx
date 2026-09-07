@@ -4,7 +4,7 @@ import { supabaseAdmin } from '@/lib/supabase/server';
 import { PostCard } from '@/components/blog/PostCard';
 import { Bookmark, Search } from 'lucide-react';
 import Link from 'next/link';
-import type { Post } from '@/types';
+import type { Post, HangBaiVietTho } from '@/types';
 
 // Compute reading time (same logic as posts.ts)
 function calculateReadingTime(text: string): number {
@@ -13,7 +13,7 @@ function calculateReadingTime(text: string): number {
     return Math.ceil(noOfWords / wordsPerMinute);
 }
 
-function formatPost(post: any): Post {
+function formatPost(post: HangBaiVietTho): Post {
     let textForReadingTime = post.excerpt || '';
     if (post.content && typeof post.content === 'object') {
         textForReadingTime += JSON.stringify(post.content);

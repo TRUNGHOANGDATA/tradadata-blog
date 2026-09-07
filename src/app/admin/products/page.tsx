@@ -104,7 +104,7 @@ export default function AdminProductsPage() {
                 const data = await res.json();
                 alert('Lỗi: ' + data.error);
             }
-        } catch (error) {
+        } catch {
             alert('Lỗi hệ thống');
         } finally {
             setSaving(false);
@@ -121,7 +121,7 @@ export default function AdminProductsPage() {
             } else {
                 alert('Xoá thất bại vì sản phẩm đã có giao dịch mua khóa ngoại.');
             }
-        } catch (error) {
+        } catch {
             alert('Lỗi hệ thống');
         }
     };

@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { loiThanhChu } from '@/lib/errors';
 import { auth } from '@/lib/auth';
 import { supabaseAdmin } from '@/lib/supabase/server';
 
@@ -59,8 +60,8 @@ export async function PATCH(
         }
 
         return NextResponse.json({ success: true, message: 'Cập nhật giá thành công' });
-    } catch (error: any) {
+    } catch (error) {
         console.error('Error updating order amount:', error);
-        return NextResponse.json({ error: error.message || 'Internal server error' }, { status: 500 });
+        return NextResponse.json({ error: loiThanhChu(error) || 'Internal server error' }, { status: 500 });
     }
 }

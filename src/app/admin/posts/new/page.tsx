@@ -1,6 +1,8 @@
 ﻿'use client';
 
 import { useState, useEffect, useMemo, useCallback } from 'react';
+import type { NodeTiptap } from '@/types';
+import { laLoiHuy } from '@/lib/errors';
 import { Save, Eye, ArrowLeft, ImagePlus, Lock, Loader2, Check, Search, Globe, FileText, Tag, X, Sparkles, Copy, ClipboardCheck } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -123,8 +125,8 @@ export default function NewPostPage() {
             } else {
                 alert('Upload failed: ' + (data.error || 'Unknown error'));
             }
-        } catch (error: any) {
-            if (error.name === 'AbortError') {
+        } catch (error) {
+            if (laLoiHuy(error)) {
                 alert('Upload timeout. Please try again with a smaller file or better connection.');
             } else {
                 alert('Upload failed. Please try again.');
@@ -170,7 +172,7 @@ export default function NewPostPage() {
             } else {
                 alert('Lỗi: ' + (data.error || 'Unknown error'));
             }
-        } catch (error) {
+        } catch {
             alert('Có lỗi xảy ra. Vui lòng thử lại.');
         } finally {
             setSaving(false);
@@ -222,8 +224,8 @@ COVER_IMAGE: Tạo một bức ảnh bìa blog có chất lượng cao, tỉ l�
     };
 
     // Helper: parse inline markdown (bold, italic, code)
-    function parseInline(text: string): any[] {
-        const result: any[] = [];
+    function parseInline(text: string): NodeTiptap[] {
+        const result: NodeTiptap[] = [];
         const regex = /(\*\*(.+?)\*\*|\*(.+?)\*|`(.+?)`)/g;
         let lastIndex = 0;
         let match;
@@ -318,10 +320,10 @@ COVER_IMAGE: Tạo một bức ảnh bìa blog có chất lượng cao, tỉ l�
 
                     {/* Word count & Reading time */}
                     {content && (() => {
-                        const extractText = (node: any): string => {
+                        const extractText = (node: NodeTiptap): string => {
                             let t = '';
                             if (node.text) t += node.text + ' ';
-                            if (node.content) node.content.forEach((n: any) => { t += extractText(n); });
+                            if (node.content) node.content.forEach((n) => { t += extractText(n); });
                             return t;
                         };
                         const text = extractText(content);
@@ -791,8 +793,8 @@ COVER_IMAGE: Tạo một bức ảnh bìa blog có chất lượng cao, tỉ l�
                                         <li>Copy prompt ở trên</li>
                                         <li>Dán vào <strong>Gemini</strong>, <strong>ChatGPT</strong>, hoặc <strong>Antigravity Chat</strong></li>
                                         <li>Copy kết quả và dán trực tiếp vào Editor</li>
-                                        <li>Dòng <code>EXCERPT:</code> → dán vào "Mô tả ngắn"</li>
-                                        <li>Dòng <code>KEYWORDS:</code> → dán vào "Từ khóa SEO"</li>
+                                        <li>Dòng <code>EXCERPT:</code> → dán vào &quot;Mô tả ngắn&quot;</li>
+                                        <li>Dòng <code>KEYWORDS:</code> → dán vào &quot;Từ khóa SEO&quot;</li>
                                         <li>Dòng <code>COVER_IMAGE:</code> → dùng mô tả để tạo ảnh bìa</li>
                                     </ol>
                                 </div>

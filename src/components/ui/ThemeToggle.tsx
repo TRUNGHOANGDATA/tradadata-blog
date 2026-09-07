@@ -10,6 +10,9 @@ export function ThemeToggle() {
         const saved = localStorage.getItem('theme');
         const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
         const isDark = saved === 'dark' || (!saved && prefersDark);
+        // Doc localStorage + prefers-color-scheme: chi co o trinh duyet. Tinh trong render
+        // dau la hydration mismatch, nen phai doc sau khi mount.
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setDark(isDark);
         document.documentElement.classList.toggle('dark', isDark);
     }, []);

@@ -1,4 +1,5 @@
 import { Metadata } from 'next';
+import type { Post, HangBaiVietTho } from '@/types';
 import { notFound } from 'next/navigation';
 import { supabaseAdmin } from '@/lib/supabase/server';
 import { PostCard } from '@/components/blog/PostCard';
@@ -21,7 +22,9 @@ export async function generateStaticParams() {
 }
 
 // Format post into the shape PostCard expects
-function formatPost(raw: any) {
+// Cot lay ra deu NOT NULL trong DB, nen ep ve Post o cuoi. Khac han `raw: any`
+// truoc day: dau vao gio co kieu, chi con dau ra la dam bao bang tay.
+function formatPost(raw: HangBaiVietTho): Post {
     return {
         id: raw.id,
         title: raw.title,
@@ -40,7 +43,7 @@ function formatPost(raw: any) {
         author_id: raw.author_id,
         author: raw.author,
         category: raw.category,
-    };
+    } as Post;
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -80,7 +83,7 @@ export default async function TagPage({ params }: Props) {
         .select('post_id')
         .eq('tag_id', tag.id);
 
-    let posts: any[] = [];
+    let posts: Post[] = [];
     if (postTagRows && postTagRows.length > 0) {
         const postIds = postTagRows.map(r => r.post_id);
         const { data: postsData } = await supabaseAdmin
