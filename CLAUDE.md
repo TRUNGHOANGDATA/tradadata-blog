@@ -40,6 +40,15 @@ Domain chuẩn: `https://www.tradadata.com`.
   dữ liệu khách vào Actions log, và không nhận secret qua `inputs` (input hiện nguyên văn
   trong log). Vì cùng lý do workflow đó cố ý không có ô "nhập lệnh kubectl tự do".
   Mỗi lần `rollout restart` là **cả blog và ke-truyen down ~1-2 phút** (`Recreate`, chung pod).
+- ⚠️ **Push vào `main` của repo `ke-truyen` là DEPLOY, kể cả khi chỉ sửa workflow.**
+  `deploy.yml` bên đó có trigger `push: branches: [main]` (khác repo này — repo này
+  đã bỏ `push:` ở commit `34fbb08`). Deploy trang truyện thì recreate pod, nên
+  **blog down theo**.
+  Nó có `paths-ignore` nhưng đã từng hở: mẫu `.github/workflows/blog-*.yml` khớp
+  `blog-cron.yml` mà KHÔNG khớp `deploy-blog.yml`. Ngày 07/09/2026 mình sửa
+  `deploy-blog.yml` và làm cả hai site 502 khoảng 3-5 phút vì đúng lỗ này.
+  Trước khi push bất cứ thứ gì vào `ke-truyen`, kiểm `paths-ignore` trong
+  `deploy.yml` xem đường dẫn của mình có được loại trừ chưa.
 
 ## Chạy dự án
 
