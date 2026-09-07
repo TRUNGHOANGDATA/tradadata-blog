@@ -11,13 +11,35 @@ Domain chuẩn: `https://www.tradadata.com`.
   `192.168.1.250` chỉ tới được qua gateway (ProxyJump).
 - Manifest Deployment/Service KHÔNG nằm trong repo này — chúng ở trên control plane.
   Repo chỉ giữ `k8s/cronjobs.yaml` (lịch chạy nền).
-- **Deploy**: `.github/workflows/deploy.yml` — push vào `main` là tự động
+- **Deploy**: KHÔNG có deploy tự động. Push vào `main` không kích hoạt gì
+  (`push:` đã bị bỏ ở commit `34fbb08` để tiết kiệm phút Actions — repo này private nên
+  phút bị tính tiền). Hai đường bấm tay, cùng làm một việc:
   typecheck → build image → push ghcr → `kubectl set image ... blog=<image>` → chờ rollout
   → **đối chiếu `/api/health` trả đúng commit SHA** mới coi là thành công.
+  - `deploy-blog` ở repo **ke-truyen** — đường đang dùng, vì repo đó public nên phút Actions
+    miễn phí không giới hạn, và bộ secret SSH vào cụm cũng nằm ở đó.
+  - `.github/workflows/deploy.yml` ở repo này (`workflow_dispatch`) — chỉ dùng khi repo blog
+    còn hạn mức phút và đã khai đủ secret.
   Image chạy Next.js standalone bằng `node server.js` (KHÔNG phải `next start`).
   Deployment mà khai `command:`/`args:` kiểu `npm start` là container không boot được.
 - Env đọc từ Secret/env của k8s, KHÔNG phải từ Vercel. Mọi script đẩy env lên Vercel
   đã được xoá khỏi repo.
+- **Vận hành cụm khi cần sửa env / xem log**: máy dev KHÔNG có `kubectl`, control plane
+  `192.168.1.250` chỉ vào được qua gateway bằng khoá SSH — khoá đó nằm trong secret của
+  repo `TRUNGHOANGDATA/ke-truyen`, không có ở repo này. Đường vào là workflow `blog-cron`
+  bên repo đó (`workflow_dispatch`, 5 chế độ):
+  - `diagnose` — chỉ đọc: CronJob, TÊN các Secret, image, job cron gần nhất.
+  - `apply-cronjobs` — áp `k8s/cronjobs.yaml` của repo này lên cụm.
+  - `test-run` — chạy ngay một CronJob, không chờ tới giờ.
+  - `check-lead-mail` — chỉ đọc, chẩn đoán mail: đếm số dòng log theo dấu hiệu, in mã lỗi
+    SMTP, che địa chỉ email, in độ dài `EMAIL_PASS` chứ không in giá trị.
+  - `set-mail-secret` — ghi `EMAIL_USER`/`EMAIL_PASS`/`LEAD_NOTIFY_EMAIL` vào Secret
+    `tradadata-blog-secret` rồi `rollout restart`. Lấy giá trị từ **secret của repo
+    ke-truyen** (`BLOG_EMAIL_USER`, `BLOG_EMAIL_PASS`, `BLOG_LEAD_NOTIFY_EMAIL`).
+  ⚠️ Repo `ke-truyen` là **public** ⇒ tuyệt đối không in giá trị secret, log ứng dụng hay
+  dữ liệu khách vào Actions log, và không nhận secret qua `inputs` (input hiện nguyên văn
+  trong log). Vì cùng lý do workflow đó cố ý không có ô "nhập lệnh kubectl tự do".
+  Mỗi lần `rollout restart` là **cả blog và ke-truyen down ~1-2 phút** (`Recreate`, chung pod).
 
 ## Chạy dự án
 
@@ -62,6 +84,20 @@ Cần file `.env.local` (không có trong repo). Các biến đang được dùn
   (dùng quota 15GB của user); service account chỉ là fallback và **có 0 quota**.
 - **Email**: Nodemailer + Gmail (`src/lib/email/gmail.ts`). Template lưu trong bảng `email_templates`,
   thay biến `{{ten_bien}}` bằng `src/lib/email/template-engine.ts`.
+  `service: 'gmail'` ⇒ luôn xác thực vào smtp.gmail.com, nên **`EMAIL_USER` bắt buộc phải là
+  chính tài khoản Google đã sinh ra app password trong `EMAIL_PASS`** (16 ký tự, bỏ hết dấu
+  cách). Sai điều này là Gmail trả `535` / `code: 'EAUTH'`. Đã bị đúng lỗi này một lần
+  (07/09/2026): `EMAIL_USER` khai địa chỉ đuôi `.vn` không phải tài khoản Google ⇒ mail chết
+  im lặng nhiều tháng.
+  `sendEmail` **không throw** — nó trả `{ success: false, error }`, mọi nơi gọi đều bỏ qua lỗi
+  để không làm hỏng request. Nghĩa là mail chết thì UI vẫn báo thành công, chỉ log mới biết.
+  Có 8 route gọi nó (`orders/create`, `admin/orders/create`, `admin/orders/[id]/approve`,
+  `cron/check-subscriptions`, `cron/process-email-queue`, `newsletter/send`,
+  `newsletter/subscribe`, `api/leads`) ⇒ **một điểm chết duy nhất làm mất sạch mail**, nặng
+  nhất là khách đặt hàng không nhận được hướng dẫn chuyển khoản.
+  Kiểm tra nhanh mail còn sống không: chạy `blog-cron` chế độ `check-lead-mail`, xem
+  `[lead] Da bao mail ve` và `Message sent:` có > 0 không.
+  `LEAD_NOTIFY_EMAIL` là nơi nhận mail báo khách quan tâm phần mềm; thiếu thì rơi về `EMAIL_USER`.
 - **Cron**: 2 endpoint `/api/cron/process-email-queue` và `/api/cron/check-subscriptions`,
   cả hai yêu cầu header `Authorization: Bearer $CRON_SECRET`.
   Lịch chạy bằng CronJob của k8s, manifest ở `k8s/cronjobs.yaml`.
