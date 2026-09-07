@@ -1,7 +1,7 @@
 import { SITE_CONFIG } from '@/lib/constants';
 
 export const metadata = {
-    title: 'Điều khoản sử dụng | Trà Đá Data',
+    title: 'Điều khoản sử dụng',
     description: 'Điều khoản sử dụng dịch vụ của TRÀ ĐÁ DATA',
     robots: { index: false, follow: true },
 };

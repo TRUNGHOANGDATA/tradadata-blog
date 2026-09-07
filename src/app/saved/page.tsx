@@ -25,7 +25,7 @@ function formatPost(post: any): Post {
 }
 
 export const metadata = {
-    title: 'Bài viết đã lưu | Trà Đá Data',
+    title: 'Bài viết đã lưu',
     description: 'Danh sách các bài viết bạn đã lưu',
 };
 

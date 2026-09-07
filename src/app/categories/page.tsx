@@ -3,7 +3,7 @@ import { CategoryCard } from '@/components/blog/CategoryCard';
 import { supabaseAdmin } from '@/lib/supabase/server';
 
 export const metadata = {
-    title: 'Chủ đề | Trà Đá Data',
+    title: 'Chủ đề',
     description: 'Khám phá bài viết theo từng chủ đề',
 };
 

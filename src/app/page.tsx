@@ -158,7 +158,7 @@ export default async function HomePage() {
           </div>
           <Link
             href="/categories"
-            className="inline-flex items-center gap-1 text-brand-600 dark:text-brand-400 hover:text-brand-700 dark:hover:text-brand-300 text-sm font-medium"
+            className="inline-flex items-center gap-1 py-2 text-brand-600 dark:text-brand-400 hover:text-brand-700 dark:hover:text-brand-300 text-sm font-medium"
           >
             Xem tất cả <ArrowRight className="h-4 w-4" />
           </Link>
@@ -181,7 +181,7 @@ export default async function HomePage() {
           </div>
           <Link
             href="/blog"
-            className="inline-flex items-center gap-1 text-brand-600 dark:text-brand-400 hover:text-brand-700 dark:hover:text-brand-300 text-sm font-medium"
+            className="inline-flex items-center gap-1 py-2 text-brand-600 dark:text-brand-400 hover:text-brand-700 dark:hover:text-brand-300 text-sm font-medium"
           >
             Xem tất cả <ArrowRight className="h-4 w-4" />
           </Link>

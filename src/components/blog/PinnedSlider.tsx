@@ -164,14 +164,14 @@ export function PinnedSlider({ posts }: PinnedSliderProps) {
                     <>
                         <button
                             onClick={(e) => { e.preventDefault(); e.stopPropagation(); prev(); }}
-                            className="absolute left-3 top-1/2 -translate-y-1/2 z-20 p-2.5 rounded-full bg-white/10 hover:bg-white/25 text-white backdrop-blur-md border border-white/10 transition-all hover:scale-110 active:scale-95"
+                            className="absolute left-3 top-1/2 -translate-y-1/2 z-20 grid place-items-center min-h-11 min-w-11 rounded-full bg-white/10 hover:bg-white/25 text-white backdrop-blur-md border border-white/10 transition-all hover:scale-110 active:scale-95"
                             aria-label="Bài trước"
                         >
                             <ChevronLeft className="h-5 w-5" />
                         </button>
                         <button
                             onClick={(e) => { e.preventDefault(); e.stopPropagation(); next(); }}
-                            className="absolute right-3 top-1/2 -translate-y-1/2 z-20 p-2.5 rounded-full bg-white/10 hover:bg-white/25 text-white backdrop-blur-md border border-white/10 transition-all hover:scale-110 active:scale-95"
+                            className="absolute right-3 top-1/2 -translate-y-1/2 z-20 grid place-items-center min-h-11 min-w-11 rounded-full bg-white/10 hover:bg-white/25 text-white backdrop-blur-md border border-white/10 transition-all hover:scale-110 active:scale-95"
                             aria-label="Bài tiếp"
                         >
                             <ChevronRight className="h-5 w-5" />
@@ -186,7 +186,7 @@ export function PinnedSlider({ posts }: PinnedSliderProps) {
                             <button
                                 key={index}
                                 onClick={(e) => { e.preventDefault(); e.stopPropagation(); goTo(index, index > current ? 'next' : 'prev'); }}
-                                className="relative p-2 group"
+                                className="relative grid place-items-center min-h-11 min-w-11 group"
                                 aria-label={`Slide ${index + 1}`}
                             >
                                 <div className={`rounded-full transition-all duration-300 ${index === current
@@ -195,7 +195,7 @@ export function PinnedSlider({ posts }: PinnedSliderProps) {
                                     }`} />
                                 {/* Progress bar animation on active dot */}
                                 {index === current && !isPaused && (
-                                    <div className="absolute top-2 left-2 h-3 w-10 rounded-full bg-brand-400/40 origin-left animate-progress" />
+                                    <div className="absolute inset-0 m-auto h-3 w-10 rounded-full bg-brand-400/40 origin-left animate-progress" />
                                 )}
                             </button>
                         ))}
