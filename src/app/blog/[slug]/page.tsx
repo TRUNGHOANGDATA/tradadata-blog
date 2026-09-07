@@ -54,8 +54,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
         return { title: 'Không tìm thấy bài viết' };
     }
 
-    const description = (post as any).meta_description || post.excerpt || `Đọc bài viết "${post.title}" trên ${SITE_CONFIG.name}`;
-    const keywords = (post as any).keywords || (post.category ? [post.category.name] : []);
+    const description = post.meta_description || post.excerpt || `Đọc bài viết "${post.title}" trên ${SITE_CONFIG.name}`;
+    const keywords = post.keywords || (post.category ? [post.category.name] : []);
     const ogImage = post.cover_image || SITE_CONFIG.ogImage;
 
     return {
@@ -128,7 +128,7 @@ export default async function BlogPostPage({ params, searchParams }: Props) {
         })(),
     ]);
 
-    let isPremiumUnlocked = !post.is_premium || isPremiumProfile;
+    const isPremiumUnlocked = !post.is_premium || isPremiumProfile;
 
     // Render HTML from Tiptap JSON content (CACHED)
     let htmlContent = '';
@@ -141,13 +141,13 @@ export default async function BlogPostPage({ params, searchParams }: Props) {
         : truncateContent(post.content, PREMIUM_PREVIEW_BLOCKS);
 
     // Get related posts IN PARALLEL with content parsing
-    const tagIds = postTags.map((t: any) => t.id);
+    const tagIds = postTags.map((t) => t.id);
     const [cachedContent, relatedPosts] = await Promise.all([
         // Content parsing (cached via renderPostContent)
         // Cache key tách riêng 2 biến thể, tránh phục vụ nhầm bản đầy đủ cho người chưa mở khoá
         contentToRender ? (async () => {
             const getCachedContent = unstable_cache(
-                async (contentRaw: any) => renderPostContent(contentRaw),
+                async (contentRaw: unknown) => renderPostContent(contentRaw),
                 [isPremiumUnlocked ? `post-content-${post.id}` : `post-content-preview-${post.id}`],
                 { revalidate: 3600, tags: [`post-${post.id}`] }
             );
@@ -195,7 +195,7 @@ export default async function BlogPostPage({ params, searchParams }: Props) {
         '@context': 'https://schema.org',
         '@type': 'Article',
         headline: post.title,
-        description: (post as any).meta_description || post.excerpt || '',
+        description: post.meta_description || post.excerpt || '',
         image: post.cover_image || `${SITE_CONFIG.url}${SITE_CONFIG.ogImage}`,
         datePublished: post.published_at || post.created_at,
         dateModified: post.updated_at,
@@ -213,7 +213,7 @@ export default async function BlogPostPage({ params, searchParams }: Props) {
             '@id': `${SITE_CONFIG.url}/blog/${post.slug}`,
         },
         wordCount: post.reading_time ? post.reading_time * 200 : undefined,
-        keywords: ((post as any).keywords || []).join(', ') || post.category?.name || '',
+        keywords: (post.keywords || []).join(', ') || post.category?.name || '',
     };
 
     // BreadcrumbList JSON-LD for Google Rich Results
@@ -424,8 +424,8 @@ export default async function BlogPostPage({ params, searchParams }: Props) {
 
                             {/* Demo File Download Button — self-checks availability client-side */}
                             <DemoDownloadButton
-                                demoUrl={(post as any).demo_url || undefined}
-                                demoLabel={(post as any).demo_label || undefined}
+                                demoUrl={post.demo_url || undefined}
+                                demoLabel={post.demo_label || undefined}
                                 postSlug={post.slug}
                             />
                         </CopyProtection>

@@ -1,4 +1,5 @@
 import { google } from 'googleapis';
+import type { SanPhamNhung } from '@/types';
 import { supabaseAdmin } from './supabase/server';
 
 export async function logOrderToSheet(orderCode: string) {
@@ -59,7 +60,7 @@ export async function logOrderToSheet(orderCode: string) {
             order.full_name,
             `'${order.phone || ''}`, // Thêm nháy đơn để tránh excel hiển thị sai sđt
             order.email,
-            (order.products as any)?.name || '',
+            (order.products as SanPhamNhung)?.name || '',
             order.amount,
             order.status === 'paid' ? 'Đã thanh toán' : 'Chờ xác nhận'
         ];
@@ -75,7 +76,7 @@ export async function logOrderToSheet(orderCode: string) {
         });
 
         console.log('Đã ghi đơn hàng vào Google Sheets:', order.order_code);
-    } catch (err: any) {
+    } catch (err) {
         console.error('Lỗi khi ghi dữ liệu thanh toán vào Google Sheets:', err);
         throw err;
     }
@@ -146,7 +147,7 @@ export async function updateOrderStatusInSheet(orderCode: string, newStatus: str
         });
 
         console.log(`Đã cập nhật đơn hàng ${orderCode} thành "${newStatus}" trong Google Sheets.`);
-    } catch (err: any) {
+    } catch (err) {
         console.error('Lỗi khi cập nhật trạng thái đơn hàng vào Google Sheets:', err);
     }
 }

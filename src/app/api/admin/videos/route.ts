@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { loiThanhChu } from '@/lib/errors';
 import { auth } from '@/lib/auth';
 import { listGoogleDriveVideos, uploadVideoToDrive, deleteFromGoogleDrive } from '@/lib/storage/google-drive';
 
@@ -24,9 +25,9 @@ export async function GET(request: Request) {
             files,
             pagination: { page, limit, totalFiles, totalPages, hasMore: page < totalPages },
         });
-    } catch (error: any) {
+    } catch (error) {
         console.error('Error listing videos:', error);
-        return NextResponse.json({ error: error.message }, { status: 500 });
+        return NextResponse.json({ error: loiThanhChu(error) }, { status: 500 });
     }
 }
 
@@ -54,8 +55,8 @@ export async function POST(request: Request) {
         }
 
         return NextResponse.json({ success: true, file: result });
-    } catch (error: any) {
-        return NextResponse.json({ error: error.message }, { status: 500 });
+    } catch (error) {
+        return NextResponse.json({ error: loiThanhChu(error) }, { status: 500 });
     }
 }
 
@@ -75,7 +76,7 @@ export async function DELETE(request: Request) {
         if (!success) return NextResponse.json({ error: 'Failed to delete' }, { status: 500 });
 
         return NextResponse.json({ success: true });
-    } catch (error: any) {
-        return NextResponse.json({ error: error.message }, { status: 500 });
+    } catch (error) {
+        return NextResponse.json({ error: loiThanhChu(error) }, { status: 500 });
     }
 }

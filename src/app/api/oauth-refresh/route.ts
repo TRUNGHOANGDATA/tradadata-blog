@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { loiThanhChu } from '@/lib/errors';
 import { google } from 'googleapis';
 
 // Temporary endpoint to generate a new OAuth refresh token
@@ -42,7 +43,7 @@ export async function GET(request: Request) {
             access_token: tokens.access_token,
             message: 'Copy the refresh_token and set it as GOOGLE_OAUTH_REFRESH_TOKEN in your env vars',
         });
-    } catch (error: any) {
-        return NextResponse.json({ error: error.message }, { status: 500 });
+    } catch (error) {
+        return NextResponse.json({ error: loiThanhChu(error) }, { status: 500 });
     }
 }

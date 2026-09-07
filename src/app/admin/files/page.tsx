@@ -35,7 +35,7 @@ export default function FilesPage() {
             const res = await fetch('/api/admin/files');
             const data = await res.json();
             setFiles(data.files || []);
-        } catch (err) {
+        } catch {
             setError('Không thể tải danh sách files');
         } finally {
             setLoading(false);
@@ -81,7 +81,7 @@ export default function FilesPage() {
         try {
             await fetch(`/api/admin/files?id=${fileId}`, { method: 'DELETE' });
             setFiles(prev => prev.filter(f => f.id !== fileId));
-        } catch (err) {
+        } catch {
             setError('Không thể xóa file');
         }
     }

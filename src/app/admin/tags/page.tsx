@@ -48,7 +48,7 @@ export default function TagsPage() {
                 const data = await res.json();
                 alert('Lỗi: ' + (data.error || 'Unknown'));
             }
-        } catch (error) {
+        } catch {
             alert('Có lỗi xảy ra');
         } finally {
             setAdding(false);
@@ -60,7 +60,7 @@ export default function TagsPage() {
         try {
             await fetch(`/api/admin/tags?id=${id}`, { method: 'DELETE' });
             setTags(prev => prev.filter(t => t.id !== id));
-        } catch (error) {
+        } catch {
             alert('Có lỗi xảy ra');
         }
     };

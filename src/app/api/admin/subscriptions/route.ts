@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { loiThanhChu } from '@/lib/errors';
 import { auth } from '@/lib/auth';
 import { supabaseAdmin } from '@/lib/supabase/server';
 
@@ -48,8 +49,8 @@ export async function GET() {
         }));
 
         return NextResponse.json({ subscriptions: enriched, products: products || [] });
-    } catch (error: any) {
+    } catch (error) {
         console.error('Error fetching subscriptions:', error);
-        return NextResponse.json({ error: error.message }, { status: 500 });
+        return NextResponse.json({ error: loiThanhChu(error) }, { status: 500 });
     }
 }

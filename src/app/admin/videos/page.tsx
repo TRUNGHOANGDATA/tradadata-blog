@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
+import { loiThanhChu } from '@/lib/errors';
 import { Upload, Loader2, Trash2, Copy, Check, AlertCircle, Search, Film, Download, Play, ExternalLink } from 'lucide-react';
 
 interface DriveVideo {
@@ -32,8 +33,8 @@ export default function VideosPage() {
             const res = await fetch('/api/admin/videos?limit=100');
             const data = await res.json();
             setVideos(data.files || []);
-        } catch (e: any) {
-            setError(e.message);
+        } catch (e) {
+            setError(loiThanhChu(e));
         } finally {
             setLoading(false);
         }
@@ -59,8 +60,8 @@ export default function VideosPage() {
                 const res = await fetch('/api/admin/videos', { method: 'POST', body: formData });
                 if (!res.ok) throw new Error(`Upload failed: ${file.name}`);
                 uploadedCount++;
-            } catch (err: any) {
-                setError(err.message);
+            } catch (err) {
+                setError(loiThanhChu(err));
             }
         }
 
@@ -78,7 +79,7 @@ export default function VideosPage() {
             await fetch(`/api/admin/videos?id=${videoId}`, { method: 'DELETE' });
             setVideos(prev => prev.filter(v => v.id !== videoId));
             setSuccess('Đã xóa video');
-        } catch (e: any) { setError(e.message); }
+        } catch (e) { setError(loiThanhChu(e)); }
     }
 
     function copyUrl(url: string, id: string) {

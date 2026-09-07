@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { loiThanhChu } from '@/lib/errors';
 import { auth } from '@/lib/auth';
 import { supabaseAdmin } from '@/lib/supabase/server';
 
@@ -54,8 +55,8 @@ export async function DELETE(_request: Request, { params }: RouteParams) {
         if (error) throw error;
 
         return NextResponse.json({ success: true });
-    } catch (error: any) {
+    } catch (error) {
         console.error('Error deleting comment:', error);
-        return NextResponse.json({ error: error.message }, { status: 500 });
+        return NextResponse.json({ error: loiThanhChu(error) }, { status: 500 });
     }
 }

@@ -1,4 +1,6 @@
 import { NextResponse } from 'next/server';
+import type { SanPhamNhung } from '@/types';
+import { loiThanhChu } from '@/lib/errors';
 import { auth } from '@/lib/auth';
 import { supabaseAdmin } from '@/lib/supabase/server';
 
@@ -33,7 +35,15 @@ export async function GET(request: Request) {
         const couponMap: Record<string, { code: string; count: number; discount: number }> = {};
         const dailyMap: Record<string, { revenue: number; orders: number }> = {};
         const productMap: Record<string, { name: string; revenue: number; count: number }> = {};
-        const recentPaid: any[] = [];
+        const recentPaid: {
+            order_code: string;
+            full_name: string | null;
+            email: string;
+            amount: number;
+            paid_at: string | null;
+            product_name: string;
+            coupon_code: string | null;
+        }[] = [];
 
         const now = new Date();
         const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
@@ -73,7 +83,7 @@ export async function GET(request: Request) {
                 }
 
                 // Product breakdown
-                const pName = (order.products as any)?.name || 'Không rõ';
+                const pName = (order.products as SanPhamNhung)?.name || 'Không rõ';
                 if (!productMap[pName]) productMap[pName] = { name: pName, revenue: 0, count: 0 };
                 productMap[pName].revenue += order.amount;
                 productMap[pName].count += 1;
@@ -99,14 +109,16 @@ export async function GET(request: Request) {
                     email: order.email,
                     amount: order.amount,
                     paid_at: order.paid_at,
-                    product_name: (order.products as any)?.name || '',
+                    product_name: (order.products as SanPhamNhung)?.name || '',
                     coupon_code: order.coupon_code,
                 });
             }
         });
 
         // Sort recent paid orders and take top 10
-        recentPaid.sort((a, b) => new Date(b.paid_at).getTime() - new Date(a.paid_at).getTime());
+        // paid_at co the null (don chua duyet lot vao) -> coi nhu cu nhat, day xuong duoi
+        const moc = (v: string | null) => (v ? new Date(v).getTime() : 0);
+        recentPaid.sort((a, b) => moc(b.paid_at) - moc(a.paid_at));
         const recentOrders = recentPaid.slice(0, 10);
 
         // Convert daily map to array
@@ -138,8 +150,8 @@ export async function GET(request: Request) {
             },
             recentOrders,
         });
-    } catch (error: any) {
+    } catch (error) {
         console.error('Error fetching revenue:', error);
-        return NextResponse.json({ error: error.message }, { status: 500 });
+        return NextResponse.json({ error: loiThanhChu(error) }, { status: 500 });
     }
 }

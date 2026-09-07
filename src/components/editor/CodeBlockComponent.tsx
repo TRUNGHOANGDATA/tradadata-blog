@@ -1,9 +1,9 @@
-import { NodeViewContent, NodeViewWrapper } from '@tiptap/react';
+import { NodeViewContent, NodeViewWrapper, type NodeViewProps } from '@tiptap/react';
 import { Check, Copy } from 'lucide-react';
 import { useState } from 'react';
 import { CODE_LANGUAGES, LANGUAGE_DISPLAY_NAMES } from '@/lib/highlight-languages';
 
-export default function CodeBlockComponent({ node, updateAttributes, extension }: any) {
+export default function CodeBlockComponent({ node, updateAttributes, extension }: NodeViewProps) {
     const [copied, setCopied] = useState(false);
 
     const handleCopy = () => {

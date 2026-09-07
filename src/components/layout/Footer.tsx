@@ -24,7 +24,7 @@ const getFooterSettings = unstable_cache(
                 .select('key, value')
                 .eq('key', 'social_links')
                 .single();
-            const links = data?.value as any;
+            const links = data?.value as { email?: string; phone?: string } | null;
             return {
                 email: links?.email || 'trunghoangdata101091@gmail.com',
                 phone: links?.phone || '',

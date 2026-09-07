@@ -44,7 +44,7 @@ export async function POST(request: Request) {
 
         if (existingSubscriber) {
             // Update with new info if provided, and reactivate if unsubscribed
-            const updateData: any = {};
+            const updateData: Record<string, unknown> = {};
 
             if (existingSubscriber.status === 'unsubscribed') {
                 updateData.status = 'active';
@@ -64,7 +64,7 @@ export async function POST(request: Request) {
             }
         } else {
             // Insert new subscriber
-            const insertData: any = { email, status: 'active' };
+            const insertData: Record<string, unknown> = { email, status: 'active' };
             if (full_name) insertData.full_name = full_name;
             if (phone) insertData.phone = phone;
 

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import type { SanPhamNhung } from '@/types';
 import { Search, Loader2, ExternalLink, X, ShoppingBag } from 'lucide-react';
 import Link from 'next/link';
 
@@ -233,7 +234,7 @@ export default function AdminCustomersPage() {
                                                         </div>
                                                     </td>
                                                     <td className="px-4 py-3 text-sm font-medium text-fg">
-                                                        {(order.products as any)?.name || 'Sản phẩm không xác định'}
+                                                        {(order.products as SanPhamNhung)?.name || 'Sản phẩm không xác định'}
                                                     </td>
                                                     <td className="px-4 py-3 text-sm font-bold text-fg">
                                                         {formatCurrency(order.amount)}

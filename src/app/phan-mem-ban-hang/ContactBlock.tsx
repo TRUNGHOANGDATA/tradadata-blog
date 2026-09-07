@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { loiThanhChu } from '@/lib/errors';
 import { Phone, Send, Loader2, CheckCircle2, AlertCircle } from 'lucide-react';
 
 interface SocialLinks {
@@ -95,9 +96,9 @@ export function LeadForm() {
             setStatus('ok');
             setMessage('Đã nhận thông tin. Chúng tôi sẽ liên hệ lại trong thời gian sớm nhất.');
             form.reset();
-        } catch (err: any) {
+        } catch (err) {
             setStatus('error');
-            setMessage(err?.message || 'Có lỗi xảy ra, bạn thử lại hoặc nhắn Zalo giúp mình.');
+            setMessage(loiThanhChu(err));
         }
     }
 

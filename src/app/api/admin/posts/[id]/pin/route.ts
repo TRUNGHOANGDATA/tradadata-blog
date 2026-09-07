@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { loiThanhChu } from '@/lib/errors';
 import { auth } from '@/lib/auth';
 import { supabaseAdmin } from '@/lib/supabase/server';
 import { revalidatePost } from '@/lib/cache';
@@ -74,8 +75,8 @@ export async function PATCH(_request: Request, { params }: RouteParams) {
             is_pinned: newPinned,
             pinned_count: pinnedCount || 0,
         });
-    } catch (error: any) {
+    } catch (error) {
         console.error('Error toggling pin:', error);
-        return NextResponse.json({ error: error.message }, { status: 500 });
+        return NextResponse.json({ error: loiThanhChu(error) }, { status: 500 });
     }
 }

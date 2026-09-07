@@ -1,3 +1,4 @@
+import type { createLowlight } from 'lowlight';
 /**
  * Custom Highlight.js language definitions for domain-specific languages
  * used in Trà Đá Data: Excel formulas, DAX, VBA, Power Query M, R
@@ -250,7 +251,14 @@ export function vbaLanguage(hljs: HLJSApi): Language {
 }
 
 // ===== Register all custom languages =====
-export function registerCustomLanguages(lowlight: any) {
+/**
+ * Kieu cua doi tuong lowlight: lay dung tu thu vien qua `ReturnType`, khong tu
+ * khai lai. Tu khai la se lech chu ky `register` (no co overload) va TypeScript
+ * tu choi nhan doi tuong that.
+ */
+type Lowlight = ReturnType<typeof createLowlight>;
+
+export function registerCustomLanguages(lowlight: Lowlight) {
     lowlight.register('excel', excelFormula);
     lowlight.register('dax', daxLanguage);
     lowlight.register('powerquery', powerQueryM);

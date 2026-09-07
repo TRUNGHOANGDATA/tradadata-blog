@@ -174,8 +174,8 @@ export function CommentSection({ postId }: { postId: string }) {
     const [replyTo, setReplyTo] = useState<string | null>(null);
     const [replyContent, setReplyContent] = useState('');
 
-    const currentUserId = (session?.user as any)?.profileId;
-    const isAdmin = (session?.user as any)?.role === 'admin';
+    const currentUserId = session?.user?.profileId;
+    const isAdmin = session?.user?.role === 'admin';
 
     const fetchComments = useCallback(async () => {
         try {
@@ -214,7 +214,7 @@ export function CommentSection({ postId }: { postId: string }) {
                 const data = await res.json();
                 alert(data.error || 'Có lỗi xảy ra');
             }
-        } catch (error) {
+        } catch {
             alert('Có lỗi xảy ra. Vui lòng thử lại.');
         } finally {
             setSubmitting(false);
@@ -244,7 +244,7 @@ export function CommentSection({ postId }: { postId: string }) {
                 const data = await res.json();
                 alert(data.error || 'Có lỗi xảy ra');
             }
-        } catch (error) {
+        } catch {
             alert('Có lỗi xảy ra. Vui lòng thử lại.');
         } finally {
             setSubmitting(false);
@@ -262,7 +262,7 @@ export function CommentSection({ postId }: { postId: string }) {
                 const data = await res.json();
                 alert(data.error || 'Có lỗi xảy ra');
             }
-        } catch (error) {
+        } catch {
             alert('Có lỗi xảy ra.');
         }
     };

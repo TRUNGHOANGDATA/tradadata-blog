@@ -28,7 +28,7 @@ export default function AdminCouponsPage() {
     const [showBatch, setShowBatch] = useState(false);
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
-    const [products, setProducts] = useState<any[]>([]);
+    const [products, setProducts] = useState<{ id: string; name: string; price: number }[]>([]);
     const [usageData, setUsageData] = useState<{ user_email: string; used_at: string }[]>([]);
     const [usageCoupon, setUsageCoupon] = useState<Coupon | null>(null);
     const [usageLoading, setUsageLoading] = useState(false);
@@ -81,6 +81,10 @@ export default function AdminCouponsPage() {
     };
 
     useEffect(() => {
+        // Tai du lieu khi mount roi setState — day la cach duy nhat khong dung thu vien
+        // data-fetching (SWR/React Query). Quy tac nay canh bao chung chung; doi sang
+        // giai phap khac la them mot phu thuoc moi chi de lam vui linter.
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         fetchCoupons();
         fetchProducts();
     }, []);

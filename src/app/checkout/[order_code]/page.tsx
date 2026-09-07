@@ -1,4 +1,5 @@
 import { supabaseAdmin } from '@/lib/supabase/server';
+import type { SanPhamNhung } from '@/types';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { CheckCircle2 } from 'lucide-react';
@@ -79,12 +80,12 @@ export default async function CheckoutPage(props: { params: Promise<{ order_code
                     full_name: order.full_name,
                     email: order.email,
                     amount: order.amount,
-                    original_amount: order.original_amount || (order.products as any)?.price || order.amount,
+                    original_amount: order.original_amount || (order.products as SanPhamNhung)?.price || order.amount,
                     coupon_code: order.coupon_code || null,
                     product_id: order.product_id,
                     status: order.status,
                 }}
-                productName={(order.products as any)?.name || 'Gói kích hoạt'}
+                productName={(order.products as SanPhamNhung)?.name || 'Gói kích hoạt'}
                 bankInfo={bankInfo}
             />
         </div>

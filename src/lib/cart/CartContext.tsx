@@ -46,6 +46,10 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
     // Khởi tạo từ localStorage
     useEffect(() => {
+        // Co "da mount" de tranh hydration mismatch khi doc gio hang tu localStorage.
+        // Doi sang useSyncExternalStore duoc, nhung day la doan giu gio hang cua khach —
+        // khong dang doi rui ro chi de bo mot canh bao linter.
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setIsMounted(true);
         try {
             const savedCart = localStorage.getItem('tdd-cart');

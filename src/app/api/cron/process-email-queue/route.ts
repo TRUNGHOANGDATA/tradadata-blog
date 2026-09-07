@@ -57,7 +57,7 @@ export async function GET(request: Request) {
 
             const unsubscribeUrl = `${process.env.NEXT_PUBLIC_APP_URL}/api/newsletter/unsubscribe?email=${encodeURIComponent(subscriber.email)}`;
             const postUrl = `${process.env.NEXT_PUBLIC_APP_URL}/blog/${post.slug}`;
-            const categoryName = post.categories ? (Array.isArray(post.categories) ? (post.categories as any[])[0]?.name : (post.categories as any).name) : 'Cập nhật';
+            const categoryName = post.categories ? (Array.isArray(post.categories) ? (post.categories as { name?: string }[])[0]?.name : (post.categories as { name?: string }).name) : 'Cập nhật';
 
             const html = generateNewPostEmailHtml({
                 postTitle: post.title,

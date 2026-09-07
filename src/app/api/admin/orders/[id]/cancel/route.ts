@@ -1,4 +1,6 @@
 import { NextResponse } from 'next/server';
+import type { SanPhamNhung } from '@/types';
+import { loiThanhChu } from '@/lib/errors';
 import { auth } from '@/lib/auth';
 import { supabaseAdmin } from '@/lib/supabase/server';
 import { updateOrderStatusInSheet } from '@/lib/google-sheets';
@@ -37,7 +39,7 @@ export async function POST(
 
         // Nếu đơn đã paid, cần thu hồi quyền
         if (order.status === 'paid') {
-            const productType = (order.products as any)?.product_type;
+            const productType = (order.products as SanPhamNhung)?.product_type;
             if (productType === 'subscription') {
                 // Xoá đúng subscription sinh ra từ đơn này, tránh để lại bản ghi mồ côi
                 // khiến trang Theo dõi Premium vẫn hiển thị là còn hạn.
@@ -108,8 +110,8 @@ export async function POST(
 
         return NextResponse.json({ success: true, message: 'Đã huỷ đơn hàng thành công' });
 
-    } catch (error: any) {
+    } catch (error) {
         console.error('Error cancelling order:', error);
-        return NextResponse.json({ error: error.message || 'Lỗi hệ thống' }, { status: 500 });
+        return NextResponse.json({ error: loiThanhChu(error) || 'Lỗi hệ thống' }, { status: 500 });
     }
 }

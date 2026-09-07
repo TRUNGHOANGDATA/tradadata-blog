@@ -1,7 +1,6 @@
 "use client";
 
 import { Share2 } from "lucide-react";
-import { useEffect, useState } from "react";
 
 interface ShareButtonsProps {
     title: string;
@@ -10,15 +9,10 @@ interface ShareButtonsProps {
 }
 
 export function ShareButtons({ title, url, orientation = "horizontal" }: ShareButtonsProps) {
-    const [currentUrl, setCurrentUrl] = useState("");
-
-    useEffect(() => {
-        if (url) {
-            setCurrentUrl(url);
-        } else if (typeof window !== "undefined") {
-            setCurrentUrl(window.location.href);
-        }
-    }, [url]);
+    // Truoc day luu URL vao state roi set trong useEffect. Khong can: ca 4 cho
+    // dung no deu nam trong handler click, nen tinh ngay luc bam vua gon hon vua
+    // luon dung URL hien tai (state cu co the lac neu dieu huong client-side).
+    const layUrl = () => url || (typeof window !== "undefined" ? window.location.href : "");
 
     const handleShare = async () => {
         if (navigator.share) {
@@ -26,24 +20,24 @@ export function ShareButtons({ title, url, orientation = "horizontal" }: ShareBu
                 await navigator.share({
                     title: title,
                     text: title,
-                    url: currentUrl,
+                    url: layUrl(),
                 });
             } catch (error) {
                 console.error("Error sharing", error);
             }
         } else {
             // Fallback: Copy to clipboard
-            navigator.clipboard.writeText(currentUrl);
+            navigator.clipboard.writeText(layUrl());
             alert("Đã copy đường dẫn bài viết!");
         }
     };
 
     const handleFacebookShare = () => {
-        window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(currentUrl)}`, "_blank");
+        window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(layUrl())}`, "_blank");
     };
 
     const handleLinkedInShare = () => {
-        window.open(`https://www.linkedin.com/shareArticle?mini=true&url=${encodeURIComponent(currentUrl)}&title=${encodeURIComponent(title)}`, "_blank");
+        window.open(`https://www.linkedin.com/shareArticle?mini=true&url=${encodeURIComponent(layUrl())}&title=${encodeURIComponent(title)}`, "_blank");
     };
 
     const containerClass = orientation === "vertical"

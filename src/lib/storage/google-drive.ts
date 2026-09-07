@@ -1,4 +1,5 @@
 import { google } from 'googleapis';
+import { loiThanhChu, thuocTinhLoi } from '@/lib/errors';
 import { Readable } from 'stream';
 
 // Google Drive API wrapper for blog uploads
@@ -132,10 +133,11 @@ async function uploadToDriveFolder(
             url,
             name: response.data.name || fileName,
         };
-    } catch (error: any) {
-        console.error('Error uploading to Google Drive:', error?.message || error);
-        if (error?.response?.data) {
-            console.error('Google Drive API Error Details:', JSON.stringify(error.response.data, null, 2));
+    } catch (error) {
+        console.error('Error uploading to Google Drive:', loiThanhChu(error));
+        const chiTiet = thuocTinhLoi<{ data?: unknown }>(error, 'response')?.data;
+        if (chiTiet) {
+            console.error('Google Drive API Error Details:', JSON.stringify(chiTiet, null, 2));
         }
         return null;
     }

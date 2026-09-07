@@ -1,4 +1,6 @@
 import { NextResponse } from 'next/server';
+import type { NodeTiptap } from '@/types';
+import { loiThanhChu } from '@/lib/errors';
 import { auth } from '@/lib/auth';
 import { supabaseAdmin } from '@/lib/supabase/server';
 import { revalidatePost } from '@/lib/cache';
@@ -6,17 +8,20 @@ import { revalidatePost } from '@/lib/cache';
 type RouteParams = { params: Promise<{ id: string }> };
 
 // Helper: extract plain text from TipTap JSON content
-function extractTextFromContent(content: any): string {
+function extractTextFromContent(content: unknown): string {
     if (!content) return '';
-    if (typeof content === 'string') {
-        try { content = JSON.parse(content); } catch { return content; }
+    let json: unknown = content;
+    if (typeof json === 'string') {
+        // Chuoi khong phai JSON thi coi luon la van ban tho
+        try { json = JSON.parse(json); } catch { return json as string; }
     }
+    if (!json || typeof json !== 'object') return '';
     let text = '';
-    function walk(node: any) {
+    function walk(node: NodeTiptap) {
         if (node.text) text += node.text + ' ';
         if (node.content) node.content.forEach(walk);
     }
-    walk(content);
+    walk(json as NodeTiptap);
     return text.trim();
 }
 
@@ -58,13 +63,13 @@ export async function GET(_request: Request, { params }: RouteParams) {
         return NextResponse.json({
             post: {
                 ...post,
-                tags: postTags?.map((pt: any) => pt.tags) || [],
+                tags: postTags?.map((pt: { tags: unknown }) => pt.tags) || [],
                 post_categories: postCategories || []
             }
         });
-    } catch (error: any) {
+    } catch (error) {
         console.error('Error fetching post:', error);
-        return NextResponse.json({ error: error.message }, { status: 500 });
+        return NextResponse.json({ error: loiThanhChu(error) }, { status: 500 });
     }
 }
 
@@ -91,7 +96,7 @@ export async function PUT(request: Request, { params }: RouteParams) {
             .eq('id', id)
             .single();
 
-        const updateData: any = {
+        const updateData: Record<string, unknown> = {
             updated_at: new Date().toISOString(),
         };
 
@@ -171,9 +176,9 @@ export async function PUT(request: Request, { params }: RouteParams) {
         revalidatePost([existing?.slug, post?.slug], id);
 
         return NextResponse.json({ post });
-    } catch (error: any) {
+    } catch (error) {
         console.error('Error updating post:', error);
-        return NextResponse.json({ error: error.message }, { status: 500 });
+        return NextResponse.json({ error: loiThanhChu(error) }, { status: 500 });
     }
 }
 
@@ -207,8 +212,8 @@ export async function DELETE(_request: Request, { params }: RouteParams) {
         revalidatePost([existing?.slug], id);
 
         return NextResponse.json({ success: true });
-    } catch (error: any) {
+    } catch (error) {
         console.error('Error deleting post:', error);
-        return NextResponse.json({ error: error.message }, { status: 500 });
+        return NextResponse.json({ error: loiThanhChu(error) }, { status: 500 });
     }
 }

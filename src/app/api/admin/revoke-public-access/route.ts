@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { loiThanhChu } from '@/lib/errors';
 import { auth } from '@/lib/auth';
 import { supabaseAdmin } from '@/lib/supabase/server';
 import { google } from 'googleapis';
@@ -101,11 +102,11 @@ export async function POST(request: Request) {
                 status: 'revoked',
                 details: `Removed ${anyonePerms.length} public permission(s)`,
             });
-        } catch (err: any) {
+        } catch (err) {
             results.push({
                 slug: post.slug,
                 status: 'error',
-                details: err?.message || 'Unknown error',
+                details: loiThanhChu(err),
             });
         }
     }

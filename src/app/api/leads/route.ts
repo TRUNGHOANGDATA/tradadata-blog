@@ -99,7 +99,7 @@ export async function POST(request: Request) {
         notify().catch((e) => console.error('Lỗi gửi mail báo lead:', e));
 
         return NextResponse.json({ success: true });
-    } catch (error: any) {
+    } catch (error) {
         console.error('Lead submit error:', error);
         return NextResponse.json({ error: 'Đã có lỗi xảy ra, bạn thử lại giúp mình.' }, { status: 500 });
     }

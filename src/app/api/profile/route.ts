@@ -61,7 +61,7 @@ export async function PATCH(request: Request) {
             return NextResponse.json({ error: 'Số điện thoại không hợp lệ' }, { status: 400 });
         }
 
-        const updates: any = {};
+        const updates: Record<string, unknown> = {};
         if (full_name !== undefined) updates.full_name = full_name.trim();
         if (phone !== undefined) updates.phone = phone.trim() || null;
 

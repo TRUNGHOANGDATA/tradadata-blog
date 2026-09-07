@@ -1,4 +1,6 @@
 import { NextResponse } from 'next/server';
+import type { NodeTiptap } from '@/types';
+import { loiThanhChu } from '@/lib/errors';
 import { auth } from '@/lib/auth';
 import { supabaseAdmin } from '@/lib/supabase/server';
 import { revalidatePost } from '@/lib/cache';
@@ -23,9 +25,9 @@ export async function GET() {
         if (error) throw error;
 
         return NextResponse.json({ posts: data || [] });
-    } catch (error: any) {
+    } catch (error) {
         console.error('Error fetching posts:', error);
-        return NextResponse.json({ error: error.message }, { status: 500 });
+        return NextResponse.json({ error: loiThanhChu(error) }, { status: 500 });
     }
 }
 
@@ -44,17 +46,20 @@ function generateSlug(title: string): string {
 }
 
 // Helper: extract plain text from TipTap JSON content
-function extractTextFromContent(content: any): string {
+function extractTextFromContent(content: unknown): string {
     if (!content) return '';
-    if (typeof content === 'string') {
-        try { content = JSON.parse(content); } catch { return content; }
+    let json: unknown = content;
+    if (typeof json === 'string') {
+        // Chuoi khong phai JSON thi coi luon la van ban tho
+        try { json = JSON.parse(json); } catch { return json as string; }
     }
+    if (!json || typeof json !== 'object') return '';
     let text = '';
-    function walk(node: any) {
+    function walk(node: NodeTiptap) {
         if (node.text) text += node.text + ' ';
         if (node.content) node.content.forEach(walk);
     }
-    walk(content);
+    walk(json as NodeTiptap);
     return text.trim();
 }
 
@@ -107,7 +112,7 @@ export async function POST(request: Request) {
         }
 
         // Create post
-        const postData: any = {
+        const postData: Record<string, unknown> = {
             title: title.trim(),
             slug,
             excerpt: excerpt?.trim() || null,
@@ -152,8 +157,8 @@ export async function POST(request: Request) {
         revalidatePost([post?.slug], post?.id);
 
         return NextResponse.json({ post }, { status: 201 });
-    } catch (error: any) {
+    } catch (error) {
         console.error('Error creating post:', error);
-        return NextResponse.json({ error: error.message }, { status: 500 });
+        return NextResponse.json({ error: loiThanhChu(error) }, { status: 500 });
     }
 }

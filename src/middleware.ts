@@ -13,9 +13,12 @@ export async function middleware(request: NextRequest) {
         return NextResponse.redirect(url, 301);
     }
 
-    // Run auth middleware for /admin routes
+    // Run auth middleware for /admin routes.
+    // NextAuth v5 cho phep goi `auth` nhu middleware nhung kieu cua no khong khai
+    // dang goi nay. Ep ve dung chu ky can dung, khong dung `any`.
     if (request.nextUrl.pathname.startsWith('/admin')) {
-        return (auth as any)(request);
+        const authMiddleware = auth as unknown as (req: NextRequest) => Promise<Response> | Response;
+        return authMiddleware(request);
     }
 
     return NextResponse.next();

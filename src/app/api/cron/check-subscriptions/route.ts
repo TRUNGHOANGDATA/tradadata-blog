@@ -1,4 +1,6 @@
 import { NextResponse } from 'next/server';
+import type { SanPhamNhung } from '@/types';
+import { loiThanhChu } from '@/lib/errors';
 import { supabaseAdmin } from '@/lib/supabase/server';
 import { sendEmail } from '@/lib/email/gmail';
 import { getEmailTemplate } from '@/lib/email/template-engine';
@@ -39,7 +41,7 @@ export async function GET(request: Request) {
             if (subError) throw subError;
 
             const emailsSent: string[] = [];
-            const uniqueUsers = new Map<string, any>();
+            const uniqueUsers = new Map<string, { user_email: string; expires_at: string; products?: unknown }>();
 
             // Deduplicate by email — only send one reminder per user
             for (const sub of (subData || [])) {
@@ -50,7 +52,7 @@ export async function GET(request: Request) {
 
             for (const [email, sub] of uniqueUsers) {
                 try {
-                    const productName = (sub.products as any)?.name || 'Gói Premium';
+                    const productName = (sub.products as SanPhamNhung)?.name || 'Gói Premium';
                     const expiresFormatted = new Date(sub.expires_at).toLocaleDateString('vi-VN', {
                         day: '2-digit',
                         month: '2-digit',
@@ -79,8 +81,8 @@ export async function GET(request: Request) {
         }
 
         return NextResponse.json({ success: true, message: 'Checked via RPC', data: expiring });
-    } catch (error: any) {
+    } catch (error) {
         console.error('Subscription check error:', error);
-        return NextResponse.json({ error: error.message }, { status: 500 });
+        return NextResponse.json({ error: loiThanhChu(error) }, { status: 500 });
     }
 }

@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { loiThanhChu } from '@/lib/errors';
 import { auth } from '@/lib/auth';
 import { supabaseAdmin } from '@/lib/supabase/server';
 import { revalidateTaxonomy } from '@/lib/cache';
@@ -18,9 +19,9 @@ export async function GET() {
         if (error) throw error;
 
         return NextResponse.json({ categories: data || [] });
-    } catch (error: any) {
+    } catch (error) {
         console.error('Error fetching categories:', error);
-        return NextResponse.json({ error: error.message }, { status: 500 });
+        return NextResponse.json({ error: loiThanhChu(error) }, { status: 500 });
     }
 }
 
@@ -69,9 +70,9 @@ export async function POST(request: Request) {
         revalidateTaxonomy();
 
         return NextResponse.json({ category: data }, { status: 201 });
-    } catch (error: any) {
+    } catch (error) {
         console.error('Error creating category:', error);
-        return NextResponse.json({ error: error.message }, { status: 500 });
+        return NextResponse.json({ error: loiThanhChu(error) }, { status: 500 });
     }
 }
 
@@ -108,9 +109,9 @@ export async function PUT(request: Request) {
         revalidateTaxonomy();
 
         return NextResponse.json({ category: data });
-    } catch (error: any) {
+    } catch (error) {
         console.error('Error updating category:', error);
-        return NextResponse.json({ error: error.message }, { status: 500 });
+        return NextResponse.json({ error: loiThanhChu(error) }, { status: 500 });
     }
 }
 
@@ -139,8 +140,8 @@ export async function DELETE(request: Request) {
         revalidateTaxonomy();
 
         return NextResponse.json({ success: true });
-    } catch (error: any) {
+    } catch (error) {
         console.error('Error deleting category:', error);
-        return NextResponse.json({ error: error.message }, { status: 500 });
+        return NextResponse.json({ error: loiThanhChu(error) }, { status: 500 });
     }
 }

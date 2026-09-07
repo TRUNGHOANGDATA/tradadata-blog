@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { loiThanhChu } from '@/lib/errors';
 import { auth } from '@/lib/auth';
 import { supabaseAdmin } from '@/lib/supabase/server';
 
@@ -52,8 +53,8 @@ export async function POST(request: Request) {
             message: `Tạo tài khoản thành công! Khách hàng đăng nhập bằng Google (${email}) để truy cập.`
         });
 
-    } catch (error: any) {
+    } catch (error) {
         console.error('Error creating user:', error);
-        return NextResponse.json({ error: error.message || 'Lỗi hệ thống' }, { status: 500 });
+        return NextResponse.json({ error: loiThanhChu(error) || 'Lỗi hệ thống' }, { status: 500 });
     }
 }

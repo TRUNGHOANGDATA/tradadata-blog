@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { loiThanhChu, thuocTinhLoi } from '@/lib/errors';
 import { auth } from '@/lib/auth';
 import { supabaseAdmin } from '@/lib/supabase/server';
 import { google } from 'googleapis';
@@ -82,14 +83,14 @@ export async function POST(request: Request) {
 
         const viewUrl = `https://drive.google.com/file/d/${fileId}/view?usp=sharing`;
         return NextResponse.json({ success: true, driveUrl: viewUrl });
-    } catch (err: any) {
+    } catch (err) {
         // If permission already exists, still return the URL
-        if (err?.code === 409 || err?.message?.includes('already has access')) {
+        if (thuocTinhLoi(err, 'code') === 409 || loiThanhChu(err).includes('already has access')) {
             const viewUrl = `https://drive.google.com/file/d/${fileId}/view?usp=sharing`;
             return NextResponse.json({ success: true, driveUrl: viewUrl });
         }
 
-        console.error('Inline download error:', err?.message || err);
+        console.error('Inline download error:', loiThanhChu(err));
         return NextResponse.json(
             { error: 'Không thể chia sẻ file. Vui lòng thử lại sau.' },
             { status: 502 }

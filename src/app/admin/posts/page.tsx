@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
+import { loiThanhChu } from '@/lib/errors';
 import Link from 'next/link';
 import { Plus, Search, Edit, Trash2, Eye, Send, Loader2, ChevronLeft, ChevronRight, Globe, CheckCircle2, XCircle } from 'lucide-react';
 
@@ -56,7 +57,7 @@ export default function PostsPage() {
             if (res.ok) {
                 setPosts(prev => prev.filter(p => p.id !== id));
             }
-        } catch (error) {
+        } catch {
             alert('Có lỗi xảy ra khi xoá');
         }
     };
@@ -77,9 +78,9 @@ export default function PostsPage() {
             } else {
                 throw new Error(data.error || 'Error');
             }
-        } catch (error: any) {
+        } catch (error) {
             setSendingState(prev => ({ ...prev, [postId]: 'error' }));
-            alert('Lỗi: ' + error.message);
+            alert('Lỗi: ' + loiThanhChu(error));
         } finally {
             setTimeout(() => setSendingState(prev => ({ ...prev, [postId]: 'idle' })), 3000);
         }
@@ -105,9 +106,9 @@ export default function PostsPage() {
                 const errMsg = data.results?.[0]?.message || data.error || 'Lỗi không xác định';
                 alert(`Lỗi index: ${errMsg}`);
             }
-        } catch (error: any) {
+        } catch (error) {
             setIndexingState(prev => ({ ...prev, [slug]: 'error' }));
-            alert(`Lỗi: ${error.message}`);
+            alert(`Lỗi: ${loiThanhChu(error)}`);
         } finally {
             setTimeout(() => setIndexingState(prev => ({ ...prev, [slug]: 'idle' })), 5000);
         }
@@ -143,8 +144,8 @@ export default function PostsPage() {
             } else {
                 setBulkResult({ message: data.error || 'Có lỗi xảy ra', type: 'error' });
             }
-        } catch (error: any) {
-            setBulkResult({ message: error.message, type: 'error' });
+        } catch (error) {
+            setBulkResult({ message: loiThanhChu(error), type: 'error' });
         } finally {
             setBulkIndexing(false);
             setTimeout(() => setBulkResult(null), 8000);
