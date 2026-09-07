@@ -3,9 +3,10 @@ import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { CheckCircle2 } from 'lucide-react';
 import CheckoutClient from './CheckoutClient';
+import { CheckoutSteps } from '@/components/cart/CheckoutSteps';
 
 export const metadata = {
-    title: 'Thanh toán đơn hàng | Trà Đá Data',
+    title: 'Thanh toán đơn hàng',
 };
 
 export default async function CheckoutPage(props: { params: Promise<{ order_code: string }> }) {
@@ -25,8 +26,11 @@ export default async function CheckoutPage(props: { params: Promise<{ order_code
     // Nếu đã thanh toán
     if (order.status === 'paid') {
         return (
-            <div className="min-h-screen bg-surface-50 dark:bg-surface-950 py-20 px-4 flex items-center justify-center">
-                <div className="w-full max-w-md bg-white dark:bg-surface-900 rounded-2xl shadow-xl shadow-brand-500/5 border border-brand-100 dark:border-surface-800 overflow-hidden text-center p-8">
+            <div className="min-h-screen bg-page py-20 px-4 flex flex-col items-center justify-center">
+                <div className="w-full max-w-md">
+                    <CheckoutSteps current={4} />
+                </div>
+                <div className="w-full max-w-md bg-card rounded-2xl shadow-e2 border border-line overflow-hidden text-center p-8">
                     <div className="w-16 h-16 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mx-auto mb-6">
                         <CheckCircle2 className="w-8 h-8 text-green-600 dark:text-green-500" />
                     </div>
@@ -74,7 +78,10 @@ export default async function CheckoutPage(props: { params: Promise<{ order_code
     };
 
     return (
-        <div className="min-h-screen bg-surface-50 dark:bg-surface-950 py-12 px-4">
+        <div className="min-h-screen bg-page py-12 px-4">
+            <div className="max-w-2xl mx-auto">
+                <CheckoutSteps current={3} />
+            </div>
             <CheckoutClient
                 order={{
                     order_code: order.order_code,

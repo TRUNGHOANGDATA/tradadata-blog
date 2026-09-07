@@ -185,7 +185,7 @@ export default async function BlogPostPage({ params, searchParams }: Props) {
                     <h3 class="text-2xl font-bold text-surface-900 dark:text-surface-100 mb-2">Phần còn lại dành cho thành viên Premium</h3>
                     <p class="text-surface-600 dark:text-surface-400 max-w-md mb-8">Đăng ký gói Premium để đọc trọn bài viết và toàn bộ nội dung chất lượng cao khác.</p>
                     ${session?.user
-                ? `<a href="/pricing" class="inline-flex items-center justify-center px-6 py-3 bg-amber-500 hover:bg-amber-600 !text-white !no-underline font-medium rounded-xl transition-colors shadow-lg">Nâng cấp Premium</a>`
+                ? `<a href="/courses" class="inline-flex items-center justify-center px-6 py-3 bg-amber-500 hover:bg-amber-600 !text-white !no-underline font-medium rounded-xl transition-colors shadow-lg">Nâng cấp Premium</a>`
                 : `<a href="/login?callbackUrl=/blog/${post.slug}" class="inline-flex items-center justify-center px-6 py-3 bg-brand-600 hover:bg-brand-700 !text-white !no-underline font-medium rounded-xl transition-colors shadow-lg">Đăng nhập để tiếp tục</a>`
             }
                 </div>

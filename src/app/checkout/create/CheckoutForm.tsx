@@ -159,19 +159,46 @@ export default function CheckoutForm() {
                     <ShoppingBag className="w-8 h-8 text-fg-faint" />
                 </div>
                 <p className="text-surface-600 dark:text-surface-400 mb-4">Giỏ hàng trống hoặc thiếu thông tin gói đăng ký.</p>
-                <div className="flex justify-center gap-3">
-                    <button type="button" onClick={() => router.push('/courses')} className="px-4 py-2 text-sm bg-brand-600 text-white rounded-xl hover:bg-brand-700 transition-colors">
-                        Xem khóa học
-                    </button>
-                    <button type="button" onClick={() => router.push('/pricing')} className="px-4 py-2 text-sm border border-surface-200 dark:border-surface-700 text-surface-700 dark:text-surface-300 rounded-xl hover:bg-surface-50 dark:hover:bg-surface-800 transition-colors">
-                        Bảng giá
-                    </button>
-                </div>
+                {/* Trước có hai nút "Xem khóa học" và "Bảng giá" nhưng cùng dẫn về
+                    /courses sau khi /pricing gộp vào đó — gộp lại còn một. */}
+                <button type="button" onClick={() => router.push('/courses')} className="px-4 py-2 text-sm bg-brand-600 text-white rounded-md hover:bg-brand-700 transition-colors">
+                    Xem khóa học
+                </button>
             </div>
         );
     }
 
     const hasEmail = !!session?.user?.email;
+
+    /**
+     * Mỗi đơn chỉ mang được MỘT gói: `POST /api/orders/create` nhận đúng một
+     * `product_id`, và bảng `orders` cũng chỉ có một cột `product_id`. Code cũ
+     * lặng lẽ lấy `items[0]` rồi bỏ các gói còn lại — khách trả tiền một gói
+     * mà tưởng đã mua hết giỏ. Chặn hẳn ở đây cho tới khi API đỡ được nhiều gói.
+     */
+    if (isCartCheckout && items.length > 1) {
+        return (
+            <div className="text-center py-4">
+                <div className="w-16 h-16 bg-amber-50 dark:bg-amber-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <ShoppingBag className="w-8 h-8 text-amber-600 dark:text-amber-400" />
+                </div>
+                <p className="text-fg-muted mb-1">
+                    Hiện mỗi đơn chỉ thanh toán được <strong>một gói</strong>.
+                </p>
+                <p className="text-sm text-fg-subtle mb-5">
+                    Giỏ của bạn đang có {items.length} gói. Vui lòng quay lại giỏ, để lại một gói rồi
+                    thanh toán từng gói một.
+                </p>
+                <button
+                    type="button"
+                    onClick={() => router.push('/cart')}
+                    className="px-4 py-2 text-sm bg-brand-600 text-white rounded-md hover:bg-brand-700 transition-colors"
+                >
+                    Quay lại giỏ hàng
+                </button>
+            </div>
+        );
+    }
 
     return (
         <form onSubmit={handleSubmit} className="space-y-5">
@@ -181,8 +208,8 @@ export default function CheckoutForm() {
                     <p className="text-xs font-semibold text-fg-subtle uppercase tracking-wider mb-2">Đơn hàng</p>
                     {items.map(item => (
                         <div key={item.product_id} className="flex justify-between text-sm">
-                            <span className="text-surface-700 dark:text-surface-300">{item.name} × {item.quantity}</span>
-                            <span className="font-medium text-surface-900 dark:text-surface-100">{formatCurrency(item.price * item.quantity)}</span>
+                            <span className="text-fg-muted">{item.name}</span>
+                            <span className="font-medium text-fg">{formatCurrency(item.price)}</span>
                         </div>
                     ))}
                     {coupon && discountAmount > 0 && (

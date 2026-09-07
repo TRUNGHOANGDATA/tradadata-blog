@@ -1,10 +1,12 @@
-﻿import { supabaseAdmin } from '@/lib/supabase/server';
-import { BookOpen, CheckCircle } from 'lucide-react';
+import { supabaseAdmin } from '@/lib/supabase/server';
+import { BookOpen, CheckCircle, ShoppingCart, FileText, Landmark, KeyRound } from 'lucide-react';
 import { AddToCartButton } from '@/components/cart/AddToCartButton';
 import { SITE_CONFIG } from '@/lib/constants';
 
 export const metadata = {
-    title: 'Khóa học | Trà Đá Data',
+    // KHÔNG viết "| Trà Đá Data" ở đây: layout gốc đã có
+    // `template: '%s | Trà Đá Data'` nên viết thêm là ra "| Trà Đá Data | Trà Đá Data".
+    title: 'Khóa học & Premium',
     description: 'Nâng cấp kỹ năng với các khóa học thực chiến từ Trà Đá Data. Hệ thống kiến thức Data, AI & Supply Chain.',
     openGraph: {
         title: 'Khóa học & Premium | Trà Đá Data',
@@ -34,15 +36,35 @@ interface Product {
     sort_order: number;
 }
 
+const formatPrice = (v: number) =>
+    new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(v);
+
+/**
+ * Lưới phải tự co theo SỐ sản phẩm thực có.
+ * Trước đây luôn cố định `lg:grid-cols-3`, nên khi chỉ bán 1 gói (tình trạng
+ * hiện tại) thì có đúng một thẻ nằm lệch sang trái trong khung rộng 1280px,
+ * trông như trang bị lỗi. Đừng đổi lại thành cột cố định.
+ */
+function gridClass(count: number) {
+    if (count === 1) return 'grid-cols-1 max-w-md mx-auto';
+    if (count === 2) return 'grid-cols-1 sm:grid-cols-2 max-w-3xl mx-auto';
+    return 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3';
+}
+
+const BUOC_MUA = [
+    { icon: ShoppingCart, title: 'Chọn gói', desc: 'Thêm gói bạn cần vào giỏ hàng.' },
+    { icon: FileText, title: 'Điền thông tin', desc: 'Nhận mã đơn và số tài khoản qua email.' },
+    { icon: Landmark, title: 'Chuyển khoản', desc: 'Chuyển đúng số tiền, ghi mã đơn ở nội dung.' },
+    { icon: KeyRound, title: 'Mở khoá', desc: 'Đối chiếu xong là tài khoản được kích hoạt.' },
+];
+
 export default async function CoursesPage() {
-    // Fetch active sections
     const { data: sections } = await supabaseAdmin
         .from('course_sections')
         .select('*')
         .eq('is_active', true)
         .order('sort_order', { ascending: true });
 
-    // Fetch active products
     const { data: products } = await supabaseAdmin
         .from('products')
         .select('*')
@@ -50,10 +72,8 @@ export default async function CoursesPage() {
         .order('sort_order', { ascending: true })
         .order('price', { ascending: true });
 
-    // Group products by section
     const sectionGroups: { section: Section | null; products: Product[] }[] = [];
 
-    // Products with a section
     (sections || []).forEach((section: Section) => {
         const sectionProducts = (products || []).filter((p: Product) => p.section_id === section.id);
         if (sectionProducts.length > 0) {
@@ -61,13 +81,13 @@ export default async function CoursesPage() {
         }
     });
 
-    // Products without a section
     const unsectionedProducts = (products || []).filter((p: Product) => !p.section_id);
     if (unsectionedProducts.length > 0) {
         sectionGroups.push({ section: null, products: unsectionedProducts });
     }
 
-    // JSON-LD structured data
+    const coSanPham = !!products && products.length > 0;
+
     const jsonLd = {
         '@context': 'https://schema.org',
         '@type': 'ItemList',
@@ -97,96 +117,93 @@ export default async function CoursesPage() {
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
             />
 
-            <div className="min-h-screen bg-surface-50 dark:bg-surface-950 py-16 px-4 layout-pt">
+            <div className="min-h-screen bg-page py-16 px-4">
                 <div className="max-w-7xl mx-auto">
-                    {/* Header */}
-                    <div className="text-center max-w-3xl mx-auto mb-16">
-                        <h1 className="text-4xl md:text-5xl font-bold text-surface-900 dark:text-surface-100 mb-6">
-                            Khóa học & <span className="text-brand-600 dark:text-brand-400">Premium</span>
+                    <div className="text-center max-w-3xl mx-auto mb-14">
+                        <h1 className="text-4xl md:text-5xl text-fg mb-5">
+                            Khóa học &amp; <span className="text-brand-600 dark:text-brand-400">Premium</span>
                         </h1>
-                        <p className="text-lg text-surface-600 dark:text-surface-400">
+                        <p className="text-lg text-fg-muted">
                             Hệ thống kiến thức được đóng gói chuẩn mực, giúp bạn làm chủ Data, AI và Supply Chain.
                         </p>
                     </div>
 
-                    {/* Sections */}
                     {sectionGroups.map((group, groupIdx) => (
                         <div key={group.section?.id || 'unsectioned'} className={groupIdx > 0 ? 'mt-16' : ''}>
-                            {/* Section Header */}
-                            {group.section && (
+                            {(group.section || sectionGroups.length > 1) && (
                                 <div className="mb-8">
-                                    <h2 className="text-2xl md:text-3xl font-bold text-surface-900 dark:text-surface-100 uppercase tracking-wide">
-                                        {group.section.name}
+                                    <h2 className="text-2xl md:text-3xl text-fg">
+                                        {group.section ? group.section.name : 'Khác'}
                                     </h2>
-                                    {group.section.description && (
-                                        <p className="text-surface-500 dark:text-surface-400 mt-2 text-lg">
-                                            {group.section.description}
-                                        </p>
+                                    {group.section?.description && (
+                                        <p className="text-fg-muted mt-2 text-lg">{group.section.description}</p>
                                     )}
-                                    <div className="mt-4 h-1 w-20 bg-brand-500 rounded-full" />
-                                </div>
-                            )}
-                            {!group.section && sectionGroups.length > 1 && (
-                                <div className="mb-8">
-                                    <h2 className="text-2xl md:text-3xl font-bold text-surface-900 dark:text-surface-100 uppercase tracking-wide">
-                                        Khác
-                                    </h2>
-                                    <div className="mt-4 h-1 w-20 bg-surface-300 dark:bg-surface-700 rounded-full" />
+                                    <div className={`mt-4 h-1 w-20 rounded-full ${group.section ? 'bg-brand-500' : 'bg-line-strong'}`} />
                                 </div>
                             )}
 
-                            {/* Products Grid */}
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                            <div className={`grid gap-8 ${gridClass(group.products.length)}`}>
                                 {group.products.map((product: Product) => (
                                     <div
                                         key={product.id}
-                                        className="bg-white dark:bg-surface-900 rounded-3xl border border-surface-200 dark:border-surface-800 overflow-hidden shadow-xl shadow-surface-200/20 dark:shadow-none hover:shadow-2xl hover:shadow-brand-500/10 hover:-translate-y-1 transition-all duration-300 flex flex-col group relative"
+                                        className="bg-card rounded-2xl border border-line overflow-hidden shadow-e1 hover:shadow-e3 hover:border-brand-300 dark:hover:border-brand-800 hover:-translate-y-0.5 transition-all duration-300 flex flex-col group relative"
                                     >
                                         {product.slug === 'premium-blog' && (
-                                            <div className="absolute top-0 right-0 bg-brand-500 text-white text-xs font-bold px-4 py-1.5 rounded-bl-xl z-10 shadow-md">
-                                                ĐỀ XUẤT
+                                            <div className="absolute top-3 right-3 z-10 bg-brand-600 text-white text-2xs font-bold uppercase px-2.5 py-1 rounded-md shadow-e1">
+                                                Đề xuất
                                             </div>
                                         )}
 
-                                        <div className="relative aspect-video bg-surface-100 dark:bg-surface-800 overflow-hidden">
+                                        {/* Ảnh chỉ là ảnh — KHÔNG chồng tiêu đề lên nữa. Trước đây tiêu đề
+                                            đặt trên ảnh với lớp phủ đen mờ nên gặp ảnh sáng là không đọc được. */}
+                                        <div className="relative aspect-[16/9] bg-sunken overflow-hidden">
                                             {product.image_url ? (
-                                                <img src={product.image_url} alt={product.name} className="w-full h-full object-cover" />
+                                                // eslint-disable-next-line @next/next/no-img-element
+                                                <img
+                                                    src={product.image_url}
+                                                    alt=""
+                                                    className="w-full h-full object-cover"
+                                                    loading="lazy"
+                                                />
                                             ) : (
                                                 <>
-                                                    <div className="absolute inset-0 bg-gradient-to-tr from-brand-600/20 to-transparent dark:from-brand-500/10"></div>
-                                                    <BookOpen className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-20 h-20 text-surface-200 dark:text-surface-700/50 group-hover:scale-110 transition-transform duration-500" />
+                                                    <div className="absolute inset-0 bg-gradient-to-tr from-brand-600/20 to-transparent dark:from-brand-500/10" />
+                                                    <BookOpen
+                                                        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-16 h-16 text-line-strong group-hover:scale-110 transition-transform duration-500"
+                                                        aria-hidden="true"
+                                                    />
                                                 </>
                                             )}
-                                            <div className="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black/60 to-transparent">
-                                                <h3 className="text-2xl font-bold text-white mb-1 leading-tight drop-shadow-lg">
-                                                    {product.name}
-                                                </h3>
-                                            </div>
                                         </div>
 
                                         <div className="p-6 flex flex-col flex-1">
-                                            <p className="text-surface-600 dark:text-surface-300 mb-6 line-clamp-2 text-sm">
-                                                {product.description}
-                                            </p>
+                                            <h3 className="text-xl text-fg mb-2">{product.name}</h3>
 
-                                            <div className="flex-1 space-y-3 mb-8">
-                                                {(product.features || []).map((feature: string, idx: number) => (
-                                                    <div key={idx} className="flex items-start gap-2.5">
-                                                        <div className="mt-0.5 w-5 h-5 shrink-0 rounded-full bg-green-50 dark:bg-green-900/30 flex items-center justify-center">
-                                                            <CheckCircle className="w-3.5 h-3.5 text-green-600 dark:text-green-400" />
-                                                        </div>
-                                                        <span className="text-sm text-surface-700 dark:text-surface-300">{feature}</span>
-                                                    </div>
-                                                ))}
-                                            </div>
+                                            {product.description && (
+                                                <p className="text-sm text-fg-muted mb-6">{product.description}</p>
+                                            )}
 
-                                            <div className="pt-6 border-t border-surface-100 dark:border-surface-800 mt-auto">
-                                                <div className="flex items-end gap-2 mb-4">
+                                            {!!product.features?.length && (
+                                                <ul className="flex-1 space-y-3 mb-8">
+                                                    {product.features.map((feature: string, idx: number) => (
+                                                        <li key={idx} className="flex items-start gap-2.5">
+                                                            <CheckCircle
+                                                                className="mt-0.5 w-4 h-4 shrink-0 text-brand-600 dark:text-brand-400"
+                                                                aria-hidden="true"
+                                                            />
+                                                            <span className="text-sm text-fg-muted">{feature}</span>
+                                                        </li>
+                                                    ))}
+                                                </ul>
+                                            )}
+
+                                            <div className="pt-6 border-t border-line mt-auto">
+                                                <div className="flex items-baseline gap-2 mb-4">
                                                     <p className="text-3xl font-extrabold text-brand-600 dark:text-brand-400">
-                                                        {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(product.price)}
+                                                        {formatPrice(product.price)}
                                                     </p>
-                                                    <p className="text-sm font-medium text-fg-subtle mb-1">
-                                                        {product.duration_days ? `/ ${product.duration_days} ngày` : '/ Vĩnh viễn'}
+                                                    <p className="text-sm font-medium text-fg-subtle">
+                                                        {product.duration_days ? `/ ${product.duration_days} ngày` : '/ vĩnh viễn'}
                                                     </p>
                                                 </div>
                                                 <AddToCartButton
@@ -203,14 +220,41 @@ export default async function CoursesPage() {
                         </div>
                     ))}
 
-                    {(!products || products.length === 0) && (
-                        <div className="col-span-full py-20 text-center">
-                            <div className="inline-flex justify-center items-center w-16 h-16 rounded-full bg-surface-100 dark:bg-surface-800 mb-4">
-                                <BookOpen className="w-8 h-8 text-fg-faint" />
+                    {!coSanPham && (
+                        <div className="py-20 text-center">
+                            <div className="inline-flex justify-center items-center w-16 h-16 rounded-full bg-sunken mb-4">
+                                <BookOpen className="w-8 h-8 text-fg-faint" aria-hidden="true" />
                             </div>
-                            <h3 className="text-xl font-semibold text-surface-900 dark:text-surface-100 mb-2">Đang cập nhật khóa học</h3>
+                            <h2 className="text-xl text-fg mb-2">Đang cập nhật khóa học</h2>
                             <p className="text-fg-subtle">Vui lòng quay lại sau nhé!</p>
                         </div>
+                    )}
+
+                    {/* Nói rõ cách thanh toán NGAY trên trang bán.
+                        Site không có cổng thanh toán — khách chuyển khoản tay rồi admin duyệt.
+                        Không nói trước thì khách bấm mua xong mới biết, và bỏ giữa đường. */}
+                    {coSanPham && (
+                        <section className="mt-20 rounded-2xl border border-line bg-card p-8 shadow-e1">
+                            <h2 className="text-2xl text-fg text-center mb-2">Mua thế nào?</h2>
+                            <p className="text-sm text-fg-subtle text-center mb-8">
+                                Thanh toán bằng chuyển khoản ngân hàng. Đơn được giữ trong 24 giờ kể từ lúc tạo.
+                            </p>
+                            <ol className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+                                {BUOC_MUA.map((buoc, i) => (
+                                    <li key={buoc.title} className="flex gap-4">
+                                        <span className="grid place-items-center h-10 w-10 shrink-0 rounded-lg bg-brand-50 dark:bg-brand-900/30">
+                                            <buoc.icon className="h-5 w-5 text-brand-600 dark:text-brand-400" aria-hidden="true" />
+                                        </span>
+                                        <div className="min-w-0">
+                                            <p className="text-sm font-semibold text-fg">
+                                                <span className="text-fg-faint">{i + 1}.</span> {buoc.title}
+                                            </p>
+                                            <p className="text-sm text-fg-muted mt-1">{buoc.desc}</p>
+                                        </div>
+                                    </li>
+                                ))}
+                            </ol>
+                        </section>
                     )}
                 </div>
             </div>
