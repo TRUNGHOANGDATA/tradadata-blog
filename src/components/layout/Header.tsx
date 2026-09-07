@@ -27,18 +27,18 @@ export function Header() {
                             {/* Logo */}
                             <Link href="/" className="flex items-center gap-2.5 group flex-shrink-0">
                                 <img src="/LOGO_TRA_DA_DATA.jpg" alt={SITE_CONFIG.name} className="h-14 w-14 object-cover transition-transform group-hover:scale-105 rounded-full shadow-sm" />
-                                <span className="hidden sm:block font-bold text-lg text-surface-900 dark:text-white tracking-tight group-hover:text-brand-600 dark:group-hover:text-brand-400 transition-colors">
+                                <span className="hidden xl:block font-bold text-lg text-surface-900 dark:text-white tracking-tight group-hover:text-brand-600 dark:group-hover:text-brand-400 transition-colors">
                                     Trà Đá Data
                                 </span>
                             </Link>
 
                             {/* Desktop Nav - Centered */}
-                            <nav className="hidden md:flex items-center justify-center gap-1 flex-1">
+                            <nav className="hidden lg:flex items-center justify-center gap-1 flex-1">
                                 {NAV_ITEMS.map((item) => (
                                     <Link
                                         key={item.href}
                                         href={item.href}
-                                        className="px-4 py-2 rounded-xl text-fg-muted hover:text-surface-900 dark:hover:text-surface-100 hover:bg-surface-100 dark:hover:bg-surface-800 transition-all duration-200 text-sm font-medium"
+                                        className="shrink-0 whitespace-nowrap px-3 py-2 rounded-xl text-fg-muted hover:text-surface-900 dark:hover:text-surface-100 hover:bg-surface-100 dark:hover:bg-surface-800 transition-all duration-200 text-sm font-medium"
                                     >
                                         {item.label}
                                     </Link>
@@ -149,7 +149,7 @@ export function Header() {
                                 {/* Mobile Menu Toggle */}
                                 <button
                                     onClick={() => setMobileOpen(!mobileOpen)}
-                                    className="md:hidden inline-flex items-center justify-center min-h-11 min-w-11 rounded-xl hover:bg-surface-100 dark:hover:bg-surface-800 transition-colors"
+                                    className="lg:hidden inline-flex items-center justify-center min-h-11 min-w-11 rounded-xl hover:bg-surface-100 dark:hover:bg-surface-800 transition-colors"
                                 >
                                     {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
                                 </button>
@@ -159,7 +159,7 @@ export function Header() {
 
                     {/* Mobile Nav */}
                     {mobileOpen && (
-                        <div className="md:hidden border-t border-surface-200 dark:border-surface-700 animate-slide-down">
+                        <div className="lg:hidden border-t border-surface-200 dark:border-surface-700 animate-slide-down">
                             <div className="px-4 py-3 space-y-1">
                                 {NAV_ITEMS.map((item) => (
                                     <Link

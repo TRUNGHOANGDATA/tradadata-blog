@@ -106,9 +106,19 @@ export function BookmarkButton({ postId, className = '', variant = 'icon' }: Boo
         <button
             onClick={toggleBookmark}
             disabled={isLoading}
-            className={`grid place-items-center min-h-11 min-w-11 rounded-full transition-all backdrop-blur-md shadow-sm border ${isBookmarked
-                ? 'bg-brand-100/90 border-brand-200 text-brand-600 dark:bg-brand-900/80 dark:border-brand-700 dark:text-brand-400'
-                : 'bg-white/80 border-white/20 text-surface-600 hover:bg-card/80 dark:border-surface-700 dark:text-surface-300 dark:hover:bg-surface-800'
+            // Nut nay NAM TREN ANH BIA, khong nam tren nen trang, nen phai doc duoc
+            // tren bat ky anh nao va giong nhau o ca hai che do. Dung nen toi mo +
+            // icon trang, cung cach voi nhan "Premium" tren cung the.
+            //
+            // Truoc day: `bg-white/80 ... dark:text-surface-300` — nen KHONG doi theo
+            // che do (thieu `dark:bg-*`) ma mau icon thi co doi, nen o dark mode thanh
+            // icon sang tren nen sang = mat tich. Do chinh PR #9 lam mat
+            // `dark:bg-surface-900/80`: phep thay the cap `bg-white dark:bg-surface-900`
+            // khop vao GIUA chuoi `hover:bg-white dark:bg-surface-900/80` vi khong neo
+            // theo bien class. Dung mau tuyet doi o day nen loi do khong tai dien.
+            className={`grid place-items-center min-h-11 min-w-11 rounded-full transition-all backdrop-blur-md shadow-e1 border ${isBookmarked
+                ? 'bg-brand-600 border-brand-500 text-white hover:bg-brand-700'
+                : 'bg-surface-900/60 border-white/25 text-white hover:bg-surface-900/80'
                 } ${className}`}
             title={isBookmarked ? 'Bỏ lưu bài viết' : 'Lưu bài viết'}
         >
