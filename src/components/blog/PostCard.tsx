@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import { Clock, Lock } from 'lucide-react';
 import type { Post } from '@/types';
 import { formatDate } from '@/lib/utils';
@@ -28,14 +29,14 @@ export function PostCard({ post, variant = 'default' }: PostCardProps) {
                 {/* Cover Image */}
                 {post.cover_image && (
                     <div className="relative aspect-[16/9] overflow-hidden">
-                        <img
+                        <Image
                             src={post.cover_image}
                             alt={post.title}
-                            loading="lazy"
-                            decoding="async"
-                            width={640}
-                            height={360}
-                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                            fill
+                            // Khung that: (1280 - 64 padding - 48 gap) / 3 col ~= 389px.
+                            // Thieu `sizes` la trinh duyet xin ban 3840px.
+                            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 400px"
+                            className="object-cover group-hover:scale-105 transition-transform duration-500"
                         />
                         {post.is_premium && (
                             <div className="absolute top-3 left-3 flex items-center gap-1 px-2 py-1 rounded-md bg-amber-500/90 text-white text-xs font-medium backdrop-blur-sm">
@@ -97,13 +98,13 @@ function FeaturedCard({ post }: { post: Post }) {
             </div>
             <article className="relative rounded-2xl overflow-hidden h-[400px] md:h-[480px]">
                 {post.cover_image && (
-                    <img
+                    <Image
                         src={post.cover_image}
                         alt={post.title}
-                        loading="eager"
-                        decoding="async"
-                        fetchPriority="high"
-                        className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                        fill
+                        priority
+                        sizes="100vw"
+                        className="object-cover group-hover:scale-105 transition-transform duration-700"
                     />
                 )}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
@@ -156,15 +157,13 @@ function CompactCard({ post }: { post: Post }) {
                 <BookmarkButton postId={post.id} variant="icon" className="scale-75 origin-top-right" />
             </div>
             {post.cover_image && (
-                <div className="shrink-0 w-20 h-20 rounded-xl overflow-hidden">
-                    <img
+                <div className="relative shrink-0 w-20 h-20 rounded-xl overflow-hidden">
+                    <Image
                         src={post.cover_image}
                         alt={post.title}
-                        loading="lazy"
-                        decoding="async"
-                        width={80}
-                        height={80}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                        fill
+                        sizes="80px"
+                        className="object-cover group-hover:scale-105 transition-transform duration-300"
                     />
                 </div>
             )}
