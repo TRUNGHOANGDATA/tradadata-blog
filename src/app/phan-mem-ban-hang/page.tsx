@@ -219,7 +219,7 @@ export default function PhanMemBanHangPage() {
             <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
 
             {/* ===== HERO ===== */}
-            <section className="relative overflow-hidden bg-gradient-to-br from-surface-900 via-surface-900 to-brand-900 layout-pt">
+            <section className="relative overflow-hidden bg-gradient-to-br from-surface-900 via-surface-900 to-brand-900">
                 <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24">
                     <div className="text-center max-w-3xl mx-auto">
                         <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-card/10 border border-white/20 text-brand-300 text-sm font-medium mb-6">

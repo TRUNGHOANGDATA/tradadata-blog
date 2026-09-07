@@ -1,12 +1,12 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { X, ShoppingBag, Plus, Minus, Trash2, Tag } from 'lucide-react';
+import { X, ShoppingBag, Trash2, Tag } from 'lucide-react';
 import { useCart } from '@/lib/cart/CartContext';
 import Link from 'next/link';
 
 export function CartSlideOver() {
-    const { isCartOpen, setCartOpen, items, updateQuantity, removeFromCart, subTotal, coupon, applyCoupon, removeCoupon, discountAmount, total } = useCart();
+    const { isCartOpen, setCartOpen, items, removeFromCart, subTotal, coupon, applyCoupon, removeCoupon, discountAmount, total } = useCart();
     const panelRef = useRef<HTMLDivElement>(null);
     const [couponCode, setCouponCode] = useState('');
     const [couponError, setCouponError] = useState('');
@@ -134,23 +134,9 @@ export function CartSlideOver() {
                                                 {formatCurrency(item.price * item.quantity)}
                                             </p>
                                             <div className="flex items-end justify-between mt-auto">
-                                                <div className="flex items-center border border-surface-200 dark:border-surface-700 rounded-lg bg-surface-50 dark:bg-surface-950">
-                                                    <button
-                                                        onClick={() => updateQuantity(item.product_id, item.quantity - 1)}
-                                                        className="p-1.5 text-fg-subtle hover:text-surface-900 dark:hover:text-surface-100 hover:bg-surface-200 dark:hover:bg-surface-800 rounded-l-lg transition-colors"
-                                                    >
-                                                        <Minus className="w-3.5 h-3.5" />
-                                                    </button>
-                                                    <span className="w-8 text-center text-sm font-medium text-surface-900 dark:text-surface-100">
-                                                        {item.quantity}
-                                                    </span>
-                                                    <button
-                                                        onClick={() => updateQuantity(item.product_id, item.quantity + 1)}
-                                                        className="p-1.5 text-fg-subtle hover:text-surface-900 dark:hover:text-surface-100 hover:bg-surface-200 dark:hover:bg-surface-800 rounded-r-lg transition-colors"
-                                                    >
-                                                        <Plus className="w-3.5 h-3.5" />
-                                                    </button>
-                                                </div>
+                                                {/* Không có bộ tăng/giảm: API tạo đơn không đọc số lượng.
+                                                    Xem chú thích trong CartContext. */}
+                                                <span className="text-xs text-fg-subtle">1 gói</span>
 
                                                 <button
                                                     type="button"

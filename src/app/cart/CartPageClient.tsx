@@ -3,7 +3,8 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useCart } from '@/lib/cart/CartContext';
-import { Trash2, Plus, Minus, ShoppingBag, Tag, ArrowRight, X } from 'lucide-react';
+import { Trash2, ShoppingBag, Tag, ArrowRight, X } from 'lucide-react';
+import { CheckoutSteps } from '@/components/cart/CheckoutSteps';
 
 export default function CartPage() {
     const {
@@ -12,7 +13,6 @@ export default function CartPage() {
         subTotal,
         discountAmount,
         total,
-        updateQuantity,
         removeFromCart,
         clearCart,
         applyCoupon,
@@ -64,7 +64,7 @@ export default function CartPage() {
 
     if (items.length === 0) {
         return (
-            <div className="min-h-screen bg-surface-50 dark:bg-surface-950 py-20 px-4 layout-pt">
+            <div className="min-h-screen bg-page py-20 px-4">
                 <div className="max-w-2xl mx-auto text-center">
                     <div className="w-24 h-24 bg-surface-100 dark:bg-surface-800 rounded-full flex items-center justify-center mx-auto mb-6">
                         <ShoppingBag className="w-12 h-12 text-fg-faint" />
@@ -86,11 +86,13 @@ export default function CartPage() {
     }
 
     return (
-        <div className="min-h-screen bg-surface-50 dark:bg-surface-950 py-12 px-4 layout-pt">
+        <div className="min-h-screen bg-page py-12 px-4">
             <div className="max-w-6xl mx-auto">
+                <CheckoutSteps current={1} />
+
                 <div className="flex items-center justify-between mb-8">
                     <h1 className="text-3xl font-bold text-surface-900 dark:text-surface-100">
-                        🛒 Giỏ hàng ({items.length} sản phẩm)
+                        Giỏ hàng ({items.length} sản phẩm)
                     </h1>
                     <button
                         onClick={clearCart}
@@ -123,23 +125,10 @@ export default function CartPage() {
                                         </p>
 
                                         <div className="flex items-center justify-between">
-                                            <div className="flex items-center border border-surface-200 dark:border-surface-700 rounded-xl bg-surface-50 dark:bg-surface-950 overflow-hidden">
-                                                <button
-                                                    onClick={() => updateQuantity(item.product_id, item.quantity - 1)}
-                                                    className="p-2.5 text-fg-subtle hover:text-surface-900 dark:hover:text-surface-100 hover:bg-surface-200 dark:hover:bg-surface-800 transition-colors"
-                                                >
-                                                    <Minus className="w-4 h-4" />
-                                                </button>
-                                                <span className="w-12 text-center font-bold text-surface-900 dark:text-surface-100">
-                                                    {item.quantity}
-                                                </span>
-                                                <button
-                                                    onClick={() => updateQuantity(item.product_id, item.quantity + 1)}
-                                                    className="p-2.5 text-fg-subtle hover:text-surface-900 dark:hover:text-surface-100 hover:bg-surface-200 dark:hover:bg-surface-800 transition-colors"
-                                                >
-                                                    <Plus className="w-4 h-4" />
-                                                </button>
-                                            </div>
+                                            {/* Không còn bộ tăng/giảm số lượng: API tạo đơn không đọc
+                                                số lượng nên nút đó chỉ làm tổng tiền lệch với số tiền
+                                                thật phải chuyển. Xem chú thích trong CartContext. */}
+                                            <span className="text-sm text-fg-subtle">1 gói</span>
 
                                             <div className="flex items-center gap-4">
                                                 <p className="text-lg font-bold text-brand-600 dark:text-brand-400">

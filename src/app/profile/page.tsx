@@ -268,7 +268,7 @@ export default function ProfilePage() {
                                 <div className="text-center py-12">
                                     <Package className="w-12 h-12 mx-auto text-surface-300 dark:text-surface-600 mb-3" />
                                     <p className="text-fg-subtle">Chưa có đơn hàng nào</p>
-                                    <Link href="/pricing" className="text-brand-600 text-sm hover:underline mt-2 inline-block">
+                                    <Link href="/courses" className="text-brand-600 text-sm hover:underline mt-2 inline-block">
                                         Xem bảng giá →
                                     </Link>
                                 </div>
@@ -370,7 +370,7 @@ export default function ProfilePage() {
                                     )}
 
                                     <Link
-                                        href="/pricing"
+                                        href="/courses"
                                         className="block text-center py-3 rounded-xl font-medium text-brand-600 dark:text-brand-400 border border-brand-200 dark:border-brand-800 hover:bg-brand-50 dark:hover:bg-brand-900/20 transition-colors"
                                     >
                                         Gia hạn thêm →
@@ -384,7 +384,7 @@ export default function ProfilePage() {
                                     <h3 className="text-lg font-semibold text-surface-700 dark:text-surface-300 mb-2">Chưa có gói Premium</h3>
                                     <p className="text-sm text-fg-subtle mb-5">Nâng cấp để truy cập toàn bộ nội dung đặc quyền</p>
                                     <Link
-                                        href="/pricing"
+                                        href="/courses"
                                         className="inline-flex items-center gap-2 px-6 py-3 bg-brand-600 text-white rounded-xl hover:bg-brand-700 transition-colors font-medium"
                                     >
                                         <Crown className="w-4 h-4" /> Đăng ký Premium

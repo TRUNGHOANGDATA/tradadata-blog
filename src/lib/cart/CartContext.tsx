@@ -105,23 +105,23 @@ export function CartProvider({ children }: { children: ReactNode }) {
     const total = subTotal - discountAmount;
 
     // Các actions
+
+    /**
+     * Mỗi gói chỉ nằm trong giỏ ĐÚNG MỘT lần — thêm lại không làm tăng số lượng.
+     *
+     * Lý do: `POST /api/orders/create` chỉ nhận `product_id` rồi tự tính tiền từ
+     * `product.price` ở server, KHÔNG đọc số lượng. Trước đây giỏ cho tăng số
+     * lượng nên khách bấm hai lần là giỏ hiện 100.000đ trong khi đơn tạo ra vẫn
+     * 50.000đ — số tiền phải chuyển không khớp thứ khách vừa nhìn thấy.
+     *
+     * Muốn bán theo số lượng thật thì phải sửa API và bảng `orders` trước, rồi
+     * mới mở lại chỗ này.
+     */
     const addToCart = (newItem: Omit<CartItem, 'quantity'> & { quantity?: number }) => {
         setItems((prevItems) => {
-            const existingItemIndex = prevItems.findIndex((i) => i.product_id === newItem.product_id);
-            const quantityToAdd = newItem.quantity || 1;
-
-            if (existingItemIndex > -1) {
-                // Đã có trong giỏ -> Tăng số lượng
-                const newItems = [...prevItems];
-                newItems[existingItemIndex] = {
-                    ...newItems[existingItemIndex],
-                    quantity: newItems[existingItemIndex].quantity + quantityToAdd,
-                };
-                return newItems;
-            } else {
-                // Chưa có -> Thêm mới
-                return [...prevItems, { ...newItem, quantity: quantityToAdd }];
-            }
+            const daCo = prevItems.some((i) => i.product_id === newItem.product_id);
+            if (daCo) return prevItems;
+            return [...prevItems, { ...newItem, quantity: 1 }];
         });
         setCartOpen(true); // Tự động mở slide-out khi thêm
     };
@@ -130,13 +130,17 @@ export function CartProvider({ children }: { children: ReactNode }) {
         setItems((prevItems) => prevItems.filter((i) => i.product_id !== product_id));
     };
 
+    /**
+     * Giữ lại để không phải sửa chữ ký context, nhưng số lượng bị kẹp về 1
+     * (xem chú thích ở `addToCart`). Gọi với số <= 0 vẫn là xoá khỏi giỏ.
+     */
     const updateQuantity = (product_id: string, quantity: number) => {
         if (quantity <= 0) {
             removeFromCart(product_id);
             return;
         }
         setItems((prevItems) =>
-            prevItems.map((i) => (i.product_id === product_id ? { ...i, quantity } : i))
+            prevItems.map((i) => (i.product_id === product_id ? { ...i, quantity: 1 } : i))
         );
     };
 

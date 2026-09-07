@@ -41,8 +41,8 @@ export function AddToCartButton({ productId, productName, productPrice, productI
                 </>
             ) : isInCart ? (
                 <>
-                    <ShoppingCart className="w-4 h-4" />
-                    Thêm lần nữa
+                    <Check className="w-4 h-4" />
+                    Đã có trong giỏ
                 </>
             ) : (
                 <>

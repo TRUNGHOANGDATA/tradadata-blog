@@ -1,13 +1,17 @@
 import { Suspense } from 'react';
 import CheckoutForm from './CheckoutForm';
+import { CheckoutSteps } from '@/components/cart/CheckoutSteps';
 
 export const metadata = {
-    title: 'Thanh toán | Trà Đá Data',
+    title: 'Thanh toán',
 };
 
 export default function CheckoutCreatePage() {
     return (
-        <div className="min-h-screen bg-surface-50 dark:bg-surface-950 py-12 px-4 flex items-center justify-center">
+        <div className="min-h-screen bg-page py-12 px-4 flex flex-col items-center justify-center">
+            <div className="w-full max-w-md">
+                <CheckoutSteps current={2} />
+            </div>
             <div className="w-full max-w-md bg-white dark:bg-surface-900 rounded-2xl shadow-xl shadow-brand-500/5 border border-brand-100 dark:border-surface-800 overflow-hidden">
                 <div className="p-6 text-center bg-brand-50/50 dark:bg-surface-800/50 border-b border-brand-100 dark:border-surface-800">
                     <h1 className="text-xl font-bold text-surface-900 dark:text-surface-100">
