@@ -7,10 +7,23 @@ const nextConfig: NextConfig = {
   productionBrowserSourceMaps: false,
   serverExternalPackages: ['googleapis', 'nodemailer', 'happy-dom'],
   eslint: {
+    // VAN phai bo qua: repo dang co 59 loi eslint co san (no-explicit-any,
+    // react-hooks/set-state-in-effect). Bat len la khong build duoc. Don dan roi
+    // hay doi thanh false.
     ignoreDuringBuilds: true,
   },
   typescript: {
-    ignoreBuildErrors: true,
+    // KHONG duoc bat lai thanh true.
+    //
+    // Truoc day de `true`, nghia la loi type KHONG chan build — ma duong deploy
+    // dang dung (`deploy-blog` o repo ke-truyen) cung khong chay `tsc` rieng,
+    // nen mot loi type co the ra thang production. Suot dot lam UI, thu duy nhat
+    // chan duoc la minh chay `npx tsc --noEmit` bang tay; thu do chi dung khi co
+    // nguoi lam.
+    //
+    // De `false` thi `next build` tu type-check, nen image Docker build that bai
+    // truoc khi kip cham vao cum. `tsc --noEmit` hien dang sach nen bat duoc ngay.
+    ignoreBuildErrors: false,
   },
   devIndicators: false,
   images: {
