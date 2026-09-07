@@ -88,6 +88,43 @@ const nextConfig: NextConfig = {
         destination: '/courses',
         permanent: true,
       },
+      // ---- URL cu cua danh sach bai viet ----
+      // /blog va /category/[slug] da bo `searchParams` de tro thanh trang TINH
+      // (query string lam Next ep render dong moi request). Cac URL dang
+      // ?page= / ?category= van con o ngoai (link chia se, ket qua Google) nen
+      // phai chuyen huong, khong duoc de chet.
+      //
+      // Thu tu quan trong: `category` dat truoc `page`. Neu URL co ca hai thi
+      // ve trang 1 cua danh muc — dung hon la giu so trang cua danh sach chung.
+      {
+        source: '/blog',
+        has: [{ type: 'query', key: 'category', value: '(?<cat>[^&]+)' }],
+        destination: '/category/:cat',
+        permanent: false,
+      },
+      {
+        source: '/blog',
+        has: [{ type: 'query', key: 'page', value: '(?<p>\d+)' }],
+        destination: '/blog/trang/:p',
+        permanent: false,
+      },
+      // /blog/trang/1 la trung noi dung voi /blog -> gop lai
+      {
+        source: '/blog/trang/1',
+        destination: '/blog',
+        permanent: true,
+      },
+      {
+        source: '/category/:slug',
+        has: [{ type: 'query', key: 'page', value: '(?<p>\d+)' }],
+        destination: '/category/:slug/trang/:p',
+        permanent: false,
+      },
+      {
+        source: '/category/:slug/trang/1',
+        destination: '/category/:slug',
+        permanent: true,
+      },
     ];
   },
   async headers() {
