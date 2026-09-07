@@ -100,8 +100,10 @@ Quản lý bằng workflow `blog-cron` ở repo `ke-truyen`: `diagnose` (xem tì
   nội dung bài Premium.
 - **Nhúng `categories` phải ghi rõ `categories!category_id`.** Bảng `posts` có hai quan hệ tới
   `categories` (khoá ngoại và bảng nối), viết chung chung là PostgREST trả lỗi.
-- **Schema trong repo đã lỗi thời.** `setup.sql`, `schema.json` và `supabase/migrations/` chỉ
-  mô tả vài bảng đời đầu. Muốn biết cột nào có thật thì đọc code hoặc query DB.
+- **Repo không dựng lại được database.** `setup.sql` và `schema.json` đã xoá vì chỉ mô tả 4
+  bảng đời đầu mà trông như bản đầy đủ. `supabase/migrations/` chỉ là lịch sử một phần, thiếu
+  toàn bộ 10 bảng của phần bán hàng — xem `supabase/migrations/README.md`. Muốn biết cột nào
+  có thật thì đọc code hoặc query DB.
 - **Không hardcode secret vào bất kỳ file nào.** Script chạy tay đọc `.env.local` qua
   `scripts-env.js`.
 

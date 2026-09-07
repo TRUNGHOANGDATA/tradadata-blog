@@ -280,6 +280,10 @@ export default async function BlogPostPage({ params, searchParams }: Props) {
                         fill
                         className="object-cover"
                         priority
+                        // BAT BUOC co `sizes` khi dung `fill`: thieu no thi Next coi
+                        // anh rong 100vw va trinh duyet xin ban 3840px. Khung that
+                        // chi rong toi da ~1216px (max-w-7xl tru padding).
+                        sizes="(max-width: 1280px) 100vw, 1216px"
                     />
                     {/* Gradient overlay */}
                     <div className="absolute inset-0 bg-gradient-to-t from-surface-900 via-surface-900/60 to-transparent" />

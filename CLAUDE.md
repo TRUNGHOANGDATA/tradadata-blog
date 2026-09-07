@@ -119,9 +119,14 @@ Cần file `.env.local` (không có trong repo). Các biến đang được dùn
 `comments`, `user_bookmarks`, `subscribers`, `email_queue`, `email_templates`, `site_settings`,
 `products`, `course_sections`, `orders`, `coupons`, `coupon_products`, `user_coupons`, `user_subscriptions`.
 
-⚠️ `setup.sql`, `schema.json` và `supabase/migrations/` đã **lỗi thời** — không có migration cho
-orders/products/coupons/subscriptions/site_settings… Schema thật được sửa trực tiếp trên Supabase.
-Khi cần biết cột nào có thật, đọc code hoặc query DB, đừng tin mấy file này.
+⚠️ **Repo KHÔNG dựng lại được database.** `setup.sql` và `schema.json` đã bị xoá — chúng chỉ
+mô tả 4 bảng đời đầu nhưng trông như bản đầy đủ. `supabase/migrations/` vẫn còn nhưng chỉ là
+lịch sử một phần: nó **không** chứa 10 bảng app đang dùng (`orders` 18 file code, `products` 8,
+`user_subscriptions` 8, `user_coupons` 7, `coupons` 6, `site_settings` 5, `coupon_products` 4,
+`software_leads` 2, `course_sections` 2, `email_queue` 2 — không bảng nào có trong migration).
+Chạy hết migration lên DB rỗng sẽ ra schema thiếu sạch phần bán hàng mà vẫn báo thành công.
+Xem `supabase/migrations/README.md`. Schema thật sửa trực tiếp trên Supabase — cần biết cột nào
+có thật thì đọc code hoặc query DB.
 
 ## Luồng nghiệp vụ chính
 
