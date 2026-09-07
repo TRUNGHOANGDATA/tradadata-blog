@@ -111,14 +111,14 @@ export default function VideosPage() {
                     <h1 className="text-2xl font-bold text-surface-900 dark:text-surface-50">
                         Quản lý Video
                     </h1>
-                    <p className="text-sm text-surface-500 mt-1">
+                    <p className="text-sm text-fg-subtle mt-1">
                         {filteredVideos.length} video
                     </p>
                 </div>
 
                 <div className="flex items-center gap-3">
                     <div className="relative">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-surface-400" />
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-fg-faint" />
                         <input
                             type="text"
                             placeholder="Tìm kiếm video..."
@@ -196,7 +196,7 @@ export default function VideosPage() {
                                     />
                                 ) : (
                                     <div className="w-full h-full flex items-center justify-center">
-                                        <Film className="w-12 h-12 text-surface-400" />
+                                        <Film className="w-12 h-12 text-fg-faint" />
                                     </div>
                                 )}
                                 <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
@@ -209,7 +209,7 @@ export default function VideosPage() {
                                 <h3 className="text-sm font-medium text-surface-800 dark:text-surface-200 truncate" title={video.name}>
                                     {video.name}
                                 </h3>
-                                <div className="flex items-center gap-2 mt-1 text-xs text-surface-400">
+                                <div className="flex items-center gap-2 mt-1 text-xs text-fg-faint">
                                     <span>{formatSize(video.size)}</span>
                                     <span>•</span>
                                     <span>{new Date(video.createdTime).toLocaleDateString('vi-VN')}</span>
@@ -219,7 +219,7 @@ export default function VideosPage() {
                                 <div className="flex items-center gap-1 mt-2">
                                     <button
                                         onClick={() => copyUrl(`https://drive.google.com/file/d/${video.id}/preview`, video.id)}
-                                        className="flex items-center gap-1 px-2 py-1 rounded-lg text-xs text-surface-500 hover:bg-surface-200 dark:hover:bg-surface-700 transition"
+                                        className="flex items-center gap-1 px-2 py-1 rounded-lg text-xs text-fg-subtle hover:bg-surface-200 dark:hover:bg-surface-700 transition"
                                         title="Copy embed URL"
                                     >
                                         {copiedId === video.id ? <Check className="w-3 h-3 text-green-500" /> : <Copy className="w-3 h-3" />}
@@ -228,7 +228,7 @@ export default function VideosPage() {
                                     <a
                                         href={`https://drive.google.com/file/d/${video.id}/view`}
                                         target="_blank"
-                                        className="flex items-center gap-1 px-2 py-1 rounded-lg text-xs text-surface-500 hover:bg-surface-200 dark:hover:bg-surface-700 transition"
+                                        className="flex items-center gap-1 px-2 py-1 rounded-lg text-xs text-fg-subtle hover:bg-surface-200 dark:hover:bg-surface-700 transition"
                                     >
                                         <ExternalLink className="w-3 h-3" />
                                         Xem

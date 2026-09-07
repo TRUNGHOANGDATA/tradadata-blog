@@ -88,7 +88,7 @@ function CommentItem({
                         <span className="font-semibold text-sm text-surface-900 dark:text-surface-100">
                             {comment.user?.full_name || comment.user?.email?.split('@')[0] || 'Ẩn danh'}
                         </span>
-                        <span className="text-xs text-surface-400">
+                        <span className="text-xs text-fg-faint">
                             {timeAgo(comment.created_at)}
                         </span>
                     </div>
@@ -98,7 +98,7 @@ function CommentItem({
                     <div className="flex items-center gap-3 mt-2">
                         <button
                             onClick={() => onReply(comment.id)}
-                            className="inline-flex items-center gap-1 text-xs text-surface-400 hover:text-brand-500 transition-colors"
+                            className="inline-flex items-center gap-1 text-xs text-fg-faint hover:text-brand-500 transition-colors"
                         >
                             <Reply className="w-3.5 h-3.5" />
                             Trả lời
@@ -106,7 +106,7 @@ function CommentItem({
                         {canDelete && (
                             <button
                                 onClick={() => onDelete(comment.id)}
-                                className="inline-flex items-center gap-1 text-xs text-surface-400 hover:text-red-500 transition-colors opacity-0 group-hover:opacity-100"
+                                className="inline-flex items-center gap-1 text-xs text-fg-faint hover:text-red-500 transition-colors opacity-0 group-hover:opacity-100"
                             >
                                 <Trash2 className="w-3.5 h-3.5" />
                                 Xoá
@@ -136,7 +136,7 @@ function CommentItem({
                                             <span className="font-semibold text-sm text-surface-900 dark:text-surface-100">
                                                 {reply.user?.full_name || reply.user?.email?.split('@')[0] || 'Ẩn danh'}
                                             </span>
-                                            <span className="text-xs text-surface-400">
+                                            <span className="text-xs text-fg-faint">
                                                 {timeAgo(reply.created_at)}
                                             </span>
                                         </div>
@@ -147,7 +147,7 @@ function CommentItem({
                                             {(currentUserId === reply.user_id || isAdmin) && (
                                                 <button
                                                     onClick={() => onDelete(reply.id)}
-                                                    className="inline-flex items-center gap-1 text-xs text-surface-400 hover:text-red-500 transition-colors opacity-0 group-hover:opacity-100"
+                                                    className="inline-flex items-center gap-1 text-xs text-fg-faint hover:text-red-500 transition-colors opacity-0 group-hover:opacity-100"
                                                 >
                                                     <Trash2 className="w-3.5 h-3.5" />
                                                     Xoá
@@ -288,7 +288,7 @@ export function CommentSection({ postId }: { postId: string }) {
                     <MessageCircle className="w-5 h-5" />
                 </div>
                 <h3 className="text-xl font-bold text-surface-900 dark:text-surface-100">
-                    Bình luận {totalCount > 0 && <span className="text-base font-normal text-surface-400">({totalCount})</span>}
+                    Bình luận {totalCount > 0 && <span className="text-base font-normal text-fg-faint">({totalCount})</span>}
                 </h3>
             </div>
 
@@ -312,7 +312,7 @@ export function CommentSection({ postId }: { postId: string }) {
                                 className="w-full px-4 py-3 rounded-xl bg-white dark:bg-surface-900 border border-surface-200 dark:border-surface-700 text-sm text-surface-800 dark:text-surface-200 placeholder:text-surface-400 focus:outline-none focus:ring-2 focus:ring-brand-500/30 focus:border-brand-500 transition-all resize-none"
                             />
                             <div className="flex items-center justify-between mt-2">
-                                <span className="text-xs text-surface-400">{content.length}/2000</span>
+                                <span className="text-xs text-fg-faint">{content.length}/2000</span>
                                 <button
                                     type="submit"
                                     disabled={!content.trim() || submitting}
@@ -349,7 +349,7 @@ export function CommentSection({ postId }: { postId: string }) {
             ) : rootComments.length === 0 ? (
                 <div className="text-center py-12">
                     <MessageCircle className="w-12 h-12 text-surface-200 dark:text-surface-700 mx-auto mb-3" />
-                    <p className="text-sm text-surface-400">Chưa có bình luận nào. Hãy là người đầu tiên!</p>
+                    <p className="text-sm text-fg-faint">Chưa có bình luận nào. Hãy là người đầu tiên!</p>
                 </div>
             ) : (
                 <div className="space-y-6">
@@ -389,7 +389,7 @@ export function CommentSection({ postId }: { postId: string }) {
                                         <div className="flex items-center gap-2 mt-2 justify-end">
                                             <button
                                                 onClick={() => { setReplyTo(null); setReplyContent(''); }}
-                                                className="px-3 py-1.5 rounded-lg text-xs text-surface-500 hover:bg-surface-100 dark:hover:bg-surface-800 transition-colors"
+                                                className="px-3 py-1.5 rounded-lg text-xs text-fg-subtle hover:bg-surface-100 dark:hover:bg-surface-800 transition-colors"
                                             >
                                                 Huỷ
                                             </button>

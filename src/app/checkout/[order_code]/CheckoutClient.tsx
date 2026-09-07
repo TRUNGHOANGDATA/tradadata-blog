@@ -81,17 +81,17 @@ export default function CheckoutClient({ order, productName, bankInfo }: Checkou
                     </h2>
                     <div className="space-y-3 text-sm">
                         <div className="flex justify-between">
-                            <span className="text-surface-500">Mã đơn hàng:</span>
+                            <span className="text-fg-subtle">Mã đơn hàng:</span>
                             <span className="font-bold text-surface-900 dark:text-surface-100">{order.order_code}</span>
                         </div>
                         <div className="flex justify-between">
-                            <span className="text-surface-500">Sản phẩm:</span>
+                            <span className="text-fg-subtle">Sản phẩm:</span>
                             <span className="font-medium text-surface-900 dark:text-surface-100 text-right max-w-[200px] truncate">
                                 {productName}
                             </span>
                         </div>
                         <div className="flex justify-between">
-                            <span className="text-surface-500">Khách hàng:</span>
+                            <span className="text-fg-subtle">Khách hàng:</span>
                             <span className="font-medium text-surface-900 dark:text-surface-100">{order.full_name}</span>
                         </div>
 
@@ -99,21 +99,21 @@ export default function CheckoutClient({ order, productName, bankInfo }: Checkou
                         {couponCode && amount !== originalAmount ? (
                             <div className="pt-2 border-t border-surface-100 dark:border-surface-800 space-y-2">
                                 <div className="flex justify-between">
-                                    <span className="text-surface-500">Giá gốc:</span>
-                                    <span className="text-surface-400 line-through text-sm">{formatCurrency(originalAmount)}</span>
+                                    <span className="text-fg-subtle">Giá gốc:</span>
+                                    <span className="text-fg-faint line-through text-sm">{formatCurrency(originalAmount)}</span>
                                 </div>
                                 <div className="flex justify-between">
-                                    <span className="text-surface-500">Giảm giá:</span>
+                                    <span className="text-fg-subtle">Giảm giá:</span>
                                     <span className="text-green-600 dark:text-green-400 font-medium">−{formatCurrency(originalAmount - amount)}</span>
                                 </div>
                                 <div className="flex justify-between">
-                                    <span className="text-surface-500">Thanh toán:</span>
+                                    <span className="text-fg-subtle">Thanh toán:</span>
                                     <span className="font-bold text-brand-600 dark:text-brand-500 text-lg">{formatCurrency(amount)}</span>
                                 </div>
                             </div>
                         ) : (
                             <div className="flex justify-between">
-                                <span className="text-surface-500">Số tiền:</span>
+                                <span className="text-fg-subtle">Số tiền:</span>
                                 <span className="font-bold text-brand-600 dark:text-brand-500 text-lg">{formatCurrency(amount)}</span>
                             </div>
                         )}
@@ -197,7 +197,7 @@ export default function CheckoutClient({ order, productName, bankInfo }: Checkou
                         Quét mã QR để thanh toán
                     </h2>
 
-                    <div className="bg-white p-2 rounded-xl mb-6 mx-auto inline-block border border-surface-100">
+                    <div className="bg-card p-2 rounded-xl mb-6 mx-auto inline-block border border-surface-100">
                         <img
                             key={qrUrl}
                             src={qrUrl}
@@ -208,22 +208,22 @@ export default function CheckoutClient({ order, productName, bankInfo }: Checkou
 
                     <div className="bg-surface-50 dark:bg-surface-800/50 rounded-xl p-4 text-left border border-surface-100 dark:border-surface-700 mb-6">
                         <div className="flex justify-between items-center mb-2">
-                            <span className="text-xs text-surface-500 uppercase font-semibold">Ngân hàng</span>
+                            <span className="text-xs text-fg-subtle uppercase font-semibold">Ngân hàng</span>
                             <span className="font-medium text-surface-900 dark:text-surface-100">{bankInfo.bankId}</span>
                         </div>
                         <div className="flex justify-between items-center mb-2">
-                            <span className="text-xs text-surface-500 uppercase font-semibold">Chủ TK</span>
+                            <span className="text-xs text-fg-subtle uppercase font-semibold">Chủ TK</span>
                             <span className="font-medium text-surface-900 dark:text-surface-100 uppercase">{bankInfo.accountName}</span>
                         </div>
                         <div className="flex justify-between items-center mb-2">
-                            <span className="text-xs text-surface-500 uppercase font-semibold">Số TK</span>
+                            <span className="text-xs text-fg-subtle uppercase font-semibold">Số TK</span>
                             <div className="flex items-center gap-2">
                                 <span className="font-bold text-brand-600 dark:text-brand-400">{bankInfo.accountNo}</span>
                                 <CopyButton text={bankInfo.accountNo} />
                             </div>
                         </div>
                         <div className="flex justify-between items-center mt-4 pt-4 border-t border-surface-200 dark:border-surface-700">
-                            <span className="text-xs text-surface-500 uppercase font-semibold">Nội dung CK</span>
+                            <span className="text-xs text-fg-subtle uppercase font-semibold">Nội dung CK</span>
                             <div className="flex items-center gap-2">
                                 <span className="font-bold text-green-600 dark:text-green-500 text-lg">{order.order_code}</span>
                                 <CopyButton text={order.order_code} />

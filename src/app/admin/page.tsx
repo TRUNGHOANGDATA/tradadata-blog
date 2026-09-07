@@ -84,7 +84,7 @@ export default function AdminDashboard() {
                 {statCards.map((card) => (
                     <div key={card.label} className="bg-white dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-800 p-5 hover:shadow-lg transition-shadow">
                         <div className="flex items-center justify-between mb-3">
-                            <span className="text-sm text-surface-500">{card.label}</span>
+                            <span className="text-sm text-fg-subtle">{card.label}</span>
                             <div className={`p-2 rounded-xl ${card.color}`}>
                                 <card.icon className="h-4 w-4" />
                             </div>
@@ -102,11 +102,11 @@ export default function AdminDashboard() {
                     <h3 className="font-semibold text-surface-900 dark:text-surface-100 mb-3">Trạng thái bài viết</h3>
                     <div className="space-y-3">
                         <div className="flex items-center justify-between">
-                            <span className="text-sm text-surface-500">Đã xuất bản</span>
+                            <span className="text-sm text-fg-subtle">Đã xuất bản</span>
                             <span className="text-sm font-semibold text-emerald-600">{stats?.publishedPosts || 0}</span>
                         </div>
                         <div className="flex items-center justify-between">
-                            <span className="text-sm text-surface-500">Nháp</span>
+                            <span className="text-sm text-fg-subtle">Nháp</span>
                             <span className="text-sm font-semibold text-amber-600">{stats?.draftPosts || 0}</span>
                         </div>
                     </div>
@@ -131,15 +131,15 @@ export default function AdminDashboard() {
                     <table className="w-full">
                         <thead>
                             <tr className="border-b border-surface-200 dark:border-surface-800 bg-surface-50 dark:bg-surface-800/50">
-                                <th className="text-left px-6 py-3 text-xs font-semibold text-surface-500 uppercase">Tiêu đề</th>
-                                <th className="text-left px-6 py-3 text-xs font-semibold text-surface-500 uppercase">Trạng thái</th>
-                                <th className="text-left px-6 py-3 text-xs font-semibold text-surface-500 uppercase">Ngày</th>
+                                <th className="text-left px-6 py-3 text-xs font-semibold text-fg-subtle uppercase">Tiêu đề</th>
+                                <th className="text-left px-6 py-3 text-xs font-semibold text-fg-subtle uppercase">Trạng thái</th>
+                                <th className="text-left px-6 py-3 text-xs font-semibold text-fg-subtle uppercase">Ngày</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-surface-200 dark:divide-surface-800">
                             {recentPosts.length === 0 ? (
                                 <tr>
-                                    <td colSpan={4} className="px-6 py-8 text-center text-surface-400 text-sm">
+                                    <td colSpan={4} className="px-6 py-8 text-center text-fg-faint text-sm">
                                         Chưa có bài viết. <Link href="/admin/posts/new" className="text-brand-600 hover:underline">Viết bài đầu tiên →</Link>
                                     </td>
                                 </tr>
@@ -162,7 +162,7 @@ export default function AdminDashboard() {
                                                 {post.status === 'published' ? 'Đã xuất bản' : 'Nháp'}
                                             </span>
                                         </td>
-                                        <td className="px-6 py-3 text-sm text-surface-500">
+                                        <td className="px-6 py-3 text-sm text-fg-subtle">
                                             {formatDate(post.created_at)}
                                         </td>
                                     </tr>

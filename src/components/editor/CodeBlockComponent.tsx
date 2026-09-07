@@ -18,7 +18,7 @@ export default function CodeBlockComponent({ node, updateAttributes, extension }
     return (
         <NodeViewWrapper className="code-block relative my-6 rounded-xl overflow-hidden bg-[#1e1e1e] font-mono shadow-lg border border-surface-200/10 dark:border-white/10">
             {/* Window-like header */}
-            <div className="flex items-center justify-between px-4 py-2 bg-[#2d2d2d] text-surface-400 text-xs select-none">
+            <div className="flex items-center justify-between px-4 py-2 bg-[#2d2d2d] text-fg-faint text-xs select-none">
                 <div className="flex items-center gap-3">
                     <div className="flex gap-1.5">
                         <div className="w-3 h-3 rounded-full bg-[#ff5f56]" />
@@ -35,7 +35,7 @@ export default function CodeBlockComponent({ node, updateAttributes, extension }
                     <button
                         onClick={handleCopy}
                         contentEditable={false}
-                        className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-[#1e1e1e] text-surface-400 hover:bg-surface-700 hover:text-white transition-all text-xs"
+                        className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-[#1e1e1e] text-fg-faint hover:bg-surface-700 hover:text-white transition-all text-xs"
                         title="Copy code"
                     >
                         {copied ? (
@@ -49,7 +49,7 @@ export default function CodeBlockComponent({ node, updateAttributes, extension }
                     <select
                         value={node.attrs.language || ''}
                         onChange={(event) => updateAttributes({ language: event.target.value })}
-                        className="bg-[#1e1e1e] border border-surface-400/20 rounded text-surface-400 text-xs px-2 py-0.5 focus:ring-0 cursor-pointer hover:text-surface-200 transition-colors focus:outline-none"
+                        className="bg-[#1e1e1e] border border-surface-400/20 rounded text-fg-faint text-xs px-2 py-0.5 focus:ring-0 cursor-pointer hover:text-surface-200 transition-colors focus:outline-none"
                         contentEditable={false}
                     >
                         {CODE_LANGUAGES.map(({ value, label }) => (

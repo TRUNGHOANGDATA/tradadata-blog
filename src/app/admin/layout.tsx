@@ -84,7 +84,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                     <h2 className="text-2xl font-bold text-surface-900 dark:text-surface-100 mb-2">
                         Không có quyền truy cập
                     </h2>
-                    <p className="text-surface-500 mb-4">Bạn cần quyền Admin hoặc Editor để truy cập trang này.</p>
+                    <p className="text-fg-subtle mb-4">Bạn cần quyền Admin hoặc Editor để truy cập trang này.</p>
                     <Link href="/" className="px-6 py-3 rounded-xl bg-brand-600 text-white font-medium hover:bg-brand-700 transition-colors">
                         Về trang chủ
                     </Link>
@@ -119,7 +119,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             <div className="p-4 border-t border-surface-200 dark:border-surface-800">
                 <Link
                     href="/"
-                    className={`flex items-center gap-2 text-sm text-surface-500 hover:text-surface-700 dark:hover:text-surface-300 transition-colors ${!mobile && collapsed ? 'justify-center' : ''
+                    className={`flex items-center gap-2 text-sm text-fg-subtle hover:text-surface-700 dark:hover:text-surface-300 transition-colors ${!mobile && collapsed ? 'justify-center' : ''
                         }`}
                 >
                     <ArrowLeft className="h-4 w-4" />

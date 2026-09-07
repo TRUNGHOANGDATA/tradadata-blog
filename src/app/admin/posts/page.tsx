@@ -238,7 +238,7 @@ export default function PostsPage() {
             {/* Filter */}
             <div className="flex gap-3 mb-6">
                 <div className="relative flex-1 max-w-sm">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-surface-400" />
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-fg-faint" />
                     <input
                         type="text"
                         placeholder="Tìm bài viết..."
@@ -260,11 +260,11 @@ export default function PostsPage() {
 
             {/* Info bar */}
             <div className="flex items-center justify-between mb-3">
-                <p className="text-sm text-surface-500">
+                <p className="text-sm text-fg-subtle">
                     Hiển thị <span className="font-semibold text-surface-700 dark:text-surface-300">{paginatedPosts.length}</span> / <span className="font-semibold text-surface-700 dark:text-surface-300">{filteredPosts.length}</span> bài viết
                     {totalPages > 1 && <span className="ml-1">(Trang {currentPage}/{totalPages})</span>}
                 </p>
-                <p className="text-sm text-surface-500">
+                <p className="text-sm text-fg-subtle">
                     <Globe className="h-3.5 w-3.5 inline-block mr-1 text-blue-500" />
                     Đã index: <span className="font-semibold text-blue-600 dark:text-blue-400">{indexedCount}</span>/<span className="font-semibold">{publishedCount}</span> bài xuất bản
                 </p>
@@ -276,17 +276,17 @@ export default function PostsPage() {
                     <table className="w-full">
                         <thead>
                             <tr className="border-b border-surface-200 dark:border-surface-800 bg-surface-50 dark:bg-surface-800/50">
-                                <th className="text-left px-6 py-3 text-xs font-semibold text-surface-500 uppercase">Tiêu đề</th>
-                                <th className="text-left px-6 py-3 text-xs font-semibold text-surface-500 uppercase">Chủ đề</th>
-                                <th className="text-left px-6 py-3 text-xs font-semibold text-surface-500 uppercase">Trạng thái</th>
-                                <th className="text-left px-6 py-3 text-xs font-semibold text-surface-500 uppercase">Ngày</th>
-                                <th className="text-right px-6 py-3 text-xs font-semibold text-surface-500 uppercase">Thao tác</th>
+                                <th className="text-left px-6 py-3 text-xs font-semibold text-fg-subtle uppercase">Tiêu đề</th>
+                                <th className="text-left px-6 py-3 text-xs font-semibold text-fg-subtle uppercase">Chủ đề</th>
+                                <th className="text-left px-6 py-3 text-xs font-semibold text-fg-subtle uppercase">Trạng thái</th>
+                                <th className="text-left px-6 py-3 text-xs font-semibold text-fg-subtle uppercase">Ngày</th>
+                                <th className="text-right px-6 py-3 text-xs font-semibold text-fg-subtle uppercase">Thao tác</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-surface-200 dark:divide-surface-800">
                             {paginatedPosts.length === 0 ? (
                                 <tr>
-                                    <td colSpan={6} className="px-6 py-12 text-center text-surface-400">
+                                    <td colSpan={6} className="px-6 py-12 text-center text-fg-faint">
                                         {posts.length === 0 ? 'Chưa có bài viết nào. Hãy viết bài đầu tiên!' : 'Không tìm thấy bài viết phù hợp.'}
                                     </td>
                                 </tr>
@@ -324,7 +324,7 @@ export default function PostsPage() {
                                                 {post.status === 'published' ? 'Đã xuất bản' : 'Nháp'}
                                             </span>
                                         </td>
-                                        <td className="px-6 py-4 text-sm text-surface-500">
+                                        <td className="px-6 py-4 text-sm text-fg-subtle">
                                             {formatDate(post.published_at || post.created_at)}
                                         </td>
                                         <td className="px-6 py-4 text-right">
@@ -340,7 +340,7 @@ export default function PostsPage() {
                                                                     ? 'bg-blue-50 text-blue-600 dark:bg-blue-900/20'
                                                                     : indexingState[post.slug] === 'error'
                                                                         ? 'bg-red-50 text-red-600 dark:bg-red-900/20 dark:text-red-400'
-                                                                        : 'hover:bg-blue-50 text-surface-400 hover:text-blue-600 dark:hover:bg-blue-900/20'
+                                                                        : 'hover:bg-blue-50 text-fg-faint hover:text-blue-600 dark:hover:bg-blue-900/20'
                                                             }`}
                                                         title={post.indexed_at
                                                             ? `Đã index lúc ${formatDate(post.indexed_at)} — Bấm để index lại`
@@ -362,7 +362,7 @@ export default function PostsPage() {
                                                         onClick={() => handleSendNewsletter(post.id)}
                                                         disabled={sendingState[post.id] === 'loading'}
                                                         className={`p-2 rounded-lg transition-colors ${sendingState[post.id] === 'success' ? 'bg-emerald-50 text-emerald-600 dark:bg-emerald-900/20' :
-                                                            'hover:bg-brand-50 text-surface-400 hover:text-brand-600 dark:hover:bg-brand-900/20'}`}
+                                                            'hover:bg-brand-50 text-fg-faint hover:text-brand-600 dark:hover:bg-brand-900/20'}`}
                                                         title="Gửi Newsletter"
                                                     >
                                                         <Send className={`h-4 w-4 ${sendingState[post.id] === 'loading' ? 'animate-pulse' : ''}`} />
@@ -375,7 +375,7 @@ export default function PostsPage() {
                                                         className="p-2 rounded-lg hover:bg-surface-100 dark:hover:bg-surface-800 transition-colors"
                                                         title="Xem"
                                                     >
-                                                        <Eye className="h-4 w-4 text-surface-400" />
+                                                        <Eye className="h-4 w-4 text-fg-faint" />
                                                     </Link>
                                                 )}
                                                 <Link
@@ -383,14 +383,14 @@ export default function PostsPage() {
                                                     className="p-2 rounded-lg hover:bg-surface-100 dark:hover:bg-surface-800 transition-colors"
                                                     title="Sửa"
                                                 >
-                                                    <Edit className="h-4 w-4 text-surface-400" />
+                                                    <Edit className="h-4 w-4 text-fg-faint" />
                                                 </Link>
                                                 <button
                                                     onClick={() => handleDelete(post.id)}
                                                     className="p-2 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
                                                     title="Xoá"
                                                 >
-                                                    <Trash2 className="h-4 w-4 text-surface-400 hover:text-red-600" />
+                                                    <Trash2 className="h-4 w-4 text-fg-faint hover:text-red-600" />
                                                 </button>
                                             </div>
                                         </td>
@@ -416,7 +416,7 @@ export default function PostsPage() {
 
                     {getPageNumbers().map((page, i) =>
                         page === '...' ? (
-                            <span key={`ellipsis-${i}`} className="px-2 py-2 text-surface-400 text-sm">…</span>
+                            <span key={`ellipsis-${i}`} className="px-2 py-2 text-fg-faint text-sm">…</span>
                         ) : (
                             <button
                                 key={page}

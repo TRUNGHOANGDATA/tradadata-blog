@@ -61,7 +61,7 @@ export function FloatingActions() {
                     href={zaloLink}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all group overflow-hidden"
+                    className="w-12 h-12 bg-card rounded-full flex items-center justify-center shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all group overflow-hidden"
                     aria-label="Liên hệ qua Zalo"
                 >
                     <div className="relative w-8 h-8 flex items-center justify-center">
@@ -76,7 +76,7 @@ export function FloatingActions() {
                     href={messengerLink}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all group overflow-hidden"
+                    className="w-12 h-12 bg-card rounded-full flex items-center justify-center shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all group overflow-hidden"
                     aria-label="Liên hệ qua Messenger"
                 >
                     <div className="relative w-8 h-8 flex items-center justify-center">

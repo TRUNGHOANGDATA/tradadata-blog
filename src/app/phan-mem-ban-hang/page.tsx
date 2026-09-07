@@ -222,7 +222,7 @@ export default function PhanMemBanHangPage() {
             <section className="relative overflow-hidden bg-gradient-to-br from-surface-900 via-surface-900 to-brand-900 layout-pt">
                 <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24">
                     <div className="text-center max-w-3xl mx-auto">
-                        <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/20 text-brand-300 text-sm font-medium mb-6">
+                        <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-card/10 border border-white/20 text-brand-300 text-sm font-medium mb-6">
                             <PackageCheck className="h-4 w-4" />
                             Dành cho doanh nghiệp thương mại vừa và nhỏ
                         </span>
@@ -238,7 +238,7 @@ export default function PhanMemBanHangPage() {
                         <div className="flex justify-center">
                             <ContactButtons variant="dark" />
                         </div>
-                        <p className="text-sm text-surface-400 mt-6">
+                        <p className="text-sm text-fg-faint mt-6">
                             Tư vấn miễn phí · Khảo sát nghiệp vụ trước khi báo giá
                         </p>
                     </div>
@@ -336,7 +336,7 @@ export default function PhanMemBanHangPage() {
                 <div className="grid md:grid-cols-2 gap-8">
                     {SCREENSHOTS.map((s) => (
                         <figure key={s.src} className="group">
-                            <div className="relative aspect-[16/9] rounded-xl overflow-hidden border border-surface-200 dark:border-surface-800 bg-white shadow-sm">
+                            <div className="relative aspect-[16/9] rounded-xl overflow-hidden border border-surface-200 dark:border-surface-800 bg-card shadow-sm">
                                 <Image
                                     src={s.src}
                                     alt={s.alt}

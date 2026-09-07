@@ -116,7 +116,7 @@ function FeaturedCard({ post }: { post: Post }) {
                         </span>
                     )}
                     {post.category && (
-                        <span className="inline-block text-xs font-semibold px-2.5 py-1 rounded-lg bg-white/20 text-white backdrop-blur-sm mb-3 ml-2">
+                        <span className="inline-block text-xs font-semibold px-2.5 py-1 rounded-lg bg-card/20 text-white backdrop-blur-sm mb-3 ml-2">
                             {post.category.icon} {post.category.name}
                         </span>
                     )}

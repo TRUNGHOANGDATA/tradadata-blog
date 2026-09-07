@@ -195,7 +195,7 @@ export default function AdminProductsPage() {
                 {products.map(product => (
                     <div key={product.id} className="bg-white dark:bg-surface-900 rounded-3xl p-6 border border-surface-200 dark:border-surface-800 flex flex-col relative overflow-hidden group">
                         {!product.is_active && (
-                            <div className="absolute top-4 right-4 px-2 py-1 bg-surface-100 dark:bg-surface-800 text-surface-500 rounded text-xs font-semibold z-10">
+                            <div className="absolute top-4 right-4 px-2 py-1 bg-surface-100 dark:bg-surface-800 text-fg-subtle rounded text-xs font-semibold z-10">
                                 Ẩn
                             </div>
                         )}
@@ -205,7 +205,7 @@ export default function AdminProductsPage() {
                             </div>
                         )}
                         <h3 className="text-xl font-bold text-surface-900 dark:text-surface-100">{product.name}</h3>
-                        <p className="text-surface-500 text-sm mt-1 mb-4 h-10 line-clamp-2">{product.description}</p>
+                        <p className="text-fg-subtle text-sm mt-1 mb-4 h-10 line-clamp-2">{product.description}</p>
                         <div className="text-3xl font-bold text-brand-600 dark:text-brand-400 mb-6">
                             {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(product.price)}
                         </div>
@@ -246,7 +246,7 @@ export default function AdminProductsPage() {
                                 {currentProduct.id ? 'Sửa Sản Phẩm' : 'Thêm Sản Phẩm Mới'}
                             </h2>
                             <button onClick={handleCloseEdit} className="p-2 rounded-full hover:bg-surface-100 dark:hover:bg-surface-800">
-                                <X className="w-5 h-5 text-surface-500" />
+                                <X className="w-5 h-5 text-fg-subtle" />
                             </button>
                         </div>
 
@@ -315,7 +315,7 @@ export default function AdminProductsPage() {
                                         }}
                                         className="w-full px-4 py-2 rounded-xl bg-surface-50 dark:bg-surface-800 border border-surface-200 dark:border-surface-700"
                                     />
-                                    <div className="text-xs text-surface-500 mt-1">Ví dụ: 30 (1 tháng), 365 (1 năm)</div>
+                                    <div className="text-xs text-fg-subtle mt-1">Ví dụ: 30 (1 tháng), 365 (1 năm)</div>
                                 </div>
                             </div>
                             <div className="grid grid-cols-2 gap-4">
@@ -342,7 +342,7 @@ export default function AdminProductsPage() {
                                             className="w-4 h-4 rounded text-brand-600 focus:ring-brand-500"
                                         />
                                     </label>
-                                    <div className="text-xs text-surface-500 mt-2">Bật để hiển thị trên Pricing</div>
+                                    <div className="text-xs text-fg-subtle mt-2">Bật để hiển thị trên Pricing</div>
                                 </div>
                             </div>
                             <div>
@@ -389,8 +389,8 @@ export default function AdminProductsPage() {
                                             <Loader2 className="w-6 h-6 animate-spin text-brand-500" />
                                         ) : (
                                             <>
-                                                <ImagePlus className="w-6 h-6 text-surface-400 mb-1" />
-                                                <span className="text-xs text-surface-500">Click để upload ảnh</span>
+                                                <ImagePlus className="w-6 h-6 text-fg-faint mb-1" />
+                                                <span className="text-xs text-fg-subtle">Click để upload ảnh</span>
                                             </>
                                         )}
                                     </div>
@@ -426,7 +426,7 @@ export default function AdminProductsPage() {
                                 Tạo Ảnh bằng AI
                             </h2>
                             <button onClick={() => setAiImageOpen(false)} className="p-2 rounded-full hover:bg-surface-100 dark:hover:bg-surface-800">
-                                <X className="w-5 h-5 text-surface-500" />
+                                <X className="w-5 h-5 text-fg-subtle" />
                             </button>
                         </div>
                         <div className="space-y-4">

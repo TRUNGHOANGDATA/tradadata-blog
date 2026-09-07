@@ -185,7 +185,7 @@ export default async function CoursesPage() {
                                                     <p className="text-3xl font-extrabold text-brand-600 dark:text-brand-400">
                                                         {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(product.price)}
                                                     </p>
-                                                    <p className="text-sm font-medium text-surface-500 mb-1">
+                                                    <p className="text-sm font-medium text-fg-subtle mb-1">
                                                         {product.duration_days ? `/ ${product.duration_days} ngày` : '/ Vĩnh viễn'}
                                                     </p>
                                                 </div>
@@ -206,10 +206,10 @@ export default async function CoursesPage() {
                     {(!products || products.length === 0) && (
                         <div className="col-span-full py-20 text-center">
                             <div className="inline-flex justify-center items-center w-16 h-16 rounded-full bg-surface-100 dark:bg-surface-800 mb-4">
-                                <BookOpen className="w-8 h-8 text-surface-400" />
+                                <BookOpen className="w-8 h-8 text-fg-faint" />
                             </div>
                             <h3 className="text-xl font-semibold text-surface-900 dark:text-surface-100 mb-2">Đang cập nhật khóa học</h3>
-                            <p className="text-surface-500">Vui lòng quay lại sau nhé!</p>
+                            <p className="text-fg-subtle">Vui lòng quay lại sau nhé!</p>
                         </div>
                     )}
                 </div>

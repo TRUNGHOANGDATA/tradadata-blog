@@ -118,10 +118,10 @@ export default function DateTimePicker({ value, onChange, placeholder = 'Chọn 
                             onClick={clearValue}
                             className="p-0.5 hover:bg-surface-200 dark:hover:bg-surface-700 rounded transition-colors"
                         >
-                            <X className="w-3.5 h-3.5 text-surface-400" />
+                            <X className="w-3.5 h-3.5 text-fg-faint" />
                         </span>
                     )}
-                    <Calendar className="w-4 h-4 text-surface-400 flex-shrink-0" />
+                    <Calendar className="w-4 h-4 text-fg-faint flex-shrink-0" />
                 </div>
             </button>
 
@@ -144,7 +144,7 @@ export default function DateTimePicker({ value, onChange, placeholder = 'Chọn 
                     {/* Day headers */}
                     <div className="grid grid-cols-7 gap-0.5 mb-1">
                         {dayNames.map(d => (
-                            <div key={d} className="text-center text-xs font-medium text-surface-400 py-1">{d}</div>
+                            <div key={d} className="text-center text-xs font-medium text-fg-faint py-1">{d}</div>
                         ))}
                     </div>
 
@@ -174,8 +174,8 @@ export default function DateTimePicker({ value, onChange, placeholder = 'Chọn 
                     {/* Time selector */}
                     <div className="border-t border-surface-200 dark:border-surface-700 pt-3">
                         <div className="flex items-center gap-2 mb-3">
-                            <Clock className="w-4 h-4 text-surface-400" />
-                            <span className="text-xs font-medium text-surface-500">Giờ hết hạn</span>
+                            <Clock className="w-4 h-4 text-fg-faint" />
+                            <span className="text-xs font-medium text-fg-subtle">Giờ hết hạn</span>
                         </div>
                         <div className="flex items-center gap-2">
                             <div className="flex items-center gap-1">
@@ -187,7 +187,7 @@ export default function DateTimePicker({ value, onChange, placeholder = 'Chọn 
                                     onChange={(e) => setHours(Math.min(23, Math.max(0, parseInt(e.target.value) || 0)))}
                                     className="w-14 px-2 py-1.5 text-center bg-surface-50 dark:bg-surface-950 border border-surface-200 dark:border-surface-700 rounded-lg text-sm font-mono font-semibold text-surface-900 dark:text-surface-100"
                                 />
-                                <span className="text-surface-400 font-bold">:</span>
+                                <span className="text-fg-faint font-bold">:</span>
                                 <input
                                     type="number"
                                     min={0}

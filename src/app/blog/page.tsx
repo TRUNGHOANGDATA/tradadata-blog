@@ -66,7 +66,7 @@ export default async function BlogPage({ searchParams }: Props) {
                     <h1 className="text-3xl md:text-4xl font-bold text-surface-900 dark:text-surface-100 mb-2">
                         Bài viết
                     </h1>
-                    <p className="text-surface-500 text-lg">
+                    <p className="text-fg-subtle text-lg">
                         Khám phá kiến thức mới mỗi ngày
                     </p>
                 </div>

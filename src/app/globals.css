@@ -1,11 +1,29 @@
 @import "tailwindcss";
 
-/* ============================================
-   Custom Theme Variables
-   ============================================ */
+/* ============================================================================
+   HỆ THỐNG THIẾT KẾ — Trà Đá Data
+   ============================================================================
+
+   Đọc trước khi sửa:
+
+   1. Mọi style mặc định (html, body, h1..h6, override dark mode) nằm trong
+      `@layer base`. BẮT BUỘC giữ như vậy. Tailwind xếp layer theo thứ tự
+      theme → base → components → utilities, nên đặt trong `base` thì utility
+      luôn thắng. Trước đây các rule này viết ở top level nên nó thắng utility,
+      phải chữa bằng `!important` (18 chỗ) và phải viết `font-extrabold!` mới
+      đè nổi `h1..h6 { font-bold }`. Bỏ `@layer base` là lỗi đó quay lại.
+
+   2. Dùng token NGHĨA (`text-fg-muted`, `bg-card`, `border-line`) cho code mới,
+      đừng dùng bậc thang thô (`text-surface-500`). Token nghĩa tự đổi theo
+      sáng/tối nên KHÔNG cần viết kèm biến thể `dark:`.
+
+   3. Bậc thang `surface-*` vẫn còn để code cũ chạy. Chúng được vá cho dark mode
+      ở cuối `@layer base`. Đừng thêm bậc mới vào danh sách vá đó — chuyển sang
+      token nghĩa thay vì mở rộng chỗ vá.
+   ========================================================================== */
 
 @theme {
-  /* Brand Colors — Green (Trà Đá Data) */
+  /* ── Màu thương hiệu — xanh Trà Đá Data ─────────────────────────────── */
   --color-brand-50: #f0fdf4;
   --color-brand-100: #dcfce7;
   --color-brand-200: #bbf7d0;
@@ -17,7 +35,7 @@
   --color-brand-800: #166534;
   --color-brand-900: #14532d;
 
-  /* Surface Colors */
+  /* ── Bậc thang trung tính (giữ cho code cũ) ─────────────────────────── */
   --color-surface-50: #f8fafc;
   --color-surface-100: #f1f5f9;
   --color-surface-200: #e2e8f0;
@@ -30,7 +48,40 @@
   --color-surface-900: #0f172a;
   --color-surface-950: #020617;
 
-  /* Accent Colors for Categories */
+  /* ── Token NGHĨA — tự đổi theo sáng/tối, không cần `dark:` ──────────────
+     Giá trị thật khai ở `:root` và `.dark` trong @layer base bên dưới.
+     `@theme inline` để Tailwind phát ra `var(--fg)` chứ không "nướng" cứng
+     giá trị lúc build — có vậy mới đổi được theo class `.dark`.            */
+}
+
+@theme inline {
+  /* Nền */
+  --color-page: var(--page);
+  /* nền trang */
+  --color-card: var(--card);
+  /* nền thẻ, panel, dropdown */
+  --color-sunken: var(--sunken);
+  /* nền lõm: code inline, ô input, vùng phụ */
+
+  /* Đường kẻ */
+  --color-line: var(--line);
+  /* viền mặc định */
+  --color-line-strong: var(--line-strong);
+  /* viền cần nhìn rõ: input, nút viền */
+
+  /* Chữ — CHỈ 3 bậc. Cần bậc thứ 4 là dấu hiệu bố cục đang có vấn đề. */
+  --color-fg: var(--fg);
+  /* chữ chính, tiêu đề */
+  --color-fg-muted: var(--fg-muted);
+  /* chữ phụ, mô tả, nội dung dài */
+  --color-fg-subtle: var(--fg-subtle);
+  /* chữ mờ: mốc thời gian, nhãn */
+  --color-fg-faint: var(--fg-faint);
+  /* mờ nhất: icon, chữ trang trí — KHÔNG dùng cho nội dung cần đọc */
+}
+
+@theme {
+  /* ── Màu nhận diện theo chủ đề ──────────────────────────────────────── */
   --color-excel: #217346;
   --color-power-query: #F2C811;
   --color-vba: #8B4513;
@@ -40,11 +91,92 @@
   --color-ai: #8B5CF6;
   --color-supply-chain: #059669;
 
-  /* Fonts */
+  /* ── Font ───────────────────────────────────────────────────────────── */
   --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
   --font-mono: 'JetBrains Mono', ui-monospace, monospace;
 
-  /* Animations */
+  /* ── THANG CỠ CHỮ ────────────────────────────────────────────────────
+     CON SỐ px GIỮ ĐÚNG mặc định Tailwind — trong `src/` đang có 876 chỗ dùng
+     các bậc này, đổi giá trị là đổi thầm cỡ chữ toàn site. Việc làm ở đây là
+     gắn sẵn `line-height` + `letter-spacing` cho từng bậc:
+
+       - chữ nhỏ  → line-height thoáng hơn mặc định (đọc đoạn dài dễ hơn)
+       - chữ lớn  → line-height chặt lại + tracking âm dần
+
+     Mặc định Tailwind để chữ lớn có tracking 0 và leading khá lỏng, đó là
+     lý do tiêu đề trông "rời" và thiếu chắc. Muốn đổi cỡ thì đổi ở thẻ, đừng
+     đổi giá trị bậc.                                                     */
+  --text-2xs: 0.6875rem;
+  /* 11px — nhãn siêu nhỏ, chỉ dùng cho chữ IN HOA */
+  --text-2xs--line-height: 1rem;
+  --text-2xs--letter-spacing: 0.05em;
+
+  --text-xs: 0.75rem;
+  /* 12px — badge, chú thích (1 dòng nên giữ leading gọn) */
+  --text-xs--line-height: 1rem;
+
+  --text-sm: 0.875rem;
+  /* 14px — chữ phụ, nhãn form, meta */
+  --text-sm--line-height: 1.3125rem;
+
+  --text-base: 1rem;
+  /* 16px — chữ giao diện mặc định */
+  --text-base--line-height: 1.625rem;
+
+  --text-lg: 1.125rem;
+  /* 18px — chữ dẫn nhập, tiêu đề thẻ lớn */
+  --text-lg--line-height: 1.75rem;
+
+  --text-xl: 1.25rem;
+  /* 20px — tiêu đề thẻ */
+  --text-xl--line-height: 1.75rem;
+  --text-xl--letter-spacing: -0.01em;
+
+  --text-2xl: 1.5rem;
+  /* 24px — tiêu đề mục phụ, h2 trong bài viết */
+  --text-2xl--line-height: 2rem;
+  --text-2xl--letter-spacing: -0.015em;
+
+  --text-3xl: 1.875rem;
+  /* 30px — tiêu đề mục (section) */
+  --text-3xl--line-height: 2.25rem;
+  --text-3xl--letter-spacing: -0.02em;
+
+  --text-4xl: 2.25rem;
+  /* 36px — tiêu đề trang */
+  --text-4xl--line-height: 2.625rem;
+  --text-4xl--letter-spacing: -0.025em;
+
+  --text-5xl: 3rem;
+  /* 48px — hero */
+  --text-5xl--line-height: 3.25rem;
+  --text-5xl--letter-spacing: -0.03em;
+
+  --text-6xl: 3.75rem;
+  /* 60px — chỉ hero trang chủ ở màn lớn */
+  --text-6xl--line-height: 4rem;
+  --text-6xl--letter-spacing: -0.032em;
+
+  /* ── THANG BO GÓC ────────────────────────────────────────────────────
+     4 bậc. Quy ước: control dùng `md`, thẻ dùng `lg`, panel lớn dùng `xl`. */
+  --radius-sm: 0.375rem;
+  /* 6px  — badge, tag */
+  --radius-md: 0.625rem;
+  /* 10px — nút, input, ô chọn */
+  --radius-lg: 1rem;
+  /* 16px — thẻ, dropdown */
+  --radius-xl: 1.5rem;
+  /* 24px — panel lớn, khối hero */
+
+  /* ── THANG ĐỘ NỔI ────────────────────────────────────────────────────
+     Trước đây cả trang chỉ có 1 giá trị shadow nên không phân biệt được lớp.
+     3 bậc, đổ bóng lạnh theo màu surface chứ không phải đen thuần —
+     đen thuần trên nền hơi xanh làm bóng bị "bẩn".                       */
+  --shadow-e1: 0 1px 2px 0 rgb(15 23 42 / 0.04), 0 1px 3px 0 rgb(15 23 42 / 0.06);
+  --shadow-e2: 0 2px 4px -1px rgb(15 23 42 / 0.05), 0 8px 16px -4px rgb(15 23 42 / 0.08);
+  --shadow-e3: 0 4px 8px -2px rgb(15 23 42 / 0.06), 0 20px 32px -8px rgb(15 23 42 / 0.12);
+
+  /* ── Animation ──────────────────────────────────────────────────────── */
   --animate-fade-in: fade-in 0.5s ease-out;
   --animate-slide-up: slide-up 0.5s ease-out;
   --animate-slide-down: slide-down 0.3s ease-out;
@@ -52,7 +184,7 @@
   --animate-progress: progress 5s linear;
 }
 
-/* Enable class-based dark mode for Tailwind v4 */
+/* Dark mode theo class, không theo prefers-color-scheme */
 @custom-variant dark (&:is(.dark, .dark *));
 
 @keyframes fade-in {
@@ -111,64 +243,109 @@
   }
 }
 
-/* ============================================
-   Base Styles
-   ============================================ */
+@layer base {
 
-html {
-  scroll-behavior: smooth;
-}
+  /* ── Giá trị thật của token nghĩa ────────────────────────────────────
+     Tương phản đã TÍNH (không phải ước lượng), WCAG AA cần ≥ 4.5:1:
 
-body {
-  @apply bg-surface-50 text-surface-900 antialiased;
-  font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
-}
+       sáng, trên thẻ #ffffff : fg 17.85  fg-muted 7.58  fg-subtle 4.76  fg-faint 2.56
+       tối,  trên thẻ #0f172a : fg 16.30  fg-muted 12.02 fg-subtle 6.96  fg-faint 5.23
 
-/* Dark mode */
-.dark body {
-  @apply bg-surface-950 text-surface-100;
-}
+     `fg-faint` ở light mode chỉ đạt 2.56 — CỐ Ý, vì nó thay đúng cho
+     `text-surface-400` đang dùng sẵn và chỉ dành cho icon / chữ trang trí.
+     Đừng dùng nó cho nội dung cần đọc. Ba bậc trên nó đều đạt AA.
 
-/* ============================================
-   Dark Mode Overrides — Explicit high-specificity
-   rules to guarantee dark backgrounds on cards
-   regardless of Tailwind utility cascade order.
-   ============================================ */
-.dark .bg-white {
-  background-color: var(--color-surface-900) !important;
-}
+     Giá trị light được chọn TRÙNG KHÍT với bậc surface mà nó thay thế, để
+     light mode không đổi một pixel nào; chỉ dark mode được sửa thứ bậc.
+     Đổi mấy giá trị này thì tính lại tương phản, đừng đoán.              */
+  :root {
+    --page: #f8fafc;
+    --card: #ffffff;
+    --sunken: #f1f5f9;
+    --line: #e2e8f0;
+    --line-strong: #cbd5e1;
+    --fg: #0f172a;
+    --fg-muted: #475569;
+    --fg-subtle: #64748b;
+    --fg-faint: #94a3b8;
+  }
 
-.dark .border-surface-200 {
-  border-color: var(--color-surface-800) !important;
-}
+  .dark {
+    --page: #020617;
+    --card: #0f172a;
+    --sunken: #1e293b;
+    --line: #1e293b;
+    --line-strong: #334155;
+    --fg: #f1f5f9;
+    --fg-muted: #cbd5e1;
+    --fg-subtle: #94a3b8;
+    --fg-faint: #7d8ca3;
+  }
 
-.dark .text-surface-900 {
-  color: var(--color-surface-100) !important;
-}
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+    /* Header dính cao 66px. Không có dòng này thì bấm mục lục sẽ cuộn tiêu đề
+       nằm LỌT dưới header, người đọc tưởng nhảy sai chỗ. 5.5rem = 88px. */
+    scroll-padding-top: 5.5rem;
+  }
 
-.dark .text-surface-500 {
-  color: var(--color-surface-300) !important;
-}
+  body {
+    @apply bg-page text-fg antialiased;
+    font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+  }
 
-.dark .text-surface-400 {
-  color: var(--color-surface-300) !important;
-}
+  /* ── Tiêu đề ──────────────────────────────────────────────────────────
+     Đây là mặc định, KHÔNG phải bắt buộc: nằm trong `@layer base` nên mọi
+     utility `font-*` / `tracking-*` viết trên thẻ đều thắng. Không cần
+     `!` để đè nữa.                                                       */
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-bold tracking-tight text-balance;
+  }
 
-.dark .text-surface-600 {
-  color: var(--color-surface-300) !important;
-}
+  /* Vòng focus thấy được — trước đây chỉ có outline mặc định của trình duyệt,
+     dùng bàn phím gần như không thấy mình đang ở đâu. */
+  :focus-visible {
+    outline: 2px solid var(--color-brand-500);
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
 
-/* ============================================
-   Typography
-   ============================================ */
+  /* Tôn trọng người tắt hiệu ứng chuyển động trong hệ điều hành */
+  @media (prefers-reduced-motion: reduce) {
 
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-  @apply font-bold tracking-tight;
+    html {
+      scroll-behavior: auto;
+    }
+
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+
+  /* KHÔNG có rule vá dark mode nào ở đây — và phải giữ như vậy.
+     Trước đây có 6 rule kiểu `.dark .bg-white { … !important }` để chữa cho
+     các class dùng "trần". Toàn bộ 384 chỗ đó đã chuyển sang token nghĩa
+     (bg-card / text-fg-muted / text-fg-subtle / text-fg-faint) nên rule vá
+     thành vô dụng và đã xoá.
+
+     Vì sao không được thêm lại: thứ tự layer do dòng `@layer theme, base,
+     components, utilities` quyết định, nên rule trong `base` KHÔNG bao giờ
+     đè nổi utility — muốn đè phải quay lại `!important`, và `!important` thì
+     đè luôn cả `dark:` mà tác giả cố ý viết trên thẻ. Đó chính là bug cũ:
+     40 chỗ viết `bg-white dark:bg-surface-800` bị ép về `surface-900`,
+     làm mất phân lớp panel lồng nhau ở dark mode.
+
+     Class nào chưa có màu cho dark mode thì dùng token nghĩa, đừng vá ở đây. */
 }
 
 /* ============================================
@@ -176,11 +353,7 @@ h6 {
    ============================================ */
 
 .glass {
-  @apply bg-white/70 backdrop-blur-xl border border-white/20 shadow-lg;
-}
-
-.dark .glass {
-  @apply bg-surface-900/70 border-surface-700/30;
+  @apply bg-card/75 backdrop-blur-xl border border-line/60 shadow-e2;
 }
 
 /* ============================================
@@ -188,8 +361,12 @@ h6 {
    ============================================ */
 
 .prose {
-  @apply text-surface-700 leading-relaxed;
+  @apply text-surface-700;
   font-family: 'Inter', ui-sans-serif, system-ui, sans-serif;
+  /* 17px/1.75 cho nội dung đọc dài. Chữ giao diện vẫn 16px/1.625 — nội dung
+     bài viết cần thoáng hơn giao diện, đây là chủ ý chứ không phải lệch. */
+  font-size: 1.0625rem;
+  line-height: 1.75;
 }
 
 .prose h2 {
@@ -201,7 +378,8 @@ h6 {
 }
 
 .prose p {
-  @apply mb-4 leading-relaxed;
+  @apply mb-5;
+  line-height: 1.75;
 }
 
 .prose a {
@@ -637,7 +815,7 @@ h6 {
    Admin Loading Skeletons
    ============================================ */
 
-@keyframes shimmer {
+@keyframes skeleton-shimmer {
   0% {
     background-position: 200% 0;
   }
@@ -650,7 +828,7 @@ h6 {
 .skeleton {
   background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
   background-size: 200% 100%;
-  animation: shimmer 1.5s ease-in-out infinite;
+  animation: skeleton-shimmer 1.5s ease-in-out infinite;
   border-radius: 8px;
 }
 

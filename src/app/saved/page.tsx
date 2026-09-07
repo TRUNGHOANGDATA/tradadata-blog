@@ -97,7 +97,7 @@ export default async function SavedPostsPage() {
                             Bài viết đã lưu
                         </h1>
                     </div>
-                    <p className="text-surface-500 text-lg max-w-2xl">
+                    <p className="text-fg-subtle text-lg max-w-2xl">
                         Danh sách các bài viết bạn đã đánh dấu để đọc lại sau này.
                     </p>
                 </div>
@@ -112,12 +112,12 @@ export default async function SavedPostsPage() {
                 ) : (
                     <div className="text-center py-20 bg-white dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-800 shadow-sm">
                         <div className="w-16 h-16 bg-surface-100 dark:bg-surface-800 rounded-full flex items-center justify-center mx-auto mb-4">
-                            <Bookmark className="h-8 w-8 text-surface-400" />
+                            <Bookmark className="h-8 w-8 text-fg-faint" />
                         </div>
                         <h3 className="text-xl font-bold text-surface-900 dark:text-surface-100 mb-2">
                             Chưa có bài viết nào
                         </h3>
-                        <p className="text-surface-500 max-w-md mx-auto mb-8">
+                        <p className="text-fg-subtle max-w-md mx-auto mb-8">
                             Bạn chưa lưu bài viết nào. Hãy lướt qua các bài viết trên blog và nhấn nút lưu để dễ dàng tìm lại sau này.
                         </p>
                         <Link

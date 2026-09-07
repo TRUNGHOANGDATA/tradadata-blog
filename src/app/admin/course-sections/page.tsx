@@ -92,7 +92,7 @@ export default function AdminCourseSectionsPage() {
                     <h1 className="text-2xl font-bold text-surface-900 dark:text-surface-100">
                         Đầu mục Khoá học
                     </h1>
-                    <p className="text-sm text-surface-500 mt-1">
+                    <p className="text-sm text-fg-subtle mt-1">
                         Nhóm các sản phẩm/khoá học theo đầu mục trên trang Khoá học
                     </p>
                 </div>
@@ -128,36 +128,36 @@ export default function AdminCourseSectionsPage() {
                             </div>
                         ) : (
                             <div className="flex items-center gap-4 p-4">
-                                <GripVertical className="w-5 h-5 text-surface-400 shrink-0" />
+                                <GripVertical className="w-5 h-5 text-fg-faint shrink-0" />
                                 <div className="flex-1 min-w-0">
                                     <div className="flex items-center gap-2">
                                         <h3 className="font-semibold text-surface-900 dark:text-surface-100 truncate">
                                             {section.name}
                                         </h3>
                                         {!section.is_active && (
-                                            <span className="px-2 py-0.5 text-xs rounded-full bg-surface-100 dark:bg-surface-800 text-surface-500">
+                                            <span className="px-2 py-0.5 text-xs rounded-full bg-surface-100 dark:bg-surface-800 text-fg-subtle">
                                                 Ẩn
                                             </span>
                                         )}
                                     </div>
                                     {section.description && (
-                                        <p className="text-sm text-surface-500 truncate mt-0.5">{section.description}</p>
+                                        <p className="text-sm text-fg-subtle truncate mt-0.5">{section.description}</p>
                                     )}
-                                    <p className="text-xs text-surface-400 mt-1">
+                                    <p className="text-xs text-fg-faint mt-1">
                                         {section.products?.[0]?.count || 0} sản phẩm · Thứ tự: {section.sort_order}
                                     </p>
                                 </div>
                                 <div className="flex items-center gap-1 shrink-0">
                                     <button
                                         onClick={() => startEdit(section)}
-                                        className="p-2 text-surface-500 hover:text-brand-600 hover:bg-brand-50 dark:hover:bg-brand-900/20 rounded-lg transition-colors"
+                                        className="p-2 text-fg-subtle hover:text-brand-600 hover:bg-brand-50 dark:hover:bg-brand-900/20 rounded-lg transition-colors"
                                         title="Sửa"
                                     >
                                         <Edit className="w-4 h-4" />
                                     </button>
                                     <button
                                         onClick={() => handleDelete(section.id)}
-                                        className="p-2 text-surface-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
+                                        className="p-2 text-fg-subtle hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
                                         title="Xoá"
                                     >
                                         <Trash2 className="w-4 h-4" />
@@ -169,7 +169,7 @@ export default function AdminCourseSectionsPage() {
                 ))}
 
                 {sections.length === 0 && !showAdd && (
-                    <div className="text-center py-12 text-surface-500">
+                    <div className="text-center py-12 text-fg-subtle">
                         <p className="text-lg font-medium mb-1">Chưa có đầu mục nào</p>
                         <p className="text-sm">Thêm đầu mục để nhóm các sản phẩm trên trang Khoá học</p>
                     </div>

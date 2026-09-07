@@ -102,7 +102,7 @@ export default function TagsPage() {
             {/* Tags grid */}
             <div className="bg-white dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-800 p-5">
                 {tags.length === 0 ? (
-                    <div className="text-center py-12 text-surface-400">
+                    <div className="text-center py-12 text-fg-faint">
                         Chưa có tag nào. Hãy thêm tag đầu tiên!
                     </div>
                 ) : (

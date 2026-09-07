@@ -28,7 +28,7 @@ export function ContactButtons({ variant = 'light' }: { variant?: 'light' | 'dar
         'inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl font-medium transition-colors shadow-sm';
     const ghost =
         variant === 'dark'
-            ? 'bg-white/10 text-white hover:bg-white/20 border border-white/20'
+            ? 'bg-card/10 text-white hover:bg-white/20 border border-white/20'
             : 'bg-white dark:bg-surface-800 text-surface-800 dark:text-surface-100 border border-surface-200 dark:border-surface-700 hover:bg-surface-50 dark:hover:bg-surface-700';
 
     return (
@@ -158,7 +158,7 @@ export function LeadForm() {
                 {status === 'sending' ? <Loader2 className="h-5 w-5 animate-spin" /> : <Send className="h-5 w-5" />}
                 {status === 'sending' ? 'Đang gửi...' : 'Gửi thông tin, nhận tư vấn'}
             </button>
-            <p className="text-xs text-surface-500 text-center">
+            <p className="text-xs text-fg-subtle text-center">
                 Thông tin chỉ dùng để liên hệ tư vấn, không chia sẻ cho bên thứ ba.
             </p>
         </form>

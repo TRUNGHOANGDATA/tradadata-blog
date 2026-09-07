@@ -67,7 +67,7 @@ export default function CartPage() {
             <div className="min-h-screen bg-surface-50 dark:bg-surface-950 py-20 px-4 layout-pt">
                 <div className="max-w-2xl mx-auto text-center">
                     <div className="w-24 h-24 bg-surface-100 dark:bg-surface-800 rounded-full flex items-center justify-center mx-auto mb-6">
-                        <ShoppingBag className="w-12 h-12 text-surface-400" />
+                        <ShoppingBag className="w-12 h-12 text-fg-faint" />
                     </div>
                     <h1 className="text-3xl font-bold text-surface-900 dark:text-surface-100 mb-4">Giỏ hàng trống</h1>
                     <p className="text-surface-600 dark:text-surface-400 mb-8">
@@ -118,7 +118,7 @@ export default function CartPage() {
                                         <h3 className="text-lg font-bold text-surface-900 dark:text-surface-100 mb-1">
                                             {item.name}
                                         </h3>
-                                        <p className="text-sm text-surface-500 mb-4">
+                                        <p className="text-sm text-fg-subtle mb-4">
                                             Đơn giá: {formatCurrency(item.price)}
                                         </p>
 
@@ -126,7 +126,7 @@ export default function CartPage() {
                                             <div className="flex items-center border border-surface-200 dark:border-surface-700 rounded-xl bg-surface-50 dark:bg-surface-950 overflow-hidden">
                                                 <button
                                                     onClick={() => updateQuantity(item.product_id, item.quantity - 1)}
-                                                    className="p-2.5 text-surface-500 hover:text-surface-900 dark:hover:text-surface-100 hover:bg-surface-200 dark:hover:bg-surface-800 transition-colors"
+                                                    className="p-2.5 text-fg-subtle hover:text-surface-900 dark:hover:text-surface-100 hover:bg-surface-200 dark:hover:bg-surface-800 transition-colors"
                                                 >
                                                     <Minus className="w-4 h-4" />
                                                 </button>
@@ -135,7 +135,7 @@ export default function CartPage() {
                                                 </span>
                                                 <button
                                                     onClick={() => updateQuantity(item.product_id, item.quantity + 1)}
-                                                    className="p-2.5 text-surface-500 hover:text-surface-900 dark:hover:text-surface-100 hover:bg-surface-200 dark:hover:bg-surface-800 transition-colors"
+                                                    className="p-2.5 text-fg-subtle hover:text-surface-900 dark:hover:text-surface-100 hover:bg-surface-200 dark:hover:bg-surface-800 transition-colors"
                                                 >
                                                     <Plus className="w-4 h-4" />
                                                 </button>
@@ -214,7 +214,7 @@ export default function CartPage() {
                             {/* Price Breakdown */}
                             <div className="space-y-3 text-sm mb-6">
                                 <div className="flex justify-between">
-                                    <span className="text-surface-500">Tạm tính</span>
+                                    <span className="text-fg-subtle">Tạm tính</span>
                                     <span className="text-surface-900 dark:text-surface-100 font-medium">{formatCurrency(subTotal)}</span>
                                 </div>
                                 {discountAmount > 0 && (

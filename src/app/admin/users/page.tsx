@@ -197,7 +197,7 @@ export default function UsersPage() {
             <div className="flex items-center justify-between mb-6">
                 <h1 className="text-2xl font-bold text-surface-900 dark:text-surface-100">Quản lý người dùng</h1>
                 <div className="flex items-center gap-3">
-                    <span className="text-sm text-surface-500">{filteredUsers.length} / {users.length}</span>
+                    <span className="text-sm text-fg-subtle">{filteredUsers.length} / {users.length}</span>
                     <button
                         onClick={() => setCreateModal({ isOpen: true, email: '', full_name: '', phone: '', role: 'reader', submitting: false, resultMessage: '' })}
                         className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-sm font-medium transition-colors shadow-md shadow-brand-500/20"
@@ -219,7 +219,7 @@ export default function UsersPage() {
                             </div>
                             <div>
                                 <p className="text-sm font-semibold text-surface-900 dark:text-surface-100">{info.label}</p>
-                                <p className="text-xs text-surface-500">{ROLE_DESCRIPTIONS[role]}</p>
+                                <p className="text-xs text-fg-subtle">{ROLE_DESCRIPTIONS[role]}</p>
                             </div>
                         </div>
                     );
@@ -228,7 +228,7 @@ export default function UsersPage() {
 
             {/* Search */}
             <div className="relative mb-4">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-surface-400" />
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-fg-faint" />
                 <input
                     type="text"
                     value={searchQuery}
@@ -243,18 +243,18 @@ export default function UsersPage() {
                     <table className="w-full">
                         <thead>
                             <tr className="border-b border-surface-200 dark:border-surface-800 bg-surface-50 dark:bg-surface-800/50">
-                                <th className="text-left px-6 py-3 text-xs font-semibold text-surface-500 uppercase">Người dùng</th>
-                                <th className="text-left px-6 py-3 text-xs font-semibold text-surface-500 uppercase">Email</th>
-                                <th className="text-left px-6 py-3 text-xs font-semibold text-surface-500 uppercase">Vai trò</th>
-                                <th className="text-left px-6 py-3 text-xs font-semibold text-surface-500 uppercase">Premium</th>
-                                <th className="text-left px-6 py-3 text-xs font-semibold text-surface-500 uppercase">Ngày tham gia</th>
-                                <th className="text-right px-6 py-3 text-xs font-semibold text-surface-500 uppercase">Thao tác</th>
+                                <th className="text-left px-6 py-3 text-xs font-semibold text-fg-subtle uppercase">Người dùng</th>
+                                <th className="text-left px-6 py-3 text-xs font-semibold text-fg-subtle uppercase">Email</th>
+                                <th className="text-left px-6 py-3 text-xs font-semibold text-fg-subtle uppercase">Vai trò</th>
+                                <th className="text-left px-6 py-3 text-xs font-semibold text-fg-subtle uppercase">Premium</th>
+                                <th className="text-left px-6 py-3 text-xs font-semibold text-fg-subtle uppercase">Ngày tham gia</th>
+                                <th className="text-right px-6 py-3 text-xs font-semibold text-fg-subtle uppercase">Thao tác</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-surface-200 dark:divide-surface-800">
                             {filteredUsers.length === 0 ? (
                                 <tr>
-                                    <td colSpan={6} className="px-6 py-8 text-center text-surface-400 text-sm">
+                                    <td colSpan={6} className="px-6 py-8 text-center text-fg-faint text-sm">
                                         Không tìm thấy người dùng nào
                                     </td>
                                 </tr>
@@ -276,7 +276,7 @@ export default function UsersPage() {
                                                 </span>
                                             </div>
                                         </td>
-                                        <td className="px-6 py-4 text-sm text-surface-500">{user.email}</td>
+                                        <td className="px-6 py-4 text-sm text-fg-subtle">{user.email}</td>
                                         <td className="px-6 py-4">
                                             <select
                                                 value={user.role}
@@ -298,14 +298,14 @@ export default function UsersPage() {
                                                 title={user.is_subscribed ? 'Premium đang BẬT — Click để tắt' : 'Premium đang TẮT — Click để bật'}
                                             >
                                                 <span
-                                                    className={`inline-flex h-4 w-4 items-center justify-center rounded-full bg-white shadow-sm transition-transform duration-300 ${user.is_subscribed ? 'translate-x-6' : 'translate-x-1'
+                                                    className={`inline-flex h-4 w-4 items-center justify-center rounded-full bg-card shadow-sm transition-transform duration-300 ${user.is_subscribed ? 'translate-x-6' : 'translate-x-1'
                                                         }`}
                                                 >
                                                     {user.is_subscribed && <Crown className="h-2.5 w-2.5 text-amber-500" />}
                                                 </span>
                                             </button>
                                         </td>
-                                        <td className="px-6 py-4 text-sm text-surface-500">
+                                        <td className="px-6 py-4 text-sm text-fg-subtle">
                                             {formatDate(user.created_at)}
                                         </td>
                                         <td className="px-6 py-4 text-right">
@@ -335,7 +335,7 @@ export default function UsersPage() {
                     <div className="bg-white dark:bg-surface-900 rounded-2xl w-full max-w-md shadow-2xl overflow-hidden">
                         <div className="flex items-center justify-between p-4 border-b border-surface-200 dark:border-surface-800">
                             <h3 className="text-lg font-bold text-surface-900 dark:text-surface-100">Tạo tài khoản mới</h3>
-                            <button onClick={() => setCreateModal(prev => ({ ...prev, isOpen: false }))} className="text-surface-400 hover:text-surface-600"><X className="w-5 h-5" /></button>
+                            <button onClick={() => setCreateModal(prev => ({ ...prev, isOpen: false }))} className="text-fg-faint hover:text-surface-600"><X className="w-5 h-5" /></button>
                         </div>
                         {createModal.resultMessage ? (
                             <div className="p-4 space-y-4">
@@ -355,7 +355,7 @@ export default function UsersPage() {
                                 <div>
                                     <label className="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-1">Email Google *</label>
                                     <input type="email" required placeholder="customer@gmail.com" className="w-full px-3 py-2 bg-white dark:bg-surface-900 border border-surface-300 dark:border-surface-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500/50 text-sm" value={createModal.email} onChange={e => setCreateModal(prev => ({ ...prev, email: e.target.value }))} />
-                                    <p className="text-xs text-surface-400 mt-1">Khách hàng sẽ đăng nhập bằng Google với email này</p>
+                                    <p className="text-xs text-fg-faint mt-1">Khách hàng sẽ đăng nhập bằng Google với email này</p>
                                 </div>
                                 <div className="grid grid-cols-2 gap-4">
                                     <div>
@@ -393,11 +393,11 @@ export default function UsersPage() {
                     <div className="bg-white dark:bg-surface-900 rounded-2xl w-full max-w-md shadow-2xl overflow-hidden">
                         <div className="flex items-center justify-between p-4 border-b border-surface-200 dark:border-surface-800">
                             <h3 className="text-lg font-bold text-surface-900 dark:text-surface-100">Thêm khoá học</h3>
-                            <button onClick={() => setSubModal(prev => ({ ...prev, isOpen: false }))} className="text-surface-400 hover:text-surface-600"><X className="w-5 h-5" /></button>
+                            <button onClick={() => setSubModal(prev => ({ ...prev, isOpen: false }))} className="text-fg-faint hover:text-surface-600"><X className="w-5 h-5" /></button>
                         </div>
                         <form onSubmit={handleAddSub} className="p-4 space-y-4">
                             <div className="p-3 bg-surface-50 dark:bg-surface-800 rounded-xl">
-                                <p className="text-sm text-surface-500">Cấp khoá học cho:</p>
+                                <p className="text-sm text-fg-subtle">Cấp khoá học cho:</p>
                                 <p className="text-sm font-semibold text-surface-900 dark:text-surface-100">{subModal.user_name} ({subModal.user_email})</p>
                             </div>
                             <div>

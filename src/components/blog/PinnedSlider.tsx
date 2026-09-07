@@ -118,7 +118,7 @@ export function PinnedSlider({ posts }: PinnedSliderProps) {
                                         )}
 
                                         {/* Meta */}
-                                        <div className={`flex items-center gap-5 text-sm text-surface-400 pt-1 transition-all duration-500 ${index === current && isAnimating
+                                        <div className={`flex items-center gap-5 text-sm text-fg-faint pt-1 transition-all duration-500 ${index === current && isAnimating
                                             ? 'opacity-100 translate-y-0'
                                             : 'opacity-0 translate-y-4'
                                             }`} style={{ transitionDelay: '400ms' }}>
@@ -164,14 +164,14 @@ export function PinnedSlider({ posts }: PinnedSliderProps) {
                     <>
                         <button
                             onClick={(e) => { e.preventDefault(); e.stopPropagation(); prev(); }}
-                            className="absolute left-3 top-1/2 -translate-y-1/2 z-20 p-2.5 rounded-full bg-white/10 hover:bg-white/25 text-white backdrop-blur-md border border-white/10 transition-all hover:scale-110 active:scale-95"
+                            className="absolute left-3 top-1/2 -translate-y-1/2 z-20 p-2.5 rounded-full bg-card/10 hover:bg-white/25 text-white backdrop-blur-md border border-white/10 transition-all hover:scale-110 active:scale-95"
                             aria-label="Bài trước"
                         >
                             <ChevronLeft className="h-5 w-5" />
                         </button>
                         <button
                             onClick={(e) => { e.preventDefault(); e.stopPropagation(); next(); }}
-                            className="absolute right-3 top-1/2 -translate-y-1/2 z-20 p-2.5 rounded-full bg-white/10 hover:bg-white/25 text-white backdrop-blur-md border border-white/10 transition-all hover:scale-110 active:scale-95"
+                            className="absolute right-3 top-1/2 -translate-y-1/2 z-20 p-2.5 rounded-full bg-card/10 hover:bg-white/25 text-white backdrop-blur-md border border-white/10 transition-all hover:scale-110 active:scale-95"
                             aria-label="Bài tiếp"
                         >
                             <ChevronRight className="h-5 w-5" />
@@ -191,7 +191,7 @@ export function PinnedSlider({ posts }: PinnedSliderProps) {
                             >
                                 <div className={`rounded-full transition-all duration-300 ${index === current
                                     ? 'w-10 h-3 bg-brand-500 shadow-lg shadow-brand-500/30'
-                                    : 'w-3 h-3 bg-white/30 group-hover:bg-white/60'
+                                    : 'w-3 h-3 bg-card/30 group-hover:bg-white/60'
                                     }`} />
                                 {/* Progress bar animation on active dot */}
                                 {index === current && !isPaused && (

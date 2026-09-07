@@ -149,7 +149,7 @@ export default function ProfilePage() {
                             <h1 className="text-xl font-bold text-surface-900 dark:text-surface-100">
                                 {profile?.full_name || session?.user?.name || 'Người dùng'}
                             </h1>
-                            <p className="text-sm text-surface-500">{session?.user?.email}</p>
+                            <p className="text-sm text-fg-subtle">{session?.user?.email}</p>
                         </div>
                     </div>
                     {isPremium && (
@@ -211,9 +211,9 @@ export default function ProfilePage() {
                                     type="email"
                                     value={session?.user?.email || ''}
                                     readOnly
-                                    className="w-full px-4 py-2.5 bg-surface-100 dark:bg-surface-800 border border-surface-200 dark:border-surface-700 rounded-xl text-surface-500 cursor-not-allowed text-sm"
+                                    className="w-full px-4 py-2.5 bg-surface-100 dark:bg-surface-800 border border-surface-200 dark:border-surface-700 rounded-xl text-fg-subtle cursor-not-allowed text-sm"
                                 />
-                                <p className="text-xs text-surface-400 mt-1 flex items-center gap-1">
+                                <p className="text-xs text-fg-faint mt-1 flex items-center gap-1">
                                     <Shield className="w-3 h-3" /> Email liên kết với tài khoản đăng nhập, không thể thay đổi
                                 </p>
                             </div>
@@ -244,7 +244,7 @@ export default function ProfilePage() {
                                     className="w-full px-4 py-2.5 bg-surface-50 dark:bg-surface-950 border border-surface-200 dark:border-surface-700 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none transition-colors text-surface-900 dark:text-surface-100 text-sm"
                                     placeholder="0984456710"
                                 />
-                                <p className="text-xs text-surface-400 mt-1">10 chữ số, bắt đầu bằng 03/05/07/08/09</p>
+                                <p className="text-xs text-fg-faint mt-1">10 chữ số, bắt đầu bằng 03/05/07/08/09</p>
                             </div>
 
                             <button
@@ -267,7 +267,7 @@ export default function ProfilePage() {
                             {orders.length === 0 ? (
                                 <div className="text-center py-12">
                                     <Package className="w-12 h-12 mx-auto text-surface-300 dark:text-surface-600 mb-3" />
-                                    <p className="text-surface-500">Chưa có đơn hàng nào</p>
+                                    <p className="text-fg-subtle">Chưa có đơn hàng nào</p>
                                     <Link href="/pricing" className="text-brand-600 text-sm hover:underline mt-2 inline-block">
                                         Xem bảng giá →
                                     </Link>
@@ -287,7 +287,7 @@ export default function ProfilePage() {
                                                             </span>
                                                         </div>
                                                         <p className="text-sm text-surface-600 dark:text-surface-400 truncate">{order.products?.name || 'Sản phẩm'}</p>
-                                                        <p className="text-xs text-surface-400 mt-0.5">{formatDateTime(order.created_at)}</p>
+                                                        <p className="text-xs text-fg-faint mt-0.5">{formatDateTime(order.created_at)}</p>
                                                     </div>
                                                     <div className="text-right flex-shrink-0">
                                                         <p className="text-base font-bold text-brand-600 dark:text-brand-400">{formatCurrency(order.amount)}</p>
@@ -326,16 +326,16 @@ export default function ProfilePage() {
                                                 </div>
                                                 <div>
                                                     <p className="font-bold text-surface-900 dark:text-surface-100">Đang hoạt động</p>
-                                                    <p className="text-sm text-surface-500">{(activeSub.products as any)?.name || 'Gói Premium'}</p>
+                                                    <p className="text-sm text-fg-subtle">{(activeSub.products as any)?.name || 'Gói Premium'}</p>
                                                 </div>
                                             </div>
                                             <div className="grid grid-cols-2 gap-3 mt-4">
                                                 <div className="p-3 bg-white/60 dark:bg-surface-800/60 rounded-xl">
-                                                    <p className="text-xs text-surface-500 mb-0.5 flex items-center gap-1"><Calendar className="w-3 h-3" /> Bắt đầu</p>
+                                                    <p className="text-xs text-fg-subtle mb-0.5 flex items-center gap-1"><Calendar className="w-3 h-3" /> Bắt đầu</p>
                                                     <p className="text-sm font-semibold text-surface-900 dark:text-surface-100">{formatDate(activeSub.starts_at)}</p>
                                                 </div>
                                                 <div className="p-3 bg-white/60 dark:bg-surface-800/60 rounded-xl">
-                                                    <p className="text-xs text-surface-500 mb-0.5 flex items-center gap-1"><Calendar className="w-3 h-3" /> Hết hạn</p>
+                                                    <p className="text-xs text-fg-subtle mb-0.5 flex items-center gap-1"><Calendar className="w-3 h-3" /> Hết hạn</p>
                                                     <p className="text-sm font-semibold text-surface-900 dark:text-surface-100">{formatDate(activeSub.expires_at)}</p>
                                                 </div>
                                             </div>
@@ -348,7 +348,7 @@ export default function ProfilePage() {
                                                 </div>
                                                 <div>
                                                     <p className="font-bold text-surface-900 dark:text-surface-100">Đang hoạt động</p>
-                                                    <p className="text-sm text-surface-500">Premium được kích hoạt bởi Admin</p>
+                                                    <p className="text-sm text-fg-subtle">Premium được kích hoạt bởi Admin</p>
                                                 </div>
                                             </div>
                                         </div>
@@ -357,12 +357,12 @@ export default function ProfilePage() {
                                     {/* All subscriptions history */}
                                     {subscriptions.length > 1 && (
                                         <div>
-                                            <p className="text-sm font-medium text-surface-500 mb-2">Lịch sử đăng ký</p>
+                                            <p className="text-sm font-medium text-fg-subtle mb-2">Lịch sử đăng ký</p>
                                             <div className="space-y-2">
                                                 {subscriptions.map(sub => (
                                                     <div key={sub.id} className="flex items-center justify-between py-2 px-3 bg-surface-50 dark:bg-surface-800/50 rounded-lg text-sm">
                                                         <span className="text-surface-600 dark:text-surface-400">{(sub.products as any)?.name || 'Premium'}</span>
-                                                        <span className="text-surface-500">{formatDate(sub.starts_at)} → {formatDate(sub.expires_at)}</span>
+                                                        <span className="text-fg-subtle">{formatDate(sub.starts_at)} → {formatDate(sub.expires_at)}</span>
                                                     </div>
                                                 ))}
                                             </div>
@@ -379,10 +379,10 @@ export default function ProfilePage() {
                             ) : (
                                 <div className="text-center py-12">
                                     <div className="w-16 h-16 rounded-2xl bg-surface-100 dark:bg-surface-800 flex items-center justify-center mx-auto mb-4">
-                                        <Crown className="w-8 h-8 text-surface-400" />
+                                        <Crown className="w-8 h-8 text-fg-faint" />
                                     </div>
                                     <h3 className="text-lg font-semibold text-surface-700 dark:text-surface-300 mb-2">Chưa có gói Premium</h3>
-                                    <p className="text-sm text-surface-500 mb-5">Nâng cấp để truy cập toàn bộ nội dung đặc quyền</p>
+                                    <p className="text-sm text-fg-subtle mb-5">Nâng cấp để truy cập toàn bộ nội dung đặc quyền</p>
                                     <Link
                                         href="/pricing"
                                         className="inline-flex items-center gap-2 px-6 py-3 bg-brand-600 text-white rounded-xl hover:bg-brand-700 transition-colors font-medium"

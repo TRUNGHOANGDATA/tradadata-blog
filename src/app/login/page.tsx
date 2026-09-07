@@ -12,7 +12,7 @@ export default function LoginPage() {
                 <div className="bg-white dark:bg-surface-900 rounded-3xl shadow-2xl border border-surface-200 dark:border-surface-800 overflow-hidden">
                     {/* Header */}
                     <div className="bg-gradient-to-br from-brand-600 to-brand-800 px-8 py-10 text-center">
-                        <div className="w-14 h-14 rounded-2xl bg-white/10 backdrop-blur-sm flex items-center justify-center mx-auto mb-4 border border-white/20">
+                        <div className="w-14 h-14 rounded-2xl bg-card/10 backdrop-blur-sm flex items-center justify-center mx-auto mb-4 border border-white/20">
                             <span className="text-white font-bold text-xl">TDD</span>
                         </div>
                         <h1 className="text-2xl font-bold text-white mb-2">
@@ -42,7 +42,7 @@ export default function LoginPage() {
                         </button>
 
                         <div className="mt-6 text-center">
-                            <p className="text-xs text-surface-400">
+                            <p className="text-xs text-fg-faint">
                                 Đăng nhập lần đầu = Tự động tạo tài khoản miễn phí
                             </p>
                         </div>

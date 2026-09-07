@@ -119,7 +119,7 @@ export default async function TagPage({ params }: Props) {
                 {/* Posts Grid */}
                 {posts.length === 0 ? (
                     <div className="text-center py-16">
-                        <p className="text-surface-400 text-lg">Chưa có bài viết nào với tag này.</p>
+                        <p className="text-fg-faint text-lg">Chưa có bài viết nào với tag này.</p>
                     </div>
                 ) : (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

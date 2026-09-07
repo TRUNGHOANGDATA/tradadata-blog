@@ -115,7 +115,7 @@ export default function SettingsPage() {
                     onClick={() => setActiveTab('general')}
                     className={`flex items-center gap-2 px-4 py-2.5 text-sm font-medium border-b-2 transition-colors ${activeTab === 'general'
                         ? 'border-brand-500 text-brand-600 dark:text-brand-400'
-                        : 'border-transparent text-surface-500 hover:text-surface-700 dark:hover:text-surface-300'
+                        : 'border-transparent text-fg-subtle hover:text-surface-700 dark:hover:text-surface-300'
                         }`}
                 >
                     <SettingsIcon className="w-4 h-4" />
@@ -125,7 +125,7 @@ export default function SettingsPage() {
                     onClick={() => setActiveTab('email')}
                     className={`flex items-center gap-2 px-4 py-2.5 text-sm font-medium border-b-2 transition-colors ${activeTab === 'email'
                         ? 'border-brand-500 text-brand-600 dark:text-brand-400'
-                        : 'border-transparent text-surface-500 hover:text-surface-700 dark:hover:text-surface-300'
+                        : 'border-transparent text-fg-subtle hover:text-surface-700 dark:hover:text-surface-300'
                         }`}
                 >
                     <Mail className="w-4 h-4" />
@@ -246,7 +246,7 @@ export default function SettingsPage() {
                                 placeholder="Ví dụ: 1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms"
                                 className="w-full px-3 py-2 rounded-lg bg-surface-50 dark:bg-surface-800 border border-surface-200 dark:border-surface-700"
                             />
-                            <p className="text-xs text-surface-500 mt-2">
+                            <p className="text-xs text-fg-subtle mt-2">
                                 Tìm Sheet ID trên thanh URL trình duyệt: docs.google.com/spreadsheets/d/<strong>[Sheet_ID]</strong>/edit.
                                 <br />Vui lòng chia sẻ quyền Editor cho: <code>{process.env.NEXT_PUBLIC_SERVICE_ACCOUNT_EMAIL || 'your-service-account@your-project.iam.gserviceaccount.com'}</code>
                             </p>
@@ -266,7 +266,7 @@ export default function SettingsPage() {
                                 onChange={(e) => setPostsPerPage(Math.max(3, Math.min(50, Number(e.target.value) || 12)))}
                                 className="w-full px-3 py-2 rounded-lg bg-surface-50 dark:bg-surface-800 border border-surface-200 dark:border-surface-700"
                             />
-                            <p className="text-xs text-surface-500 mt-2">Số lượng bài viết tối đa hiển thị trên 1 trang blog trước khi tự phân trang (3–50).</p>
+                            <p className="text-xs text-fg-subtle mt-2">Số lượng bài viết tối đa hiển thị trên 1 trang blog trước khi tự phân trang (3–50).</p>
                         </div>
                     </section>
 
@@ -328,7 +328,7 @@ export default function SettingsPage() {
                                     rows={15}
                                     className="w-full px-3 py-2 rounded-lg bg-surface-50 dark:bg-surface-800 border border-surface-200 dark:border-surface-700 font-mono text-sm"
                                 ></textarea>
-                                <p className="text-xs text-surface-500 mt-2">
+                                <p className="text-xs text-fg-subtle mt-2">
                                     Các biến hỗ trợ: <code>{`{{name}}`}, {`{{url}}`}, {`{{order_code}}`}, {`{{product_name}}`}, {`{{amount}}`}, {`{{title}}`}, {`{{excerpt}}`}</code>
                                 </p>
                             </div>
@@ -344,7 +344,7 @@ export default function SettingsPage() {
                             </div>
                         </div>
                     ) : (
-                        <div className="py-12 text-center text-surface-500 bg-surface-50 dark:bg-surface-800/50 rounded-2xl border border-surface-200 dark:border-surface-800">
+                        <div className="py-12 text-center text-fg-subtle bg-surface-50 dark:bg-surface-800/50 rounded-2xl border border-surface-200 dark:border-surface-800">
                             Không tìm thấy mẫu email này trong Database. Vui lòng kiểm tra lại.
                         </div>
                     )}
