@@ -83,7 +83,7 @@ export function Header() {
                                                     <User className="h-4 w-4 text-brand-600" />
                                                 </div>
                                             )}
-                                            <ChevronDown className="h-3 w-3 text-surface-400 hidden sm:block" />
+                                            <ChevronDown className="h-3 w-3 text-fg-faint hidden sm:block" />
                                         </button>
 
                                         {/* Dropdown */}
@@ -95,7 +95,7 @@ export function Header() {
                                                         <p className="text-sm font-medium text-surface-900 dark:text-surface-100 truncate">
                                                             {session.user.name}
                                                         </p>
-                                                        <p className="text-xs text-surface-500 truncate">{session.user.email}</p>
+                                                        <p className="text-xs text-fg-subtle truncate">{session.user.email}</p>
                                                     </div>
                                                     <div className="py-1">
                                                         {isAdmin && (

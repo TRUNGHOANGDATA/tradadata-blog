@@ -198,30 +198,30 @@ export default function AdminSubscriptionsPage() {
                     className={`p-4 rounded-xl border transition-all text-left ${statusFilter === 'all'
                         ? 'border-brand-500 bg-brand-50 dark:bg-brand-900/20 ring-2 ring-brand-500/20'
                         : 'border-surface-200 dark:border-surface-800 bg-white dark:bg-surface-900 hover:border-brand-300'}`}>
-                    <p className="text-xs font-medium text-surface-500 mb-1">Tổng khách hàng</p>
+                    <p className="text-xs font-medium text-fg-subtle mb-1">Tổng khách hàng</p>
                     <p className="text-2xl font-bold text-surface-900 dark:text-surface-100">{stats.total}</p>
-                    <p className="text-xs text-surface-400 mt-1">{subscriptions.length} đăng ký</p>
+                    <p className="text-xs text-fg-faint mt-1">{subscriptions.length} đăng ký</p>
                 </button>
                 <button onClick={() => setStatusFilter('active')}
                     className={`p-4 rounded-xl border transition-all text-left ${statusFilter === 'active'
                         ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-900/20 ring-2 ring-emerald-500/20'
                         : 'border-surface-200 dark:border-surface-800 bg-white dark:bg-surface-900 hover:border-emerald-300'}`}>
-                    <p className="text-xs font-medium text-surface-500 mb-1">Đang hoạt động</p>
+                    <p className="text-xs font-medium text-fg-subtle mb-1">Đang hoạt động</p>
                     <p className="text-2xl font-bold text-emerald-600 dark:text-emerald-400">{stats.active}</p>
                 </button>
                 <button onClick={() => setStatusFilter('expiring')}
                     className={`p-4 rounded-xl border transition-all text-left ${statusFilter === 'expiring'
                         ? 'border-amber-500 bg-amber-50 dark:bg-amber-900/20 ring-2 ring-amber-500/20'
                         : 'border-surface-200 dark:border-surface-800 bg-white dark:bg-surface-900 hover:border-amber-300'}`}>
-                    <p className="text-xs font-medium text-surface-500 mb-1">Sắp hết hạn</p>
+                    <p className="text-xs font-medium text-fg-subtle mb-1">Sắp hết hạn</p>
                     <p className="text-2xl font-bold text-amber-600 dark:text-amber-400">{stats.expiring}</p>
-                    <p className="text-xs text-surface-400 mt-1">trong 7 ngày</p>
+                    <p className="text-xs text-fg-faint mt-1">trong 7 ngày</p>
                 </button>
                 <button onClick={() => setStatusFilter('expired')}
                     className={`p-4 rounded-xl border transition-all text-left ${statusFilter === 'expired'
                         ? 'border-red-500 bg-red-50 dark:bg-red-900/20 ring-2 ring-red-500/20'
                         : 'border-surface-200 dark:border-surface-800 bg-white dark:bg-surface-900 hover:border-red-300'}`}>
-                    <p className="text-xs font-medium text-surface-500 mb-1">Đã hết hạn</p>
+                    <p className="text-xs font-medium text-fg-subtle mb-1">Đã hết hạn</p>
                     <p className="text-2xl font-bold text-red-600 dark:text-red-400">{stats.expired}</p>
                 </button>
             </div>
@@ -229,7 +229,7 @@ export default function AdminSubscriptionsPage() {
             {/* Filters */}
             <div className="flex flex-col sm:flex-row gap-3 mb-6">
                 <div className="relative flex-1 max-w-md">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-surface-400" />
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-fg-faint" />
                     <input
                         type="text"
                         placeholder="Tìm theo tên, email, SĐT..."
@@ -239,7 +239,7 @@ export default function AdminSubscriptionsPage() {
                     />
                 </div>
                 <div className="flex items-center gap-2">
-                    <Filter className="w-4 h-4 text-surface-400" />
+                    <Filter className="w-4 h-4 text-fg-faint" />
                     <select
                         value={productFilter}
                         onChange={(e) => setProductFilter(e.target.value)}
@@ -259,18 +259,18 @@ export default function AdminSubscriptionsPage() {
                     <table className="w-full">
                         <thead>
                             <tr className="border-b border-surface-200 dark:border-surface-800 bg-surface-50 dark:bg-surface-800/50">
-                                <th className="text-left px-5 py-3 text-xs font-semibold text-surface-500 uppercase">Khách hàng</th>
-                                <th className="text-left px-5 py-3 text-xs font-semibold text-surface-500 uppercase">Sản phẩm</th>
-                                <th className="text-center px-5 py-3 text-xs font-semibold text-surface-500 uppercase">Trạng thái</th>
-                                <th className="text-center px-5 py-3 text-xs font-semibold text-surface-500 uppercase">Thời hạn</th>
-                                <th className="text-right px-5 py-3 text-xs font-semibold text-surface-500 uppercase">Còn lại</th>
-                                <th className="text-right px-5 py-3 text-xs font-semibold text-surface-500 uppercase w-10"></th>
+                                <th className="text-left px-5 py-3 text-xs font-semibold text-fg-subtle uppercase">Khách hàng</th>
+                                <th className="text-left px-5 py-3 text-xs font-semibold text-fg-subtle uppercase">Sản phẩm</th>
+                                <th className="text-center px-5 py-3 text-xs font-semibold text-fg-subtle uppercase">Trạng thái</th>
+                                <th className="text-center px-5 py-3 text-xs font-semibold text-fg-subtle uppercase">Thời hạn</th>
+                                <th className="text-right px-5 py-3 text-xs font-semibold text-fg-subtle uppercase">Còn lại</th>
+                                <th className="text-right px-5 py-3 text-xs font-semibold text-fg-subtle uppercase w-10"></th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-surface-200 dark:divide-surface-800">
                             {filtered.length === 0 ? (
                                 <tr>
-                                    <td colSpan={6} className="px-6 py-12 text-center text-surface-400">
+                                    <td colSpan={6} className="px-6 py-12 text-center text-fg-faint">
                                         Không có khách hàng nào.
                                     </td>
                                 </tr>
@@ -292,8 +292,8 @@ export default function AdminSubscriptionsPage() {
                                                 <td className="px-5 py-3.5">
                                                     <div className="flex flex-col">
                                                         <span className="font-semibold text-sm text-surface-900 dark:text-surface-100">{customer.name || '—'}</span>
-                                                        <span className="text-xs text-surface-500">{customer.email}</span>
-                                                        {customer.phone && <span className="text-xs text-surface-400">{customer.phone}</span>}
+                                                        <span className="text-xs text-fg-subtle">{customer.email}</span>
+                                                        {customer.phone && <span className="text-xs text-fg-faint">{customer.phone}</span>}
                                                     </div>
                                                 </td>
                                                 {/* Products */}
@@ -316,7 +316,7 @@ export default function AdminSubscriptionsPage() {
                                                 {/* Duration */}
                                                 <td className="px-5 py-3.5 text-center">
                                                     {productEntries.map(([pid, prod]) => (
-                                                        <div key={pid} className="text-xs text-surface-500 flex items-center justify-center gap-1">
+                                                        <div key={pid} className="text-xs text-fg-subtle flex items-center justify-center gap-1">
                                                             <Calendar className="w-3 h-3" />
                                                             {formatDate(prod.earliestStart)} → {formatDate(prod.latestExpiry)}
                                                         </div>
@@ -335,8 +335,8 @@ export default function AdminSubscriptionsPage() {
                                                 {/* Expand */}
                                                 <td className="px-3 py-3.5 text-right">
                                                     {isExpanded
-                                                        ? <ChevronUp className="w-4 h-4 text-surface-400" />
-                                                        : <ChevronDown className="w-4 h-4 text-surface-400" />
+                                                        ? <ChevronUp className="w-4 h-4 text-fg-faint" />
+                                                        : <ChevronDown className="w-4 h-4 text-fg-faint" />
                                                     }
                                                 </td>
                                             </tr>
@@ -349,10 +349,10 @@ export default function AdminSubscriptionsPage() {
                                                     return (
                                                         <tr key={sub.id} className="bg-surface-50/50 dark:bg-surface-800/30">
                                                             <td className="px-5 py-2.5 pl-10">
-                                                                <span className="text-xs text-surface-400">Chi tiết đăng ký</span>
+                                                                <span className="text-xs text-fg-faint">Chi tiết đăng ký</span>
                                                             </td>
                                                             <td className="px-5 py-2.5">
-                                                                <span className="text-xs text-surface-500">{prod.name}</span>
+                                                                <span className="text-xs text-fg-subtle">{prod.name}</span>
                                                             </td>
                                                             <td className="px-5 py-2.5 text-center">
                                                                 <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-medium border ${subCfg.badgeClass}`}>
@@ -360,7 +360,7 @@ export default function AdminSubscriptionsPage() {
                                                                 </span>
                                                             </td>
                                                             <td className="px-5 py-2.5 text-center">
-                                                                <span className="text-xs text-surface-500">
+                                                                <span className="text-xs text-fg-subtle">
                                                                     {formatDate(new Date(sub.starts_at))} → {formatDate(new Date(sub.expires_at))}
                                                                 </span>
                                                             </td>
@@ -373,13 +373,13 @@ export default function AdminSubscriptionsPage() {
                                                                                 <Gift className="w-3 h-3" /> Miễn phí
                                                                             </span>
                                                                         ) : (
-                                                                            <span className="text-[11px] text-surface-500">
+                                                                            <span className="text-[11px] text-fg-subtle">
                                                                                 {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(sub.orders.amount)}
                                                                             </span>
                                                                         )}
                                                                     </div>
                                                                 ) : (
-                                                                    <span className="text-xs text-surface-400 italic">Cấp tay</span>
+                                                                    <span className="text-xs text-fg-faint italic">Cấp tay</span>
                                                                 )}
                                                             </td>
                                                         </tr>
@@ -396,7 +396,7 @@ export default function AdminSubscriptionsPage() {
             </div>
 
             {/* Summary footer */}
-            <div className="mt-4 text-sm text-surface-500 text-right">
+            <div className="mt-4 text-sm text-fg-subtle text-right">
                 Hiển thị {filtered.length} / {customers.length} khách hàng
             </div>
         </>

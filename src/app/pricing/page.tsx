@@ -83,7 +83,7 @@ export default async function PricingPage() {
                 ))}
 
                 {(!products || products.length === 0) && (
-                    <div className="col-span-full text-center text-surface-500 py-10">
+                    <div className="col-span-full text-center text-fg-subtle py-10">
                         Đang cập nhật các gói sản phẩm. Vui lòng quay lại sau!
                     </div>
                 )}

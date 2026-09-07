@@ -440,7 +440,7 @@ function EditorToolbar({ editor, onToggleHtml, isHtmlMode }: { editor: Editor; o
                         >
                             <Sparkles className="w-4 h-4" /> Copy Prompt
                         </button>
-                        <p className="text-xs text-surface-400 mt-2 text-center">Paste vào Gemini Photo để tạo ảnh</p>
+                        <p className="text-xs text-fg-faint mt-2 text-center">Paste vào Gemini Photo để tạo ảnh</p>
                     </div>
                 )}
             </div>
@@ -765,7 +765,7 @@ export function TiptapEditor({ content, onChange, placeholder = 'Bắt đầu vi
         return (
             <div className="bg-white dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-700 overflow-hidden">
                 <div className="p-6 min-h-[400px] flex items-center justify-center">
-                    <div className="animate-pulse text-surface-400">Đang tải editor...</div>
+                    <div className="animate-pulse text-fg-faint">Đang tải editor...</div>
                 </div>
             </div>
         );

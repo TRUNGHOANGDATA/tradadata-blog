@@ -179,14 +179,14 @@ export default function AdminRevenuePage() {
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
                 <h1 className="text-2xl font-bold text-surface-900 dark:text-surface-100">Báo cáo Doanh thu</h1>
                 <div className="flex items-center gap-2 bg-white dark:bg-surface-900 border border-surface-200 dark:border-surface-800 rounded-xl px-3 py-1.5 shadow-sm">
-                    <span className="text-sm font-medium text-surface-500">Từ ngày:</span>
+                    <span className="text-sm font-medium text-fg-subtle">Từ ngày:</span>
                     <input
                         type="date"
                         className="bg-transparent text-sm focus:outline-none text-surface-900 dark:text-surface-100 placeholder-surface-400"
                         value={fromDate}
                         onChange={(e) => setFromDate(e.target.value)}
                     />
-                    <span className="text-sm font-medium text-surface-500">đến:</span>
+                    <span className="text-sm font-medium text-fg-subtle">đến:</span>
                     <input
                         type="date"
                         className="bg-transparent text-sm focus:outline-none text-surface-900 dark:text-surface-100 placeholder-surface-400"
@@ -200,7 +200,7 @@ export default function AdminRevenuePage() {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
                 <div className="bg-white dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-800 p-5 hover:shadow-lg transition-shadow">
                     <div className="flex items-center justify-between mb-3">
-                        <span className="text-sm font-medium text-surface-500">Tổng doanh thu</span>
+                        <span className="text-sm font-medium text-fg-subtle">Tổng doanh thu</span>
                         <div className="p-2 rounded-xl bg-emerald-50 text-emerald-600 dark:bg-emerald-900/20">
                             <DollarSign className="h-4 w-4" />
                         </div>
@@ -212,7 +212,7 @@ export default function AdminRevenuePage() {
 
                 <div className="bg-white dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-800 p-5 hover:shadow-lg transition-shadow">
                     <div className="flex items-center justify-between mb-3">
-                        <span className="text-sm font-medium text-surface-500">Doanh thu tháng này</span>
+                        <span className="text-sm font-medium text-fg-subtle">Doanh thu tháng này</span>
                         <div className="p-2 rounded-xl bg-blue-50 text-blue-600 dark:bg-blue-900/20">
                             <Calendar className="h-4 w-4" />
                         </div>
@@ -239,7 +239,7 @@ export default function AdminRevenuePage() {
                 <Link href="/admin/orders" className={`bg-white dark:bg-surface-900 rounded-2xl border ${stats && stats.pendingOrders > 0 ? 'border-amber-400 dark:border-amber-600 shadow-md shadow-amber-500/10 animate-pulse' : 'border-surface-200 dark:border-surface-800'} p-5 hover:shadow-lg transition-all block group cursor-pointer`}>
                     <div className="flex items-center justify-between mb-3">
                         <span className={`text-sm font-medium ${stats && stats.pendingOrders > 0 ? 'text-amber-600 dark:text-amber-500' : 'text-surface-500'}`}>Đơn chờ duyệt</span>
-                        <div className={`p-2 rounded-xl ${stats && stats.pendingOrders > 0 ? 'bg-amber-100 text-amber-600 dark:bg-amber-900/30' : 'bg-surface-50 text-surface-500 dark:bg-surface-800'}`}>
+                        <div className={`p-2 rounded-xl ${stats && stats.pendingOrders > 0 ? 'bg-amber-100 text-amber-600 dark:bg-amber-900/30' : 'bg-surface-50 text-fg-subtle dark:bg-surface-800'}`}>
                             <AlertCircle className="h-4 w-4" />
                         </div>
                     </div>
@@ -300,7 +300,7 @@ export default function AdminRevenuePage() {
                     {dailyRevenue.map((d, i) => (
                         <div key={d.date} className="flex-1 text-center">
                             {(i % 5 === 0 || i === dailyRevenue.length - 1) && (
-                                <span className="text-[10px] text-surface-400">{formatShortDate(d.date)}</span>
+                                <span className="text-[10px] text-fg-faint">{formatShortDate(d.date)}</span>
                             )}
                         </div>
                     ))}
@@ -316,7 +316,7 @@ export default function AdminRevenuePage() {
                         <h2 className="text-lg font-bold text-surface-900 dark:text-surface-100">Doanh thu theo sản phẩm</h2>
                     </div>
                     {productBreakdown.length === 0 ? (
-                        <p className="text-surface-400 text-sm text-center py-8">Chưa có dữ liệu</p>
+                        <p className="text-fg-faint text-sm text-center py-8">Chưa có dữ liệu</p>
                     ) : (
                         <div className="space-y-4">
                             {productBreakdown.map((p, i) => {
@@ -340,7 +340,7 @@ export default function AdminRevenuePage() {
                                                     style={{ width: `${pct}%` }}
                                                 />
                                             </div>
-                                            <span className="text-xs text-surface-400 w-14 text-right">{p.count} đơn</span>
+                                            <span className="text-xs text-fg-faint w-14 text-right">{p.count} đơn</span>
                                         </div>
                                     </div>
                                 );
@@ -356,7 +356,7 @@ export default function AdminRevenuePage() {
                         <h2 className="text-lg font-bold text-surface-900 dark:text-surface-100">Tác động mã giảm giá</h2>
                     </div>
                     {!couponImpact || couponImpact.usedCount === 0 ? (
-                        <p className="text-surface-400 text-sm text-center py-8">Chưa có mã giảm giá nào được sử dụng</p>
+                        <p className="text-fg-faint text-sm text-center py-8">Chưa có mã giảm giá nào được sử dụng</p>
                     ) : (
                         <>
                             <div className="grid grid-cols-2 gap-4 mb-5">
@@ -375,7 +375,7 @@ export default function AdminRevenuePage() {
                             </div>
                             {couponImpact.topCoupons.length > 0 && (
                                 <div>
-                                    <h3 className="text-xs font-semibold text-surface-500 uppercase mb-3">Top mã giảm giá</h3>
+                                    <h3 className="text-xs font-semibold text-fg-subtle uppercase mb-3">Top mã giảm giá</h3>
                                     <div className="space-y-2">
                                         {couponImpact.topCoupons.map((c) => (
                                             <div key={c.code} className="flex items-center justify-between p-2.5 bg-surface-50 dark:bg-surface-800 rounded-xl">
@@ -383,7 +383,7 @@ export default function AdminRevenuePage() {
                                                     <span className="font-mono text-sm font-bold text-surface-900 dark:text-surface-100 bg-surface-200 dark:bg-surface-700 px-2 py-0.5 rounded-md">
                                                         {c.code}
                                                     </span>
-                                                    <span className="text-xs text-surface-500">{c.count} lần</span>
+                                                    <span className="text-xs text-fg-subtle">{c.count} lần</span>
                                                 </div>
                                                 <span className="text-sm font-semibold text-red-500">
                                                     −{formatCurrency(c.discount)}
@@ -410,17 +410,17 @@ export default function AdminRevenuePage() {
                     </Link>
                 </div>
                 {recentOrders.length === 0 ? (
-                    <p className="text-surface-400 text-sm text-center py-8">Chưa có đơn hàng nào</p>
+                    <p className="text-fg-faint text-sm text-center py-8">Chưa có đơn hàng nào</p>
                 ) : (
                     <div className="overflow-x-auto">
                         <table className="w-full">
                             <thead>
                                 <tr className="border-b border-surface-200 dark:border-surface-800">
-                                    <th className="text-left px-4 py-2.5 text-xs font-semibold text-surface-500 uppercase">Mã đơn</th>
-                                    <th className="text-left px-4 py-2.5 text-xs font-semibold text-surface-500 uppercase">Khách hàng</th>
-                                    <th className="text-left px-4 py-2.5 text-xs font-semibold text-surface-500 uppercase">Sản phẩm</th>
-                                    <th className="text-right px-4 py-2.5 text-xs font-semibold text-surface-500 uppercase">Số tiền</th>
-                                    <th className="text-right px-4 py-2.5 text-xs font-semibold text-surface-500 uppercase">Ngày</th>
+                                    <th className="text-left px-4 py-2.5 text-xs font-semibold text-fg-subtle uppercase">Mã đơn</th>
+                                    <th className="text-left px-4 py-2.5 text-xs font-semibold text-fg-subtle uppercase">Khách hàng</th>
+                                    <th className="text-left px-4 py-2.5 text-xs font-semibold text-fg-subtle uppercase">Sản phẩm</th>
+                                    <th className="text-right px-4 py-2.5 text-xs font-semibold text-fg-subtle uppercase">Số tiền</th>
+                                    <th className="text-right px-4 py-2.5 text-xs font-semibold text-fg-subtle uppercase">Ngày</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-surface-100 dark:divide-surface-800">
@@ -434,7 +434,7 @@ export default function AdminRevenuePage() {
                                         <td className="px-4 py-3">
                                             <div className="flex flex-col">
                                                 <span className="text-sm font-medium text-surface-900 dark:text-surface-100">{o.full_name}</span>
-                                                <span className="text-xs text-surface-400">{o.email}</span>
+                                                <span className="text-xs text-fg-faint">{o.email}</span>
                                             </div>
                                         </td>
                                         <td className="px-4 py-3 text-sm text-surface-600 dark:text-surface-400">{o.product_name}</td>
@@ -444,7 +444,7 @@ export default function AdminRevenuePage() {
                                                 <span className="block text-xs text-green-600 dark:text-green-400">🎫 {o.coupon_code}</span>
                                             )}
                                         </td>
-                                        <td className="px-4 py-3 text-right text-xs text-surface-500">{formatDateTime(o.paid_at)}</td>
+                                        <td className="px-4 py-3 text-right text-xs text-fg-subtle">{formatDateTime(o.paid_at)}</td>
                                     </tr>
                                 ))}
                             </tbody>

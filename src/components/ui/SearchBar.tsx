@@ -49,7 +49,7 @@ export function SearchBar() {
             {/* Trigger Button */}
             <button
                 onClick={() => setOpen(true)}
-                className="flex items-center gap-2 px-3 py-2 rounded-xl bg-surface-100 dark:bg-surface-800 hover:bg-surface-200 dark:hover:bg-surface-700 text-surface-500 transition-all duration-300 text-sm border border-surface-200 dark:border-surface-700"
+                className="flex items-center gap-2 px-3 py-2 rounded-xl bg-surface-100 dark:bg-surface-800 hover:bg-surface-200 dark:hover:bg-surface-700 text-fg-subtle transition-all duration-300 text-sm border border-surface-200 dark:border-surface-700"
             >
                 <Search className="h-4 w-4" />
                 <span className="hidden sm:inline">Tìm kiếm...</span>
@@ -71,7 +71,7 @@ export function SearchBar() {
                     <div className="relative w-full max-w-xl mx-4 animate-scale-in z-10">
                         <form onSubmit={handleSubmit} className="bg-white dark:bg-surface-900 rounded-2xl shadow-2xl border border-surface-200 dark:border-surface-700 overflow-hidden">
                             <div className="flex items-center gap-3 px-4 py-3">
-                                <Search className="h-5 w-5 text-surface-400 shrink-0" />
+                                <Search className="h-5 w-5 text-fg-faint shrink-0" />
                                 <input
                                     ref={inputRef}
                                     type="text"
@@ -85,10 +85,10 @@ export function SearchBar() {
                                     onClick={() => setOpen(false)}
                                     className="p-1 rounded-lg hover:bg-surface-200 dark:hover:bg-surface-800 transition-colors"
                                 >
-                                    <X className="h-5 w-5 text-surface-400" />
+                                    <X className="h-5 w-5 text-fg-faint" />
                                 </button>
                             </div>
-                            <div className="px-4 py-2 bg-surface-50 dark:bg-surface-950 border-t border-surface-200 dark:border-surface-800 text-xs text-surface-500 flex items-center justify-between">
+                            <div className="px-4 py-2 bg-surface-50 dark:bg-surface-950 border-t border-surface-200 dark:border-surface-800 text-xs text-fg-subtle flex items-center justify-between">
                                 <span>
                                     Nhấn <kbd className="px-1.5 py-0.5 rounded-md border border-surface-300 dark:border-surface-700 bg-white dark:bg-surface-800 font-mono text-surface-700 dark:text-surface-300 shadow-sm">Enter</kbd> để tìm kiếm
                                 </span>

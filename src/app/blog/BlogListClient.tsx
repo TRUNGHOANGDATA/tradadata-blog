@@ -81,7 +81,7 @@ export function BlogListClient({
             <div className="flex flex-col md:flex-row gap-4 mb-8">
                 {/* Search */}
                 <div className="relative flex-1 max-w-md">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-surface-400" />
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-fg-faint" />
                     <input
                         type="text"
                         placeholder="Tìm kiếm bài viết..."
@@ -93,7 +93,7 @@ export function BlogListClient({
 
                 {/* Category Filter */}
                 <div className="flex items-center gap-2 overflow-x-auto pb-2 md:pb-0 scrollbar-hide">
-                    <SlidersHorizontal className="h-4 w-4 text-surface-400 shrink-0" />
+                    <SlidersHorizontal className="h-4 w-4 text-fg-faint shrink-0" />
                     {filterCategories.map((cat) => (
                         <button
                             key={cat.slug}
@@ -121,7 +121,7 @@ export function BlogListClient({
                 <div className="text-center py-16 bg-white/50 dark:bg-surface-900/50 rounded-2xl border border-surface-200 dark:border-surface-800">
                     <div className="text-4xl mb-4">🔍</div>
                     <h3 className="text-lg font-medium text-surface-900 dark:text-surface-100 mb-1">Không tìm thấy kết quả</h3>
-                    <p className="text-surface-500 text-sm">Vui lòng thử lại với từ khóa hoặc chủ đề khác.</p>
+                    <p className="text-fg-subtle text-sm">Vui lòng thử lại với từ khóa hoặc chủ đề khác.</p>
                     <button
                         onClick={() => { setSearchQuery(''); handleCategoryChange(''); }}
                         className="mt-4 px-4 py-2 text-sm font-medium text-brand-600 dark:text-brand-400 hover:bg-brand-50 dark:hover:bg-brand-900/20 rounded-lg transition-colors"
@@ -147,7 +147,7 @@ export function BlogListClient({
                     {/* Page numbers */}
                     {getPageNumbers().map((page, i) =>
                         page === '...' ? (
-                            <span key={`ellipsis-${i}`} className="px-2 py-2 text-surface-400 text-sm">…</span>
+                            <span key={`ellipsis-${i}`} className="px-2 py-2 text-fg-faint text-sm">…</span>
                         ) : (
                             <Link
                                 key={page}

@@ -110,7 +110,7 @@ export default function AdminLeadsPage() {
             <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
                 <div>
                     <h1 className="text-2xl font-bold text-surface-900 dark:text-surface-100">Khách quan tâm phần mềm</h1>
-                    <p className="text-sm text-surface-500 mt-1">Thông tin gửi từ trang /phan-mem-ban-hang</p>
+                    <p className="text-sm text-fg-subtle mt-1">Thông tin gửi từ trang /phan-mem-ban-hang</p>
                 </div>
                 <button
                     onClick={load}
@@ -138,7 +138,7 @@ export default function AdminLeadsPage() {
             </div>
 
             <div className="relative mb-6">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-surface-400" />
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-fg-faint" />
                 <input
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
@@ -150,7 +150,7 @@ export default function AdminLeadsPage() {
             {shown.length === 0 ? (
                 <div className="text-center py-20 rounded-2xl bg-white dark:bg-surface-900 border border-surface-200 dark:border-surface-800">
                     <Inbox className="h-10 w-10 text-surface-300 dark:text-surface-700 mx-auto mb-3" />
-                    <p className="text-surface-500">
+                    <p className="text-fg-subtle">
                         {leads.length === 0 ? 'Chưa có ai để lại thông tin.' : 'Không có kết quả khớp bộ lọc.'}
                     </p>
                 </div>
@@ -175,7 +175,7 @@ export default function AdminLeadsPage() {
                                             {l.phone}
                                         </a>
                                         {l.company && <span>{l.company}</span>}
-                                        <span className="text-surface-400">{fmt(l.created_at)}</span>
+                                        <span className="text-fg-faint">{fmt(l.created_at)}</span>
                                     </div>
                                 </div>
                                 <div className="flex items-center gap-2 shrink-0">
@@ -193,7 +193,7 @@ export default function AdminLeadsPage() {
                                         onClick={() => remove(l.id, l.full_name)}
                                         disabled={busyId === l.id}
                                         title="Xoá"
-                                        className="p-2 rounded-lg text-surface-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+                                        className="p-2 rounded-lg text-fg-faint hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
                                     >
                                         <Trash2 className="h-4 w-4" />
                                     </button>

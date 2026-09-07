@@ -25,7 +25,7 @@ export async function Footer() {
     const settings = await getFooterSettings();
 
     return (
-        <footer className="bg-surface-900 dark:bg-surface-950 text-surface-400 mt-20">
+        <footer className="bg-surface-900 dark:bg-surface-950 text-fg-faint mt-20">
             {/* Wave Separator */}
             <div className="relative -mt-px">
                 <svg
@@ -136,7 +136,7 @@ export async function Footer() {
                     <p className="text-sm">
                         © {new Date().getFullYear()} {SITE_CONFIG.author}. All rights reserved.
                     </p>
-                    <p className="text-xs text-surface-500">
+                    <p className="text-xs text-fg-subtle">
                         Built with Next.js, TailwindCSS & Supabase
                     </p>
                 </div>

@@ -12,7 +12,7 @@ export default function TermsPage() {
             <h1 className="text-3xl font-bold text-surface-900 dark:text-surface-100 mb-2">
                 Điều khoản Sử dụng
             </h1>
-            <p className="text-surface-500 mb-10">Cập nhật lần cuối: 27/02/2026</p>
+            <p className="text-fg-subtle mb-10">Cập nhật lần cuối: 27/02/2026</p>
 
             <div className="prose prose-surface dark:prose-invert max-w-none space-y-8">
                 {/* 1 */}

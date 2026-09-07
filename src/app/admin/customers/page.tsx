@@ -111,7 +111,7 @@ export default function AdminCustomersPage() {
             {/* Filter */}
             <div className="mb-6">
                 <div className="relative max-w-md">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-surface-400" />
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-fg-faint" />
                     <input
                         type="text"
                         placeholder="Tìm theo Tên, Email, SĐT..."
@@ -128,16 +128,16 @@ export default function AdminCustomersPage() {
                     <table className="w-full">
                         <thead>
                             <tr className="border-b border-surface-200 dark:border-surface-800 bg-surface-50 dark:bg-surface-800/50">
-                                <th className="text-left px-6 py-3 text-xs font-semibold text-surface-500 uppercase">Khách hàng</th>
-                                <th className="text-right px-6 py-3 text-xs font-semibold text-surface-500 uppercase">Tổng đơn</th>
-                                <th className="text-right px-6 py-3 text-xs font-semibold text-surface-500 uppercase">Tổng chi tiêu</th>
-                                <th className="text-right px-6 py-3 text-xs font-semibold text-surface-500 uppercase">Đơn gần nhất</th>
+                                <th className="text-left px-6 py-3 text-xs font-semibold text-fg-subtle uppercase">Khách hàng</th>
+                                <th className="text-right px-6 py-3 text-xs font-semibold text-fg-subtle uppercase">Tổng đơn</th>
+                                <th className="text-right px-6 py-3 text-xs font-semibold text-fg-subtle uppercase">Tổng chi tiêu</th>
+                                <th className="text-right px-6 py-3 text-xs font-semibold text-fg-subtle uppercase">Đơn gần nhất</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-surface-200 dark:divide-surface-800">
                             {filteredCustomers.length === 0 ? (
                                 <tr>
-                                    <td colSpan={4} className="px-6 py-12 text-center text-surface-400">
+                                    <td colSpan={4} className="px-6 py-12 text-center text-fg-faint">
                                         Không có khách hàng nào.
                                     </td>
                                 </tr>
@@ -151,8 +151,8 @@ export default function AdminCustomersPage() {
                                         <td className="px-6 py-4">
                                             <div className="flex flex-col">
                                                 <span className="font-bold text-surface-900 dark:text-surface-100">{customer.full_name}</span>
-                                                <span className="text-sm text-surface-500">{customer.email}</span>
-                                                <span className="text-sm text-surface-500">{customer.phone}</span>
+                                                <span className="text-sm text-fg-subtle">{customer.email}</span>
+                                                <span className="text-sm text-fg-subtle">{customer.phone}</span>
                                             </div>
                                         </td>
                                         <td className="px-6 py-4 text-right">
@@ -165,8 +165,8 @@ export default function AdminCustomersPage() {
                                                 {formatCurrency(customer.total_spent)}
                                             </span>
                                         </td>
-                                        <td className="px-6 py-4 text-right text-sm text-surface-500">
-                                            {customer.last_order_at ? formatDate(customer.last_order_at) : <span className="text-surface-400 italic">Chưa có đơn</span>}
+                                        <td className="px-6 py-4 text-right text-sm text-fg-subtle">
+                                            {customer.last_order_at ? formatDate(customer.last_order_at) : <span className="text-fg-faint italic">Chưa có đơn</span>}
                                         </td>
                                     </tr>
                                 ))
@@ -185,13 +185,13 @@ export default function AdminCustomersPage() {
                         <div className="flex items-center justify-between p-5 border-b border-surface-200 dark:border-surface-800 bg-surface-50 dark:bg-surface-800/50">
                             <div>
                                 <h3 className="text-lg font-bold text-surface-900 dark:text-surface-100">Lịch sử đơn hàng</h3>
-                                <p className="text-sm text-surface-500 mt-1">
+                                <p className="text-sm text-fg-subtle mt-1">
                                     Khách hàng: <span className="font-medium text-surface-900 dark:text-surface-100">{selectedCustomer.full_name}</span> ({selectedCustomer.email})
                                 </p>
                             </div>
                             <button
                                 onClick={() => setSelectedCustomer(null)}
-                                className="text-surface-400 hover:text-surface-600 transition-colors p-2 hover:bg-surface-200 dark:hover:bg-surface-700 rounded-full"
+                                className="text-fg-faint hover:text-surface-600 transition-colors p-2 hover:bg-surface-200 dark:hover:bg-surface-700 rounded-full"
                             >
                                 <X className="w-5 h-5" />
                             </button>
@@ -203,7 +203,7 @@ export default function AdminCustomersPage() {
                                     <Loader2 className="w-8 h-8 animate-spin text-brand-600" />
                                 </div>
                             ) : customerOrders.length === 0 ? (
-                                <div className="text-center p-8 text-surface-500">
+                                <div className="text-center p-8 text-fg-subtle">
                                     Không tìm thấy đơn hàng nào.
                                 </div>
                             ) : (
@@ -211,10 +211,10 @@ export default function AdminCustomersPage() {
                                     <table className="w-full">
                                         <thead>
                                             <tr className="border-b border-surface-200 dark:border-surface-800 bg-surface-50 dark:bg-surface-800/50">
-                                                <th className="text-left px-4 py-3 text-xs font-semibold text-surface-500 uppercase">Mã Đơn / Ngày</th>
-                                                <th className="text-left px-4 py-3 text-xs font-semibold text-surface-500 uppercase">Sản phẩm</th>
-                                                <th className="text-left px-4 py-3 text-xs font-semibold text-surface-500 uppercase">Thành tiền</th>
-                                                <th className="text-right px-4 py-3 text-xs font-semibold text-surface-500 uppercase">Trạng thái</th>
+                                                <th className="text-left px-4 py-3 text-xs font-semibold text-fg-subtle uppercase">Mã Đơn / Ngày</th>
+                                                <th className="text-left px-4 py-3 text-xs font-semibold text-fg-subtle uppercase">Sản phẩm</th>
+                                                <th className="text-left px-4 py-3 text-xs font-semibold text-fg-subtle uppercase">Thành tiền</th>
+                                                <th className="text-right px-4 py-3 text-xs font-semibold text-fg-subtle uppercase">Trạng thái</th>
                                             </tr>
                                         </thead>
                                         <tbody className="divide-y divide-surface-200 dark:divide-surface-800">
@@ -229,7 +229,7 @@ export default function AdminCustomersPage() {
                                                             >
                                                                 {order.order_code} <ExternalLink className="w-3 h-3" />
                                                             </Link>
-                                                            <span className="text-xs text-surface-500 mt-1">{formatDateTime(order.created_at)}</span>
+                                                            <span className="text-xs text-fg-subtle mt-1">{formatDateTime(order.created_at)}</span>
                                                         </div>
                                                     </td>
                                                     <td className="px-4 py-3 text-sm font-medium text-surface-900 dark:text-surface-100">

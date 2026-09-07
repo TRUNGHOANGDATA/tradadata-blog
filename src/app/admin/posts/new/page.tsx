@@ -13,7 +13,7 @@ const TiptapEditor = dynamic(
         loading: () => (
             <div className="bg-white dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-700 overflow-hidden">
                 <div className="p-6 min-h-[400px] flex items-center justify-center">
-                    <div className="animate-pulse text-surface-400">Đang tải editor...</div>
+                    <div className="animate-pulse text-fg-faint">Đang tải editor...</div>
                 </div>
             </div>
         ),
@@ -394,7 +394,7 @@ COVER_IMAGE: Tạo một bức ảnh bìa blog có chất lượng cao, tỉ l�
                         </div>
                         <div className="relative">
                             <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-surface-50 dark:bg-surface-800 border border-surface-200 dark:border-surface-700 focus-within:ring-2 focus-within:ring-brand-500/30">
-                                <Search className="h-3.5 w-3.5 text-surface-400 shrink-0" />
+                                <Search className="h-3.5 w-3.5 text-fg-faint shrink-0" />
                                 <input
                                     type="text"
                                     value={tagSearch}
@@ -487,7 +487,7 @@ COVER_IMAGE: Tạo một bức ảnh bìa blog có chất lượng cao, tỉ l�
                                         </button>
                                     )}
                                     {!tagSearch.trim() && tags.filter(t => !selectedTagIds.includes(t.id)).length === 0 && (
-                                        <div className="px-3 py-2 text-xs text-surface-400">Không còn tag nào</div>
+                                        <div className="px-3 py-2 text-xs text-fg-faint">Không còn tag nào</div>
                                     )}
                                 </div>
                             )}
@@ -516,7 +516,7 @@ COVER_IMAGE: Tạo một bức ảnh bìa blog có chất lượng cao, tỉ l�
                             </div>
                         ) : (
                             <div className="space-y-2">
-                                <label className="w-full h-32 rounded-xl border-2 border-dashed border-surface-300 dark:border-surface-600 hover:border-brand-400 dark:hover:border-brand-600 transition-colors flex flex-col items-center justify-center gap-2 text-surface-400 hover:text-brand-500 cursor-pointer">
+                                <label className="w-full h-32 rounded-xl border-2 border-dashed border-surface-300 dark:border-surface-600 hover:border-brand-400 dark:hover:border-brand-600 transition-colors flex flex-col items-center justify-center gap-2 text-fg-faint hover:text-brand-500 cursor-pointer">
                                     {uploadingCover ? (
                                         <Loader2 className="h-6 w-6 animate-spin" />
                                     ) : (
@@ -594,7 +594,7 @@ COVER_IMAGE: Tạo một bức ảnh bìa blog có chất lượng cao, tỉ l�
                                                         btn.classList.remove('text-green-500');
                                                     }, 2000);
                                                 }}
-                                                className="text-[10px] p-1 text-surface-400 hover:text-brand-500 bg-surface-100 dark:bg-surface-800 rounded opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0"
+                                                className="text-[10px] p-1 text-fg-faint hover:text-brand-500 bg-surface-100 dark:bg-surface-800 rounded opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0"
                                                 title="Copy prompt"
                                             >
                                                 📋
@@ -620,12 +620,12 @@ COVER_IMAGE: Tạo một bức ảnh bìa blog có chất lượng cao, tỉ l�
                                     }`}
                             >
                                 <span
-                                    className={`absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white shadow transition-transform ${isPremium ? 'translate-x-5' : ''
+                                    className={`absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-card shadow transition-transform ${isPremium ? 'translate-x-5' : ''
                                         }`}
                                 />
                             </button>
                         </div>
-                        <p className="text-xs text-surface-500 mt-2">
+                        <p className="text-xs text-fg-subtle mt-2">
                             Yêu cầu đăng nhập để xem nội dung đầy đủ
                         </p>
                     </div>
@@ -639,7 +639,7 @@ COVER_IMAGE: Tạo một bức ảnh bìa blog có chất lượng cao, tỉ l�
 
                         {/* SEO Preview */}
                         <div className="mb-4 p-3 rounded-xl bg-surface-50 dark:bg-surface-800 border border-surface-200 dark:border-surface-700">
-                            <p className="text-xs text-surface-400 mb-1.5 font-medium">🔍 Preview trên Google</p>
+                            <p className="text-xs text-fg-faint mb-1.5 font-medium">🔍 Preview trên Google</p>
                             <p className="text-sm text-blue-700 dark:text-blue-400 font-medium truncate">
                                 {title || 'Tiêu đề bài viết'} | Trà Đá Data
                             </p>
@@ -658,7 +658,7 @@ COVER_IMAGE: Tạo một bức ảnh bìa blog có chất lượng cao, tỉ l�
                                 <span className="text-surface-400 dark:text-surface-500 font-normal"> — tùy chọn</span>
                             </label>
                             <div className="flex items-center gap-1">
-                                <span className="text-xs text-surface-400 whitespace-nowrap">/blog/</span>
+                                <span className="text-xs text-fg-faint whitespace-nowrap">/blog/</span>
                                 <input
                                     type="text"
                                     value={customSlug}
@@ -667,7 +667,7 @@ COVER_IMAGE: Tạo một bức ảnh bìa blog có chất lượng cao, tỉ l�
                                     className="w-full px-2 py-1.5 rounded-lg bg-surface-50 dark:bg-surface-800 border border-surface-200 dark:border-surface-700 text-xs focus:outline-none focus:ring-2 focus:ring-brand-500/30"
                                 />
                             </div>
-                            <p className="text-[10px] text-surface-400 mt-1">💡 Để trống = tự sinh từ tiêu đề</p>
+                            <p className="text-[10px] text-fg-faint mt-1">💡 Để trống = tự sinh từ tiêu đề</p>
                         </div>
 
                         {/* Meta Description */}
@@ -684,7 +684,7 @@ COVER_IMAGE: Tạo một bức ảnh bìa blog có chất lượng cao, tỉ l�
                                 maxLength={160}
                                 className="w-full px-2 py-1.5 rounded-lg bg-surface-50 dark:bg-surface-800 border border-surface-200 dark:border-surface-700 text-xs focus:outline-none focus:ring-2 focus:ring-brand-500/30 resize-none"
                             />
-                            <p className="text-[10px] text-surface-400 mt-0.5">
+                            <p className="text-[10px] text-fg-faint mt-0.5">
                                 💡 Tối ưu 150-160 ký tự · Hiện tại: {(metaDescription || excerpt).length}/160
                             </p>
                         </div>
@@ -702,7 +702,7 @@ COVER_IMAGE: Tạo một bức ảnh bìa blog có chất lượng cao, tỉ l�
                                 placeholder="excel, power query, data analysis"
                                 className="w-full px-2 py-1.5 rounded-lg bg-surface-50 dark:bg-surface-800 border border-surface-200 dark:border-surface-700 text-xs focus:outline-none focus:ring-2 focus:ring-brand-500/30"
                             />
-                            <p className="text-[10px] text-surface-400 mt-1">💡 Phân cách bằng dấu phẩy · Để trống = tự dùng tên chủ đề</p>
+                            <p className="text-[10px] text-fg-faint mt-1">💡 Phân cách bằng dấu phẩy · Để trống = tự dùng tên chủ đề</p>
                         </div>
                     </div>
                 </div>
@@ -718,7 +718,7 @@ COVER_IMAGE: Tạo một bức ảnh bìa blog có chất lượng cao, tỉ l�
                                 Tạo Prompt viết bài bằng AI
                             </h2>
                             <button onClick={() => { setAiWriteOpen(false); setGeneratedPrompt(''); }} className="p-2 rounded-full hover:bg-surface-100 dark:hover:bg-surface-800">
-                                <X className="w-5 h-5 text-surface-500" />
+                                <X className="w-5 h-5 text-fg-subtle" />
                             </button>
                         </div>
 
@@ -738,7 +738,7 @@ COVER_IMAGE: Tạo một bức ảnh bìa blog có chất lượng cao, tỉ l�
                                 <div>
                                     <label className="block text-sm font-medium mb-1 text-surface-700 dark:text-surface-300">
                                         Ý tưởng / Ghi chú
-                                        <span className="text-surface-400 font-normal"> — tùy chọn</span>
+                                        <span className="text-fg-faint font-normal"> — tùy chọn</span>
                                     </label>
                                     <textarea
                                         value={aiIdeas}
@@ -755,7 +755,7 @@ COVER_IMAGE: Tạo một bức ảnh bìa blog có chất lượng cao, tỉ l�
                                 >
                                     <Sparkles className="w-5 h-5" /> Tạo Prompt
                                 </button>
-                                <p className="text-xs text-surface-400 text-center">💡 Không cần API Key — Copy prompt vào Gemini, ChatGPT, hoặc Antigravity để viết bài</p>
+                                <p className="text-xs text-fg-faint text-center">💡 Không cần API Key — Copy prompt vào Gemini, ChatGPT, hoặc Antigravity để viết bài</p>
                             </div>
                         ) : (
                             <div className="space-y-4">

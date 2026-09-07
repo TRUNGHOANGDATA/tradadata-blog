@@ -12,7 +12,7 @@ export default function PrivacyPage() {
             <h1 className="text-3xl font-bold text-surface-900 dark:text-surface-100 mb-2">
                 Chính sách Bảo mật
             </h1>
-            <p className="text-surface-500 mb-10">Cập nhật lần cuối: 27/02/2026</p>
+            <p className="text-fg-subtle mb-10">Cập nhật lần cuối: 27/02/2026</p>
 
             <div className="prose prose-surface dark:prose-invert max-w-none space-y-8">
                 {/* 1 */}
@@ -35,7 +35,7 @@ export default function PrivacyPage() {
                         <li><strong>Họ tên:</strong> Tên hiển thị từ tài khoản Google</li>
                         <li><strong>Ảnh đại diện:</strong> Avatar từ tài khoản Google</li>
                     </ul>
-                    <p className="text-sm text-surface-500 mt-2">
+                    <p className="text-sm text-fg-subtle mt-2">
                         Chúng tôi <strong>không</strong> truy cập mật khẩu, danh bạ, Drive, hoặc bất kỳ dữ liệu Google nào khác.
                     </p>
 

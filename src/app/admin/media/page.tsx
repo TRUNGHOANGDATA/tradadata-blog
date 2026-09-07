@@ -183,14 +183,14 @@ export default function MediaPage() {
                 <div>
                     <h1 className="text-2xl font-bold text-surface-900 dark:text-surface-100">Thư viện ảnh</h1>
                     {pagination && (
-                        <p className="text-xs text-surface-500 mt-1">{pagination.totalFiles} ảnh</p>
+                        <p className="text-xs text-fg-subtle mt-1">{pagination.totalFiles} ảnh</p>
                     )}
                 </div>
 
                 <div className="flex flex-wrap items-center gap-3 w-full sm:w-auto">
                     {/* Search */}
                     <div className="relative flex-1 sm:w-64">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-surface-400" />
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-fg-faint" />
                         <input
                             type="text"
                             placeholder="Tìm kiếm ảnh..."
@@ -273,7 +273,7 @@ export default function MediaPage() {
                                 >
                                     <button
                                         onClick={(e) => { e.stopPropagation(); copyUrl(file.url, file.id); }}
-                                        className="p-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white transition-colors"
+                                        className="p-2.5 rounded-xl bg-card/10 hover:bg-white/20 text-white transition-colors"
                                         title="Copy URL"
                                     >
                                         {copiedId === file.id ? <Check className="h-4 w-4 text-green-400" /> : <Copy className="h-4 w-4" />}
@@ -290,8 +290,8 @@ export default function MediaPage() {
                             <div className="p-3 bg-white dark:bg-surface-900 border-t border-surface-100 dark:border-surface-800">
                                 <p className="text-xs text-surface-700 dark:text-surface-300 font-medium truncate" title={file.name}>{file.name}</p>
                                 <div className="flex items-center justify-between mt-1">
-                                    <p className="text-[10px] text-surface-400">{formatSize(file.size)}</p>
-                                    <p className="text-[10px] text-surface-400">{new Date(file.createdTime).toLocaleDateString('vi-VN')}</p>
+                                    <p className="text-[10px] text-fg-faint">{formatSize(file.size)}</p>
+                                    <p className="text-[10px] text-fg-faint">{new Date(file.createdTime).toLocaleDateString('vi-VN')}</p>
                                 </div>
                             </div>
                         </div>
@@ -371,7 +371,7 @@ export default function MediaPage() {
                             <h3 className="text-lg font-medium text-white truncate pr-4">{previewFile.name}</h3>
                             <button
                                 onClick={() => setPreviewFile(null)}
-                                className="p-2 bg-surface-800 hover:bg-surface-700 rounded-xl text-surface-400 hover:text-white transition-colors"
+                                className="p-2 bg-surface-800 hover:bg-surface-700 rounded-xl text-fg-faint hover:text-white transition-colors"
                             >
                                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18" /><path d="m6 6 12 12" /></svg>
                             </button>
@@ -386,7 +386,7 @@ export default function MediaPage() {
                         </div>
                         {/* Footer / Actions */}
                         <div className="flex items-center justify-between p-4 border-t border-surface-800 bg-surface-950/50">
-                            <div className="text-sm text-surface-400">
+                            <div className="text-sm text-fg-faint">
                                 {formatSize(previewFile.size)} • {new Date(previewFile.createdTime).toLocaleString('vi-VN')}
                             </div>
                             <div className="flex gap-2">

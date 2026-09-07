@@ -140,7 +140,7 @@ export function InlineDownloadBlock({ driveUrl, filename, label }: Props) {
                     <div className="bg-white dark:bg-surface-900 rounded-2xl shadow-2xl max-w-md w-full p-8 relative">
                         <button
                             onClick={() => setShowPhoneModal(false)}
-                            className="absolute top-4 right-4 text-surface-400 hover:text-surface-600 dark:hover:text-surface-300 text-xl"
+                            className="absolute top-4 right-4 text-fg-faint hover:text-surface-600 dark:hover:text-surface-300 text-xl"
                         >
                             ✕
                         </button>
@@ -187,7 +187,7 @@ export function InlineDownloadBlock({ driveUrl, filename, label }: Props) {
                                     {phoneError && (
                                         <p className="text-red-500 text-sm mt-2">{phoneError}</p>
                                     )}
-                                    <p className="text-xs text-surface-500 mt-2">
+                                    <p className="text-xs text-fg-subtle mt-2">
                                         Chúng tôi không spam. SĐT chỉ dùng để xác thực.
                                     </p>
                                     <button

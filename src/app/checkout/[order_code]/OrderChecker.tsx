@@ -30,7 +30,7 @@ export default function OrderChecker({ orderCode, isPaid }: { orderCode: string;
     if (isPaid) return null;
 
     return (
-        <div className="mt-6 text-sm text-surface-500 flex items-center justify-center gap-2">
+        <div className="mt-6 text-sm text-fg-subtle flex items-center justify-center gap-2">
             <div className="w-3 h-3 rounded-full bg-brand-500 animate-pulse"></div>
             Đang chờ Admin duyệt đơn...
         </div>

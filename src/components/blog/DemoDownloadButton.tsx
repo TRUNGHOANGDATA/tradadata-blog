@@ -177,7 +177,7 @@ export function DemoDownloadButton({ demoUrl, demoLabel, postSlug }: Props) {
                     <div className="bg-white dark:bg-surface-900 rounded-2xl shadow-2xl max-w-md w-full p-8 relative">
                         <button
                             onClick={() => setShowPhoneModal(false)}
-                            className="absolute top-4 right-4 text-surface-400 hover:text-surface-600 dark:hover:text-surface-300 text-xl leading-none"
+                            className="absolute top-4 right-4 text-fg-faint hover:text-surface-600 dark:hover:text-surface-300 text-xl leading-none"
                         >
                             ✕
                         </button>
@@ -224,7 +224,7 @@ export function DemoDownloadButton({ demoUrl, demoLabel, postSlug }: Props) {
                                     {phoneError && (
                                         <p className="text-red-500 text-sm mt-2">{phoneError}</p>
                                     )}
-                                    <p className="text-xs text-surface-500 mt-2">
+                                    <p className="text-xs text-fg-subtle mt-2">
                                         Chúng tôi không spam. SĐT chỉ dùng để xác thực và gửi thông tin khóa học khi có yêu cầu.
                                     </p>
 

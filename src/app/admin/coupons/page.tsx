@@ -211,7 +211,7 @@ export default function AdminCouponsPage() {
                         <Ticket className="w-7 h-7 text-brand-600" />
                         Mã giảm giá
                     </h1>
-                    <p className="text-surface-500 mt-1">{coupons.length} mã</p>
+                    <p className="text-fg-subtle mt-1">{coupons.length} mã</p>
                 </div>
                 <div className="flex gap-3">
                     <button
@@ -249,7 +249,7 @@ export default function AdminCouponsPage() {
                     <h3 className="font-bold text-surface-900 dark:text-surface-100 mb-4">Tạo mã giảm giá</h3>
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                         <div>
-                            <label className="text-xs font-medium text-surface-500 mb-1 block">Mã giảm giá *</label>
+                            <label className="text-xs font-medium text-fg-subtle mb-1 block">Mã giảm giá *</label>
                             <input
                                 type="text"
                                 value={form.code}
@@ -259,7 +259,7 @@ export default function AdminCouponsPage() {
                             />
                         </div>
                         <div>
-                            <label className="text-xs font-medium text-surface-500 mb-1 block">Loại giảm giá</label>
+                            <label className="text-xs font-medium text-fg-subtle mb-1 block">Loại giảm giá</label>
                             <select
                                 value={form.discount_type}
                                 onChange={(e) => setForm({ ...form, discount_type: e.target.value })}
@@ -270,7 +270,7 @@ export default function AdminCouponsPage() {
                             </select>
                         </div>
                         <div>
-                            <label className="text-xs font-medium text-surface-500 mb-1 block">Giá trị *</label>
+                            <label className="text-xs font-medium text-fg-subtle mb-1 block">Giá trị *</label>
                             <input
                                 type="number"
                                 value={form.discount_value}
@@ -279,7 +279,7 @@ export default function AdminCouponsPage() {
                             />
                         </div>
                         <div>
-                            <label className="text-xs font-medium text-surface-500 mb-1 block">Giảm tối đa</label>
+                            <label className="text-xs font-medium text-fg-subtle mb-1 block">Giảm tối đa</label>
                             <input
                                 type="number"
                                 value={form.max_discount}
@@ -289,7 +289,7 @@ export default function AdminCouponsPage() {
                             />
                         </div>
                         <div>
-                            <label className="text-xs font-medium text-surface-500 mb-1 block">Đơn tối thiểu</label>
+                            <label className="text-xs font-medium text-fg-subtle mb-1 block">Đơn tối thiểu</label>
                             <input
                                 type="number"
                                 value={form.min_order_amount}
@@ -298,7 +298,7 @@ export default function AdminCouponsPage() {
                             />
                         </div>
                         <div>
-                            <label className="text-xs font-medium text-surface-500 mb-1 block">Giới hạn lượt dùng</label>
+                            <label className="text-xs font-medium text-fg-subtle mb-1 block">Giới hạn lượt dùng</label>
                             <input
                                 type="number"
                                 value={form.usage_limit}
@@ -308,7 +308,7 @@ export default function AdminCouponsPage() {
                             />
                         </div>
                         <div>
-                            <label className="text-xs font-medium text-surface-500 mb-1 block">Lượt dùng / Mỗi khách</label>
+                            <label className="text-xs font-medium text-fg-subtle mb-1 block">Lượt dùng / Mỗi khách</label>
                             <input
                                 type="number"
                                 value={form.per_user_limit}
@@ -318,7 +318,7 @@ export default function AdminCouponsPage() {
                             />
                         </div>
                         <div>
-                            <label className="text-xs font-medium text-surface-500 mb-1 block">Hạn sử dụng</label>
+                            <label className="text-xs font-medium text-fg-subtle mb-1 block">Hạn sử dụng</label>
                             <DateTimePicker
                                 value={form.expires_at}
                                 onChange={(val) => setForm({ ...form, expires_at: val })}
@@ -328,7 +328,7 @@ export default function AdminCouponsPage() {
 
                         {/* Product restrictions */}
                         <div className="col-span-full">
-                            <label className="text-xs font-medium text-surface-500 mb-2 block">Áp dụng cho khóa học (Mặc định: Tất cả)</label>
+                            <label className="text-xs font-medium text-fg-subtle mb-2 block">Áp dụng cho khóa học (Mặc định: Tất cả)</label>
                             <div className="bg-surface-50 dark:bg-surface-950 border border-surface-200 dark:border-surface-700 rounded-xl p-3 max-h-40 overflow-y-auto space-y-2">
                                 {products.map(p => (
                                     <label key={p.id} className="flex items-center gap-2 cursor-pointer hover:bg-surface-100 dark:hover:bg-surface-800 p-1.5 rounded-lg transition-colors">
@@ -357,11 +357,11 @@ export default function AdminCouponsPage() {
             {showBatch && (
                 <div className="mb-6 bg-white dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-800 p-6">
                     <h3 className="font-bold text-surface-900 dark:text-surface-100 mb-4">Import hàng loạt</h3>
-                    <p className="text-sm text-surface-500 mb-4">Nhập nhiều mã giảm giá, mỗi dòng 1 mã (hoặc phân tách bằng dấu phẩy). Tất cả mã sẽ áp dụng chung cài đặt bên dưới.</p>
+                    <p className="text-sm text-fg-subtle mb-4">Nhập nhiều mã giảm giá, mỗi dòng 1 mã (hoặc phân tách bằng dấu phẩy). Tất cả mã sẽ áp dụng chung cài đặt bên dưới.</p>
 
                     {/* Textarea */}
                     <div className="mb-4">
-                        <label className="text-xs font-medium text-surface-500 mb-1 block">Danh sách mã *</label>
+                        <label className="text-xs font-medium text-fg-subtle mb-1 block">Danh sách mã *</label>
                         <textarea
                             value={batchText}
                             onChange={(e) => setBatchText(e.target.value)}
@@ -374,7 +374,7 @@ export default function AdminCouponsPage() {
                     {/* Settings grid — same fields as single create */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                         <div>
-                            <label className="text-xs font-medium text-surface-500 mb-1 block">Loại giảm giá</label>
+                            <label className="text-xs font-medium text-fg-subtle mb-1 block">Loại giảm giá</label>
                             <select
                                 value={batchType}
                                 onChange={(e) => setBatchType(e.target.value)}
@@ -385,7 +385,7 @@ export default function AdminCouponsPage() {
                             </select>
                         </div>
                         <div>
-                            <label className="text-xs font-medium text-surface-500 mb-1 block">Giá trị *</label>
+                            <label className="text-xs font-medium text-fg-subtle mb-1 block">Giá trị *</label>
                             <input
                                 type="number"
                                 value={batchValue}
@@ -394,7 +394,7 @@ export default function AdminCouponsPage() {
                             />
                         </div>
                         <div>
-                            <label className="text-xs font-medium text-surface-500 mb-1 block">Giảm tối đa</label>
+                            <label className="text-xs font-medium text-fg-subtle mb-1 block">Giảm tối đa</label>
                             <input
                                 type="number"
                                 value={batchMaxDiscount}
@@ -404,7 +404,7 @@ export default function AdminCouponsPage() {
                             />
                         </div>
                         <div>
-                            <label className="text-xs font-medium text-surface-500 mb-1 block">Đơn tối thiểu</label>
+                            <label className="text-xs font-medium text-fg-subtle mb-1 block">Đơn tối thiểu</label>
                             <input
                                 type="number"
                                 value={batchMinOrder}
@@ -413,7 +413,7 @@ export default function AdminCouponsPage() {
                             />
                         </div>
                         <div>
-                            <label className="text-xs font-medium text-surface-500 mb-1 block">Giới hạn lượt dùng</label>
+                            <label className="text-xs font-medium text-fg-subtle mb-1 block">Giới hạn lượt dùng</label>
                             <input
                                 type="number"
                                 value={batchUsageLimit}
@@ -423,7 +423,7 @@ export default function AdminCouponsPage() {
                             />
                         </div>
                         <div>
-                            <label className="text-xs font-medium text-surface-500 mb-1 block">Lượt dùng / Mỗi khách</label>
+                            <label className="text-xs font-medium text-fg-subtle mb-1 block">Lượt dùng / Mỗi khách</label>
                             <input
                                 type="number"
                                 value={batchPerUserLimit}
@@ -433,7 +433,7 @@ export default function AdminCouponsPage() {
                             />
                         </div>
                         <div>
-                            <label className="text-xs font-medium text-surface-500 mb-1 block">Hạn sử dụng</label>
+                            <label className="text-xs font-medium text-fg-subtle mb-1 block">Hạn sử dụng</label>
                             <DateTimePicker
                                 value={batchExpires}
                                 onChange={(val) => setBatchExpires(val)}
@@ -443,7 +443,7 @@ export default function AdminCouponsPage() {
 
                         {/* Product restrictions */}
                         <div className="col-span-full">
-                            <label className="text-xs font-medium text-surface-500 mb-2 block">Áp dụng cho khóa học (Mặc định: Tất cả)</label>
+                            <label className="text-xs font-medium text-fg-subtle mb-2 block">Áp dụng cho khóa học (Mặc định: Tất cả)</label>
                             <div className="bg-surface-50 dark:bg-surface-950 border border-surface-200 dark:border-surface-700 rounded-xl p-3 max-h-40 overflow-y-auto space-y-2">
                                 {products.map(p => (
                                     <label key={p.id} className="flex items-center gap-2 cursor-pointer hover:bg-surface-100 dark:hover:bg-surface-800 p-1.5 rounded-lg transition-colors">
@@ -474,25 +474,25 @@ export default function AdminCouponsPage() {
             {/* Coupons Table */}
             <div className="bg-white dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-800 overflow-hidden">
                 {loading ? (
-                    <div className="p-12 text-center text-surface-500">Đang tải...</div>
+                    <div className="p-12 text-center text-fg-subtle">Đang tải...</div>
                 ) : coupons.length === 0 ? (
                     <div className="p-12 text-center">
                         <Ticket className="w-12 h-12 text-surface-300 mx-auto mb-3" />
-                        <p className="text-surface-500">Chưa có mã giảm giá nào</p>
+                        <p className="text-fg-subtle">Chưa có mã giảm giá nào</p>
                     </div>
                 ) : (
                     <div className="overflow-x-auto">
                         <table className="w-full">
                             <thead>
                                 <tr className="border-b border-surface-200 dark:border-surface-800 bg-surface-50 dark:bg-surface-950">
-                                    <th className="text-left px-5 py-3 text-xs font-semibold text-surface-500 uppercase">Mã</th>
-                                    <th className="text-left px-5 py-3 text-xs font-semibold text-surface-500 uppercase">Giảm giá</th>
-                                    <th className="text-left px-5 py-3 text-xs font-semibold text-surface-500 uppercase">Lượt dùng</th>
-                                    <th className="text-left px-5 py-3 text-xs font-semibold text-surface-500 uppercase">/User</th>
-                                    <th className="text-left px-5 py-3 text-xs font-semibold text-surface-500 uppercase">Áp dụng</th>
-                                    <th className="text-left px-5 py-3 text-xs font-semibold text-surface-500 uppercase">Hạn</th>
-                                    <th className="text-center px-5 py-3 text-xs font-semibold text-surface-500 uppercase">Trạng thái</th>
-                                    <th className="text-center px-5 py-3 text-xs font-semibold text-surface-500 uppercase">Hành động</th>
+                                    <th className="text-left px-5 py-3 text-xs font-semibold text-fg-subtle uppercase">Mã</th>
+                                    <th className="text-left px-5 py-3 text-xs font-semibold text-fg-subtle uppercase">Giảm giá</th>
+                                    <th className="text-left px-5 py-3 text-xs font-semibold text-fg-subtle uppercase">Lượt dùng</th>
+                                    <th className="text-left px-5 py-3 text-xs font-semibold text-fg-subtle uppercase">/User</th>
+                                    <th className="text-left px-5 py-3 text-xs font-semibold text-fg-subtle uppercase">Áp dụng</th>
+                                    <th className="text-left px-5 py-3 text-xs font-semibold text-fg-subtle uppercase">Hạn</th>
+                                    <th className="text-center px-5 py-3 text-xs font-semibold text-fg-subtle uppercase">Trạng thái</th>
+                                    <th className="text-center px-5 py-3 text-xs font-semibold text-fg-subtle uppercase">Hành động</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-surface-100 dark:divide-surface-800">
@@ -526,7 +526,7 @@ export default function AdminCouponsPage() {
                                                 {c.latest_user_emails && c.latest_user_emails.length > 0 && (
                                                     <div className="mt-1 flex flex-col gap-0.5">
                                                         {c.latest_user_emails.slice(0, 2).map((email, i) => (
-                                                            <span key={i} className="text-xs text-surface-400 truncate max-w-[180px]" title={email}>
+                                                            <span key={i} className="text-xs text-fg-faint truncate max-w-[180px]" title={email}>
                                                                 {email}
                                                             </span>
                                                         ))}
@@ -537,7 +537,7 @@ export default function AdminCouponsPage() {
                                                 )}
                                             </button>
                                         </td>
-                                        <td className="px-5 py-4 text-sm text-surface-500">
+                                        <td className="px-5 py-4 text-sm text-fg-subtle">
                                             {c.per_user_limit ? `${c.per_user_limit} lần` : '∞'}
                                         </td>
                                         <td className="px-5 py-4 text-sm">
@@ -550,10 +550,10 @@ export default function AdminCouponsPage() {
                                                     ))}
                                                 </div>
                                             ) : (
-                                                <span className="text-xs text-surface-400">Tất cả</span>
+                                                <span className="text-xs text-fg-faint">Tất cả</span>
                                             )}
                                         </td>
-                                        <td className="px-5 py-4 text-sm text-surface-500">
+                                        <td className="px-5 py-4 text-sm text-fg-subtle">
                                             {c.expires_at ? (
                                                 <div className="flex items-center gap-1.5">
                                                     <Calendar className="w-3.5 h-3.5" />
@@ -570,7 +570,7 @@ export default function AdminCouponsPage() {
                                                 {c.is_active ? (
                                                     <ToggleRight className="w-7 h-7 text-green-500" />
                                                 ) : (
-                                                    <ToggleLeft className="w-7 h-7 text-surface-400" />
+                                                    <ToggleLeft className="w-7 h-7 text-fg-faint" />
                                                 )}
                                             </button>
                                         </td>
@@ -606,7 +606,7 @@ export default function AdminCouponsPage() {
                         <div className="p-5 border-b border-surface-200 dark:border-surface-800 flex items-center justify-between">
                             <div>
                                 <h3 className="font-bold text-surface-900 dark:text-surface-100">Lịch sử sử dụng</h3>
-                                <p className="text-sm text-surface-500 mt-0.5">Mã: <span className="font-mono font-semibold">{usageCoupon.code}</span></p>
+                                <p className="text-sm text-fg-subtle mt-0.5">Mã: <span className="font-mono font-semibold">{usageCoupon.code}</span></p>
                             </div>
                             <button onClick={() => setUsageCoupon(null)} className="p-1.5 hover:bg-surface-100 dark:hover:bg-surface-800 rounded-lg">
                                 <X className="w-5 h-5" />
@@ -616,13 +616,13 @@ export default function AdminCouponsPage() {
                             {usageLoading ? (
                                 <div className="flex items-center justify-center py-8"><Loader2 className="w-6 h-6 animate-spin text-brand-500" /></div>
                             ) : usageData.length === 0 ? (
-                                <p className="text-center text-surface-500 py-8">Chưa có ai sử dụng mã này</p>
+                                <p className="text-center text-fg-subtle py-8">Chưa có ai sử dụng mã này</p>
                             ) : (
                                 <div className="space-y-3">
                                     {usageData.map((u, i) => (
                                         <div key={i} className="flex items-center justify-between p-3 bg-surface-50 dark:bg-surface-800 rounded-xl">
                                             <span className="text-sm font-medium text-surface-900 dark:text-surface-100">{u.user_email}</span>
-                                            <span className="text-xs text-surface-500">{u.used_at ? new Date(u.used_at).toLocaleString('vi-VN') : '—'}</span>
+                                            <span className="text-xs text-fg-subtle">{u.used_at ? new Date(u.used_at).toLocaleString('vi-VN') : '—'}</span>
                                         </div>
                                     ))}
                                 </div>

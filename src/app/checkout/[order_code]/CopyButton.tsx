@@ -19,7 +19,7 @@ export default function CopyButton({ text }: { text: string }) {
     return (
         <button
             onClick={handleCopy}
-            className="text-surface-400 hover:text-brand-600 transition-colors focus:outline-none p-1 rounded hover:bg-surface-100 dark:hover:bg-surface-800"
+            className="text-fg-faint hover:text-brand-600 transition-colors focus:outline-none p-1 rounded hover:bg-surface-100 dark:hover:bg-surface-800"
             title="Copy"
         >
             {copied ? <Check className="w-4 h-4 text-green-500" /> : <Copy className="w-4 h-4" />}

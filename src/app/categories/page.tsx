@@ -37,7 +37,7 @@ export default async function CategoriesPage() {
                     <h1 className="text-3xl md:text-5xl font-bold text-surface-900 dark:text-surface-100 mb-4">
                         Tất cả Chủ đề
                     </h1>
-                    <p className="text-surface-500 text-lg md:text-xl max-w-2xl mx-auto">
+                    <p className="text-fg-subtle text-lg md:text-xl max-w-2xl mx-auto">
                         Khám phá các bài viết theo từng lĩnh vực chuyên môn từ Data, AI đến Supply Chain.
                     </p>
                 </div>

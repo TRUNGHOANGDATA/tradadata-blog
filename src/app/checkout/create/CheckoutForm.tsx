@@ -137,7 +137,7 @@ export default function CheckoutForm() {
                 <p className="text-surface-600 dark:text-surface-400 mb-1">
                     Đơn hàng <span className="font-semibold text-brand-600">{activatedOrderCode}</span> đã được kích hoạt tự động.
                 </p>
-                <p className="text-sm text-surface-500 mb-6">
+                <p className="text-sm text-fg-subtle mb-6">
                     Khóa học đã được mở, bạn có thể truy cập ngay!
                 </p>
                 <div className="flex justify-center gap-3">
@@ -156,7 +156,7 @@ export default function CheckoutForm() {
         return (
             <div className="text-center py-4">
                 <div className="w-16 h-16 bg-surface-100 dark:bg-surface-800 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <ShoppingBag className="w-8 h-8 text-surface-400" />
+                    <ShoppingBag className="w-8 h-8 text-fg-faint" />
                 </div>
                 <p className="text-surface-600 dark:text-surface-400 mb-4">Giỏ hàng trống hoặc thiếu thông tin gói đăng ký.</p>
                 <div className="flex justify-center gap-3">
@@ -178,7 +178,7 @@ export default function CheckoutForm() {
             {/* Cart summary */}
             {isCartCheckout && (
                 <div className="bg-surface-50 dark:bg-surface-800/50 rounded-xl p-4 space-y-2 border border-surface-200 dark:border-surface-700">
-                    <p className="text-xs font-semibold text-surface-500 uppercase tracking-wider mb-2">Đơn hàng</p>
+                    <p className="text-xs font-semibold text-fg-subtle uppercase tracking-wider mb-2">Đơn hàng</p>
                     {items.map(item => (
                         <div key={item.product_id} className="flex justify-between text-sm">
                             <span className="text-surface-700 dark:text-surface-300">{item.name} × {item.quantity}</span>
@@ -271,7 +271,7 @@ export default function CheckoutForm() {
             >
                 {isLoading ? 'Đang tạo đơn hàng...' : 'Tiếp tục thanh toán'}
             </button>
-            <p className="text-center text-xs text-surface-500 mt-4">
+            <p className="text-center text-xs text-fg-subtle mt-4">
                 Thông tin của bạn được bảo mật tuyệt đối.
             </p>
         </form>

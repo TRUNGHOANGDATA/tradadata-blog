@@ -103,7 +103,7 @@ export default function CouponSection({
                         <button
                             onClick={handleRemove}
                             disabled={loading}
-                            className="p-1.5 text-surface-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
+                            className="p-1.5 text-fg-faint hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
                             title="Bỏ mã giảm giá"
                         >
                             {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <X className="w-4 h-4" />}

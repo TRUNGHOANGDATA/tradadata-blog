@@ -123,7 +123,7 @@ export default function CategoriesPage() {
                                 <span className="text-2xl">{cat.icon || '📁'}</span>
                                 <div>
                                     <h3 className="font-semibold text-surface-900 dark:text-surface-100">{cat.name}</h3>
-                                    <p className="text-xs text-surface-400">/{cat.slug}</p>
+                                    <p className="text-xs text-fg-faint">/{cat.slug}</p>
                                 </div>
                             </div>
                             {cat.color && (
@@ -131,7 +131,7 @@ export default function CategoriesPage() {
                             )}
                         </div>
                         {cat.description && (
-                            <p className="text-sm text-surface-500 mb-3 line-clamp-2">{cat.description}</p>
+                            <p className="text-sm text-fg-subtle mb-3 line-clamp-2">{cat.description}</p>
                         )}
                         <div className="flex items-center gap-2 pt-3 border-t border-surface-100 dark:border-surface-800">
                             <button
@@ -153,7 +153,7 @@ export default function CategoriesPage() {
                 ))}
 
                 {categories.length === 0 && (
-                    <div className="col-span-full text-center py-12 text-surface-400">
+                    <div className="col-span-full text-center py-12 text-fg-faint">
                         Chưa có chủ đề nào. Hãy thêm chủ đề đầu tiên!
                     </div>
                 )}

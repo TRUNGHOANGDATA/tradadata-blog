@@ -159,7 +159,7 @@ export default async function BlogPostPage({ params, searchParams }: Props) {
                 { revalidate: 3600, tags: [`post-${post.id}`] }
             );
             return getCachedContent(contentToRender);
-        })() : Promise.resolve({ html: '<p class="text-surface-500 italic">Bài viết này chưa có nội dung.</p>', toc: [] as { id: string, text: string, level: number }[] }),
+        })() : Promise.resolve({ html: '<p class="text-fg-subtle italic">Bài viết này chưa có nội dung.</p>', toc: [] as { id: string, text: string, level: number }[] }),
         // Related posts (cached at data layer)
         post.category_id ? getRelatedPosts(post.category_id, post.id, 3, tagIds) : Promise.resolve([]),
     ]);
@@ -258,17 +258,17 @@ export default async function BlogPostPage({ params, searchParams }: Props) {
             <div className="bg-surface-50 dark:bg-surface-950 border-b border-surface-200 dark:border-surface-800 mt-16 md:mt-20">
                 <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex items-center gap-2 text-sm text-surface-500 dark:text-surface-400">
                     <Link href="/" className="hover:text-brand-600 dark:hover:text-brand-400 transition-colors">Trang chủ</Link>
-                    <ChevronRight className="h-4 w-4 text-surface-400" />
+                    <ChevronRight className="h-4 w-4 text-fg-faint" />
                     <Link href="/blog" className="hover:text-brand-600 dark:hover:text-brand-400 transition-colors">Bài viết</Link>
                     {post.category && (
                         <>
-                            <ChevronRight className="h-4 w-4 text-surface-400" />
+                            <ChevronRight className="h-4 w-4 text-fg-faint" />
                             <Link href={`/category/${post.category.slug}`} className="hover:text-brand-600 dark:hover:text-brand-400 transition-colors">
                                 {post.category.icon} {post.category.name}
                             </Link>
                         </>
                     )}
-                    <ChevronRight className="h-4 w-4 text-surface-400" />
+                    <ChevronRight className="h-4 w-4 text-fg-faint" />
                     <span className="text-surface-900 dark:text-surface-200 font-medium line-clamp-1">{post.title}</span>
                 </nav>
             </div>
@@ -314,7 +314,7 @@ export default async function BlogPostPage({ params, searchParams }: Props) {
                                 <div className="flex items-center gap-2 mb-4">
                                     <Link
                                         href={`/admin/posts/${post.id}/edit`}
-                                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/15 text-white border border-white/25 text-xs font-medium hover:bg-white/25 transition-colors backdrop-blur-sm"
+                                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-card/15 text-white border border-white/25 text-xs font-medium hover:bg-white/25 transition-colors backdrop-blur-sm"
                                     >
                                         <Pencil className="h-3 w-3" />
                                         Sửa bài viết
@@ -353,7 +353,7 @@ export default async function BlogPostPage({ params, searchParams }: Props) {
                                         <Link
                                             key={tag.id}
                                             href={`/tag/${tag.slug}`}
-                                            className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-white/10 text-surface-300 border border-white/20 text-xs font-medium hover:bg-white/20 hover:text-white transition-colors backdrop-blur-sm"
+                                            className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-card/10 text-surface-300 border border-white/20 text-xs font-medium hover:bg-white/20 hover:text-white transition-colors backdrop-blur-sm"
                                         >
                                             <Tag className="h-3 w-3" />
                                             {tag.name}
@@ -375,7 +375,7 @@ export default async function BlogPostPage({ params, searchParams }: Props) {
                         <div className="sticky top-24 space-y-8">
                             <Link
                                 href="/blog"
-                                className="inline-flex items-center gap-2 text-surface-500 hover:text-brand-600 dark:hover:text-brand-400 transition-colors text-sm font-medium"
+                                className="inline-flex items-center gap-2 text-fg-subtle hover:text-brand-600 dark:hover:text-brand-400 transition-colors text-sm font-medium"
                             >
                                 <ArrowLeft className="h-4 w-4" />
                                 Quay lại
@@ -407,9 +407,20 @@ export default async function BlogPostPage({ params, searchParams }: Props) {
                                 </p>
                             )}
 
+                            {/* Trước đây còn prose-lg / dark:prose-invert / prose-brand /
+                                prose-img:* / prose-pre:* — đã bỏ vì repo KHÔNG cài
+                                @tailwindcss/typography nên chúng không sinh ra CSS nào,
+                                chỉ gây tưởng là đang có tác dụng. Toàn bộ style bài viết
+                                nằm trong globals.css.
+
+                                max-w-[55ch] = 590px = ~70 ký tự mỗi dòng, đo bằng canvas với
+                                đúng font Inter 17px: ký tự trung bình của tiếng Việt rộng
+                                8.43px, còn 1ch = chiều rộng chữ "0" = 10.72px. Đừng đổi sang
+                                65-75ch cho "đúng sách" — 68ch ra tận 86 ký tự, rộng hơn cả
+                                trước khi sửa. */}
                             <ArticleContent
                                 htmlContent={htmlContent}
-                                className="prose prose-lg dark:prose-invert prose-brand max-w-none prose-img:rounded-xl prose-pre:bg-surface-900 prose-pre:text-surface-100"
+                                className="prose max-w-[55ch]"
                             />
 
 
@@ -482,7 +493,7 @@ export default async function BlogPostPage({ params, searchParams }: Props) {
                                     <Sparkles className="h-32 w-32" />
                                 </div>
                                 <div className="relative z-10">
-                                    <div className="inline-flex px-2 py-1 bg-white/20 backdrop-blur-sm rounded-lg text-xs font-bold tracking-wider uppercase mb-4 text-brand-100">
+                                    <div className="inline-flex px-2 py-1 bg-card/20 backdrop-blur-sm rounded-lg text-xs font-bold tracking-wider uppercase mb-4 text-brand-100">
                                         Khoá học chuyên sâu
                                     </div>
                                     <h3 className="text-lg font-bold mb-2">Muốn làm chủ {post.category?.name}?</h3>
@@ -491,7 +502,7 @@ export default async function BlogPostPage({ params, searchParams }: Props) {
                                     </p>
                                     <Link
                                         href="/courses"
-                                        className="inline-flex items-center justify-center w-full px-4 py-2.5 bg-white text-brand-700 font-bold rounded-xl hover:bg-brand-50 transition-colors"
+                                        className="inline-flex items-center justify-center w-full px-4 py-2.5 bg-card text-brand-700 font-bold rounded-xl hover:bg-brand-50 transition-colors"
                                     >
                                         Tìm hiểu ngay
                                         <ArrowRight className="ml-2 h-4 w-4" />
@@ -522,7 +533,7 @@ export default async function BlogPostPage({ params, searchParams }: Props) {
                     <div className="flex items-center justify-between mb-8">
                         <div>
                             <h2 className="text-2xl font-bold text-surface-900 dark:text-surface-100">Bài viết liên quan</h2>
-                            <p className="text-surface-500 mt-1">Khám phá thêm các bài viết cùng chủ đề</p>
+                            <p className="text-fg-subtle mt-1">Khám phá thêm các bài viết cùng chủ đề</p>
                         </div>
                         <Link href="/blog" className="hidden md:inline-flex items-center font-medium text-brand-600 hover:text-brand-700 dark:text-brand-400 dark:hover:text-brand-300">
                             Xem tất cả <ArrowRight className="ml-1.5 h-4 w-4" />

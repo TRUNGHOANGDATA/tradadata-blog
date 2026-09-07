@@ -253,7 +253,7 @@ export default function AdminOrdersPage() {
             <div className="flex flex-col gap-3 mb-6">
                 <div className="flex flex-col sm:flex-row gap-3">
                     <div className="relative flex-1 max-w-md">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-surface-400" />
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-fg-faint" />
                         <input
                             type="text"
                             placeholder="Tìm theo Mã đơn, Email, Tên, SĐT..."
@@ -274,14 +274,14 @@ export default function AdminOrdersPage() {
                     </select>
                 </div>
                 <div className="flex flex-wrap items-center gap-2 bg-white dark:bg-surface-900 border border-surface-200 dark:border-surface-800 rounded-xl px-3 py-1.5 shadow-sm w-fit">
-                    <span className="text-sm font-medium text-surface-500">Từ ngày:</span>
+                    <span className="text-sm font-medium text-fg-subtle">Từ ngày:</span>
                     <input
                         type="date"
                         className="bg-transparent text-sm focus:outline-none text-surface-900 dark:text-surface-100 placeholder-surface-400"
                         value={fromDate}
                         onChange={(e) => setFromDate(e.target.value)}
                     />
-                    <span className="text-sm font-medium text-surface-500">đến:</span>
+                    <span className="text-sm font-medium text-fg-subtle">đến:</span>
                     <input
                         type="date"
                         className="bg-transparent text-sm focus:outline-none text-surface-900 dark:text-surface-100 placeholder-surface-400"
@@ -294,7 +294,7 @@ export default function AdminOrdersPage() {
             {/* Table */}
             {filteredOrders.length > 0 && (
                 <div className="mb-4 text-right">
-                    <span className="text-surface-500 text-sm mr-2">Tổng tiền đơn duyệt: </span>
+                    <span className="text-fg-subtle text-sm mr-2">Tổng tiền đơn duyệt: </span>
                     <span className="text-lg font-bold text-brand-600 dark:text-brand-400">
                         {formatCurrency(totalAmount)}
                     </span>
@@ -305,17 +305,17 @@ export default function AdminOrdersPage() {
                     <table className="w-full table-fixed">
                         <thead>
                             <tr className="border-b border-surface-200 dark:border-surface-800 bg-surface-50 dark:bg-surface-800/50">
-                                <th className="text-left px-4 py-3 text-xs font-semibold text-surface-500 uppercase w-[14%]">Mã Đơn / Ngày tạo</th>
-                                <th className="text-left px-4 py-3 text-xs font-semibold text-surface-500 uppercase w-[24%]">Khách hàng</th>
-                                <th className="text-left px-4 py-3 text-xs font-semibold text-surface-500 uppercase w-[24%]">Sản phẩm / Tiền</th>
-                                <th className="text-center px-3 py-3 text-xs font-semibold text-surface-500 uppercase w-[12%]">Trạng thái</th>
-                                <th className="text-center px-4 py-3 text-xs font-semibold text-surface-500 uppercase w-[26%]">Thao tác</th>
+                                <th className="text-left px-4 py-3 text-xs font-semibold text-fg-subtle uppercase w-[14%]">Mã Đơn / Ngày tạo</th>
+                                <th className="text-left px-4 py-3 text-xs font-semibold text-fg-subtle uppercase w-[24%]">Khách hàng</th>
+                                <th className="text-left px-4 py-3 text-xs font-semibold text-fg-subtle uppercase w-[24%]">Sản phẩm / Tiền</th>
+                                <th className="text-center px-3 py-3 text-xs font-semibold text-fg-subtle uppercase w-[12%]">Trạng thái</th>
+                                <th className="text-center px-4 py-3 text-xs font-semibold text-fg-subtle uppercase w-[26%]">Thao tác</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-surface-200 dark:divide-surface-800">
                             {filteredOrders.length === 0 ? (
                                 <tr>
-                                    <td colSpan={5} className="px-6 py-12 text-center text-surface-400">
+                                    <td colSpan={5} className="px-6 py-12 text-center text-fg-faint">
                                         Không tìm thấy đơn hàng nào.
                                     </td>
                                 </tr>
@@ -331,14 +331,14 @@ export default function AdminOrdersPage() {
                                                 >
                                                     {order.order_code} <ExternalLink className="w-3 h-3" />
                                                 </Link>
-                                                <span className="text-xs text-surface-500 mt-1">{formatDate(order.created_at)}</span>
+                                                <span className="text-xs text-fg-subtle mt-1">{formatDate(order.created_at)}</span>
                                             </div>
                                         </td>
                                         <td className="px-4 py-4">
                                             <div className="flex flex-col">
                                                 <span className="font-medium text-surface-900 dark:text-surface-100">{order.full_name}</span>
-                                                <span className="text-sm text-surface-500">{order.email}</span>
-                                                <span className="text-sm text-surface-500">{order.phone}</span>
+                                                <span className="text-sm text-fg-subtle">{order.email}</span>
+                                                <span className="text-sm text-fg-subtle">{order.phone}</span>
                                             </div>
                                         </td>
                                         <td className="px-4 py-4">
@@ -349,7 +349,7 @@ export default function AdminOrdersPage() {
                                                 <div className="flex flex-col mt-1">
                                                     {order.coupon_code && order.original_amount && order.original_amount !== order.amount ? (
                                                         <>
-                                                            <span className="text-xs text-surface-400 line-through">
+                                                            <span className="text-xs text-fg-faint line-through">
                                                                 {formatCurrency(order.original_amount)}
                                                             </span>
                                                             <span className="font-bold text-brand-600 dark:text-brand-400">
@@ -441,8 +441,8 @@ export default function AdminOrdersPage() {
                                             ) : (
                                                 <div className="flex items-center justify-center">
                                                     <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-surface-100 dark:bg-surface-800/50 border border-surface-200/60 dark:border-surface-700/40">
-                                                        <X className="w-3 h-3 text-surface-400" />
-                                                        <span className="text-xs text-surface-400">Đã huỷ</span>
+                                                        <X className="w-3 h-3 text-fg-faint" />
+                                                        <span className="text-xs text-fg-faint">Đã huỷ</span>
                                                     </div>
                                                 </div>
                                             )}
@@ -463,7 +463,7 @@ export default function AdminOrdersPage() {
                             <h3 className="text-lg font-bold text-surface-900 dark:text-surface-100">Sửa giá đơn hàng</h3>
                             <button
                                 onClick={() => setEditAmountModal(prev => ({ ...prev, isOpen: false }))}
-                                className="text-surface-400 hover:text-surface-600 transition-colors"
+                                className="text-fg-faint hover:text-surface-600 transition-colors"
                             >
                                 <X className="w-5 h-5" />
                             </button>
@@ -474,7 +474,7 @@ export default function AdminOrdersPage() {
                                 <input
                                     type="text"
                                     disabled
-                                    className="w-full px-3 py-2 bg-surface-50 dark:bg-surface-800 border border-surface-200 dark:border-surface-700 rounded-xl text-surface-500 font-mono text-sm"
+                                    className="w-full px-3 py-2 bg-surface-50 dark:bg-surface-800 border border-surface-200 dark:border-surface-700 rounded-xl text-fg-subtle font-mono text-sm"
                                     value={editAmountModal.orderCode}
                                 />
                             </div>
@@ -484,7 +484,7 @@ export default function AdminOrdersPage() {
                                     <input
                                         type="text"
                                         disabled
-                                        className="w-full px-3 py-2 bg-surface-50 dark:bg-surface-800 border border-surface-200 dark:border-surface-700 rounded-xl text-surface-500 text-sm line-through"
+                                        className="w-full px-3 py-2 bg-surface-50 dark:bg-surface-800 border border-surface-200 dark:border-surface-700 rounded-xl text-fg-subtle text-sm line-through"
                                         value={formatCurrency(editAmountModal.currentAmount)}
                                     />
                                 </div>
@@ -540,7 +540,7 @@ export default function AdminOrdersPage() {
                             <h3 className="text-lg font-bold text-surface-900 dark:text-surface-100">Tạo đơn hàng thủ công</h3>
                             <button
                                 onClick={() => setCreateModal(prev => ({ ...prev, isOpen: false }))}
-                                className="text-surface-400 hover:text-surface-600 transition-colors"
+                                className="text-fg-faint hover:text-surface-600 transition-colors"
                             >
                                 <X className="w-5 h-5" />
                             </button>

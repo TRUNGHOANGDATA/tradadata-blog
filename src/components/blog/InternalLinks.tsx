@@ -34,7 +34,7 @@ export function InternalLinks({ relatedPosts }: InternalLinksProps) {
                                 </p>
                             )}
                         </div>
-                        <ArrowRight className="h-4 w-4 text-surface-400 group-hover:text-brand-500 transition-colors shrink-0" />
+                        <ArrowRight className="h-4 w-4 text-fg-faint group-hover:text-brand-500 transition-colors shrink-0" />
                     </Link>
                 ))}
             </div>

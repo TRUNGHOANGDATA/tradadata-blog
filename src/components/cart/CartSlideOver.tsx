@@ -83,12 +83,12 @@ export function CartSlideOver() {
                             <ShoppingBag className="w-6 h-6 text-brand-600 dark:text-brand-500" />
                             Giỏ hàng
                             {items.length > 0 && (
-                                <span className="text-sm font-normal text-surface-500">({items.length} sản phẩm)</span>
+                                <span className="text-sm font-normal text-fg-subtle">({items.length} sản phẩm)</span>
                             )}
                         </h2>
                         <button
                             type="button"
-                            className="p-2 text-surface-400 hover:text-surface-500 dark:hover:text-surface-300 transition-colors rounded-xl hover:bg-surface-100 dark:hover:bg-surface-800"
+                            className="p-2 text-fg-faint hover:text-surface-500 dark:hover:text-surface-300 transition-colors rounded-xl hover:bg-surface-100 dark:hover:bg-surface-800"
                             onClick={() => setCartOpen(false)}
                         >
                             <X className="h-6 w-6" />
@@ -100,10 +100,10 @@ export function CartSlideOver() {
                         {items.length === 0 ? (
                             <div className="h-full flex flex-col items-center justify-center text-center">
                                 <div className="w-20 h-20 bg-surface-100 dark:bg-surface-800 rounded-full flex items-center justify-center mb-4">
-                                    <ShoppingBag className="w-10 h-10 text-surface-400" />
+                                    <ShoppingBag className="w-10 h-10 text-fg-faint" />
                                 </div>
                                 <h3 className="text-lg font-bold text-surface-900 dark:text-surface-100 mb-2">Giỏ hàng rỗng</h3>
-                                <p className="text-surface-500 mb-6">Hãy khám phá các khóa học của chúng tôi!</p>
+                                <p className="text-fg-subtle mb-6">Hãy khám phá các khóa học của chúng tôi!</p>
                                 <Link
                                     href="/courses"
                                     onClick={() => setCartOpen(false)}
@@ -137,7 +137,7 @@ export function CartSlideOver() {
                                                 <div className="flex items-center border border-surface-200 dark:border-surface-700 rounded-lg bg-surface-50 dark:bg-surface-950">
                                                     <button
                                                         onClick={() => updateQuantity(item.product_id, item.quantity - 1)}
-                                                        className="p-1.5 text-surface-500 hover:text-surface-900 dark:hover:text-surface-100 hover:bg-surface-200 dark:hover:bg-surface-800 rounded-l-lg transition-colors"
+                                                        className="p-1.5 text-fg-subtle hover:text-surface-900 dark:hover:text-surface-100 hover:bg-surface-200 dark:hover:bg-surface-800 rounded-l-lg transition-colors"
                                                     >
                                                         <Minus className="w-3.5 h-3.5" />
                                                     </button>
@@ -146,7 +146,7 @@ export function CartSlideOver() {
                                                     </span>
                                                     <button
                                                         onClick={() => updateQuantity(item.product_id, item.quantity + 1)}
-                                                        className="p-1.5 text-surface-500 hover:text-surface-900 dark:hover:text-surface-100 hover:bg-surface-200 dark:hover:bg-surface-800 rounded-r-lg transition-colors"
+                                                        className="p-1.5 text-fg-subtle hover:text-surface-900 dark:hover:text-surface-100 hover:bg-surface-200 dark:hover:bg-surface-800 rounded-r-lg transition-colors"
                                                     >
                                                         <Plus className="w-3.5 h-3.5" />
                                                     </button>
@@ -213,7 +213,7 @@ export function CartSlideOver() {
                             {/* Price Summary */}
                             <div className="space-y-2 text-sm mb-4">
                                 <div className="flex justify-between">
-                                    <span className="text-surface-500">Tạm tính</span>
+                                    <span className="text-fg-subtle">Tạm tính</span>
                                     <span className="text-surface-900 dark:text-surface-100 font-medium">{formatCurrency(subTotal)}</span>
                                 </div>
                                 {discountAmount > 0 && (
@@ -244,7 +244,7 @@ export function CartSlideOver() {
                                     Thanh toán
                                 </Link>
                             </div>
-                            <div className="mt-3 text-center text-sm text-surface-500">
+                            <div className="mt-3 text-center text-sm text-fg-subtle">
                                 <button
                                     type="button"
                                     className="font-medium text-brand-600 hover:text-brand-500 dark:text-brand-400 dark:hover:text-brand-300 hover:underline"

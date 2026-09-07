@@ -13,12 +13,12 @@ export default function CheckoutCreatePage() {
                     <h1 className="text-xl font-bold text-surface-900 dark:text-surface-100">
                         Thông tin đăng ký
                     </h1>
-                    <p className="text-sm text-surface-500 mt-1">
+                    <p className="text-sm text-fg-subtle mt-1">
                         Vui lòng điền thông tin để tiếp tục
                     </p>
                 </div>
                 <div className="p-6">
-                    <Suspense fallback={<div className="text-center py-8 text-surface-500">Đang tải biểu mẫu...</div>}>
+                    <Suspense fallback={<div className="text-center py-8 text-fg-subtle">Đang tải biểu mẫu...</div>}>
                         <CheckoutForm />
                     </Suspense>
                 </div>
