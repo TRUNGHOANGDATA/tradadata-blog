@@ -101,7 +101,7 @@ export default function AdminCustomersPage() {
     return (
         <>
             <div className="flex items-center justify-between mb-6">
-                <h1 className="text-2xl font-bold text-surface-900 dark:text-surface-100">Khách hàng</h1>
+                <h1 className="text-2xl font-bold text-fg">Khách hàng</h1>
                 <div className="flex items-center gap-2 bg-brand-50 text-brand-700 dark:bg-brand-900/20 dark:text-brand-400 px-4 py-2 rounded-xl text-sm font-medium">
                     <ShoppingBag className="w-4 h-4" />
                     <span>Tổng số: {customers.length} khách</span>
@@ -117,17 +117,17 @@ export default function AdminCustomersPage() {
                         placeholder="Tìm theo Tên, Email, SĐT..."
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
-                        className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-white dark:bg-surface-900 border border-surface-200 dark:border-surface-700 focus:outline-none focus:ring-2 focus:ring-brand-500/30 text-sm"
+                        className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-card border border-surface-200 dark:border-surface-700 focus:outline-none focus:ring-2 focus:ring-brand-500/30 text-sm"
                     />
                 </div>
             </div>
 
             {/* Table */}
-            <div className="bg-white dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-800 overflow-hidden">
+            <div className="bg-card rounded-2xl border border-line overflow-hidden">
                 <div className="overflow-x-auto">
                     <table className="w-full">
                         <thead>
-                            <tr className="border-b border-surface-200 dark:border-surface-800 bg-surface-50 dark:bg-surface-800/50">
+                            <tr className="border-b border-line bg-surface-50 dark:bg-surface-800/50">
                                 <th className="text-left px-6 py-3 text-xs font-semibold text-fg-subtle uppercase">Khách hàng</th>
                                 <th className="text-right px-6 py-3 text-xs font-semibold text-fg-subtle uppercase">Tổng đơn</th>
                                 <th className="text-right px-6 py-3 text-xs font-semibold text-fg-subtle uppercase">Tổng chi tiêu</th>
@@ -150,7 +150,7 @@ export default function AdminCustomersPage() {
                                     >
                                         <td className="px-6 py-4">
                                             <div className="flex flex-col">
-                                                <span className="font-bold text-surface-900 dark:text-surface-100">{customer.full_name}</span>
+                                                <span className="font-bold text-fg">{customer.full_name}</span>
                                                 <span className="text-sm text-fg-subtle">{customer.email}</span>
                                                 <span className="text-sm text-fg-subtle">{customer.phone}</span>
                                             </div>
@@ -180,13 +180,13 @@ export default function AdminCustomersPage() {
             {selectedCustomer && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
                     onClick={() => setSelectedCustomer(null)}>
-                    <div className="bg-white dark:bg-surface-900 rounded-2xl w-full max-w-4xl max-h-[90vh] flex flex-col shadow-2xl overflow-hidden animate-in fade-in duration-200"
+                    <div className="bg-card rounded-2xl w-full max-w-4xl max-h-[90vh] flex flex-col shadow-2xl overflow-hidden animate-in fade-in duration-200"
                         onClick={e => e.stopPropagation()}>
-                        <div className="flex items-center justify-between p-5 border-b border-surface-200 dark:border-surface-800 bg-surface-50 dark:bg-surface-800/50">
+                        <div className="flex items-center justify-between p-5 border-b border-line bg-surface-50 dark:bg-surface-800/50">
                             <div>
-                                <h3 className="text-lg font-bold text-surface-900 dark:text-surface-100">Lịch sử đơn hàng</h3>
+                                <h3 className="text-lg font-bold text-fg">Lịch sử đơn hàng</h3>
                                 <p className="text-sm text-fg-subtle mt-1">
-                                    Khách hàng: <span className="font-medium text-surface-900 dark:text-surface-100">{selectedCustomer.full_name}</span> ({selectedCustomer.email})
+                                    Khách hàng: <span className="font-medium text-fg">{selectedCustomer.full_name}</span> ({selectedCustomer.email})
                                 </p>
                             </div>
                             <button
@@ -207,10 +207,10 @@ export default function AdminCustomersPage() {
                                     Không tìm thấy đơn hàng nào.
                                 </div>
                             ) : (
-                                <div className="border border-surface-200 dark:border-surface-800 rounded-xl overflow-hidden">
+                                <div className="border border-line rounded-xl overflow-hidden">
                                     <table className="w-full">
                                         <thead>
-                                            <tr className="border-b border-surface-200 dark:border-surface-800 bg-surface-50 dark:bg-surface-800/50">
+                                            <tr className="border-b border-line bg-surface-50 dark:bg-surface-800/50">
                                                 <th className="text-left px-4 py-3 text-xs font-semibold text-fg-subtle uppercase">Mã Đơn / Ngày</th>
                                                 <th className="text-left px-4 py-3 text-xs font-semibold text-fg-subtle uppercase">Sản phẩm</th>
                                                 <th className="text-left px-4 py-3 text-xs font-semibold text-fg-subtle uppercase">Thành tiền</th>
@@ -232,10 +232,10 @@ export default function AdminCustomersPage() {
                                                             <span className="text-xs text-fg-subtle mt-1">{formatDateTime(order.created_at)}</span>
                                                         </div>
                                                     </td>
-                                                    <td className="px-4 py-3 text-sm font-medium text-surface-900 dark:text-surface-100">
+                                                    <td className="px-4 py-3 text-sm font-medium text-fg">
                                                         {(order.products as any)?.name || 'Sản phẩm không xác định'}
                                                     </td>
-                                                    <td className="px-4 py-3 text-sm font-bold text-surface-900 dark:text-surface-100">
+                                                    <td className="px-4 py-3 text-sm font-bold text-fg">
                                                         {formatCurrency(order.amount)}
                                                     </td>
                                                     <td className="px-4 py-3 text-right">

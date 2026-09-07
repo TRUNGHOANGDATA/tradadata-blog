@@ -7,7 +7,7 @@ export default function AboutPage() {
             {/* Hero */}
             <section className="bg-gradient-to-b from-brand-50 to-surface-50 dark:from-surface-900 dark:to-surface-950 py-16">
                 <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-                    <h1 className="text-4xl md:text-5xl font-bold text-surface-900 dark:text-surface-100 mb-4">
+                    <h1 className="text-4xl md:text-5xl font-bold text-fg mb-4">
                         Về {SITE_CONFIG.name}
                     </h1>
                     <p className="text-lg text-surface-600 dark:text-surface-400 leading-relaxed max-w-2xl mx-auto">
@@ -42,9 +42,9 @@ export default function AboutPage() {
                             desc: 'Nội dung được biên soạn kỹ lưỡng, cập nhật thường xuyên với trends mới nhất.',
                         },
                     ].map((item) => (
-                        <div key={item.title} className="p-6 rounded-2xl bg-white dark:bg-surface-900 border border-surface-200 dark:border-surface-800">
+                        <div key={item.title} className="p-6 rounded-2xl bg-card border border-line">
                             <item.icon className="h-8 w-8 text-brand-600 mb-4" />
-                            <h3 className="text-lg font-bold text-surface-900 dark:text-surface-100 mb-2">
+                            <h3 className="text-lg font-bold text-fg mb-2">
                                 {item.title}
                             </h3>
                             <p className="text-surface-600 dark:text-surface-400 text-sm leading-relaxed">
@@ -58,7 +58,7 @@ export default function AboutPage() {
             {/* Topics */}
             <section className="bg-surface-100 dark:bg-surface-900/50 py-16">
                 <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <h2 className="text-2xl font-bold text-surface-900 dark:text-surface-100 mb-8 text-center">
+                    <h2 className="text-2xl font-bold text-fg mb-8 text-center">
                         Chủ đề chính
                     </h2>
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -77,7 +77,7 @@ export default function AboutPage() {
                                 className="flex items-center gap-3 p-4 rounded-xl bg-white dark:bg-surface-800 border border-surface-200 dark:border-surface-700"
                             >
                                 <span className="text-2xl">{topic.emoji}</span>
-                                <span className="font-medium text-surface-900 dark:text-surface-100">{topic.name}</span>
+                                <span className="font-medium text-fg">{topic.name}</span>
                             </div>
                         ))}
                     </div>

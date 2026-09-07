@@ -131,7 +131,7 @@ export default function CheckoutForm() {
                 <div className="w-20 h-20 bg-green-50 dark:bg-green-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
                     <CheckCircle className="w-10 h-10 text-green-600 dark:text-green-400" />
                 </div>
-                <h3 className="text-xl font-bold text-surface-900 dark:text-surface-100 mb-2">
+                <h3 className="text-xl font-bold text-fg mb-2">
                     🎉 Kích hoạt thành công!
                 </h3>
                 <p className="text-surface-600 dark:text-surface-400 mb-1">
@@ -161,7 +161,7 @@ export default function CheckoutForm() {
                 <p className="text-surface-600 dark:text-surface-400 mb-4">Giỏ hàng trống hoặc thiếu thông tin gói đăng ký.</p>
                 {/* Trước có hai nút "Xem khóa học" và "Bảng giá" nhưng cùng dẫn về
                     /courses sau khi /pricing gộp vào đó — gộp lại còn một. */}
-                <button type="button" onClick={() => router.push('/courses')} className="px-4 py-2 text-sm bg-brand-600 text-white rounded-md hover:bg-brand-700 transition-colors">
+                <button type="button" onClick={() => router.push('/courses')} className="px-4 py-2 text-sm bg-brand-600 text-white rounded-xl hover:bg-brand-700 transition-colors">
                     Xem khóa học
                 </button>
             </div>
@@ -192,7 +192,7 @@ export default function CheckoutForm() {
                 <button
                     type="button"
                     onClick={() => router.push('/cart')}
-                    className="px-4 py-2 text-sm bg-brand-600 text-white rounded-md hover:bg-brand-700 transition-colors"
+                    className="px-4 py-2 text-sm bg-brand-600 text-white rounded-xl hover:bg-brand-700 transition-colors"
                 >
                     Quay lại giỏ hàng
                 </button>
@@ -219,7 +219,7 @@ export default function CheckoutForm() {
                         </div>
                     )}
                     <div className="flex justify-between font-bold text-base pt-2 border-t border-surface-200 dark:border-surface-700">
-                        <span className="text-surface-900 dark:text-surface-100">Tổng cộng</span>
+                        <span className="text-fg">Tổng cộng</span>
                         <span className="text-brand-600 dark:text-brand-400">{formatCurrency(total)}</span>
                     </div>
                 </div>
@@ -242,7 +242,7 @@ export default function CheckoutForm() {
                     defaultValue={savedName || session?.user?.name || ''}
                     key={`name-${savedName}`}
                     required
-                    className="w-full px-4 py-2 bg-surface-50 dark:bg-surface-900 border border-surface-200 dark:border-surface-700 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none transition-colors text-surface-900 dark:text-surface-100"
+                    className="w-full px-4 py-2 bg-surface-50 dark:bg-surface-900 border border-surface-200 dark:border-surface-700 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none transition-colors text-fg"
                     placeholder="Nguyễn Văn A"
                 />
             </div>
@@ -258,7 +258,7 @@ export default function CheckoutForm() {
                     defaultValue={session?.user?.email || ''}
                     readOnly={hasEmail}
                     required
-                    className={`w-full px-4 py-2 bg-surface-50 dark:bg-surface-900 border border-surface-200 dark:border-surface-700 rounded-lg outline-none transition-colors text-surface-900 dark:text-surface-100 ${hasEmail
+                    className={`w-full px-4 py-2 bg-surface-50 dark:bg-surface-900 border border-surface-200 dark:border-surface-700 rounded-lg outline-none transition-colors text-fg ${hasEmail
                         ? 'opacity-70 cursor-not-allowed border-none bg-surface-100 dark:bg-surface-800 focus:ring-0'
                         : 'focus:ring-2 focus:ring-brand-500 focus:border-brand-500'
                         }`}
@@ -279,7 +279,7 @@ export default function CheckoutForm() {
                     required
                     pattern="0[35789][0-9]{8}"
                     title="Vui lòng nhập đúng định dạng số điện thoại 10 số (VD: 0984456710)"
-                    className="w-full px-4 py-2 bg-surface-50 dark:bg-surface-900 border border-surface-200 dark:border-surface-700 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none transition-colors text-surface-900 dark:text-surface-100"
+                    className="w-full px-4 py-2 bg-surface-50 dark:bg-surface-900 border border-surface-200 dark:border-surface-700 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none transition-colors text-fg"
                     placeholder="09..."
                 />
                 <p className="mt-1 text-xs text-surface-500 dark:text-surface-400">

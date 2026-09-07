@@ -11,7 +11,7 @@ const TiptapEditor = dynamic(
     {
         ssr: false,
         loading: () => (
-            <div className="bg-white dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-700 overflow-hidden">
+            <div className="bg-card rounded-2xl border border-surface-200 dark:border-surface-700 overflow-hidden">
                 <div className="p-6 min-h-[400px] flex items-center justify-center">
                     <div className="animate-pulse text-fg-faint">Đang tải editor...</div>
                 </div>
@@ -328,7 +328,7 @@ COVER_IMAGE: Tạo một bức ảnh bìa blog có chất lượng cao, tỉ l�
                     >
                         <ArrowLeft className="h-5 w-5" />
                     </Link>
-                    <h1 className="text-xl font-bold text-surface-900 dark:text-surface-100">
+                    <h1 className="text-xl font-bold text-fg">
                         Chỉnh sửa bài viết
                     </h1>
                 </div>
@@ -389,7 +389,7 @@ COVER_IMAGE: Tạo một bức ảnh bìa blog có chất lượng cao, tỉ l�
                         value={title}
                         onChange={(e) => setTitle(e.target.value)}
                         placeholder="Tiêu đề bài viết..."
-                        className="w-full px-4 py-3 rounded-xl bg-white dark:bg-surface-900 border border-surface-200 dark:border-surface-700 text-xl font-bold text-surface-900 dark:text-surface-100 placeholder:text-surface-400 focus:outline-none focus:ring-2 focus:ring-brand-500/30 focus:border-brand-500 transition-all"
+                        className="w-full px-4 py-3 rounded-xl bg-card border border-surface-200 dark:border-surface-700 text-xl font-bold text-fg placeholder:text-surface-400 focus:outline-none focus:ring-2 focus:ring-brand-500/30 focus:border-brand-500 transition-all"
                     />
 
                     <textarea
@@ -397,7 +397,7 @@ COVER_IMAGE: Tạo một bức ảnh bìa blog có chất lượng cao, tỉ l�
                         onChange={(e) => setExcerpt(e.target.value)}
                         placeholder="Mô tả ngắn gọn bài viết..."
                         rows={2}
-                        className="w-full px-4 py-3 rounded-xl bg-white dark:bg-surface-900 border border-surface-200 dark:border-surface-700 text-sm text-surface-700 dark:text-surface-300 placeholder:text-surface-400 focus:outline-none focus:ring-2 focus:ring-brand-500/30 focus:border-brand-500 transition-all resize-none"
+                        className="w-full px-4 py-3 rounded-xl bg-card border border-surface-200 dark:border-surface-700 text-sm text-surface-700 dark:text-surface-300 placeholder:text-surface-400 focus:outline-none focus:ring-2 focus:ring-brand-500/30 focus:border-brand-500 transition-all resize-none"
                     />
 
                     <TiptapEditor
@@ -419,7 +419,7 @@ COVER_IMAGE: Tạo một bức ảnh bìa blog có chất lượng cao, tỉ l�
                         const chars = text.replace(/\s/g, '').length;
                         const readingMin = Math.max(1, Math.ceil(words / 200));
                         return (
-                            <div className="flex items-center gap-4 px-4 py-2.5 rounded-xl bg-white dark:bg-surface-900 border border-surface-200 dark:border-surface-700 text-xs text-surface-500 dark:text-surface-400">
+                            <div className="flex items-center gap-4 px-4 py-2.5 rounded-xl bg-card border border-surface-200 dark:border-surface-700 text-xs text-surface-500 dark:text-surface-400">
                                 <span className="flex items-center gap-1.5">
                                     <FileText className="h-3.5 w-3.5" />
                                     {words.toLocaleString()} từ
@@ -433,8 +433,8 @@ COVER_IMAGE: Tạo một bức ảnh bìa blog có chất lượng cao, tỉ l�
 
                 {/* Sidebar */}
                 <div className="space-y-4">
-                    <div className="bg-white dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-700 p-5">
-                        <h3 className="font-semibold text-surface-900 dark:text-surface-100 mb-3">Trạng thái</h3>
+                    <div className="bg-card rounded-2xl border border-surface-200 dark:border-surface-700 p-5">
+                        <h3 className="font-semibold text-fg mb-3">Trạng thái</h3>
                         <select
                             value={status}
                             onChange={(e) => setStatus(e.target.value)}
@@ -445,8 +445,8 @@ COVER_IMAGE: Tạo một bức ảnh bìa blog có chất lượng cao, tỉ l�
                         </select>
                     </div>
 
-                    <div className="bg-white dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-700 p-5">
-                        <h3 className="font-semibold text-surface-900 dark:text-surface-100 mb-3">Chủ đề <span className="text-xs text-surface-400 font-normal">(chọn nhiều)</span></h3>
+                    <div className="bg-card rounded-2xl border border-surface-200 dark:border-surface-700 p-5">
+                        <h3 className="font-semibold text-fg mb-3">Chủ đề <span className="text-xs text-surface-400 font-normal">(chọn nhiều)</span></h3>
                         <div className="space-y-1.5 max-h-48 overflow-y-auto">
                             {categories.map((cat) => {
                                 const checked = selectedCategoryIds.includes(cat.id);
@@ -485,8 +485,8 @@ COVER_IMAGE: Tạo một bức ảnh bìa blog có chất lượng cao, tỉ l�
                     </div>
 
                     {/* Tags */}
-                    <div className="bg-white dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-700 p-5">
-                        <h3 className="font-semibold text-surface-900 dark:text-surface-100 mb-3 flex items-center gap-2">
+                    <div className="bg-card rounded-2xl border border-surface-200 dark:border-surface-700 p-5">
+                        <h3 className="font-semibold text-fg mb-3 flex items-center gap-2">
                             <Tag className="h-4 w-4 text-brand-500" /> Tags
                         </h3>
                         <div className="flex flex-wrap gap-1.5 mb-2">
@@ -550,7 +550,7 @@ COVER_IMAGE: Tạo một bức ảnh bìa blog có chất lượng cao, tỉ l�
                                     }}
                                     onFocus={() => setShowTagDropdown(true)}
                                     placeholder="Tìm, tạo hoặc dán tags (phân cách bằng ,)..."
-                                    className="w-full bg-transparent text-sm focus:outline-none text-surface-900 dark:text-surface-100 placeholder:text-surface-400"
+                                    className="w-full bg-transparent text-sm focus:outline-none text-fg placeholder:text-surface-400"
                                 />
                             </div>
                             {showTagDropdown && (
@@ -608,9 +608,9 @@ COVER_IMAGE: Tạo một bức ảnh bìa blog có chất lượng cao, tỉ l�
                         </div>
                     </div>
 
-                    <div className="bg-white dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-700 p-5">
+                    <div className="bg-card rounded-2xl border border-surface-200 dark:border-surface-700 p-5">
                         <div className="flex items-center justify-between mb-3">
-                            <h3 className="font-semibold text-surface-900 dark:text-surface-100">Ảnh bìa</h3>
+                            <h3 className="font-semibold text-fg">Ảnh bìa</h3>
                             <span className="text-[10px] text-fg-subtle bg-surface-100 dark:bg-surface-800 px-2 py-0.5 rounded-full font-medium">1200x630px</span>
                         </div>
                         {coverImage ? (
@@ -679,7 +679,7 @@ COVER_IMAGE: Tạo một bức ảnh bìa blog có chất lượng cao, tỉ l�
                                                 🔍 Google Images
                                             </a>
                                         </div>
-                                        <div className="mt-2 p-2 bg-white dark:bg-surface-950 border border-surface-200 dark:border-surface-800 rounded-md flex items-start gap-2 group">
+                                        <div className="mt-2 p-2 bg-white dark:bg-surface-950 border border-line rounded-md flex items-start gap-2 group">
                                             <p className="text-[11px] text-surface-600 dark:text-surface-400 font-mono flex-1 break-words select-all">
                                                 Tạo một bức ảnh bìa blog có chất lượng cao, tỉ lệ 16:9, kích thước 1200x630px, với phong cách chuyên nghiệp và hiện đại, thể hiện chủ đề: &quot;{coverKeyword}&quot;
                                             </p>
@@ -709,18 +709,18 @@ COVER_IMAGE: Tạo một bức ảnh bìa blog có chất lượng cao, tỉ l�
                         )}
                     </div>
 
-                    <div className="bg-white dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-700 p-5 space-y-4">
+                    <div className="bg-card rounded-2xl border border-surface-200 dark:border-surface-700 p-5 space-y-4">
                         <div>
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-2">
                                     <Lock className="h-4 w-4 text-amber-500" />
-                                    <h3 className="font-semibold text-surface-900 dark:text-surface-100">Premium</h3>
+                                    <h3 className="font-semibold text-fg">Premium</h3>
                                 </div>
                                 <button
                                     onClick={() => setIsPremium(!isPremium)}
                                     className={`relative w-11 h-6 rounded-full transition-colors ${isPremium ? 'bg-brand-600' : 'bg-surface-300 dark:bg-surface-600'}`}
                                 >
-                                    <span className={`absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-card shadow transition-transform ${isPremium ? 'translate-x-5' : ''}`} />
+                                    <span className={`absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white shadow transition-transform ${isPremium ? 'translate-x-5' : ''}`} />
                                 </button>
                             </div>
                             <p className="text-xs text-fg-subtle mt-1">Yêu cầu đăng nhập để xem nội dung đầy đủ</p>
@@ -729,13 +729,13 @@ COVER_IMAGE: Tạo một bức ảnh bìa blog có chất lượng cao, tỉ l�
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-2">
                                     <Pin className="h-4 w-4 text-emerald-500" />
-                                    <h3 className="font-semibold text-surface-900 dark:text-surface-100">Ghim đầu trang</h3>
+                                    <h3 className="font-semibold text-fg">Ghim đầu trang</h3>
                                 </div>
                                 <button
                                     onClick={() => setIsFeatured(!isFeatured)}
                                     className={`relative w-11 h-6 rounded-full transition-colors ${isFeatured ? 'bg-emerald-600' : 'bg-surface-300 dark:bg-surface-600'}`}
                                 >
-                                    <span className={`absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-card shadow transition-transform ${isFeatured ? 'translate-x-5' : ''}`} />
+                                    <span className={`absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white shadow transition-transform ${isFeatured ? 'translate-x-5' : ''}`} />
                                 </button>
                             </div>
                             <p className="text-xs text-fg-subtle mt-1">Hiển thị bài viết lớn ở đầu trang chủ</p>
@@ -743,11 +743,11 @@ COVER_IMAGE: Tạo một bức ảnh bìa blog có chất lượng cao, tỉ l�
                     </div>
 
                     {/* Demo File */}
-                    <div className="bg-white dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-700 p-5">
+                    <div className="bg-card rounded-2xl border border-surface-200 dark:border-surface-700 p-5">
                         <div className="flex items-center justify-between mb-3">
                             <div className="flex items-center gap-2">
                                 <FileDown className="h-4 w-4 text-emerald-500" />
-                                <h3 className="font-semibold text-surface-900 dark:text-surface-100">File Demo</h3>
+                                <h3 className="font-semibold text-fg">File Demo</h3>
                             </div>
                             {!showDemoFields && (
                                 <button
@@ -842,10 +842,10 @@ COVER_IMAGE: Tạo một bức ảnh bìa blog có chất lượng cao, tỉ l�
                     </div>
 
                     {/* SEO & Metadata */}
-                    <div className="bg-white dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-700 p-5">
+                    <div className="bg-card rounded-2xl border border-surface-200 dark:border-surface-700 p-5">
                         <div className="flex items-center gap-2 mb-3">
                             <Globe className="h-4 w-4 text-emerald-500" />
-                            <h3 className="font-semibold text-surface-900 dark:text-surface-100">SEO & Metadata</h3>
+                            <h3 className="font-semibold text-fg">SEO & Metadata</h3>
                         </div>
 
                         {/* SEO Preview */}
@@ -922,9 +922,9 @@ COVER_IMAGE: Tạo một bức ảnh bìa blog có chất lượng cao, tỉ l�
             {/* AI Prompt Generator Modal */}
             {aiWriteOpen && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-surface-900/50 backdrop-blur-sm">
-                    <div className="bg-white dark:bg-surface-900 rounded-3xl p-6 w-full max-w-2xl border border-surface-200 dark:border-surface-800 shadow-2xl max-h-[90vh] overflow-y-auto">
+                    <div className="bg-card rounded-3xl p-6 w-full max-w-2xl border border-line shadow-2xl max-h-[90vh] overflow-y-auto">
                         <div className="flex items-center justify-between mb-4">
-                            <h2 className="text-lg font-bold text-surface-900 dark:text-surface-100 flex items-center gap-2">
+                            <h2 className="text-lg font-bold text-fg flex items-center gap-2">
                                 <Sparkles className="h-5 w-5 text-purple-500" />
                                 Tạo Prompt viết bài bằng AI
                             </h2>

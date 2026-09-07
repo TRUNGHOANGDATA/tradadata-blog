@@ -108,7 +108,7 @@ export function BookmarkButton({ postId, className = '', variant = 'icon' }: Boo
             disabled={isLoading}
             className={`p-2 rounded-full transition-all backdrop-blur-md shadow-sm border ${isBookmarked
                 ? 'bg-brand-100/90 border-brand-200 text-brand-600 dark:bg-brand-900/80 dark:border-brand-700 dark:text-brand-400'
-                : 'bg-white/80 border-white/20 text-surface-600 hover:bg-white dark:bg-surface-900/80 dark:border-surface-700 dark:text-surface-300 dark:hover:bg-surface-800'
+                : 'bg-white/80 border-white/20 text-surface-600 hover:bg-card/80 dark:border-surface-700 dark:text-surface-300 dark:hover:bg-surface-800'
                 } ${className}`}
             title={isBookmarked ? 'Bỏ lưu bài viết' : 'Lưu bài viết'}
         >

@@ -146,7 +146,7 @@ export default function ProfilePage() {
                             </div>
                         )}
                         <div>
-                            <h1 className="text-xl font-bold text-surface-900 dark:text-surface-100">
+                            <h1 className="text-xl font-bold text-fg">
                                 {profile?.full_name || session?.user?.name || 'Người dùng'}
                             </h1>
                             <p className="text-sm text-fg-subtle">{session?.user?.email}</p>
@@ -175,7 +175,7 @@ export default function ProfilePage() {
                             {t.count !== undefined && t.count > 0 && (
                                 <span className={`text-xs px-1.5 py-0.5 rounded-full ${tab === t.key
                                     ? 'bg-brand-100 dark:bg-brand-500/30 text-brand-700 dark:text-brand-300'
-                                    : 'bg-surface-300 dark:bg-surface-600 text-surface-600 dark:text-surface-300'
+                                    : 'bg-surface-300 dark:bg-surface-600 text-fg-muted'
                                     }`}>{t.count}</span>
                             )}
                         </button>
@@ -183,11 +183,11 @@ export default function ProfilePage() {
                 </div>
 
                 {/* Tab Content */}
-                <div className="bg-white dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-800 overflow-hidden">
+                <div className="bg-card rounded-2xl border border-line overflow-hidden">
                     {/* ===== INFO TAB ===== */}
                     {tab === 'info' && (
                         <div className="p-6 space-y-5">
-                            <h2 className="text-lg font-bold text-surface-900 dark:text-surface-100 flex items-center gap-2">
+                            <h2 className="text-lg font-bold text-fg flex items-center gap-2">
                                 <Pencil className="w-4 h-4 text-brand-500" /> Thông tin cá nhân
                             </h2>
 
@@ -227,7 +227,7 @@ export default function ProfilePage() {
                                     type="text"
                                     value={formName}
                                     onChange={e => setFormName(e.target.value)}
-                                    className="w-full px-4 py-2.5 bg-surface-50 dark:bg-surface-950 border border-surface-200 dark:border-surface-700 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none transition-colors text-surface-900 dark:text-surface-100 text-sm"
+                                    className="w-full px-4 py-2.5 bg-surface-50 dark:bg-surface-950 border border-surface-200 dark:border-surface-700 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none transition-colors text-fg text-sm"
                                     placeholder="Nguyễn Văn A"
                                 />
                             </div>
@@ -241,7 +241,7 @@ export default function ProfilePage() {
                                     type="tel"
                                     value={formPhone}
                                     onChange={e => setFormPhone(e.target.value)}
-                                    className="w-full px-4 py-2.5 bg-surface-50 dark:bg-surface-950 border border-surface-200 dark:border-surface-700 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none transition-colors text-surface-900 dark:text-surface-100 text-sm"
+                                    className="w-full px-4 py-2.5 bg-surface-50 dark:bg-surface-950 border border-surface-200 dark:border-surface-700 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none transition-colors text-fg text-sm"
                                     placeholder="0984456710"
                                 />
                                 <p className="text-xs text-fg-faint mt-1">10 chữ số, bắt đầu bằng 03/05/07/08/09</p>
@@ -261,7 +261,7 @@ export default function ProfilePage() {
                     {/* ===== ORDERS TAB ===== */}
                     {tab === 'orders' && (
                         <div className="p-6">
-                            <h2 className="text-lg font-bold text-surface-900 dark:text-surface-100 flex items-center gap-2 mb-4">
+                            <h2 className="text-lg font-bold text-fg flex items-center gap-2 mb-4">
                                 <Package className="w-4 h-4 text-brand-500" /> Lịch sử đơn hàng
                             </h2>
                             {orders.length === 0 ? (
@@ -281,7 +281,7 @@ export default function ProfilePage() {
                                                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
                                                     <div className="flex-1 min-w-0">
                                                         <div className="flex items-center gap-2 mb-1 flex-wrap">
-                                                            <span className="font-mono font-bold text-sm text-surface-900 dark:text-surface-100">{order.order_code}</span>
+                                                            <span className="font-mono font-bold text-sm text-fg">{order.order_code}</span>
                                                             <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium border ${st.className}`}>
                                                                 {st.icon} {st.label}
                                                             </span>
@@ -312,7 +312,7 @@ export default function ProfilePage() {
                     {/* ===== PREMIUM TAB ===== */}
                     {tab === 'premium' && (
                         <div className="p-6">
-                            <h2 className="text-lg font-bold text-surface-900 dark:text-surface-100 flex items-center gap-2 mb-4">
+                            <h2 className="text-lg font-bold text-fg flex items-center gap-2 mb-4">
                                 <Crown className="w-4 h-4 text-brand-500" /> Premium
                             </h2>
 
@@ -325,18 +325,18 @@ export default function ProfilePage() {
                                                     <Crown className="w-5 h-5 text-brand-500" />
                                                 </div>
                                                 <div>
-                                                    <p className="font-bold text-surface-900 dark:text-surface-100">Đang hoạt động</p>
+                                                    <p className="font-bold text-fg">Đang hoạt động</p>
                                                     <p className="text-sm text-fg-subtle">{(activeSub.products as any)?.name || 'Gói Premium'}</p>
                                                 </div>
                                             </div>
                                             <div className="grid grid-cols-2 gap-3 mt-4">
                                                 <div className="p-3 bg-white/60 dark:bg-surface-800/60 rounded-xl">
                                                     <p className="text-xs text-fg-subtle mb-0.5 flex items-center gap-1"><Calendar className="w-3 h-3" /> Bắt đầu</p>
-                                                    <p className="text-sm font-semibold text-surface-900 dark:text-surface-100">{formatDate(activeSub.starts_at)}</p>
+                                                    <p className="text-sm font-semibold text-fg">{formatDate(activeSub.starts_at)}</p>
                                                 </div>
                                                 <div className="p-3 bg-white/60 dark:bg-surface-800/60 rounded-xl">
                                                     <p className="text-xs text-fg-subtle mb-0.5 flex items-center gap-1"><Calendar className="w-3 h-3" /> Hết hạn</p>
-                                                    <p className="text-sm font-semibold text-surface-900 dark:text-surface-100">{formatDate(activeSub.expires_at)}</p>
+                                                    <p className="text-sm font-semibold text-fg">{formatDate(activeSub.expires_at)}</p>
                                                 </div>
                                             </div>
                                         </div>
@@ -347,7 +347,7 @@ export default function ProfilePage() {
                                                     <Crown className="w-5 h-5 text-brand-500" />
                                                 </div>
                                                 <div>
-                                                    <p className="font-bold text-surface-900 dark:text-surface-100">Đang hoạt động</p>
+                                                    <p className="font-bold text-fg">Đang hoạt động</p>
                                                     <p className="text-sm text-fg-subtle">Premium được kích hoạt bởi Admin</p>
                                                 </div>
                                             </div>

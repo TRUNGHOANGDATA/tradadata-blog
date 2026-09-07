@@ -207,7 +207,7 @@ export default function AdminCouponsPage() {
         <div>
             <div className="flex items-center justify-between mb-8">
                 <div>
-                    <h1 className="text-2xl font-bold text-surface-900 dark:text-surface-100 flex items-center gap-3">
+                    <h1 className="text-2xl font-bold text-fg flex items-center gap-3">
                         <Ticket className="w-7 h-7 text-brand-600" />
                         Mã giảm giá
                     </h1>
@@ -216,7 +216,7 @@ export default function AdminCouponsPage() {
                 <div className="flex gap-3">
                     <button
                         onClick={() => { setShowBatch(!showBatch); setShowCreate(false); }}
-                        className="flex items-center gap-2 px-4 py-2.5 bg-surface-100 dark:bg-surface-800 hover:bg-surface-200 dark:hover:bg-surface-700 text-surface-900 dark:text-surface-100 rounded-xl text-sm font-medium transition-colors"
+                        className="flex items-center gap-2 px-4 py-2.5 bg-surface-100 dark:bg-surface-800 hover:bg-surface-200 dark:hover:bg-surface-700 text-fg rounded-xl text-sm font-medium transition-colors"
                     >
                         <Import className="w-4 h-4" />
                         Import hàng loạt
@@ -245,8 +245,8 @@ export default function AdminCouponsPage() {
 
             {/* Create Single Form */}
             {showCreate && (
-                <div className="mb-6 bg-white dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-800 p-6">
-                    <h3 className="font-bold text-surface-900 dark:text-surface-100 mb-4">Tạo mã giảm giá</h3>
+                <div className="mb-6 bg-card rounded-2xl border border-line p-6">
+                    <h3 className="font-bold text-fg mb-4">Tạo mã giảm giá</h3>
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                         <div>
                             <label className="text-xs font-medium text-fg-subtle mb-1 block">Mã giảm giá *</label>
@@ -355,8 +355,8 @@ export default function AdminCouponsPage() {
 
             {/* Batch Import */}
             {showBatch && (
-                <div className="mb-6 bg-white dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-800 p-6">
-                    <h3 className="font-bold text-surface-900 dark:text-surface-100 mb-4">Import hàng loạt</h3>
+                <div className="mb-6 bg-card rounded-2xl border border-line p-6">
+                    <h3 className="font-bold text-fg mb-4">Import hàng loạt</h3>
                     <p className="text-sm text-fg-subtle mb-4">Nhập nhiều mã giảm giá, mỗi dòng 1 mã (hoặc phân tách bằng dấu phẩy). Tất cả mã sẽ áp dụng chung cài đặt bên dưới.</p>
 
                     {/* Textarea */}
@@ -472,7 +472,7 @@ export default function AdminCouponsPage() {
             )}
 
             {/* Coupons Table */}
-            <div className="bg-white dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-800 overflow-hidden">
+            <div className="bg-card rounded-2xl border border-line overflow-hidden">
                 {loading ? (
                     <div className="p-12 text-center text-fg-subtle">Đang tải...</div>
                 ) : coupons.length === 0 ? (
@@ -484,7 +484,7 @@ export default function AdminCouponsPage() {
                     <div className="overflow-x-auto">
                         <table className="w-full">
                             <thead>
-                                <tr className="border-b border-surface-200 dark:border-surface-800 bg-surface-50 dark:bg-surface-950">
+                                <tr className="border-b border-line bg-surface-50 dark:bg-surface-950">
                                     <th className="text-left px-5 py-3 text-xs font-semibold text-fg-subtle uppercase">Mã</th>
                                     <th className="text-left px-5 py-3 text-xs font-semibold text-fg-subtle uppercase">Giảm giá</th>
                                     <th className="text-left px-5 py-3 text-xs font-semibold text-fg-subtle uppercase">Lượt dùng</th>
@@ -499,7 +499,7 @@ export default function AdminCouponsPage() {
                                 {coupons.map((c) => (
                                     <tr key={c.id} className={`hover:bg-surface-50 dark:hover:bg-surface-800/50 transition-colors ${!c.is_active ? 'opacity-50' : ''}`}>
                                         <td className="px-5 py-4">
-                                            <span className="font-mono font-bold text-sm text-surface-900 dark:text-surface-100 bg-surface-100 dark:bg-surface-800 px-2 py-1 rounded-lg">
+                                            <span className="font-mono font-bold text-sm text-fg bg-surface-100 dark:bg-surface-800 px-2 py-1 rounded-lg">
                                                 {c.code}
                                             </span>
                                         </td>
@@ -602,10 +602,10 @@ export default function AdminCouponsPage() {
             {/* Usage Detail Modal */}
             {usageCoupon && (
                 <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={() => setUsageCoupon(null)}>
-                    <div className="bg-white dark:bg-surface-900 rounded-2xl shadow-2xl max-w-md w-full max-h-[70vh] overflow-hidden" onClick={(e) => e.stopPropagation()}>
-                        <div className="p-5 border-b border-surface-200 dark:border-surface-800 flex items-center justify-between">
+                    <div className="bg-card rounded-2xl shadow-2xl max-w-md w-full max-h-[70vh] overflow-hidden" onClick={(e) => e.stopPropagation()}>
+                        <div className="p-5 border-b border-line flex items-center justify-between">
                             <div>
-                                <h3 className="font-bold text-surface-900 dark:text-surface-100">Lịch sử sử dụng</h3>
+                                <h3 className="font-bold text-fg">Lịch sử sử dụng</h3>
                                 <p className="text-sm text-fg-subtle mt-0.5">Mã: <span className="font-mono font-semibold">{usageCoupon.code}</span></p>
                             </div>
                             <button onClick={() => setUsageCoupon(null)} className="p-1.5 hover:bg-surface-100 dark:hover:bg-surface-800 rounded-lg">
@@ -621,7 +621,7 @@ export default function AdminCouponsPage() {
                                 <div className="space-y-3">
                                     {usageData.map((u, i) => (
                                         <div key={i} className="flex items-center justify-between p-3 bg-surface-50 dark:bg-surface-800 rounded-xl">
-                                            <span className="text-sm font-medium text-surface-900 dark:text-surface-100">{u.user_email}</span>
+                                            <span className="text-sm font-medium text-fg">{u.user_email}</span>
                                             <span className="text-xs text-fg-subtle">{u.used_at ? new Date(u.used_at).toLocaleString('vi-VN') : '—'}</span>
                                         </div>
                                     ))}

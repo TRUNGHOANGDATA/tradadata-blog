@@ -85,7 +85,7 @@ function CommentItem({
                 <UserAvatar user={comment.user} />
                 <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 flex-wrap">
-                        <span className="font-semibold text-sm text-surface-900 dark:text-surface-100">
+                        <span className="font-semibold text-sm text-fg">
                             {comment.user?.full_name || comment.user?.email?.split('@')[0] || 'Ẩn danh'}
                         </span>
                         <span className="text-xs text-fg-faint">
@@ -133,7 +133,7 @@ function CommentItem({
                                     <UserAvatar user={reply.user} />
                                     <div className="flex-1 min-w-0">
                                         <div className="flex items-center gap-2 flex-wrap">
-                                            <span className="font-semibold text-sm text-surface-900 dark:text-surface-100">
+                                            <span className="font-semibold text-sm text-fg">
                                                 {reply.user?.full_name || reply.user?.email?.split('@')[0] || 'Ẩn danh'}
                                             </span>
                                             <span className="text-xs text-fg-faint">
@@ -281,13 +281,13 @@ export function CommentSection({ postId }: { postId: string }) {
     const totalCount = comments.length;
 
     return (
-        <section className="mt-12 pt-8 border-t border-surface-200 dark:border-surface-800">
+        <section className="mt-12 pt-8 border-t border-line">
             {/* Header */}
             <div className="flex items-center gap-3 mb-6">
                 <div className="p-2 rounded-xl bg-brand-50 dark:bg-brand-900/20 text-brand-600 dark:text-brand-400">
                     <MessageCircle className="w-5 h-5" />
                 </div>
-                <h3 className="text-xl font-bold text-surface-900 dark:text-surface-100">
+                <h3 className="text-xl font-bold text-fg">
                     Bình luận {totalCount > 0 && <span className="text-base font-normal text-fg-faint">({totalCount})</span>}
                 </h3>
             </div>
@@ -309,7 +309,7 @@ export function CommentSection({ postId }: { postId: string }) {
                                 placeholder="Viết bình luận..."
                                 rows={3}
                                 maxLength={2000}
-                                className="w-full px-4 py-3 rounded-xl bg-white dark:bg-surface-900 border border-surface-200 dark:border-surface-700 text-sm text-surface-800 dark:text-surface-200 placeholder:text-surface-400 focus:outline-none focus:ring-2 focus:ring-brand-500/30 focus:border-brand-500 transition-all resize-none"
+                                className="w-full px-4 py-3 rounded-xl bg-card border border-surface-200 dark:border-surface-700 text-sm text-surface-800 dark:text-surface-200 placeholder:text-surface-400 focus:outline-none focus:ring-2 focus:ring-brand-500/30 focus:border-brand-500 transition-all resize-none"
                             />
                             <div className="flex items-center justify-between mt-2">
                                 <span className="text-xs text-fg-faint">{content.length}/2000</span>
@@ -384,7 +384,7 @@ export function CommentSection({ postId }: { postId: string }) {
                                             rows={2}
                                             maxLength={2000}
                                             autoFocus
-                                            className="w-full px-3 py-2 rounded-xl bg-white dark:bg-surface-900 border border-surface-200 dark:border-surface-700 text-sm text-surface-800 dark:text-surface-200 placeholder:text-surface-400 focus:outline-none focus:ring-2 focus:ring-brand-500/30 focus:border-brand-500 transition-all resize-none"
+                                            className="w-full px-3 py-2 rounded-xl bg-card border border-surface-200 dark:border-surface-700 text-sm text-surface-800 dark:text-surface-200 placeholder:text-surface-400 focus:outline-none focus:ring-2 focus:ring-brand-500/30 focus:border-brand-500 transition-all resize-none"
                                         />
                                         <div className="flex items-center gap-2 mt-2 justify-end">
                                             <button

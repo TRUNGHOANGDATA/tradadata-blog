@@ -65,7 +65,7 @@ export function Newsletter() {
             <div className="relative rounded-3xl overflow-hidden min-h-[400px] flex items-center justify-center">
                 <div className="absolute inset-0 bg-gradient-to-r from-brand-600 to-brand-800" />
                 <div className="absolute inset-0 opacity-20">
-                    <div className="absolute top-4 right-10 w-32 h-32 bg-card rounded-full filter blur-2xl" />
+                    <div className="absolute top-4 right-10 w-32 h-32 bg-white rounded-full filter blur-2xl" />
                     <div className="absolute bottom-4 left-20 w-40 h-40 bg-cyan-300 rounded-full filter blur-2xl" />
                 </div>
 
@@ -88,7 +88,7 @@ export function Newsletter() {
                                 disabled={status === "loading" || status === "success"}
                                 placeholder="Họ và tên *"
                                 required
-                                className="w-full pl-10 pr-4 py-3 rounded-xl bg-card/10 text-white placeholder:text-white/50 border border-white/20 focus:outline-none focus:ring-2 focus:ring-white/30 backdrop-blur-sm disabled:opacity-70"
+                                className="w-full pl-10 pr-4 py-3 rounded-xl bg-white/10 text-white placeholder:text-white/50 border border-white/20 focus:outline-none focus:ring-2 focus:ring-white/30 backdrop-blur-sm disabled:opacity-70"
                             />
                         </div>
 
@@ -103,7 +103,7 @@ export function Newsletter() {
                                     disabled={status === "loading" || status === "success"}
                                     placeholder="Email của bạn *"
                                     required
-                                    className="w-full pl-10 pr-4 py-3 rounded-xl bg-card/10 text-white placeholder:text-white/50 border border-white/20 focus:outline-none focus:ring-2 focus:ring-white/30 backdrop-blur-sm disabled:opacity-70"
+                                    className="w-full pl-10 pr-4 py-3 rounded-xl bg-white/10 text-white placeholder:text-white/50 border border-white/20 focus:outline-none focus:ring-2 focus:ring-white/30 backdrop-blur-sm disabled:opacity-70"
                                 />
                             </div>
                             <div className="flex-[2] relative">
@@ -115,7 +115,7 @@ export function Newsletter() {
                                     disabled={status === "loading" || status === "success"}
                                     placeholder="Số điện thoại *"
                                     required
-                                    className="w-full pl-10 pr-4 py-3 rounded-xl bg-card/10 text-white placeholder:text-white/50 border border-white/20 focus:outline-none focus:ring-2 focus:ring-white/30 backdrop-blur-sm disabled:opacity-70"
+                                    className="w-full pl-10 pr-4 py-3 rounded-xl bg-white/10 text-white placeholder:text-white/50 border border-white/20 focus:outline-none focus:ring-2 focus:ring-white/30 backdrop-blur-sm disabled:opacity-70"
                                 />
                             </div>
                         </div>
@@ -129,7 +129,7 @@ export function Newsletter() {
                         <button
                             type="submit"
                             disabled={status === "loading" || status === "success"}
-                            className="w-full px-6 py-3 rounded-xl bg-card text-brand-700 font-semibold hover:bg-white/90 transition-all shadow-lg disabled:opacity-70 disabled:hover:bg-white flex items-center justify-center"
+                            className="w-full px-6 py-3 rounded-xl bg-white text-brand-700 font-semibold hover:bg-white/90 transition-all shadow-lg disabled:opacity-70 disabled:hover:bg-white flex items-center justify-center"
                         >
                             {status === "loading" ? (
                                 <Loader2 className="w-5 h-5 animate-spin" />

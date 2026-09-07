@@ -93,7 +93,7 @@ export default async function SavedPostsPage() {
                         <div className="p-3 bg-brand-100 dark:bg-brand-900/40 rounded-xl text-brand-600 dark:text-brand-400">
                             <Bookmark className="h-6 w-6" />
                         </div>
-                        <h1 className="text-3xl font-bold text-surface-900 dark:text-surface-100">
+                        <h1 className="text-3xl font-bold text-fg">
                             Bài viết đã lưu
                         </h1>
                     </div>
@@ -110,11 +110,11 @@ export default async function SavedPostsPage() {
                         ))}
                     </div>
                 ) : (
-                    <div className="text-center py-20 bg-white dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-800 shadow-sm">
+                    <div className="text-center py-20 bg-card rounded-2xl border border-line shadow-sm">
                         <div className="w-16 h-16 bg-surface-100 dark:bg-surface-800 rounded-full flex items-center justify-center mx-auto mb-4">
                             <Bookmark className="h-8 w-8 text-fg-faint" />
                         </div>
-                        <h3 className="text-xl font-bold text-surface-900 dark:text-surface-100 mb-2">
+                        <h3 className="text-xl font-bold text-fg mb-2">
                             Chưa có bài viết nào
                         </h3>
                         <p className="text-fg-subtle max-w-md mx-auto mb-8">

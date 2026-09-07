@@ -53,7 +53,7 @@ export function SearchBar() {
             >
                 <Search className="h-4 w-4" />
                 <span className="hidden sm:inline">Tìm kiếm...</span>
-                <kbd className="hidden lg:inline-flex items-center gap-0.5 px-2 py-0.5 rounded-md bg-white dark:bg-surface-700 text-[11px] font-semibold font-mono text-surface-600 dark:text-surface-300 border border-surface-300 dark:border-surface-600 shadow-sm">
+                <kbd className="hidden lg:inline-flex items-center gap-0.5 px-2 py-0.5 rounded-md bg-white dark:bg-surface-700 text-[11px] font-semibold font-mono text-fg-muted border border-surface-300 dark:border-surface-600 shadow-sm">
                     {shortcutLabel}
                 </kbd>
             </button>
@@ -69,7 +69,7 @@ export function SearchBar() {
 
                     {/* Modal Content */}
                     <div className="relative w-full max-w-xl mx-4 animate-scale-in z-10">
-                        <form onSubmit={handleSubmit} className="bg-white dark:bg-surface-900 rounded-2xl shadow-2xl border border-surface-200 dark:border-surface-700 overflow-hidden">
+                        <form onSubmit={handleSubmit} className="bg-card rounded-2xl shadow-2xl border border-surface-200 dark:border-surface-700 overflow-hidden">
                             <div className="flex items-center gap-3 px-4 py-3">
                                 <Search className="h-5 w-5 text-fg-faint shrink-0" />
                                 <input
@@ -78,7 +78,7 @@ export function SearchBar() {
                                     value={query}
                                     onChange={(e) => setQuery(e.target.value)}
                                     placeholder="Tìm kiếm bài viết, chủ đề..."
-                                    className="flex-1 bg-transparent outline-none text-surface-900 dark:text-surface-100 placeholder:text-surface-400 text-lg"
+                                    className="flex-1 bg-transparent outline-none text-fg placeholder:text-surface-400 text-lg"
                                 />
                                 <button
                                     type="button"
@@ -88,7 +88,7 @@ export function SearchBar() {
                                     <X className="h-5 w-5 text-fg-faint" />
                                 </button>
                             </div>
-                            <div className="px-4 py-2 bg-surface-50 dark:bg-surface-950 border-t border-surface-200 dark:border-surface-800 text-xs text-fg-subtle flex items-center justify-between">
+                            <div className="px-4 py-2 bg-surface-50 dark:bg-surface-950 border-t border-line text-xs text-fg-subtle flex items-center justify-between">
                                 <span>
                                     Nhấn <kbd className="px-1.5 py-0.5 rounded-md border border-surface-300 dark:border-surface-700 bg-white dark:bg-surface-800 font-mono text-surface-700 dark:text-surface-300 shadow-sm">Enter</kbd> để tìm kiếm
                                 </span>

@@ -151,7 +151,7 @@ export default async function HomePage() {
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h2 className="text-2xl md:text-3xl font-bold text-surface-900 dark:text-surface-100">
+            <h2 className="text-2xl md:text-3xl font-bold text-fg">
               Chủ đề
             </h2>
             <p className="text-surface-500 dark:text-surface-400 mt-1">Khám phá theo lĩnh vực bạn quan tâm</p>
@@ -175,7 +175,7 @@ export default async function HomePage() {
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center gap-2">
             <TrendingUp className="h-6 w-6 text-brand-600" />
-            <h2 className="text-2xl md:text-3xl font-bold text-surface-900 dark:text-surface-100">
+            <h2 className="text-2xl md:text-3xl font-bold text-fg">
               Bài viết mới nhất
             </h2>
           </div>

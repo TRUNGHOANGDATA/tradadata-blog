@@ -9,10 +9,10 @@ export default function LoginPage() {
         <div className="min-h-[80vh] flex items-center justify-center px-4">
             <div className="w-full max-w-md">
                 {/* Card */}
-                <div className="bg-white dark:bg-surface-900 rounded-3xl shadow-2xl border border-surface-200 dark:border-surface-800 overflow-hidden">
+                <div className="bg-card rounded-3xl shadow-2xl border border-line overflow-hidden">
                     {/* Header */}
                     <div className="bg-gradient-to-br from-brand-600 to-brand-800 px-8 py-10 text-center">
-                        <div className="w-14 h-14 rounded-2xl bg-card/10 backdrop-blur-sm flex items-center justify-center mx-auto mb-4 border border-white/20">
+                        <div className="w-14 h-14 rounded-2xl bg-white/10 backdrop-blur-sm flex items-center justify-center mx-auto mb-4 border border-white/20">
                             <span className="text-white font-bold text-xl">TDD</span>
                         </div>
                         <h1 className="text-2xl font-bold text-white mb-2">

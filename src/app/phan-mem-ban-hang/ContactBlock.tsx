@@ -28,7 +28,7 @@ export function ContactButtons({ variant = 'light' }: { variant?: 'light' | 'dar
         'inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl font-medium transition-colors shadow-sm';
     const ghost =
         variant === 'dark'
-            ? 'bg-card/10 text-white hover:bg-white/20 border border-white/20'
+            ? 'bg-white/10 text-white hover:bg-white/20 border border-white/20'
             : 'bg-white dark:bg-surface-800 text-surface-800 dark:text-surface-100 border border-surface-200 dark:border-surface-700 hover:bg-surface-50 dark:hover:bg-surface-700';
 
     return (
@@ -105,14 +105,14 @@ export function LeadForm() {
         return (
             <div className="rounded-2xl border border-brand-200 dark:border-brand-900/40 bg-brand-50 dark:bg-brand-900/10 p-8 text-center">
                 <CheckCircle2 className="h-12 w-12 text-brand-600 dark:text-brand-400 mx-auto mb-4" />
-                <h3 className="text-xl font-bold text-surface-900 dark:text-surface-100 mb-2">Đã gửi thành công</h3>
+                <h3 className="text-xl font-bold text-fg mb-2">Đã gửi thành công</h3>
                 <p className="text-surface-600 dark:text-surface-400">{message}</p>
             </div>
         );
     }
 
     const input =
-        'w-full px-4 py-3 rounded-xl bg-white dark:bg-surface-900 border border-surface-300 dark:border-surface-700 text-surface-900 dark:text-surface-100 placeholder:text-surface-400 focus:outline-none focus:ring-2 focus:ring-brand-500/50';
+        'w-full px-4 py-3 rounded-xl bg-card border border-surface-300 dark:border-surface-700 text-fg placeholder:text-surface-400 focus:outline-none focus:ring-2 focus:ring-brand-500/50';
 
     return (
         <form onSubmit={onSubmit} className="space-y-4">

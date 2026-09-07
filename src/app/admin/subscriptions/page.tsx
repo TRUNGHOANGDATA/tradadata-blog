@@ -189,7 +189,7 @@ export default function AdminSubscriptionsPage() {
         <>
             {/* Header */}
             <div className="flex items-center justify-between mb-6">
-                <h1 className="text-2xl font-bold text-surface-900 dark:text-surface-100">Theo dõi Premium</h1>
+                <h1 className="text-2xl font-bold text-fg">Theo dõi Premium</h1>
             </div>
 
             {/* Stats Cards */}
@@ -197,22 +197,22 @@ export default function AdminSubscriptionsPage() {
                 <button onClick={() => setStatusFilter('all')}
                     className={`p-4 rounded-xl border transition-all text-left ${statusFilter === 'all'
                         ? 'border-brand-500 bg-brand-50 dark:bg-brand-900/20 ring-2 ring-brand-500/20'
-                        : 'border-surface-200 dark:border-surface-800 bg-white dark:bg-surface-900 hover:border-brand-300'}`}>
+                        : 'border-line bg-card hover:border-brand-300'}`}>
                     <p className="text-xs font-medium text-fg-subtle mb-1">Tổng khách hàng</p>
-                    <p className="text-2xl font-bold text-surface-900 dark:text-surface-100">{stats.total}</p>
+                    <p className="text-2xl font-bold text-fg">{stats.total}</p>
                     <p className="text-xs text-fg-faint mt-1">{subscriptions.length} đăng ký</p>
                 </button>
                 <button onClick={() => setStatusFilter('active')}
                     className={`p-4 rounded-xl border transition-all text-left ${statusFilter === 'active'
                         ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-900/20 ring-2 ring-emerald-500/20'
-                        : 'border-surface-200 dark:border-surface-800 bg-white dark:bg-surface-900 hover:border-emerald-300'}`}>
+                        : 'border-line bg-card hover:border-emerald-300'}`}>
                     <p className="text-xs font-medium text-fg-subtle mb-1">Đang hoạt động</p>
                     <p className="text-2xl font-bold text-emerald-600 dark:text-emerald-400">{stats.active}</p>
                 </button>
                 <button onClick={() => setStatusFilter('expiring')}
                     className={`p-4 rounded-xl border transition-all text-left ${statusFilter === 'expiring'
                         ? 'border-amber-500 bg-amber-50 dark:bg-amber-900/20 ring-2 ring-amber-500/20'
-                        : 'border-surface-200 dark:border-surface-800 bg-white dark:bg-surface-900 hover:border-amber-300'}`}>
+                        : 'border-line bg-card hover:border-amber-300'}`}>
                     <p className="text-xs font-medium text-fg-subtle mb-1">Sắp hết hạn</p>
                     <p className="text-2xl font-bold text-amber-600 dark:text-amber-400">{stats.expiring}</p>
                     <p className="text-xs text-fg-faint mt-1">trong 7 ngày</p>
@@ -220,7 +220,7 @@ export default function AdminSubscriptionsPage() {
                 <button onClick={() => setStatusFilter('expired')}
                     className={`p-4 rounded-xl border transition-all text-left ${statusFilter === 'expired'
                         ? 'border-red-500 bg-red-50 dark:bg-red-900/20 ring-2 ring-red-500/20'
-                        : 'border-surface-200 dark:border-surface-800 bg-white dark:bg-surface-900 hover:border-red-300'}`}>
+                        : 'border-line bg-card hover:border-red-300'}`}>
                     <p className="text-xs font-medium text-fg-subtle mb-1">Đã hết hạn</p>
                     <p className="text-2xl font-bold text-red-600 dark:text-red-400">{stats.expired}</p>
                 </button>
@@ -235,7 +235,7 @@ export default function AdminSubscriptionsPage() {
                         placeholder="Tìm theo tên, email, SĐT..."
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
-                        className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-white dark:bg-surface-900 border border-surface-200 dark:border-surface-700 focus:outline-none focus:ring-2 focus:ring-brand-500/30 text-sm"
+                        className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-card border border-surface-200 dark:border-surface-700 focus:outline-none focus:ring-2 focus:ring-brand-500/30 text-sm"
                     />
                 </div>
                 <div className="flex items-center gap-2">
@@ -243,7 +243,7 @@ export default function AdminSubscriptionsPage() {
                     <select
                         value={productFilter}
                         onChange={(e) => setProductFilter(e.target.value)}
-                        className="px-3 py-2.5 rounded-xl bg-white dark:bg-surface-900 border border-surface-200 dark:border-surface-700 focus:outline-none focus:ring-2 focus:ring-brand-500/30 text-sm"
+                        className="px-3 py-2.5 rounded-xl bg-card border border-surface-200 dark:border-surface-700 focus:outline-none focus:ring-2 focus:ring-brand-500/30 text-sm"
                     >
                         <option value="all">Tất cả sản phẩm</option>
                         {products.map(p => (
@@ -254,11 +254,11 @@ export default function AdminSubscriptionsPage() {
             </div>
 
             {/* Customer Table */}
-            <div className="bg-white dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-800 overflow-hidden">
+            <div className="bg-card rounded-2xl border border-line overflow-hidden">
                 <div className="overflow-x-auto">
                     <table className="w-full">
                         <thead>
-                            <tr className="border-b border-surface-200 dark:border-surface-800 bg-surface-50 dark:bg-surface-800/50">
+                            <tr className="border-b border-line bg-surface-50 dark:bg-surface-800/50">
                                 <th className="text-left px-5 py-3 text-xs font-semibold text-fg-subtle uppercase">Khách hàng</th>
                                 <th className="text-left px-5 py-3 text-xs font-semibold text-fg-subtle uppercase">Sản phẩm</th>
                                 <th className="text-center px-5 py-3 text-xs font-semibold text-fg-subtle uppercase">Trạng thái</th>
@@ -291,7 +291,7 @@ export default function AdminSubscriptionsPage() {
                                                 {/* Customer */}
                                                 <td className="px-5 py-3.5">
                                                     <div className="flex flex-col">
-                                                        <span className="font-semibold text-sm text-surface-900 dark:text-surface-100">{customer.name || '—'}</span>
+                                                        <span className="font-semibold text-sm text-fg">{customer.name || '—'}</span>
                                                         <span className="text-xs text-fg-subtle">{customer.email}</span>
                                                         {customer.phone && <span className="text-xs text-fg-faint">{customer.phone}</span>}
                                                     </div>
@@ -302,7 +302,7 @@ export default function AdminSubscriptionsPage() {
                                                         {productEntries.map(([pid, prod]) => (
                                                             <div key={pid} className="flex items-center gap-2">
                                                                 <Crown className="w-3.5 h-3.5 text-brand-500 flex-shrink-0" />
-                                                                <span className="text-sm font-medium text-surface-900 dark:text-surface-100">{prod.name}</span>
+                                                                <span className="text-sm font-medium text-fg">{prod.name}</span>
                                                             </div>
                                                         ))}
                                                     </div>

@@ -12,9 +12,9 @@ export default function CheckoutCreatePage() {
             <div className="w-full max-w-md">
                 <CheckoutSteps current={2} />
             </div>
-            <div className="w-full max-w-md bg-white dark:bg-surface-900 rounded-2xl shadow-xl shadow-brand-500/5 border border-brand-100 dark:border-surface-800 overflow-hidden">
+            <div className="w-full max-w-md bg-card rounded-2xl shadow-e2 border border-line overflow-hidden">
                 <div className="p-6 text-center bg-brand-50/50 dark:bg-surface-800/50 border-b border-brand-100 dark:border-surface-800">
-                    <h1 className="text-xl font-bold text-surface-900 dark:text-surface-100">
+                    <h1 className="text-xl font-bold text-fg">
                         Thông tin đăng ký
                     </h1>
                     <p className="text-sm text-fg-subtle mt-1">

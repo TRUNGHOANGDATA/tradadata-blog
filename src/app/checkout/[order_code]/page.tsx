@@ -34,7 +34,7 @@ export default async function CheckoutPage(props: { params: Promise<{ order_code
                     <div className="w-16 h-16 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mx-auto mb-6">
                         <CheckCircle2 className="w-8 h-8 text-green-600 dark:text-green-500" />
                     </div>
-                    <h1 className="text-2xl font-bold text-surface-900 dark:text-surface-100 mb-2">
+                    <h1 className="text-2xl font-bold text-fg mb-2">
                         Thanh toán thành công!
                     </h1>
                     <p className="text-surface-600 dark:text-surface-400 mb-8">

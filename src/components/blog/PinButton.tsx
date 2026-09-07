@@ -39,7 +39,7 @@ export function PinButton({ postId, initialPinned }: PinButtonProps) {
             disabled={loading}
             className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all backdrop-blur-sm border ${isPinned
                     ? 'bg-amber-500/20 text-amber-300 border-amber-500/40 hover:bg-amber-500/30'
-                    : 'bg-card/15 text-white border-white/25 hover:bg-white/25'
+                    : 'bg-white/15 text-white border-white/25 hover:bg-white/25'
                 } ${loading ? 'opacity-50 cursor-wait' : ''}`}
             title={isPinned ? 'Bỏ ghim bài viết' : 'Ghim bài viết lên đầu trang'}
         >

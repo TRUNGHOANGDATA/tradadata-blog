@@ -66,7 +66,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         return (
             <div className="min-h-[80vh] flex items-center justify-center">
                 <div className="text-center">
-                    <h2 className="text-2xl font-bold text-surface-900 dark:text-surface-100 mb-4">
+                    <h2 className="text-2xl font-bold text-fg mb-4">
                         Bạn cần đăng nhập
                     </h2>
                     <Link href="/login" className="px-6 py-3 rounded-xl bg-brand-600 text-white font-medium hover:bg-brand-700 transition-colors">
@@ -81,7 +81,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         return (
             <div className="min-h-[80vh] flex items-center justify-center">
                 <div className="text-center">
-                    <h2 className="text-2xl font-bold text-surface-900 dark:text-surface-100 mb-2">
+                    <h2 className="text-2xl font-bold text-fg mb-2">
                         Không có quyền truy cập
                     </h2>
                     <p className="text-fg-subtle mb-4">Bạn cần quyền Admin hoặc Editor để truy cập trang này.</p>
@@ -116,7 +116,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 })}
             </nav>
 
-            <div className="p-4 border-t border-surface-200 dark:border-surface-800">
+            <div className="p-4 border-t border-line">
                 <Link
                     href="/"
                     className={`flex items-center gap-2 text-sm text-fg-subtle hover:text-surface-700 dark:hover:text-surface-300 transition-colors ${!mobile && collapsed ? 'justify-center' : ''
@@ -132,14 +132,14 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     return (
         <div className="flex h-[calc(100vh-64px)] overflow-hidden">
             {/* Mobile top bar */}
-            <div className="fixed top-16 left-0 right-0 z-30 md:hidden bg-white dark:bg-surface-900 border-b border-surface-200 dark:border-surface-800 px-4 py-2.5 flex items-center gap-3">
+            <div className="fixed top-16 left-0 right-0 z-30 md:hidden bg-card border-b border-line px-4 py-2.5 flex items-center gap-3">
                 <button
                     onClick={() => setMobileOpen(true)}
                     className="p-1.5 rounded-lg hover:bg-surface-100 dark:hover:bg-surface-800 transition-colors"
                 >
                     <Menu className="h-5 w-5 text-surface-600 dark:text-surface-400" />
                 </button>
-                <span className="font-bold text-sm text-surface-900 dark:text-surface-100">Admin</span>
+                <span className="font-bold text-sm text-fg">Admin</span>
             </div>
 
             {/* Mobile overlay drawer */}
@@ -151,9 +151,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                         onClick={() => setMobileOpen(false)}
                     />
                     {/* Drawer */}
-                    <aside className="absolute top-0 left-0 w-72 h-full bg-white dark:bg-surface-900 shadow-2xl flex flex-col animate-in slide-in-from-left duration-200">
-                        <div className="flex items-center justify-between p-4 border-b border-surface-200 dark:border-surface-800">
-                            <span className="font-bold text-surface-900 dark:text-surface-100">Admin</span>
+                    <aside className="absolute top-0 left-0 w-72 h-full bg-card shadow-2xl flex flex-col animate-in slide-in-from-left duration-200">
+                        <div className="flex items-center justify-between p-4 border-b border-line">
+                            <span className="font-bold text-fg">Admin</span>
                             <button
                                 onClick={() => setMobileOpen(false)}
                                 className="p-1.5 rounded-lg hover:bg-surface-100 dark:hover:bg-surface-800 transition-colors"
@@ -169,11 +169,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             {/* Desktop sidebar */}
             <aside
                 className={`${collapsed ? 'w-16' : 'w-60'
-                    } bg-white dark:bg-surface-900 border-r border-surface-200 dark:border-surface-800 transition-all duration-300 shrink-0 hidden md:flex flex-col overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]`}
+                    } bg-card border-r border-line transition-all duration-300 shrink-0 hidden md:flex flex-col overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]`}
             >
-                <div className="flex items-center justify-between p-4 border-b border-surface-200 dark:border-surface-800">
+                <div className="flex items-center justify-between p-4 border-b border-line">
                     {!collapsed && (
-                        <span className="font-bold text-surface-900 dark:text-surface-100">
+                        <span className="font-bold text-fg">
                             Admin
                         </span>
                     )}
