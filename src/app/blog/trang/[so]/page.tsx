@@ -1,4 +1,4 @@
-import { notFound } from 'next/navigation';
+import { redirect } from 'next/navigation';
 import { DanhSachBlog, demSoTrang } from '../../DanhSachBlog';
 
 export const revalidate = 3600;
@@ -30,11 +30,21 @@ export default async function TrangBlog({ params }: Props) {
     const { so } = await params;
     const trang = Number(so);
 
-    // `/blog/trang/1` da co redirect ve `/blog` trong next.config.ts.
-    if (!Number.isInteger(trang) || trang < 2) notFound();
+    // Tham so vo nghia hoac vuot so trang -> CHUYEN HUONG ve /blog, khong dung
+    // `notFound()`.
+    //
+    // Vi sao: route nay co `generateStaticParams` + `revalidate`, nen Next cache
+    // luon ket qua not-found va phuc vu nhu trang tinh — do duoc tren production:
+    // /blog/trang/abc tra dung noi dung trang 404 nhung ma trang thai la 200.
+    // Mot trang 404 tra 200 la "soft 404": Google coi la trang that va index no.
+    //
+    // Cach khac la `export const dynamicParams = false` de router tu 404, nhung
+    // the thi khi so bai tang len du 15 trang, /blog/trang/15 se 404 cho tro
+    // toi lan build sau — te hon, vi do la link co that trong bo phan trang.
+    if (!Number.isInteger(trang) || trang < 2) redirect('/blog');
 
     const tongTrang = await demSoTrang();
-    if (trang > tongTrang) notFound();
+    if (trang > tongTrang) redirect('/blog');
 
     return <DanhSachBlog trang={trang} />;
 }

@@ -89,6 +89,10 @@ const nextConfig: NextConfig = {
         permanent: true,
       },
       // ---- URL cu cua danh sach bai viet ----
+      // LUU Y ve regex: dung `[0-9]+`, KHONG dung `\d+`.
+      // Trong chuoi JS nhay don, '\d' la escape khong hop le nen JS bo dau
+      // backslash va gia tri thuc te thanh `(?<p>d+)` — chi khop chu "d", nen
+      // redirect khong bao gio chay. Da bi dung loi nay: /blog?page=3 tra 200.
       // /blog va /category/[slug] da bo `searchParams` de tro thanh trang TINH
       // (query string lam Next ep render dong moi request). Cac URL dang
       // ?page= / ?category= van con o ngoai (link chia se, ket qua Google) nen
@@ -104,7 +108,7 @@ const nextConfig: NextConfig = {
       },
       {
         source: '/blog',
-        has: [{ type: 'query', key: 'page', value: '(?<p>\d+)' }],
+        has: [{ type: 'query', key: 'page', value: '(?<p>[0-9]+)' }],
         destination: '/blog/trang/:p',
         permanent: false,
       },
@@ -116,7 +120,7 @@ const nextConfig: NextConfig = {
       },
       {
         source: '/category/:slug',
-        has: [{ type: 'query', key: 'page', value: '(?<p>\d+)' }],
+        has: [{ type: 'query', key: 'page', value: '(?<p>[0-9]+)' }],
         destination: '/category/:slug/trang/:p',
         permanent: false,
       },
