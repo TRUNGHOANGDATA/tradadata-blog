@@ -3,9 +3,13 @@ import { revalidatePath, revalidateTag } from 'next/cache';
 /**
  * Xoá cache liên quan tới bài viết sau khi ghi dữ liệu.
  *
- * Vì sao cần: `/blog/[slug]` được pre-render tĩnh qua `generateStaticParams` và
- * `src/lib/data/posts.ts` bọc query trong `unstable_cache`. Nếu không gọi hàm này,
- * bài viết đã publish sẽ giữ nguyên nội dung cũ cho tới lần deploy tiếp theo.
+ * Vì sao cần: `src/lib/data/posts.ts` bọc mọi query danh sách/bài viết trong
+ * `unstable_cache` với tag 'posts'. Không gọi hàm này thì bài vừa publish vẫn
+ * hiện nội dung cũ cho tới khi cache tự hết hạn (2-5 phút).
+ *
+ * LƯU Ý: `/blog/[slug]` KHÔNG phải trang tĩnh dù có `generateStaticParams` —
+ * nó gọi `auth()` để gating Premium nên bị render động mọi request. Cái giữ cho
+ * nó nhanh là data cache, không phải route cache.
  *
  * Gọi hàm này ở MỌI API route có ghi vào bảng posts / post_tags / post_categories.
  * Đừng gọi trong route đếm lượt xem — sẽ phá sạch cache mỗi lần có người đọc bài.
@@ -42,7 +46,21 @@ export function revalidatePost(slugs: (string | null | undefined)[] = [], postId
  */
 export function revalidateTaxonomy() {
     revalidateTag('posts');
+    revalidateTag('categories');
     revalidatePath('/categories');
     revalidatePath('/category/[slug]', 'page');
     revalidatePath('/tag/[slug]', 'page');
+}
+
+/**
+ * Xoá cache cấu hình site (`site_settings`).
+ *
+ * Footer nằm trong layout gốc và đọc `social_links`, nên truy vấn đó phải được
+ * cache — nếu không thì MỌI trang render động đều phải chờ một vòng gọi Supabase
+ * trước khi gửi được byte đầu tiên, và `loading.tsx` cũng không kịp hiện.
+ * Gọi hàm này sau khi admin lưu cài đặt để thay đổi hiện ra ngay.
+ */
+export function revalidateSettings() {
+    revalidateTag('settings');
+    revalidatePath('/', 'layout');
 }

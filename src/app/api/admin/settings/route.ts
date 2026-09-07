@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { revalidateSettings } from '@/lib/cache';
 import { auth } from '@/lib/auth';
 import { supabaseAdmin } from '@/lib/supabase/server';
 
@@ -52,6 +53,10 @@ export async function POST(request: Request) {
         });
 
         await Promise.all(updates);
+
+        // Footer trong layout goc doc `social_links` qua unstable_cache (tag 'settings').
+        // Khong xoa cache thi doi cai dat phai cho toi 10 phut moi hien ra.
+        revalidateSettings();
 
         return NextResponse.json({ success: true, message: 'Settings updated' });
     } catch (error: any) {

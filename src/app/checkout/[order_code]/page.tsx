@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { CheckCircle2 } from 'lucide-react';
 import CheckoutClient from './CheckoutClient';
+import { getSetting } from '@/lib/data/settings';
 import { CheckoutSteps } from '@/components/cart/CheckoutSteps';
 
 export const metadata = {
@@ -51,22 +52,12 @@ export default async function CheckoutPage(props: { params: Promise<{ order_code
         );
     }
 
-    // Lấy thông tin ngân hàng từ admin settings
-    const { data: bankSetting } = await supabaseAdmin
-        .from('site_settings')
-        .select('value')
-        .eq('key', 'bank_info')
-        .single();
-
-    // Lấy thông tin liên hệ (zalo, facebook)
-    const { data: socialSetting } = await supabaseAdmin
-        .from('site_settings')
-        .select('value')
-        .eq('key', 'social_links')
-        .single();
-
-    const socialLinks = socialSetting?.value || {};
-    const bankInfoBase = bankSetting?.value || {};
+    // Cấu hình ngân hàng + liên hệ: đọc qua tầng settings có cache.
+    // Truy vấn `orders` ở trên thì KHÔNG cache — dữ liệu theo từng đơn hàng.
+    const [bankInfoBase, socialLinks] = await Promise.all([
+        getSetting<Record<string, string>>('bank_info', {}),
+        getSetting<Record<string, string>>('social_links', {}),
+    ]);
     const bankInfo = {
         bankId: '970422',
         accountNo: '0123456',

@@ -1,25 +1,41 @@
 import Link from 'next/link';
 import { Mail, ExternalLink, Phone } from 'lucide-react';
 import { SITE_CONFIG, DEFAULT_CATEGORIES } from '@/lib/constants';
+import { unstable_cache } from 'next/cache';
 import { supabaseAdmin } from '@/lib/supabase/server';
 
-async function getFooterSettings() {
-    if (!supabaseAdmin) return { email: 'trunghoangdata101091@gmail.com', phone: '' };
-    try {
-        const { data } = await supabaseAdmin
-            .from('site_settings')
-            .select('key, value')
-            .eq('key', 'social_links')
-            .single();
-        const links = data?.value as any;
-        return {
-            email: links?.email || 'trunghoangdata101091@gmail.com',
-            phone: links?.phone || '',
-        };
-    } catch {
-        return { email: 'trunghoangdata101091@gmail.com', phone: '' };
-    }
-}
+/**
+ * BẮT BUỘC giữ trong `unstable_cache`.
+ *
+ * Footer nằm trong layout gốc. Layout mà `await` một truy vấn không cache thì
+ * React không render nổi shell, nên server không gửi được byte nào cho tới khi
+ * truy vấn xong — mọi trang render động đều trả giá, và `loading.tsx` cũng
+ * không có cơ hội hiện ra (đo được: TTFB /blog là 1343ms).
+ *
+ * Tag 'settings' — `revalidateSettings()` trong src/lib/cache.ts xoá ngay khi
+ * admin lưu cài đặt.
+ */
+const getFooterSettings = unstable_cache(
+    async () => {
+        if (!supabaseAdmin) return { email: 'trunghoangdata101091@gmail.com', phone: '' };
+        try {
+            const { data } = await supabaseAdmin
+                .from('site_settings')
+                .select('key, value')
+                .eq('key', 'social_links')
+                .single();
+            const links = data?.value as any;
+            return {
+                email: links?.email || 'trunghoangdata101091@gmail.com',
+                phone: links?.phone || '',
+            };
+        } catch {
+            return { email: 'trunghoangdata101091@gmail.com', phone: '' };
+        }
+    },
+    ['footer-settings-v1'],
+    { revalidate: 600, tags: ['settings'] }
+);
 
 export async function Footer() {
     const settings = await getFooterSettings();

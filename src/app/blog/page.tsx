@@ -3,7 +3,7 @@ import { getCategories, getCategoryBySlug } from '@/lib/data/categories';
 import { BlogListClient } from './BlogListClient';
 import { Newsletter } from '@/components/blog/Newsletter';
 import { PinnedSlider } from '@/components/blog/PinnedSlider';
-import { supabaseAdmin } from '@/lib/supabase/server';
+import { getSetting } from '@/lib/data/settings';
 
 export const metadata = {
     title: 'Bài viết',
@@ -20,16 +20,8 @@ export default async function BlogPage({ searchParams }: Props) {
     const params = await searchParams;
     const currentPage = Math.max(1, parseInt(params.page || '1', 10) || 1);
 
-    // Get posts_per_page setting from DB
-    let postsPerPage = 12;
-    try {
-        const { data } = await supabaseAdmin
-            .from('site_settings')
-            .select('value')
-            .eq('key', 'posts_per_page')
-            .single();
-        if (data?.value) postsPerPage = Number(data.value) || 12;
-    } catch { /* use default */ }
+    // posts_per_page: doc qua tang settings co cache thay vi truy van tho moi request
+    const postsPerPage = Number(await getSetting('posts_per_page', 12)) || 12;
 
     // Resolve category slug to ID (if filtering by category)
     let categoryId: string | undefined;
