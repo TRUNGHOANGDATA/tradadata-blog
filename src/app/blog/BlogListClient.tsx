@@ -44,18 +44,19 @@ export function BlogListClient({
     }, [searchQuery, initialPosts]);
 
     // Build URL with params
-    const buildUrl = (page: number, category?: string) => {
-        const params = new URLSearchParams();
-        if (page > 1) params.set('page', String(page));
-        const cat = category !== undefined ? category : currentCategory;
-        if (cat) params.set('category', cat);
-        const qs = params.toString();
-        return qs ? `/blog?${qs}` : '/blog';
-    };
+    /**
+     * Dung ROUTE SEGMENT, khong dung query string.
+     *
+     * `?page=` va `?category=` lam Next ep trang render dong moi request (do
+     * duoc: TTFB 0,29-0,41s so voi 0,14-0,16s cua trang tinh). Doi sang
+     * `/blog/trang/N` va `/category/<slug>` thi ca hai deu tinh.
+     * URL cu van song nho redirect khai trong next.config.ts.
+     */
+    const buildUrl = (page: number) => (page <= 1 ? '/blog' : `/blog/trang/${page}`);
 
     const handleCategoryChange = (slug: string) => {
-        // Reset to page 1 when changing category
-        router.push(buildUrl(1, slug));
+        // Loc theo danh muc co route rieng; bo loc thi ve /blog
+        router.push(slug ? `/category/${slug}` : '/blog');
     };
 
     // Generate page numbers with ellipsis for large page counts

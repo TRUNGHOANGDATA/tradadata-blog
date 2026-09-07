@@ -29,6 +29,9 @@ export function revalidatePost(slugs: (string | null | undefined)[] = [], postId
     // Route cache của các trang tĩnh có liệt kê bài viết
     revalidatePath('/');
     revalidatePath('/blog');
+    // Phan trang la route segment tinh (/blog/trang/2, /blog/trang/3...) nen phai
+    // xoa ca chung, khong thi bai moi khong day duoc cac trang sau.
+    revalidatePath('/blog/trang/[so]', 'page');
     revalidatePath('/sitemap.xml');
 
     // Trang chi tiết của từng bài
@@ -49,6 +52,7 @@ export function revalidateTaxonomy() {
     revalidateTag('categories');
     revalidatePath('/categories');
     revalidatePath('/category/[slug]', 'page');
+    revalidatePath('/category/[slug]/trang/[so]', 'page');
     revalidatePath('/tag/[slug]', 'page');
 }
 
