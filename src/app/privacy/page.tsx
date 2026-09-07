@@ -1,7 +1,7 @@
 import { SITE_CONFIG } from '@/lib/constants';
 
 export const metadata = {
-    title: 'Chính sách bảo mật | Trà Đá Data',
+    title: 'Chính sách bảo mật',
     description: 'Chính sách bảo mật và quyền riêng tư của TRÀ ĐÁ DATA',
     robots: { index: false, follow: true },
 };

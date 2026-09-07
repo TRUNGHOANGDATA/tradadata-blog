@@ -3,6 +3,14 @@ import { Search as SearchIcon, ArrowLeft } from 'lucide-react';
 import { searchPosts } from '@/lib/data/posts';
 import { PostCard } from '@/components/blog/PostCard';
 
+export const metadata = {
+    title: 'Tìm kiếm',
+    description: 'Tìm bài viết theo từ khoá trên Trà Đá Data.',
+    // Trang ket qua tim kiem sinh vo han URL theo tham so ?q= va noi dung trung
+    // lap voi /blog, nen khong de Google index.
+    robots: { index: false, follow: true },
+};
+
 type Props = {
     searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 };

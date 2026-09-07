@@ -193,6 +193,24 @@
 
      Độ nhấc khi hover cũng chỉ 2 mức: thẻ `hover:-translate-y-1` (4px),
      nút `hover:-translate-y-0.5` (2px).                                  */
+
+  /* ── VÙNG BẤM ────────────────────────────────────────────────────────
+     WCAG 2.2 AA yêu cầu tối thiểu 24x24px; mức AAA và hướng dẫn của
+     Apple/Google là 44x44px. Quy ước ở đây:
+
+       nút chỉ có icon, control chính   min-h-11 min-w-11   (44px)
+       link trong danh sách (footer…)   thêm py-1.5         (>= 32px)
+       link chữ nằm trong câu           không cần (WCAG miễn trừ)
+
+     Cách làm: KHÔNG phóng to icon, chỉ mở rộng vùng bấm bằng
+     `min-h-11 min-w-11` + `grid place-items-center`, nên giao diện gần như
+     không đổi. Trước đây 28/57 phần tử bấm được trên mobile dưới 44px:
+     icon header 36x36, "Đăng nhập" 48x32, chấm slider 28x28,
+     link footer cao 20px.
+
+     Lưu ý: đổi nút icon sang min-h-11 thì phải kiểm lại các phần tử con đặt
+     `absolute` theo toạ độ cứng (top-2 left-2…) — nút to ra là chúng lệch.
+     Dùng `absolute inset-0 m-auto` để tự căn giữa.                       */
   --shadow-e1: 0 1px 2px 0 rgb(15 23 42 / 0.04), 0 1px 3px 0 rgb(15 23 42 / 0.06);
   --shadow-e2: 0 2px 4px -1px rgb(15 23 42 / 0.05), 0 8px 16px -4px rgb(15 23 42 / 0.08);
   --shadow-e3: 0 4px 8px -2px rgb(15 23 42 / 0.06), 0 20px 32px -8px rgb(15 23 42 / 0.12);
@@ -978,40 +996,6 @@
 .dark .admin-loading-chart {
   background: rgba(255, 255, 255, 0.02);
   border-color: rgba(255, 255, 255, 0.08);
-}
-
-/* ============================================
-   Custom Cursor
-   ============================================ */
-.custom-cursor-active,
-.custom-cursor-active * {
-  cursor: none !important;
-}
-
-.custom-cursor-dot {
-  position: fixed;
-  top: 0;
-  left: 0;
-  pointer-events: none;
-  z-index: 99999;
-  border-radius: 50%;
-  background: white;
-  mix-blend-mode: difference;
-  transition: width 0.15s ease, height 0.15s ease, opacity 0.2s ease;
-  will-change: transform;
-}
-
-.custom-cursor-ring {
-  position: fixed;
-  top: 0;
-  left: 0;
-  pointer-events: none;
-  z-index: 99998;
-  border-radius: 50%;
-  border: 2px solid rgba(255, 255, 255, 0.4);
-  mix-blend-mode: difference;
-  transition: width 0.3s ease, height 0.3s ease, border-color 0.3s ease, background-color 0.3s ease, opacity 0.2s ease;
-  will-change: transform;
 }
 
 /* ============================================

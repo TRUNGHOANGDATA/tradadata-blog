@@ -49,7 +49,7 @@ export function SearchBar() {
             {/* Trigger Button */}
             <button
                 onClick={() => setOpen(true)}
-                className="flex items-center gap-2 px-3 py-2 rounded-xl bg-surface-100 dark:bg-surface-800 hover:bg-surface-200 dark:hover:bg-surface-700 text-fg-subtle transition-all duration-300 text-sm border border-surface-200 dark:border-surface-700"
+                className="flex items-center gap-2 min-h-11 px-3 rounded-xl bg-surface-100 dark:bg-surface-800 hover:bg-surface-200 dark:hover:bg-surface-700 text-fg-subtle transition-all duration-300 text-sm border border-surface-200 dark:border-surface-700"
             >
                 <Search className="h-4 w-4" />
                 <span className="hidden sm:inline">Tìm kiếm...</span>

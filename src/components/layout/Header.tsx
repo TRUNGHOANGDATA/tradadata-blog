@@ -53,7 +53,7 @@ export function Header() {
                                 {/* Cart Toggle */}
                                 <button
                                     onClick={() => setCartOpen(true)}
-                                    className="relative p-2 text-fg-muted hover:text-surface-900 dark:hover:text-surface-100 hover:bg-surface-100 dark:hover:bg-surface-800 rounded-xl transition-all"
+                                    className="relative inline-flex items-center justify-center min-h-11 min-w-11 text-fg-muted hover:text-surface-900 dark:hover:text-surface-100 hover:bg-surface-100 dark:hover:bg-surface-800 rounded-xl transition-all"
                                     aria-label="Giỏ hàng"
                                 >
                                     <ShoppingCart className="h-5 w-5" />
@@ -139,7 +139,7 @@ export function Header() {
                                 ) : (
                                     <button
                                         onClick={() => signIn('google')}
-                                        className="flex items-center gap-2 px-4 py-2 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-sm font-medium transition-all duration-200 shadow-lg shadow-brand-600/25 hover:shadow-brand-600/40"
+                                        className="flex items-center justify-center gap-2 min-h-11 px-4 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-sm font-medium transition-all duration-200 shadow-lg shadow-brand-600/25 hover:shadow-brand-600/40"
                                     >
                                         <LogIn className="h-4 w-4" />
                                         <span className="hidden sm:inline">Đăng nhập</span>
@@ -149,7 +149,7 @@ export function Header() {
                                 {/* Mobile Menu Toggle */}
                                 <button
                                     onClick={() => setMobileOpen(!mobileOpen)}
-                                    className="md:hidden p-2 rounded-xl hover:bg-surface-100 dark:hover:bg-surface-800 transition-colors"
+                                    className="md:hidden inline-flex items-center justify-center min-h-11 min-w-11 rounded-xl hover:bg-surface-100 dark:hover:bg-surface-800 transition-colors"
                                 >
                                     {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
                                 </button>
@@ -166,7 +166,7 @@ export function Header() {
                                         key={item.href}
                                         href={item.href}
                                         onClick={() => setMobileOpen(false)}
-                                        className="flex items-center px-3 py-2.5 rounded-xl text-surface-700 dark:text-surface-300 hover:bg-surface-100 dark:hover:bg-surface-800 transition-colors text-sm font-medium"
+                                        className="flex items-center min-h-11 px-3 rounded-xl text-surface-700 dark:text-surface-300 hover:bg-surface-100 dark:hover:bg-surface-800 transition-colors text-sm font-medium"
                                     >
                                         {item.label}
                                     </Link>

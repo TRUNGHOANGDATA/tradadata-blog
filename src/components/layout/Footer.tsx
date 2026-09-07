@@ -61,7 +61,7 @@ export async function Footer() {
                                 <li key={cat.slug}>
                                     <Link
                                         href={`/category/${cat.slug}`}
-                                        className="text-sm hover:text-white transition-colors flex items-center gap-2"
+                                        className="text-sm py-1.5 hover:text-white transition-colors flex items-center gap-2"
                                     >
                                         <span>{cat.icon}</span>
                                         {cat.name}
@@ -76,27 +76,27 @@ export async function Footer() {
                         <h3 className="text-white font-semibold mb-4">Liên kết</h3>
                         <ul className="space-y-2">
                             <li>
-                                <Link href="/blog" className="text-sm hover:text-white transition-colors">
+                                <Link href="/blog" className="text-sm py-1.5 hover:text-white transition-colors">
                                     Tất cả bài viết
                                 </Link>
                             </li>
                             <li>
-                                <Link href="/about" className="text-sm hover:text-white transition-colors">
+                                <Link href="/about" className="text-sm py-1.5 hover:text-white transition-colors">
                                     Giới thiệu
                                 </Link>
                             </li>
                             <li>
-                                <Link href="/courses" className="text-sm hover:text-white transition-colors flex items-center gap-1">
+                                <Link href="/courses" className="text-sm py-1.5 hover:text-white transition-colors flex items-center gap-1">
                                     Khóa học
                                 </Link>
                             </li>
                             <li>
-                                <Link href="/terms" className="text-sm hover:text-white transition-colors">
+                                <Link href="/terms" className="text-sm py-1.5 hover:text-white transition-colors">
                                     Điều khoản sử dụng
                                 </Link>
                             </li>
                             <li>
-                                <Link href="/privacy" className="text-sm hover:text-white transition-colors">
+                                <Link href="/privacy" className="text-sm py-1.5 hover:text-white transition-colors">
                                     Chính sách bảo mật
                                 </Link>
                             </li>
@@ -110,7 +110,7 @@ export async function Footer() {
                             <li>
                                 <a
                                     href={`mailto:${settings.email}`}
-                                    className="text-sm hover:text-white transition-colors flex items-center gap-2"
+                                    className="text-sm py-1.5 hover:text-white transition-colors flex items-center gap-2"
                                 >
                                     <Mail className="h-4 w-4" />
                                     {settings.email}
@@ -120,7 +120,7 @@ export async function Footer() {
                                 <li>
                                     <a
                                         href={`tel:${settings.phone}`}
-                                        className="text-sm hover:text-white transition-colors flex items-center gap-2"
+                                        className="text-sm py-1.5 hover:text-white transition-colors flex items-center gap-2"
                                     >
                                         <Phone className="h-4 w-4" />
                                         {settings.phone}

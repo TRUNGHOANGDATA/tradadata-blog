@@ -6,7 +6,7 @@ import { PinnedSlider } from '@/components/blog/PinnedSlider';
 import { supabaseAdmin } from '@/lib/supabase/server';
 
 export const metadata = {
-    title: 'Bài viết | Trà Đá Data',
+    title: 'Bài viết',
     description: 'Khám phá tất cả các bài viết về Data & AI',
 };
 

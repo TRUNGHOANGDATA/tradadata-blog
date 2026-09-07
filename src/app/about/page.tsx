@@ -1,6 +1,13 @@
 import { BookOpen, Users, Code, Heart } from 'lucide-react';
 import { SITE_CONFIG } from '@/lib/constants';
 
+export const metadata = {
+    // KHONG viet "| Tra Da Data": layout goc da co template '%s | Tra Da Data'
+    title: 'Giới thiệu',
+    description: `Về ${SITE_CONFIG.name} — blog chia sẻ kiến thức thực chiến về Excel, Power BI, SQL, Python, AI và quản lý chuỗi cung ứng.`,
+    alternates: { canonical: '/about' },
+};
+
 export default function AboutPage() {
     return (
         <>
