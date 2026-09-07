@@ -4,10 +4,13 @@
 # Cùng pattern với repo ke-truyen: build/push chạy trên runner GitHub, bước deploy
 # chỉ gửi vài lệnh kubectl qua SSH nên không cần self-hosted runner.
 #
-# ⚠️ DEPLOY TỰ ĐỘNG mỗi push vào main. Container `blog` và `ke-truyen` nằm CHUNG
-#    1 pod với `strategy: Recreate`, nên mỗi lần deploy blog thì
-#    truyen.tradadata.com cũng downtime ~1-2 phút, và ngược lại.
-#    Không muốn tự động thì xoá khối `push:` bên dưới, chỉ giữ `workflow_dispatch`.
+# ⚠️ CHỈ chạy bằng tay (`workflow_dispatch`). Khối `push:` đã bị bỏ ở commit 34fbb08
+#    để tiết kiệm phút Actions — repo này private nên phút bị tính tiền. Muốn deploy
+#    tự động lại thì thêm `push: { branches: [main] }` vào khối `on:`.
+#    Đường đang dùng thực tế là workflow `deploy-blog` ở repo ke-truyen (repo đó public
+#    nên phút Actions miễn phí, và bộ secret SSH vào cụm cũng nằm ở đó).
+#    Container `blog` và `ke-truyen` nằm CHUNG 1 pod với `strategy: Recreate`, nên mỗi
+#    lần deploy blog thì truyen.tradadata.com cũng downtime ~1-2 phút, và ngược lại.
 #
 # ─── Secrets cần khai (Settings > Secrets and variables > Actions) ────────────
 #   SSH_PRIVATE_KEY                    khoá riêng vào gateway + control plane
