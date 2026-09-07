@@ -1,4 +1,4 @@
-import { redirect } from 'next/navigation';
+import { notFound } from 'next/navigation';
 import { DanhSachBlog, demSoTrang } from '../../DanhSachBlog';
 
 export const revalidate = 3600;
@@ -30,21 +30,28 @@ export default async function TrangBlog({ params }: Props) {
     const { so } = await params;
     const trang = Number(so);
 
-    // Tham so vo nghia hoac vuot so trang -> CHUYEN HUONG ve /blog, khong dung
-    // `notFound()`.
+    // ĐÃ THỬ HAI CÁCH, cả hai đều KHÔNG trả được mã 404 thật:
     //
-    // Vi sao: route nay co `generateStaticParams` + `revalidate`, nen Next cache
-    // luon ket qua not-found va phuc vu nhu trang tinh — do duoc tren production:
-    // /blog/trang/abc tra dung noi dung trang 404 nhung ma trang thai la 200.
-    // Mot trang 404 tra 200 la "soft 404": Google coi la trang that va index no.
+    //   notFound()  -> body dung la trang 404, nhung ma tra ve 200
+    //   redirect()  -> cung 200, kem body la trang chuyen huong phia client
     //
-    // Cach khac la `export const dynamicParams = false` de router tu 404, nhung
-    // the thi khi so bai tang len du 15 trang, /blog/trang/15 se 404 cho tro
-    // toi lan build sau — te hon, vi do la link co that trong bo phan trang.
-    if (!Number.isInteger(trang) || trang < 2) redirect('/blog');
+    // Ly do: route nay co `generateStaticParams` + `revalidate`, nen Next PRERENDER
+    // ket qua roi cache lai (do duoc tren production: `x-nextjs-prerender: 1`,
+    // `x-nextjs-cache: HIT`). Da prerender thi khong con request nao de gan ma
+    // trang thai hay header Location vao.
+    //
+    // Cach DUY NHAT tra 404 that la `export const dynamicParams = false` — router
+    // tu 404 cho moi tham so khong nam trong generateStaticParams, khong render gi.
+    // CO Y KHONG dung, vi khi so bai tang du 15 trang thi /blog/trang/15 se 404
+    // cho toi lan deploy sau — ma do la link CO THAT trong bo phan trang. Doi mot
+    // link that bi hong de sua ma trang thai cua mot URL khong ai tro tao la lo.
+    //
+    // Giu `notFound()` de nguoi doc thay dung trang 404. Google phan loai truong
+    // hop nay la "soft 404" va KHONG index no, nen thiet hai SEO thuc te la ~0.
+    if (!Number.isInteger(trang) || trang < 2) notFound();
 
     const tongTrang = await demSoTrang();
-    if (trang > tongTrang) redirect('/blog');
+    if (trang > tongTrang) notFound();
 
     return <DanhSachBlog trang={trang} />;
 }

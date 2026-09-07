@@ -1,4 +1,4 @@
-import { notFound, redirect } from 'next/navigation';
+import { notFound } from 'next/navigation';
 import { getCategories, getCategoryBySlug } from '@/lib/data/categories';
 import { NoiDungDanhMuc, demSoTrangDanhMuc } from '../../NoiDungDanhMuc';
 
@@ -35,18 +35,16 @@ export default async function TrangDanhMuc({ params }: Props) {
     const { slug, so } = await params;
     const trang = Number(so);
 
-    // So trang vo nghia / vuot pham vi -> chuyen huong ve trang 1 cua danh muc,
-    // KHONG dung notFound(). Xem chu thich day du o blog/trang/[so]/page.tsx:
-    // route co generateStaticParams + revalidate nen Next cache ket qua not-found
-    // va tra ma 200 -> soft 404, Google coi la trang that.
-    if (!Number.isInteger(trang) || trang < 2) redirect(`/category/${slug}`);
+    // Xem chu thich day du o src/app/blog/trang/[so]/page.tsx: route prerender
+    // nen ma tra ve la 200 du body dung la trang 404. Da can nhac
+    // `dynamicParams = false` va co y khong dung.
+    if (!Number.isInteger(trang) || trang < 2) notFound();
 
-    // Danh muc khong ton tai thi 404 THAT SU — day khong phai loi so trang.
     const cat = await getCategoryBySlug(slug);
     if (!cat) notFound();
 
     const tong = await demSoTrangDanhMuc(cat.id);
-    if (trang > tong) redirect(`/category/${slug}`);
+    if (trang > tong) notFound();
 
     return <NoiDungDanhMuc slug={slug} trang={trang} />;
 }
