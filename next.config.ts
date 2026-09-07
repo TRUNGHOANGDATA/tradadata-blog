@@ -27,7 +27,29 @@ const nextConfig: NextConfig = {
   },
   devIndicators: false,
   images: {
-    formats: ['image/avif', 'image/webp'],
+    // CHI WebP, KHONG dung AVIF.
+    //
+    // Do thuc te tren cum (07/09/2026), cung mot anh cover 502KB tu Google Drive,
+    // cache lanh:
+    //     AVIF w=1920  6,18s  ->  24 KB
+    //     WebP w=1920  1,29s  ->  30 KB
+    //     AVIF w=828   7,06s  ->  25 KB
+    //     WebP w=828   1,09s  ->  31 KB
+    // Tuc pod bo ra 6-7 GIAY encode AVIF de tiet kiem 6KB. Do rong gan nhu khong
+    // anh huong — chi phi nam o bo encode AVIF. Day la ly do "anh dau bai load lau".
+    // Cum nay yeu, dung them AVIF lai la quay ve 6 giay.
+    formats: ['image/webp'],
+
+    // Bo 2048 va 3840 khoi thang mac dinh cua Next.
+    // Anh hero rong toi da ~1216px (max-w-7xl tru padding) ma truoc day trinh
+    // duyet xin w=3840 vi the <Image fill> khong khai `sizes`. Moi breakpoint la
+    // mot lan encode rieng, nen cang it bac cang it viec cho pod.
+    deviceSizes: [640, 750, 828, 1080, 1200, 1920],
+
+    // Optimizer chi tra `max-age=86400` (1 ngay), va `.next/cache` nam TRONG
+    // container nen moi lan deploy la mat sach -> anh lai lanh. Keo TTL len 30 ngay
+    // de tra gia encode mot lan cho moi lan deploy thay vi lap lai hang ngay.
+    minimumCacheTTL: 2592000,
     remotePatterns: [
       {
         protocol: 'https',
