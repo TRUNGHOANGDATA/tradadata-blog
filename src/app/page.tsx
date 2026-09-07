@@ -6,8 +6,7 @@ import { CategoryCard } from '@/components/blog/CategoryCard';
 import { PinnedSlider } from '@/components/blog/PinnedSlider';
 import { SITE_CONFIG } from '@/lib/constants';
 import { getLatestPosts, getPosts, getPinnedPosts } from '@/lib/data/posts';
-import { getCategories } from '@/lib/data/categories';
-import { supabaseAdmin } from '@/lib/supabase/server';
+import { getCategories, getCategoryPostCounts } from '@/lib/data/categories';
 
 export const revalidate = 60;
 
@@ -23,22 +22,8 @@ export default async function HomePage() {
   const pinnedIds = new Set(pinnedPosts.map(p => p.id));
   const otherPosts = recentPosts.filter(p => !pinnedIds.has(p.id)).slice(0, 6);
 
-  // Get post counts per category (only published posts, using junction table)
-  const { data: publishedPosts } = await supabaseAdmin
-    .from('posts')
-    .select('id')
-    .eq('status', 'published');
-  const publishedIds = new Set((publishedPosts || []).map((p: any) => p.id));
-
-  const { data: countData } = await supabaseAdmin
-    .from('post_categories')
-    .select('category_id, post_id');
-  const categoryCounts: Record<string, number> = {};
-  (countData || []).forEach((pc: any) => {
-    if (pc.category_id && publishedIds.has(pc.post_id)) {
-      categoryCounts[pc.category_id] = (categoryCounts[pc.category_id] || 0) + 1;
-    }
-  });
+  // Dem bai theo danh muc — da gom vao tang data va co cache (tags: posts + categories)
+  const categoryCounts = await getCategoryPostCounts();
 
 
 

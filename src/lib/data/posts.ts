@@ -40,7 +40,18 @@ function formatPost(post: any, { stripContent = false }: { stripContent?: boolea
 // Alias cho các hàm trả về danh sách — khó quên hơn là truyền option bằng tay
 const formatPostForList = (post: any): Post => formatPost(post, { stripContent: true });
 
-export async function getPosts({
+/**
+ * Truy van danh sach bai viet.
+ *
+ * Ban chua cache de o duoi, `getPosts` xuat ra la ban DA BOC unstable_cache.
+ * Vi sao phai cache: /blog dung `searchParams` nen bi Next ep render dong, tuc
+ * `export const revalidate` cua trang khong bao gio ap dung. Neu tang data cung
+ * khong cache thi moi request la mot vong goi Supabase — do duoc TTFB 1.3s.
+ *
+ * Cache duoc gan tag 'posts' nen `revalidatePost()` trong src/lib/cache.ts van
+ * xoa sach khi co bai moi. Dung bo tag di.
+ */
+async function getPostsUncached({
     page = 1,
     limit = 10,
     categoryId,
@@ -113,6 +124,12 @@ export async function getPosts({
         count: count || 0,
     };
 }
+
+export const getPosts = unstable_cache(
+    getPostsUncached,
+    ['posts-list-v1'],
+    { revalidate: 120, tags: ['posts'] } // 2 phut; revalidatePost() xoa ngay khi can
+);
 
 // Cached version — prevents duplicate DB queries between generateMetadata and BlogPostPage
 export const getPostBySlug = unstable_cache(
@@ -219,7 +236,7 @@ export const getRelatedPosts = unstable_cache(
     { revalidate: 600, tags: ['posts'] } // Cache 10 phút
 );
 
-export async function getPinnedPosts(limit = 5): Promise<Post[]> {
+async function getPinnedPostsUncached(limit = 5): Promise<Post[]> {
     if (!supabaseAdmin) return [];
 
     const { data, error } = await supabaseAdmin
@@ -262,6 +279,8 @@ export async function getPinnedPosts(limit = 5): Promise<Post[]> {
     });
 }
 
+// KHONG boc cache rieng: no goi getPosts (da cache) nen tu huong cache theo.
+// Boc them mot lop nua chi ton bo nho ma khong nhanh hon.
 export async function getLatestPosts(limit = 6): Promise<Post[]> {
     const { data } = await getPosts({ limit });
     return data;
@@ -282,7 +301,7 @@ export const getAllPublishedSlugs = unstable_cache(
     { revalidate: 3600, tags: ['posts'] }
 );
 
-export async function searchPosts(query: string): Promise<Post[]> {
+async function searchPostsUncached(query: string): Promise<Post[]> {
     if (!supabaseAdmin || !query) return [];
 
     const { data, error } = await supabaseAdmin
@@ -300,3 +319,43 @@ export async function searchPosts(query: string): Promise<Post[]> {
 
     return (data || []).map(formatPostForList);
 }
+
+export const getPinnedPosts = unstable_cache(
+    getPinnedPostsUncached,
+    ['pinned-posts-v1'],
+    { revalidate: 300, tags: ['posts'] }
+);
+
+/**
+ * Tim kiem co cache 60 giay.
+ *
+ * Khoa cache la chuoi nguoi dung go nen khong gioi han so khoa. 60 giay du de
+ * chan viec go lai/tai lai cung tu khoa lien tuc ma khong phinh cache tren dia.
+ */
+export const searchPosts = unstable_cache(
+    searchPostsUncached,
+    ['search-posts-v1'],
+    { revalidate: 60, tags: ['posts'] }
+);
+
+/**
+ * Tag cua mot bai viet. Truoc day viet tho ngay trong /blog/[slug] — ma trang do
+ * render DONG moi request (vi goi `auth()` de gating Premium), nen truy van nay
+ * chay lai moi luot doc bai.
+ *
+ * KHONG cache duoc chung voi truy van kiem tra `profiles.is_subscribed` ben canh:
+ * cai do la du lieu theo NGUOI DUNG, cache lai la ro quyen Premium sang nguoi khac.
+ */
+export const getPostTags = unstable_cache(
+    async (postId: string): Promise<{ id: string; name: string; slug: string }[]> => {
+        if (!supabaseAdmin) return [];
+        const { data } = await supabaseAdmin
+            .from('post_tags')
+            .select('tag_id, tags(id, name, slug)')
+            .eq('post_id', postId);
+        type Row = { tags: { id: string; name: string; slug: string } | null };
+        return ((data as Row[] | null) || []).map(pt => pt.tags).filter((t): t is { id: string; name: string; slug: string } => !!t);
+    },
+    ['post-tags-v1'],
+    { revalidate: 300, tags: ['posts'] }
+);

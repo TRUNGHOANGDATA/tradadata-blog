@@ -149,10 +149,39 @@ trong khi luồng auto-activate ở `orders/create` lại đọc đúng `product
 
 ## Điểm cần lưu ý khi phát triển tiếp
 
-- **Cache**: `/blog/[slug]` là SSG (pre-render lúc build, không có `revalidate`) nên trang đã
-  publish sẽ đóng băng cho tới lần deploy sau nếu không invalidate thủ công.
-  Dùng `revalidatePost(slugs, postId)` / `revalidateTaxonomy()` trong `src/lib/cache.ts` —
-  **bắt buộc gọi ở mọi API route ghi vào posts / post_tags / post_categories / categories / tags**.
+- **Trang nào tĩnh, trang nào động** (đo bằng `curl -I`, xem `Cache-Control`):
+  - `/`, `/categories`, `/tag/[slug]`, `/courses` — có `revalidate` và không dùng
+    API động ⇒ được cache ở tầng route (`x-nextjs-cache: HIT`), rất nhanh.
+  - `/blog` — **động**, vì dùng `searchParams` (phân trang, lọc danh mục).
+    `export const revalidate` ở file đó KHÔNG bao giờ áp dụng, đừng tin nó.
+  - `/blog/[slug]` — **động**, vì gọi `auth()` để gating Premium.
+    Có `generateStaticParams` nhưng nó chỉ còn tác dụng lúc build.
+  ⇒ Với hai trang động này, thứ giữ cho chúng nhanh là **data cache**, không phải
+  route cache. Đừng thêm `export const revalidate` rồi tưởng đã xong.
+
+- **Mọi truy vấn dùng chung phải đi qua `src/lib/data/*` và bọc `unstable_cache`.**
+  Đừng viết `supabaseAdmin.from(...)` thẳng trong page component. Lý do đo được
+  (07/09/2026): TTFB `/blog` là **1343ms** vì tầng data không cache và có 36 truy
+  vấn thô nằm rải trong page.
+  - `posts.ts`: `getPosts`, `getPostBySlug`, `getPinnedPosts`, `getRelatedPosts`,
+    `searchPosts`, `getPostTags`, `getAllPublishedSlugs` — tag `posts`.
+  - `categories.ts`: `getCategories`, `getCategoryBySlug`, `getCategoryPostCounts`
+    — tag `categories` (riêng `getCategoryPostCounts` mang cả hai tag).
+  - `settings.ts`: `getSetting(key, fallback)` — tag `settings`.
+  - **KHÔNG được cache**: dữ liệu theo người dùng hoặc theo đơn hàng —
+    `profiles.is_subscribed` trong `/blog/[slug]`, `user_bookmarks` ở `/saved`,
+    `orders` ở `/checkout/[order_code]`, và `getPostBySlugForPreview` (xem bản nháp).
+    Cache dùng chung cho mọi khách nên cache mấy thứ này là rò dữ liệu/quyền.
+
+- **Layout gốc KHÔNG được `await` truy vấn không cache.** `Footer` nằm trong layout
+  và đọc `site_settings`; trước đây không cache nên React không render nổi shell,
+  server không gửi được byte nào cho tới khi truy vấn xong ⇒ mọi trang động trả giá,
+  và `loading.tsx` cũng không có cơ hội hiện ra. Đã bọc `unstable_cache` tag `settings`.
+
+- **Invalidate**: `revalidatePost(slugs, postId)` / `revalidateTaxonomy()` /
+  `revalidateSettings()` trong `src/lib/cache.ts` —
+  **bắt buộc gọi ở mọi API route ghi vào posts / post_tags / post_categories /
+  categories / tags / site_settings**.
   Đừng gọi trong route đếm lượt xem (`/api/posts/[slug]/view`) — sẽ phá cache mỗi lượt đọc.
 - `src/lib/rate-limit.ts` dùng Upstash Redis (sliding window) khi có
   `UPSTASH_REDIS_REST_URL` + `UPSTASH_REDIS_REST_TOKEN`; thiếu env thì tự rơi về bộ đếm

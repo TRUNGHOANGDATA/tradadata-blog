@@ -1,6 +1,5 @@
-import { getCategories } from '@/lib/data/categories';
+import { getCategories, getCategoryPostCounts } from '@/lib/data/categories';
 import { CategoryCard } from '@/components/blog/CategoryCard';
-import { supabaseAdmin } from '@/lib/supabase/server';
 
 export const metadata = {
     title: 'Chủ đề',
@@ -12,22 +11,8 @@ export const revalidate = 3600;
 export default async function CategoriesPage() {
     const categories = await getCategories();
 
-    // Count published posts per category via junction table
-    const { data: publishedPosts } = await supabaseAdmin!
-        .from('posts')
-        .select('id')
-        .eq('status', 'published');
-    const publishedIds = new Set((publishedPosts || []).map((p: any) => p.id));
-
-    const { data: pcData } = await supabaseAdmin!
-        .from('post_categories')
-        .select('category_id, post_id');
-    const categoryCounts: Record<string, number> = {};
-    (pcData || []).forEach((pc: any) => {
-        if (pc.category_id && publishedIds.has(pc.post_id)) {
-            categoryCounts[pc.category_id] = (categoryCounts[pc.category_id] || 0) + 1;
-        }
-    });
+    // Dem bai theo danh muc: dung chung ham co cache voi trang chu
+    const categoryCounts = await getCategoryPostCounts();
 
     return (
         <article className="min-h-screen bg-surface-50 dark:bg-surface-950 pb-16">

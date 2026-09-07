@@ -7,7 +7,7 @@ import { auth } from '@/lib/auth';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Calendar, Clock, ArrowLeft, ChevronRight, BookOpen, Sparkles, ArrowRight, Tag, Pencil } from 'lucide-react';
-import { getPostBySlug, getPostBySlugForPreview, getRelatedPosts, getAllPublishedSlugs } from '@/lib/data/posts';
+import { getPostBySlug, getPostBySlugForPreview, getRelatedPosts, getAllPublishedSlugs, getPostTags } from '@/lib/data/posts';
 import { SITE_CONFIG } from '@/lib/constants';
 import { PostCard } from '@/components/blog/PostCard';
 import { ShareButtons } from '@/components/blog/ShareButtons';
@@ -112,15 +112,8 @@ export default async function BlogPostPage({ params, searchParams }: Props) {
 
     // Fetch tags, premium status, and cached content IN PARALLEL
     const [postTags, isPremiumProfile] = await Promise.all([
-        // Tags query
-        (async () => {
-            if (!supabaseAdmin) return [];
-            const { data: ptData } = await supabaseAdmin
-                .from('post_tags')
-                .select('tag_id, tags(id, name, slug)')
-                .eq('post_id', post.id);
-            return ptData ? ptData.map((pt: any) => pt.tags).filter(Boolean) : [];
-        })(),
+        // Tag cua bai: da chuyen sang tang data co cache (tag 'posts')
+        getPostTags(post.id),
         // Premium check
         (async () => {
             if (post.is_premium && session?.user?.email && supabaseAdmin) {
