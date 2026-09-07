@@ -137,7 +137,7 @@ export function DemoDownloadButton({ demoUrl, demoLabel, postSlug }: Props) {
                         <FileSpreadsheet className="w-7 h-7 text-emerald-600 dark:text-emerald-400" />
                     </div>
                     <div className="flex-1 min-w-0">
-                        <h3 className="text-lg font-bold text-surface-900 dark:text-surface-100 mb-1">
+                        <h3 className="text-lg font-bold text-fg mb-1">
                             📥 Tải File Demo
                         </h3>
                         <p className="text-sm text-surface-600 dark:text-surface-400 mb-4">
@@ -174,7 +174,7 @@ export function DemoDownloadButton({ demoUrl, demoLabel, postSlug }: Props) {
             {/* Phone Update Modal */}
             {showPhoneModal && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
-                    <div className="bg-white dark:bg-surface-900 rounded-2xl shadow-2xl max-w-md w-full p-8 relative">
+                    <div className="bg-card rounded-2xl shadow-2xl max-w-md w-full p-8 relative">
                         <button
                             onClick={() => setShowPhoneModal(false)}
                             className="absolute top-4 right-4 text-fg-faint hover:text-surface-600 dark:hover:text-surface-300 text-xl leading-none"
@@ -185,7 +185,7 @@ export function DemoDownloadButton({ demoUrl, demoLabel, postSlug }: Props) {
                         {phoneUpdated ? (
                             <div className="text-center py-4">
                                 <CheckCircle className="w-16 h-16 text-emerald-500 mx-auto mb-4" />
-                                <h3 className="text-xl font-bold text-surface-900 dark:text-surface-100 mb-2">
+                                <h3 className="text-xl font-bold text-fg mb-2">
                                     Cập nhật thành công!
                                 </h3>
                                 <p className="text-surface-600 dark:text-surface-400">
@@ -199,7 +199,7 @@ export function DemoDownloadButton({ demoUrl, demoLabel, postSlug }: Props) {
                                         <Phone className="w-6 h-6 text-brand-600 dark:text-brand-400" />
                                     </div>
                                     <div>
-                                        <h3 className="text-lg font-bold text-surface-900 dark:text-surface-100">
+                                        <h3 className="text-lg font-bold text-fg">
                                             Cập nhật số điện thoại
                                         </h3>
                                         <p className="text-sm text-surface-500 dark:text-surface-400">
@@ -217,7 +217,7 @@ export function DemoDownloadButton({ demoUrl, demoLabel, postSlug }: Props) {
                                         value={phone}
                                         onChange={(e) => setPhone(e.target.value)}
                                         placeholder="0912 345 678"
-                                        className="w-full px-4 py-3 rounded-xl border border-surface-300 dark:border-surface-700 bg-surface-50 dark:bg-surface-800 text-surface-900 dark:text-surface-100 focus:ring-2 focus:ring-brand-500 focus:border-transparent transition-all text-lg tracking-wider"
+                                        className="w-full px-4 py-3 rounded-xl border border-surface-300 dark:border-surface-700 bg-surface-50 dark:bg-surface-800 text-fg focus:ring-2 focus:ring-brand-500 focus:border-transparent transition-all text-lg tracking-wider"
                                         maxLength={12}
                                         autoFocus
                                     />

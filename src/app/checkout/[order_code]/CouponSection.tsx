@@ -85,8 +85,8 @@ export default function CouponSection({
     };
 
     return (
-        <div className="bg-white dark:bg-surface-900 rounded-2xl p-5 shadow-sm border border-surface-200 dark:border-surface-800">
-            <h3 className="text-sm font-bold text-surface-900 dark:text-surface-100 flex items-center gap-2 mb-3">
+        <div className="bg-card rounded-2xl p-5 shadow-sm border border-line">
+            <h3 className="text-sm font-bold text-fg flex items-center gap-2 mb-3">
                 <Ticket className="w-4 h-4 text-brand-500" />
                 Mã giảm giá
             </h3>

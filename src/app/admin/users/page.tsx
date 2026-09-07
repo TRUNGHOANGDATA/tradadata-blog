@@ -195,12 +195,12 @@ export default function UsersPage() {
     return (
         <>
             <div className="flex items-center justify-between mb-6">
-                <h1 className="text-2xl font-bold text-surface-900 dark:text-surface-100">Quản lý người dùng</h1>
+                <h1 className="text-2xl font-bold text-fg">Quản lý người dùng</h1>
                 <div className="flex items-center gap-3">
                     <span className="text-sm text-fg-subtle">{filteredUsers.length} / {users.length}</span>
                     <button
                         onClick={() => setCreateModal({ isOpen: true, email: '', full_name: '', phone: '', role: 'reader', submitting: false, resultMessage: '' })}
-                        className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-sm font-medium transition-colors shadow-md shadow-brand-500/20"
+                        className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-sm font-medium transition-colors shadow-lg shadow-brand-600/25"
                     >
                         <Plus className="w-4 h-4" /> Tạo tài khoản
                     </button>
@@ -213,12 +213,12 @@ export default function UsersPage() {
                     const info = getRoleInfo(role);
                     const Icon = info.icon;
                     return (
-                        <div key={role} className="flex items-start gap-3 bg-white dark:bg-surface-900 rounded-xl border border-surface-200 dark:border-surface-800 p-3">
+                        <div key={role} className="flex items-start gap-3 bg-card rounded-xl border border-line p-3">
                             <div className={`p-2 rounded-lg ${info.color}`}>
                                 <Icon className="h-4 w-4" />
                             </div>
                             <div>
-                                <p className="text-sm font-semibold text-surface-900 dark:text-surface-100">{info.label}</p>
+                                <p className="text-sm font-semibold text-fg">{info.label}</p>
                                 <p className="text-xs text-fg-subtle">{ROLE_DESCRIPTIONS[role]}</p>
                             </div>
                         </div>
@@ -234,15 +234,15 @@ export default function UsersPage() {
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     placeholder="Tìm kiếm theo tên hoặc email..."
-                    className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-white dark:bg-surface-900 border border-surface-200 dark:border-surface-700 text-sm text-surface-900 dark:text-surface-100 placeholder:text-surface-400 focus:outline-none focus:ring-2 focus:ring-brand-500/30 focus:border-brand-500 transition-all"
+                    className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-card border border-surface-200 dark:border-surface-700 text-sm text-fg placeholder:text-surface-400 focus:outline-none focus:ring-2 focus:ring-brand-500/30 focus:border-brand-500 transition-all"
                 />
             </div>
 
-            <div className="bg-white dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-800 overflow-hidden">
+            <div className="bg-card rounded-2xl border border-line overflow-hidden">
                 <div className="overflow-x-auto">
                     <table className="w-full">
                         <thead>
-                            <tr className="border-b border-surface-200 dark:border-surface-800 bg-surface-50 dark:bg-surface-800/50">
+                            <tr className="border-b border-line bg-surface-50 dark:bg-surface-800/50">
                                 <th className="text-left px-6 py-3 text-xs font-semibold text-fg-subtle uppercase">Người dùng</th>
                                 <th className="text-left px-6 py-3 text-xs font-semibold text-fg-subtle uppercase">Email</th>
                                 <th className="text-left px-6 py-3 text-xs font-semibold text-fg-subtle uppercase">Vai trò</th>
@@ -271,7 +271,7 @@ export default function UsersPage() {
                                                         <User className="h-4 w-4 text-brand-600" />
                                                     </div>
                                                 )}
-                                                <span className="text-sm font-medium text-surface-900 dark:text-surface-100">
+                                                <span className="text-sm font-medium text-fg">
                                                     {user.full_name || 'Chưa đặt tên'}
                                                 </span>
                                             </div>
@@ -298,7 +298,7 @@ export default function UsersPage() {
                                                 title={user.is_subscribed ? 'Premium đang BẬT — Click để tắt' : 'Premium đang TẮT — Click để bật'}
                                             >
                                                 <span
-                                                    className={`inline-flex h-4 w-4 items-center justify-center rounded-full bg-card shadow-sm transition-transform duration-300 ${user.is_subscribed ? 'translate-x-6' : 'translate-x-1'
+                                                    className={`inline-flex h-4 w-4 items-center justify-center rounded-full bg-white shadow-sm transition-transform duration-300 ${user.is_subscribed ? 'translate-x-6' : 'translate-x-1'
                                                         }`}
                                                 >
                                                     {user.is_subscribed && <Crown className="h-2.5 w-2.5 text-amber-500" />}
@@ -332,9 +332,9 @@ export default function UsersPage() {
             {/* Create Account Modal */}
             {createModal.isOpen && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-                    <div className="bg-white dark:bg-surface-900 rounded-2xl w-full max-w-md shadow-2xl overflow-hidden">
-                        <div className="flex items-center justify-between p-4 border-b border-surface-200 dark:border-surface-800">
-                            <h3 className="text-lg font-bold text-surface-900 dark:text-surface-100">Tạo tài khoản mới</h3>
+                    <div className="bg-card rounded-2xl w-full max-w-md shadow-2xl overflow-hidden">
+                        <div className="flex items-center justify-between p-4 border-b border-line">
+                            <h3 className="text-lg font-bold text-fg">Tạo tài khoản mới</h3>
                             <button onClick={() => setCreateModal(prev => ({ ...prev, isOpen: false }))} className="text-fg-faint hover:text-surface-600"><X className="w-5 h-5" /></button>
                         </div>
                         {createModal.resultMessage ? (
@@ -354,22 +354,22 @@ export default function UsersPage() {
                             <form onSubmit={handleCreateUser} className="p-4 space-y-4">
                                 <div>
                                     <label className="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-1">Email Google *</label>
-                                    <input type="email" required placeholder="customer@gmail.com" className="w-full px-3 py-2 bg-white dark:bg-surface-900 border border-surface-300 dark:border-surface-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500/50 text-sm" value={createModal.email} onChange={e => setCreateModal(prev => ({ ...prev, email: e.target.value }))} />
+                                    <input type="email" required placeholder="customer@gmail.com" className="w-full px-3 py-2 bg-card border border-surface-300 dark:border-surface-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500/50 text-sm" value={createModal.email} onChange={e => setCreateModal(prev => ({ ...prev, email: e.target.value }))} />
                                     <p className="text-xs text-fg-faint mt-1">Khách hàng sẽ đăng nhập bằng Google với email này</p>
                                 </div>
                                 <div className="grid grid-cols-2 gap-4">
                                     <div>
                                         <label className="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-1">Họ tên</label>
-                                        <input type="text" placeholder="Nguyễn Văn A" className="w-full px-3 py-2 bg-white dark:bg-surface-900 border border-surface-300 dark:border-surface-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500/50 text-sm" value={createModal.full_name} onChange={e => setCreateModal(prev => ({ ...prev, full_name: e.target.value }))} />
+                                        <input type="text" placeholder="Nguyễn Văn A" className="w-full px-3 py-2 bg-card border border-surface-300 dark:border-surface-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500/50 text-sm" value={createModal.full_name} onChange={e => setCreateModal(prev => ({ ...prev, full_name: e.target.value }))} />
                                     </div>
                                     <div>
                                         <label className="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-1">SĐT</label>
-                                        <input type="text" placeholder="0912 345 678" className="w-full px-3 py-2 bg-white dark:bg-surface-900 border border-surface-300 dark:border-surface-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500/50 text-sm" value={createModal.phone} onChange={e => setCreateModal(prev => ({ ...prev, phone: e.target.value }))} />
+                                        <input type="text" placeholder="0912 345 678" className="w-full px-3 py-2 bg-card border border-surface-300 dark:border-surface-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500/50 text-sm" value={createModal.phone} onChange={e => setCreateModal(prev => ({ ...prev, phone: e.target.value }))} />
                                     </div>
                                 </div>
                                 <div>
                                     <label className="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-1">Vai trò</label>
-                                    <select className="w-full px-3 py-2 bg-white dark:bg-surface-900 border border-surface-300 dark:border-surface-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500/50 text-sm" value={createModal.role} onChange={e => setCreateModal(prev => ({ ...prev, role: e.target.value }))}>
+                                    <select className="w-full px-3 py-2 bg-card border border-surface-300 dark:border-surface-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500/50 text-sm" value={createModal.role} onChange={e => setCreateModal(prev => ({ ...prev, role: e.target.value }))}>
                                         <option value="reader">Reader</option>
                                         <option value="editor">Editor</option>
                                         <option value="admin">Admin</option>
@@ -377,7 +377,7 @@ export default function UsersPage() {
                                 </div>
                                 <div className="pt-2 flex justify-end gap-2">
                                     <button type="button" onClick={() => setCreateModal(prev => ({ ...prev, isOpen: false }))} className="px-4 py-2 text-surface-700 dark:text-surface-300 hover:bg-surface-100 dark:hover:bg-surface-800 rounded-xl text-sm font-medium">Huỷ</button>
-                                    <button type="submit" disabled={createModal.submitting} className="px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white font-medium flex items-center gap-2 rounded-xl shadow-md shadow-brand-500/20 disabled:opacity-50 text-sm">
+                                    <button type="submit" disabled={createModal.submitting} className="px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white font-medium flex items-center gap-2 rounded-xl shadow-lg shadow-brand-600/25 disabled:opacity-50 text-sm">
                                         {createModal.submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4" />} Tạo tài khoản
                                     </button>
                                 </div>
@@ -390,19 +390,19 @@ export default function UsersPage() {
             {/* Add Subscription Modal */}
             {subModal.isOpen && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-                    <div className="bg-white dark:bg-surface-900 rounded-2xl w-full max-w-md shadow-2xl overflow-hidden">
-                        <div className="flex items-center justify-between p-4 border-b border-surface-200 dark:border-surface-800">
-                            <h3 className="text-lg font-bold text-surface-900 dark:text-surface-100">Thêm khoá học</h3>
+                    <div className="bg-card rounded-2xl w-full max-w-md shadow-2xl overflow-hidden">
+                        <div className="flex items-center justify-between p-4 border-b border-line">
+                            <h3 className="text-lg font-bold text-fg">Thêm khoá học</h3>
                             <button onClick={() => setSubModal(prev => ({ ...prev, isOpen: false }))} className="text-fg-faint hover:text-surface-600"><X className="w-5 h-5" /></button>
                         </div>
                         <form onSubmit={handleAddSub} className="p-4 space-y-4">
                             <div className="p-3 bg-surface-50 dark:bg-surface-800 rounded-xl">
                                 <p className="text-sm text-fg-subtle">Cấp khoá học cho:</p>
-                                <p className="text-sm font-semibold text-surface-900 dark:text-surface-100">{subModal.user_name} ({subModal.user_email})</p>
+                                <p className="text-sm font-semibold text-fg">{subModal.user_name} ({subModal.user_email})</p>
                             </div>
                             <div>
                                 <label className="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-1">Khoá học *</label>
-                                <select required className="w-full px-3 py-2 bg-white dark:bg-surface-900 border border-surface-300 dark:border-surface-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500/50 text-sm" value={subModal.product_id} onChange={e => setSubModal(prev => ({ ...prev, product_id: e.target.value }))}>
+                                <select required className="w-full px-3 py-2 bg-card border border-surface-300 dark:border-surface-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500/50 text-sm" value={subModal.product_id} onChange={e => setSubModal(prev => ({ ...prev, product_id: e.target.value }))}>
                                     <option value="">-- Chọn khoá học --</option>
                                     {products.map(p => (
                                         <option key={p.id} value={p.id}>{p.name}{p.duration_days ? ` (${p.duration_days} ngày)` : ''}</option>
@@ -411,7 +411,7 @@ export default function UsersPage() {
                             </div>
                             <div>
                                 <label className="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-1">Số ngày <span className="text-surface-400 font-normal">(để trống = theo sản phẩm)</span></label>
-                                <input type="number" min="0" placeholder="30" className="w-full px-3 py-2 bg-white dark:bg-surface-900 border border-surface-300 dark:border-surface-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500/50 text-sm" value={subModal.duration_days || ''} onChange={e => setSubModal(prev => ({ ...prev, duration_days: Number(e.target.value) }))} />
+                                <input type="number" min="0" placeholder="30" className="w-full px-3 py-2 bg-card border border-surface-300 dark:border-surface-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500/50 text-sm" value={subModal.duration_days || ''} onChange={e => setSubModal(prev => ({ ...prev, duration_days: Number(e.target.value) }))} />
                             </div>
                             <div className="pt-2 flex justify-end gap-2">
                                 <button type="button" onClick={() => setSubModal(prev => ({ ...prev, isOpen: false }))} className="px-4 py-2 text-surface-700 dark:text-surface-300 hover:bg-surface-100 dark:hover:bg-surface-800 rounded-xl text-sm font-medium">Huỷ</button>

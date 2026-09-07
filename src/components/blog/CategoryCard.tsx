@@ -10,7 +10,7 @@ export function CategoryCard({ category, postCount = 0 }: CategoryCardProps) {
     return (
         <Link
             href={`/category/${category.slug}`}
-            className="group block p-5 rounded-2xl bg-white dark:bg-surface-900 border border-surface-200 dark:border-surface-800 hover:border-transparent hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
+            className="group block p-5 rounded-2xl bg-card border border-line hover:border-brand-300 dark:hover:border-brand-700 shadow-e1 hover:shadow-e2 transition-all duration-300 hover:-translate-y-1"
             style={{
                 '--hover-color': category.color,
             } as React.CSSProperties}
@@ -21,13 +21,13 @@ export function CategoryCard({ category, postCount = 0 }: CategoryCardProps) {
             >
                 {category.icon}
             </div>
-            <h3 className="font-semibold text-surface-900 dark:text-surface-100 group-hover:text-brand-600 dark:group-hover:text-brand-400 transition-colors mb-1">
+            <h3 className="font-semibold text-fg group-hover:text-brand-600 dark:group-hover:text-brand-400 transition-colors mb-1">
                 {category.name}
             </h3>
             {category.description && (
-                <p className="text-sm text-surface-500 dark:text-surface-300 line-clamp-2 mb-2">{category.description}</p>
+                <p className="text-sm text-fg-muted line-clamp-2 mb-2">{category.description}</p>
             )}
-            <span className="text-xs text-surface-400 dark:text-surface-400">
+            <span className="text-xs text-fg-subtle">
                 {postCount} bài viết
             </span>
         </Link>

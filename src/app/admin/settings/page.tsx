@@ -107,10 +107,10 @@ export default function SettingsPage() {
 
     return (
         <div className="max-w-4xl mx-auto">
-            <h1 className="text-2xl font-bold text-surface-900 dark:text-surface-100 mb-6">Cài đặt Hệ thống</h1>
+            <h1 className="text-2xl font-bold text-fg mb-6">Cài đặt Hệ thống</h1>
 
             {/* Tabs */}
-            <div className="flex gap-2 border-b border-surface-200 dark:border-surface-800 mb-8">
+            <div className="flex gap-2 border-b border-line mb-8">
                 <button
                     onClick={() => setActiveTab('general')}
                     className={`flex items-center gap-2 px-4 py-2.5 text-sm font-medium border-b-2 transition-colors ${activeTab === 'general'
@@ -137,8 +137,8 @@ export default function SettingsPage() {
             {activeTab === 'general' && (
                 <div className="space-y-8 animate-in fade-in duration-300">
                     {/* Bank Info */}
-                    <section className="bg-white dark:bg-surface-900 rounded-2xl p-6 border border-surface-200 dark:border-surface-800">
-                        <h2 className="text-lg font-bold text-surface-900 dark:text-surface-100 mb-4">Mã QR Ngân Hàng (VietQR)</h2>
+                    <section className="bg-card rounded-2xl p-6 border border-line">
+                        <h2 className="text-lg font-bold text-fg mb-4">Mã QR Ngân Hàng (VietQR)</h2>
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                             <div>
                                 <label className="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-1">Ngân Hàng (Tên viết tắt)</label>
@@ -192,8 +192,8 @@ export default function SettingsPage() {
                     </section>
 
                     {/* Social Links */}
-                    <section className="bg-white dark:bg-surface-900 rounded-2xl p-6 border border-surface-200 dark:border-surface-800">
-                        <h2 className="text-lg font-bold text-surface-900 dark:text-surface-100 mb-4">Liên hệ Hỗ trợ</h2>
+                    <section className="bg-card rounded-2xl p-6 border border-line">
+                        <h2 className="text-lg font-bold text-fg mb-4">Liên hệ Hỗ trợ</h2>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
                                 <label className="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-1">Zalo Link (zalo.me/sdt)</label>
@@ -235,8 +235,8 @@ export default function SettingsPage() {
                     </section>
 
                     {/* Google Sheets */}
-                    <section className="bg-white dark:bg-surface-900 rounded-2xl p-6 border border-surface-200 dark:border-surface-800">
-                        <h2 className="text-lg font-bold text-surface-900 dark:text-surface-100 mb-4">Google Sheet (Log Doanh thu)</h2>
+                    <section className="bg-card rounded-2xl p-6 border border-line">
+                        <h2 className="text-lg font-bold text-fg mb-4">Google Sheet (Log Doanh thu)</h2>
                         <div>
                             <label className="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-1">Sheet ID</label>
                             <input
@@ -254,8 +254,8 @@ export default function SettingsPage() {
                     </section>
 
                     {/* Blog Settings */}
-                    <section className="bg-white dark:bg-surface-900 rounded-2xl p-6 border border-surface-200 dark:border-surface-800">
-                        <h2 className="text-lg font-bold text-surface-900 dark:text-surface-100 mb-4">Cài đặt Blog</h2>
+                    <section className="bg-card rounded-2xl p-6 border border-line">
+                        <h2 className="text-lg font-bold text-fg mb-4">Cài đặt Blog</h2>
                         <div className="max-w-xs">
                             <label className="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-1">Số bài viết mỗi trang</label>
                             <input
@@ -344,7 +344,7 @@ export default function SettingsPage() {
                             </div>
                         </div>
                     ) : (
-                        <div className="py-12 text-center text-fg-subtle bg-surface-50 dark:bg-surface-800/50 rounded-2xl border border-surface-200 dark:border-surface-800">
+                        <div className="py-12 text-center text-fg-subtle bg-surface-50 dark:bg-surface-800/50 rounded-2xl border border-line">
                             Không tìm thấy mẫu email này trong Database. Vui lòng kiểm tra lại.
                         </div>
                     )}

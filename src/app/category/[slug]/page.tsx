@@ -105,7 +105,7 @@ export default async function CategoryPage({ params, searchParams }: Props) {
                     <div className="inline-flex items-center justify-center h-16 w-16 rounded-full bg-brand-100 dark:bg-brand-900/40 text-brand-600 dark:text-brand-400 text-3xl mb-6 shadow-sm border border-brand-200 dark:border-brand-800">
                         {category.icon}
                     </div>
-                    <h1 className="text-3xl md:text-5xl font-bold text-surface-900 dark:text-surface-100 mb-4">
+                    <h1 className="text-3xl md:text-5xl font-bold text-fg mb-4">
                         {category.name}
                     </h1>
                     <p className="text-fg-subtle text-lg md:text-xl max-w-2xl mx-auto">
@@ -141,11 +141,11 @@ export default async function CategoryPage({ params, searchParams }: Props) {
                         ))}
                     </div>
                 ) : (
-                    <div className="text-center py-16 bg-white/50 dark:bg-surface-900/50 rounded-2xl border border-surface-200 dark:border-surface-800">
+                    <div className="text-center py-16 bg-white/50 dark:bg-surface-900/50 rounded-2xl border border-line">
                         <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-surface-100 dark:bg-surface-800 text-fg-faint mb-4">
                             <Filter className="w-8 h-8" />
                         </div>
-                        <h3 className="text-lg font-medium text-surface-900 dark:text-surface-100 mb-2">Chưa có bài viết</h3>
+                        <h3 className="text-lg font-medium text-fg mb-2">Chưa có bài viết</h3>
                         <p className="text-fg-subtle text-sm max-w-sm mx-auto">Chúng tôi đang cập nhật các bài viết mới cho chủ đề này. Vui lòng quay lại sau nhé!</p>
                         <Link
                             href="/categories"
@@ -163,7 +163,7 @@ export default async function CategoryPage({ params, searchParams }: Props) {
                         {currentPage > 1 && (
                             <Link
                                 href={buildUrl(currentPage - 1)}
-                                className="px-4 py-2 rounded-xl text-sm font-medium border bg-white dark:bg-surface-900 text-surface-600 dark:text-surface-400 border-surface-200 dark:border-surface-700 hover:bg-surface-50 dark:hover:bg-surface-800 transition-colors inline-flex items-center gap-1"
+                                className="px-4 py-2 rounded-xl text-sm font-medium border bg-card text-surface-600 dark:text-surface-400 border-surface-200 dark:border-surface-700 hover:bg-surface-50 dark:hover:bg-surface-800 transition-colors inline-flex items-center gap-1"
                             >
                                 <ChevronLeft className="h-4 w-4" />
                                 Trước
@@ -180,7 +180,7 @@ export default async function CategoryPage({ params, searchParams }: Props) {
                                     href={buildUrl(page)}
                                     className={`px-4 py-2 rounded-xl text-sm font-medium border transition-colors ${currentPage === page
                                         ? 'bg-brand-600 text-white border-brand-600'
-                                        : 'bg-white dark:bg-surface-900 text-surface-600 dark:text-surface-400 border-surface-200 dark:border-surface-700 hover:bg-surface-50 dark:hover:bg-surface-800'
+                                        : 'bg-card text-surface-600 dark:text-surface-400 border-surface-200 dark:border-surface-700 hover:bg-surface-50 dark:hover:bg-surface-800'
                                         }`}
                                 >
                                     {page}
@@ -192,7 +192,7 @@ export default async function CategoryPage({ params, searchParams }: Props) {
                         {currentPage < totalPages && (
                             <Link
                                 href={buildUrl(currentPage + 1)}
-                                className="px-4 py-2 rounded-xl text-sm font-medium border bg-white dark:bg-surface-900 text-surface-600 dark:text-surface-400 border-surface-200 dark:border-surface-700 hover:bg-surface-50 dark:hover:bg-surface-800 transition-colors inline-flex items-center gap-1"
+                                className="px-4 py-2 rounded-xl text-sm font-medium border bg-card text-surface-600 dark:text-surface-400 border-surface-200 dark:border-surface-700 hover:bg-surface-50 dark:hover:bg-surface-800 transition-colors inline-flex items-center gap-1"
                             >
                                 Tiếp
                                 <ChevronRight className="h-4 w-4" />

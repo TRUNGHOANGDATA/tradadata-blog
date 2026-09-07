@@ -76,10 +76,10 @@ export function CartSlideOver() {
                 ref={panelRef}
                 className={`fixed inset-y-0 right-0 z-50 w-full max-w-md transform transition-transform duration-500 ease-in-out ${isCartOpen ? 'translate-x-0' : 'translate-x-full'}`}
             >
-                <div className="flex h-full flex-col bg-white dark:bg-surface-900 shadow-2xl">
+                <div className="flex h-full flex-col bg-card shadow-2xl">
                     {/* Header */}
-                    <div className="flex items-start justify-between px-6 py-5 border-b border-surface-200 dark:border-surface-800">
-                        <h2 className="text-xl font-bold text-surface-900 dark:text-surface-100 flex items-center gap-2">
+                    <div className="flex items-start justify-between px-6 py-5 border-b border-line">
+                        <h2 className="text-xl font-bold text-fg flex items-center gap-2">
                             <ShoppingBag className="w-6 h-6 text-brand-600 dark:text-brand-500" />
                             Giỏ hàng
                             {items.length > 0 && (
@@ -102,7 +102,7 @@ export function CartSlideOver() {
                                 <div className="w-20 h-20 bg-surface-100 dark:bg-surface-800 rounded-full flex items-center justify-center mb-4">
                                     <ShoppingBag className="w-10 h-10 text-fg-faint" />
                                 </div>
-                                <h3 className="text-lg font-bold text-surface-900 dark:text-surface-100 mb-2">Giỏ hàng rỗng</h3>
+                                <h3 className="text-lg font-bold text-fg mb-2">Giỏ hàng rỗng</h3>
                                 <p className="text-fg-subtle mb-6">Hãy khám phá các khóa học của chúng tôi!</p>
                                 <Link
                                     href="/courses"
@@ -126,7 +126,7 @@ export function CartSlideOver() {
 
                                         <div className="ml-4 flex flex-1 flex-col">
                                             <div className="flex justify-between mb-1">
-                                                <h3 className="text-sm font-semibold text-surface-900 dark:text-surface-100 line-clamp-2 pr-2">
+                                                <h3 className="text-sm font-semibold text-fg line-clamp-2 pr-2">
                                                     {item.name}
                                                 </h3>
                                             </div>
@@ -156,7 +156,7 @@ export function CartSlideOver() {
 
                     {/* Footer */}
                     {items.length > 0 && (
-                        <div className="border-t border-surface-200 dark:border-surface-800 px-6 py-5">
+                        <div className="border-t border-line px-6 py-5">
                             {/* Coupon Section */}
                             <div className="mb-4">
                                 {coupon ? (
@@ -181,7 +181,7 @@ export function CartSlideOver() {
                                                 onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
                                                 onKeyDown={(e) => e.key === 'Enter' && handleApplyCoupon()}
                                                 placeholder="Nhập mã giảm giá..."
-                                                className="flex-1 px-3 py-2 bg-surface-50 dark:bg-surface-950 border border-surface-200 dark:border-surface-700 rounded-xl text-sm text-surface-900 dark:text-surface-100 placeholder-surface-400 focus:outline-none focus:ring-2 focus:ring-brand-500/50"
+                                                className="flex-1 px-3 py-2 bg-surface-50 dark:bg-surface-950 border border-surface-200 dark:border-surface-700 rounded-xl text-sm text-fg placeholder-surface-400 focus:outline-none focus:ring-2 focus:ring-brand-500/50"
                                             />
                                             <button
                                                 onClick={handleApplyCoupon}
@@ -200,7 +200,7 @@ export function CartSlideOver() {
                             <div className="space-y-2 text-sm mb-4">
                                 <div className="flex justify-between">
                                     <span className="text-fg-subtle">Tạm tính</span>
-                                    <span className="text-surface-900 dark:text-surface-100 font-medium">{formatCurrency(subTotal)}</span>
+                                    <span className="text-fg font-medium">{formatCurrency(subTotal)}</span>
                                 </div>
                                 {discountAmount > 0 && (
                                     <div className="flex justify-between text-green-600 dark:text-green-400">
@@ -209,7 +209,7 @@ export function CartSlideOver() {
                                     </div>
                                 )}
                                 <div className="flex justify-between pt-2 border-t border-surface-100 dark:border-surface-800">
-                                    <span className="font-bold text-surface-900 dark:text-surface-100">Tổng cộng</span>
+                                    <span className="font-bold text-fg">Tổng cộng</span>
                                     <span className="font-extrabold text-xl text-brand-600 dark:text-brand-400">{formatCurrency(total)}</span>
                                 </div>
                             </div>
@@ -218,14 +218,14 @@ export function CartSlideOver() {
                                 <Link
                                     href="/cart"
                                     onClick={() => setCartOpen(false)}
-                                    className="flex items-center justify-center rounded-xl border-2 border-surface-200 dark:border-surface-700 px-4 py-3 text-sm font-medium text-surface-900 dark:text-surface-100 hover:border-surface-300 dark:hover:border-surface-600 hover:bg-surface-50 dark:hover:bg-surface-800 transition-all"
+                                    className="flex items-center justify-center rounded-xl border-2 border-surface-200 dark:border-surface-700 px-4 py-3 text-sm font-medium text-fg hover:border-surface-300 dark:hover:border-surface-600 hover:bg-surface-50 dark:hover:bg-surface-800 transition-all"
                                 >
                                     Xem giỏ hàng
                                 </Link>
                                 <Link
                                     href="/checkout/create"
                                     onClick={() => setCartOpen(false)}
-                                    className="flex items-center justify-center rounded-xl bg-brand-600 px-4 py-3 text-sm font-medium text-white shadow-lg shadow-brand-500/25 hover:shadow-brand-500/40 hover:bg-brand-700 transition-all"
+                                    className="flex items-center justify-center rounded-xl bg-brand-600 px-4 py-3 text-sm font-medium text-white shadow-lg shadow-brand-600/25 hover:shadow-brand-600/40 hover:bg-brand-700 transition-all"
                                 >
                                     Thanh toán
                                 </Link>

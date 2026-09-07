@@ -38,7 +38,7 @@ export function Header() {
                                     <Link
                                         key={item.href}
                                         href={item.href}
-                                        className="px-4 py-2 rounded-xl text-surface-600 dark:text-surface-300 hover:text-surface-900 dark:hover:text-surface-100 hover:bg-surface-100 dark:hover:bg-surface-800 transition-all duration-200 text-sm font-medium"
+                                        className="px-4 py-2 rounded-xl text-fg-muted hover:text-surface-900 dark:hover:text-surface-100 hover:bg-surface-100 dark:hover:bg-surface-800 transition-all duration-200 text-sm font-medium"
                                     >
                                         {item.label}
                                     </Link>
@@ -53,7 +53,7 @@ export function Header() {
                                 {/* Cart Toggle */}
                                 <button
                                     onClick={() => setCartOpen(true)}
-                                    className="relative p-2 text-surface-600 dark:text-surface-300 hover:text-surface-900 dark:hover:text-surface-100 hover:bg-surface-100 dark:hover:bg-surface-800 rounded-xl transition-all"
+                                    className="relative p-2 text-fg-muted hover:text-surface-900 dark:hover:text-surface-100 hover:bg-surface-100 dark:hover:bg-surface-800 rounded-xl transition-all"
                                     aria-label="Giỏ hàng"
                                 >
                                     <ShoppingCart className="h-5 w-5" />
@@ -92,7 +92,7 @@ export function Header() {
                                                 <div className="fixed inset-0" onClick={() => setProfileOpen(false)} />
                                                 <div className="absolute right-0 top-12 w-56 glass rounded-xl shadow-xl animate-slide-down overflow-hidden">
                                                     <div className="px-4 py-3 border-b border-surface-200 dark:border-surface-700">
-                                                        <p className="text-sm font-medium text-surface-900 dark:text-surface-100 truncate">
+                                                        <p className="text-sm font-medium text-fg truncate">
                                                             {session.user.name}
                                                         </p>
                                                         <p className="text-xs text-fg-subtle truncate">{session.user.email}</p>

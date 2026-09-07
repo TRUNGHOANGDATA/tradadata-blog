@@ -23,7 +23,7 @@ interface Pagination {
 // Skeleton component for grid items
 function SkeletonCard() {
     return (
-        <div className="bg-white dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-800 overflow-hidden">
+        <div className="bg-card rounded-2xl border border-line overflow-hidden">
             <div className="aspect-square bg-surface-100 dark:bg-surface-800 animate-pulse" />
             <div className="p-3 border-t border-surface-100 dark:border-surface-800">
                 <div className="h-3 w-3/4 bg-surface-200 dark:bg-surface-700 rounded animate-pulse" />
@@ -181,7 +181,7 @@ export default function MediaPage() {
         <>
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 gap-4">
                 <div>
-                    <h1 className="text-2xl font-bold text-surface-900 dark:text-surface-100">Thư viện ảnh</h1>
+                    <h1 className="text-2xl font-bold text-fg">Thư viện ảnh</h1>
                     {pagination && (
                         <p className="text-xs text-fg-subtle mt-1">{pagination.totalFiles} ảnh</p>
                     )}
@@ -196,12 +196,12 @@ export default function MediaPage() {
                             placeholder="Tìm kiếm ảnh..."
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
-                            className="w-full pl-9 pr-4 py-2 bg-white dark:bg-surface-900 border border-surface-200 dark:border-surface-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500/50 focus:border-brand-500 dark:text-white transition-all"
+                            className="w-full pl-9 pr-4 py-2 bg-card border border-surface-200 dark:border-surface-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500/50 focus:border-brand-500 dark:text-white transition-all"
                         />
                     </div>
 
                     {/* View mode */}
-                    <div className="flex items-center bg-white dark:bg-surface-900 border border-surface-200 dark:border-surface-700 rounded-xl p-1 hidden sm:flex">
+                    <div className="flex items-center bg-card border border-surface-200 dark:border-surface-700 rounded-xl p-1 hidden sm:flex">
                         <button
                             onClick={() => setViewMode('grid')}
                             className={`p-1.5 rounded-lg transition-all ${viewMode === 'grid' ? 'bg-surface-100 dark:bg-surface-800 text-brand-600 dark:text-brand-400 shadow-sm' : 'text-surface-400 hover:text-surface-600 dark:hover:text-surface-300'}`}
@@ -245,13 +245,13 @@ export default function MediaPage() {
                     ))}
                 </div>
             ) : files.length === 0 ? (
-                <div className="bg-white dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-800 p-12 text-center">
+                <div className="bg-card rounded-2xl border border-line p-12 text-center">
                     <AlertCircle className="h-12 w-12 text-surface-300 dark:text-surface-600 mx-auto mb-4" />
                     <p className="text-surface-800 dark:text-surface-200 font-medium">Chưa có ảnh nào</p>
                     <p className="text-surface-500 dark:text-surface-400 text-sm mt-1">Upload ảnh đầu tiên hoặc thêm ảnh qua trình soạn thảo bài viết.</p>
                 </div>
             ) : filteredFiles.length === 0 ? (
-                <div className="bg-white dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-800 p-12 text-center">
+                <div className="bg-card rounded-2xl border border-line p-12 text-center">
                     <Search className="h-12 w-12 text-surface-300 dark:text-surface-600 mx-auto mb-4" />
                     <p className="text-surface-800 dark:text-surface-200 font-medium">Không tìm thấy ảnh</p>
                     <p className="text-surface-500 dark:text-surface-400 text-sm mt-1">Thử lại với từ khoá khác xem sao.</p>
@@ -259,7 +259,7 @@ export default function MediaPage() {
             ) : viewMode === 'grid' ? (
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
                     {filteredFiles.map((file) => (
-                        <div key={file.id} className="group relative bg-white dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-800 overflow-hidden hover:border-brand-500/50 transition-colors shadow-sm hover:shadow-md">
+                        <div key={file.id} className="group relative bg-card rounded-2xl border border-line overflow-hidden hover:border-brand-500/50 transition-colors shadow-sm hover:shadow-md">
                             <div className="aspect-square relative flex items-center justify-center bg-surface-50 dark:bg-surface-950">
                                 <FadeImage
                                     src={getOptimizedThumb(file, 200)}
@@ -273,7 +273,7 @@ export default function MediaPage() {
                                 >
                                     <button
                                         onClick={(e) => { e.stopPropagation(); copyUrl(file.url, file.id); }}
-                                        className="p-2.5 rounded-xl bg-card/10 hover:bg-white/20 text-white transition-colors"
+                                        className="p-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white transition-colors"
                                         title="Copy URL"
                                     >
                                         {copiedId === file.id ? <Check className="h-4 w-4 text-green-400" /> : <Copy className="h-4 w-4" />}
@@ -287,7 +287,7 @@ export default function MediaPage() {
                                     </button>
                                 </div>
                             </div>
-                            <div className="p-3 bg-white dark:bg-surface-900 border-t border-surface-100 dark:border-surface-800">
+                            <div className="p-3 bg-card border-t border-surface-100 dark:border-surface-800">
                                 <p className="text-xs text-surface-700 dark:text-surface-300 font-medium truncate" title={file.name}>{file.name}</p>
                                 <div className="flex items-center justify-between mt-1">
                                     <p className="text-[10px] text-fg-faint">{formatSize(file.size)}</p>
@@ -300,7 +300,7 @@ export default function MediaPage() {
             ) : (
                 <div className="flex flex-col gap-3">
                     {filteredFiles.map((file) => (
-                        <div key={file.id} className="flex items-center gap-4 p-3 bg-white dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-800 hover:border-brand-500/40 transition-colors shadow-sm hover:shadow-md group">
+                        <div key={file.id} className="flex items-center gap-4 p-3 bg-card rounded-2xl border border-line hover:border-brand-500/40 transition-colors shadow-sm hover:shadow-md group">
                             <div
                                 className="h-16 w-16 rounded-xl overflow-hidden bg-surface-50 dark:bg-surface-950 shrink-0 border border-surface-100 dark:border-surface-800 cursor-pointer"
                                 onClick={() => setPreviewFile(file)}
@@ -321,14 +321,14 @@ export default function MediaPage() {
                             <div className="flex items-center gap-2 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
                                 <button
                                     onClick={() => copyUrl(file.url, file.id)}
-                                    className="p-2 rounded-xl bg-surface-100 dark:bg-surface-800 hover:bg-brand-50 hover:text-brand-600 dark:hover:bg-brand-500/20 dark:hover:text-brand-400 text-surface-600 dark:text-surface-300 transition-colors"
+                                    className="p-2 rounded-xl bg-surface-100 dark:bg-surface-800 hover:bg-brand-50 hover:text-brand-600 dark:hover:bg-brand-500/20 dark:hover:text-brand-400 text-fg-muted transition-colors"
                                     title="Copy URL"
                                 >
                                     {copiedId === file.id ? <Check className="h-4 w-4 text-green-500" /> : <Copy className="h-4 w-4" />}
                                 </button>
                                 <button
                                     onClick={() => handleDelete(file.id, file.name)}
-                                    className="p-2 rounded-xl bg-surface-100 dark:bg-surface-800 hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-500/20 dark:hover:text-red-400 text-surface-600 dark:text-surface-300 transition-colors"
+                                    className="p-2 rounded-xl bg-surface-100 dark:bg-surface-800 hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-500/20 dark:hover:text-red-400 text-fg-muted transition-colors"
                                     title="Xoá"
                                 >
                                     <Trash2 className="h-4 w-4" />
@@ -345,7 +345,7 @@ export default function MediaPage() {
                     <button
                         onClick={loadMore}
                         disabled={loadingMore}
-                        className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-white dark:bg-surface-900 border border-surface-200 dark:border-surface-700 text-sm font-medium text-surface-700 dark:text-surface-300 hover:border-brand-500/50 hover:text-brand-600 dark:hover:text-brand-400 transition-colors shadow-sm disabled:opacity-50"
+                        className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-card border border-surface-200 dark:border-surface-700 text-sm font-medium text-surface-700 dark:text-surface-300 hover:border-brand-500/50 hover:text-brand-600 dark:hover:text-brand-400 transition-colors shadow-sm disabled:opacity-50"
                     >
                         {loadingMore ? (
                             <><Loader2 className="h-4 w-4 animate-spin" /> Đang tải...</>

@@ -180,7 +180,7 @@ export default function AdminProductsPage() {
     return (
         <>
             <div className="flex items-center justify-between mb-6">
-                <h1 className="text-2xl font-bold text-surface-900 dark:text-surface-100">Gói Sản Phẩm</h1>
+                <h1 className="text-2xl font-bold text-fg">Gói Sản Phẩm</h1>
                 <button
                     onClick={() => handleOpenEdit()}
                     className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-brand-600 text-white text-sm font-medium hover:bg-brand-700 transition-colors shadow-lg shadow-brand-600/25"
@@ -193,7 +193,7 @@ export default function AdminProductsPage() {
             {/* List */}
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
                 {products.map(product => (
-                    <div key={product.id} className="bg-white dark:bg-surface-900 rounded-3xl p-6 border border-surface-200 dark:border-surface-800 flex flex-col relative overflow-hidden group">
+                    <div key={product.id} className="bg-card rounded-3xl p-6 border border-line flex flex-col relative overflow-hidden group">
                         {!product.is_active && (
                             <div className="absolute top-4 right-4 px-2 py-1 bg-surface-100 dark:bg-surface-800 text-fg-subtle rounded text-xs font-semibold z-10">
                                 Ẩn
@@ -204,7 +204,7 @@ export default function AdminProductsPage() {
                                 <img src={product.image_url} alt={product.name} className="w-full h-full object-cover" />
                             </div>
                         )}
-                        <h3 className="text-xl font-bold text-surface-900 dark:text-surface-100">{product.name}</h3>
+                        <h3 className="text-xl font-bold text-fg">{product.name}</h3>
                         <p className="text-fg-subtle text-sm mt-1 mb-4 h-10 line-clamp-2">{product.description}</p>
                         <div className="text-3xl font-bold text-brand-600 dark:text-brand-400 mb-6">
                             {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(product.price)}
@@ -240,9 +240,9 @@ export default function AdminProductsPage() {
             {/* Modal Form */}
             {isEditing && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-surface-900/50 backdrop-blur-sm">
-                    <div className="bg-white dark:bg-surface-900 rounded-3xl p-6 w-full max-w-lg border border-surface-200 dark:border-surface-800 shadow-2xl overflow-y-auto max-h-[90vh]">
+                    <div className="bg-card rounded-3xl p-6 w-full max-w-lg border border-line shadow-2xl overflow-y-auto max-h-[90vh]">
                         <div className="flex items-center justify-between mb-6">
-                            <h2 className="text-xl font-bold text-surface-900 dark:text-surface-100">
+                            <h2 className="text-xl font-bold text-fg">
                                 {currentProduct.id ? 'Sửa Sản Phẩm' : 'Thêm Sản Phẩm Mới'}
                             </h2>
                             <button onClick={handleCloseEdit} className="p-2 rounded-full hover:bg-surface-100 dark:hover:bg-surface-800">
@@ -419,9 +419,9 @@ export default function AdminProductsPage() {
             {/* AI Image Modal */}
             {aiImageOpen && (
                 <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-surface-900/50 backdrop-blur-sm">
-                    <div className="bg-white dark:bg-surface-900 rounded-3xl p-6 w-full max-w-lg border border-surface-200 dark:border-surface-800 shadow-2xl">
+                    <div className="bg-card rounded-3xl p-6 w-full max-w-lg border border-line shadow-2xl">
                         <div className="flex items-center justify-between mb-6">
-                            <h2 className="text-xl font-bold flex items-center gap-2 text-surface-900 dark:text-surface-100">
+                            <h2 className="text-xl font-bold flex items-center gap-2 text-fg">
                                 <Sparkles className="h-6 w-6 text-brand-500" />
                                 Tạo Ảnh bằng AI
                             </h2>

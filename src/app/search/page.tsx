@@ -23,13 +23,13 @@ export default async function SearchPage({ searchParams }: Props) {
                     <div className="inline-flex items-center justify-center h-16 w-16 rounded-full bg-brand-100 dark:bg-brand-900/40 text-brand-600 dark:text-brand-400 mb-6 shadow-sm border border-brand-200 dark:border-brand-800">
                         <SearchIcon className="h-8 w-8" />
                     </div>
-                    <h1 className="text-3xl md:text-5xl font-bold text-surface-900 dark:text-surface-100 mb-4">
+                    <h1 className="text-3xl md:text-5xl font-bold text-fg mb-4">
                         Kết quả tìm kiếm
                     </h1>
                     <p className="text-fg-subtle text-lg md:text-xl max-w-2xl mx-auto">
                         {query ? (
                             <>
-                                Tìm thấy <span className="font-bold text-brand-600 dark:text-brand-400">{results.length}</span> kết quả cho từ khoá &quot;<span className="text-surface-900 dark:text-surface-100 font-medium">{query}</span>&quot;
+                                Tìm thấy <span className="font-bold text-brand-600 dark:text-brand-400">{results.length}</span> kết quả cho từ khoá &quot;<span className="text-fg font-medium">{query}</span>&quot;
                             </>
                         ) : (
                             'Vui lòng nhập từ khoá để tìm kiếm bài viết.'
@@ -58,11 +58,11 @@ export default async function SearchPage({ searchParams }: Props) {
                             ))}
                         </div>
                     ) : (
-                        <div className="text-center py-16 bg-white/50 dark:bg-surface-900/50 rounded-2xl border border-surface-200 dark:border-surface-800">
+                        <div className="text-center py-16 bg-white/50 dark:bg-surface-900/50 rounded-2xl border border-line">
                             <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-surface-100 dark:bg-surface-800 text-fg-faint mb-4">
                                 <SearchIcon className="w-8 h-8" />
                             </div>
-                            <h3 className="text-lg font-medium text-surface-900 dark:text-surface-100 mb-2">Không tìm thấy kết quả</h3>
+                            <h3 className="text-lg font-medium text-fg mb-2">Không tìm thấy kết quả</h3>
                             <p className="text-fg-subtle text-sm max-w-sm mx-auto">Không có bài viết nào phù hợp với từ khoá của bạn. Thử tìm kiếm với từ khoá khác xem sao.</p>
                             <Link
                                 href="/blog"

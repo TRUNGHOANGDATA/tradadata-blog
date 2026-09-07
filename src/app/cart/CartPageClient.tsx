@@ -69,7 +69,7 @@ export default function CartPage() {
                     <div className="w-24 h-24 bg-surface-100 dark:bg-surface-800 rounded-full flex items-center justify-center mx-auto mb-6">
                         <ShoppingBag className="w-12 h-12 text-fg-faint" />
                     </div>
-                    <h1 className="text-3xl font-bold text-surface-900 dark:text-surface-100 mb-4">Giỏ hàng trống</h1>
+                    <h1 className="text-3xl font-bold text-fg mb-4">Giỏ hàng trống</h1>
                     <p className="text-surface-600 dark:text-surface-400 mb-8">
                         Bạn chưa thêm sản phẩm nào vào giỏ hàng.
                     </p>
@@ -91,7 +91,7 @@ export default function CartPage() {
                 <CheckoutSteps current={1} />
 
                 <div className="flex items-center justify-between mb-8">
-                    <h1 className="text-3xl font-bold text-surface-900 dark:text-surface-100">
+                    <h1 className="text-3xl font-bold text-fg">
                         Giỏ hàng ({items.length} sản phẩm)
                     </h1>
                     <button
@@ -109,7 +109,7 @@ export default function CartPage() {
                         {items.map((item) => (
                             <div
                                 key={item.product_id}
-                                className="bg-white dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-800 p-6 shadow-sm hover:shadow-md transition-all"
+                                className="bg-card rounded-2xl border border-line p-6 shadow-sm hover:shadow-md transition-all"
                             >
                                 <div className="flex items-start gap-5">
                                     <div className="w-20 h-20 shrink-0 rounded-xl bg-gradient-to-br from-brand-500/10 to-brand-600/20 dark:from-brand-500/5 dark:to-brand-600/10 border border-surface-200 dark:border-surface-700 flex items-center justify-center">
@@ -117,7 +117,7 @@ export default function CartPage() {
                                     </div>
 
                                     <div className="flex-1 min-w-0">
-                                        <h3 className="text-lg font-bold text-surface-900 dark:text-surface-100 mb-1">
+                                        <h3 className="text-lg font-bold text-fg mb-1">
                                             {item.name}
                                         </h3>
                                         <p className="text-sm text-fg-subtle mb-4">
@@ -150,8 +150,8 @@ export default function CartPage() {
 
                     {/* Order Summary */}
                     <div className="w-full lg:w-[380px]">
-                        <div className="bg-white dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-800 p-6 shadow-sm sticky top-24">
-                            <h2 className="text-lg font-bold text-surface-900 dark:text-surface-100 mb-6 pb-4 border-b border-surface-100 dark:border-surface-800">
+                        <div className="bg-card rounded-2xl border border-line p-6 shadow-sm sticky top-24">
+                            <h2 className="text-lg font-bold text-fg mb-6 pb-4 border-b border-surface-100 dark:border-surface-800">
                                 Tóm tắt đơn hàng
                             </h2>
 
@@ -183,7 +183,7 @@ export default function CartPage() {
                                                 value={couponCode}
                                                 onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
                                                 placeholder="Nhập mã giảm giá..."
-                                                className="flex-1 px-4 py-2.5 bg-surface-50 dark:bg-surface-950 border border-surface-200 dark:border-surface-700 rounded-xl text-sm text-surface-900 dark:text-surface-100 placeholder-surface-400 focus:outline-none focus:ring-2 focus:ring-brand-500/50 focus:border-brand-500"
+                                                className="flex-1 px-4 py-2.5 bg-surface-50 dark:bg-surface-950 border border-surface-200 dark:border-surface-700 rounded-xl text-sm text-fg placeholder-surface-400 focus:outline-none focus:ring-2 focus:ring-brand-500/50 focus:border-brand-500"
                                             />
                                             <button
                                                 onClick={handleApplyCoupon}
@@ -204,7 +204,7 @@ export default function CartPage() {
                             <div className="space-y-3 text-sm mb-6">
                                 <div className="flex justify-between">
                                     <span className="text-fg-subtle">Tạm tính</span>
-                                    <span className="text-surface-900 dark:text-surface-100 font-medium">{formatCurrency(subTotal)}</span>
+                                    <span className="text-fg font-medium">{formatCurrency(subTotal)}</span>
                                 </div>
                                 {discountAmount > 0 && (
                                     <div className="flex justify-between text-green-600 dark:text-green-400">
@@ -213,7 +213,7 @@ export default function CartPage() {
                                     </div>
                                 )}
                                 <div className="flex justify-between pt-4 border-t border-surface-100 dark:border-surface-800 text-base">
-                                    <span className="font-bold text-surface-900 dark:text-surface-100">Tổng cộng</span>
+                                    <span className="font-bold text-fg">Tổng cộng</span>
                                     <span className="font-extrabold text-2xl text-brand-600 dark:text-brand-400">
                                         {formatCurrency(total)}
                                     </span>

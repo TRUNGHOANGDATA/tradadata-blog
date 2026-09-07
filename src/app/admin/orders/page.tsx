@@ -232,11 +232,11 @@ export default function AdminOrdersPage() {
     return (
         <>
             <div className="flex items-center justify-between mb-6">
-                <h1 className="text-2xl font-bold text-surface-900 dark:text-surface-100">Quản lý duyệt đơn</h1>
+                <h1 className="text-2xl font-bold text-fg">Quản lý duyệt đơn</h1>
                 <div className="flex gap-2">
                     <button
                         onClick={() => setCreateModal(prev => ({ ...prev, isOpen: true }))}
-                        className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-sm font-medium transition-colors shadow-md shadow-brand-500/20"
+                        className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-sm font-medium transition-colors shadow-lg shadow-brand-600/25"
                     >
                         <Plus className="w-4 h-4" /> Tạo đơn hàng
                     </button>
@@ -259,13 +259,13 @@ export default function AdminOrdersPage() {
                             placeholder="Tìm theo Mã đơn, Email, Tên, SĐT..."
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
-                            className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-white dark:bg-surface-900 border border-surface-200 dark:border-surface-700 focus:outline-none focus:ring-2 focus:ring-brand-500/30 text-sm"
+                            className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-card border border-surface-200 dark:border-surface-700 focus:outline-none focus:ring-2 focus:ring-brand-500/30 text-sm"
                         />
                     </div>
                     <select
                         value={statusFilter}
                         onChange={(e) => setStatusFilter(e.target.value)}
-                        className="px-3 py-2.5 rounded-xl bg-white dark:bg-surface-900 border border-surface-200 dark:border-surface-700 text-sm"
+                        className="px-3 py-2.5 rounded-xl bg-card border border-surface-200 dark:border-surface-700 text-sm"
                     >
                         <option value="all">Tất cả trạng thái</option>
                         <option value="pending">Chờ xác nhận</option>
@@ -273,18 +273,18 @@ export default function AdminOrdersPage() {
                         <option value="cancelled">Đã huỷ</option>
                     </select>
                 </div>
-                <div className="flex flex-wrap items-center gap-2 bg-white dark:bg-surface-900 border border-surface-200 dark:border-surface-800 rounded-xl px-3 py-1.5 shadow-sm w-fit">
+                <div className="flex flex-wrap items-center gap-2 bg-card border border-line rounded-xl px-3 py-1.5 shadow-sm w-fit">
                     <span className="text-sm font-medium text-fg-subtle">Từ ngày:</span>
                     <input
                         type="date"
-                        className="bg-transparent text-sm focus:outline-none text-surface-900 dark:text-surface-100 placeholder-surface-400"
+                        className="bg-transparent text-sm focus:outline-none text-fg placeholder-surface-400"
                         value={fromDate}
                         onChange={(e) => setFromDate(e.target.value)}
                     />
                     <span className="text-sm font-medium text-fg-subtle">đến:</span>
                     <input
                         type="date"
-                        className="bg-transparent text-sm focus:outline-none text-surface-900 dark:text-surface-100 placeholder-surface-400"
+                        className="bg-transparent text-sm focus:outline-none text-fg placeholder-surface-400"
                         value={toDate}
                         onChange={(e) => setToDate(e.target.value)}
                     />
@@ -300,11 +300,11 @@ export default function AdminOrdersPage() {
                     </span>
                 </div>
             )}
-            <div className="bg-white dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-800 overflow-hidden">
+            <div className="bg-card rounded-2xl border border-line overflow-hidden">
                 <div className="overflow-x-auto">
                     <table className="w-full table-fixed">
                         <thead>
-                            <tr className="border-b border-surface-200 dark:border-surface-800 bg-surface-50 dark:bg-surface-800/50">
+                            <tr className="border-b border-line bg-surface-50 dark:bg-surface-800/50">
                                 <th className="text-left px-4 py-3 text-xs font-semibold text-fg-subtle uppercase w-[14%]">Mã Đơn / Ngày tạo</th>
                                 <th className="text-left px-4 py-3 text-xs font-semibold text-fg-subtle uppercase w-[24%]">Khách hàng</th>
                                 <th className="text-left px-4 py-3 text-xs font-semibold text-fg-subtle uppercase w-[24%]">Sản phẩm / Tiền</th>
@@ -336,14 +336,14 @@ export default function AdminOrdersPage() {
                                         </td>
                                         <td className="px-4 py-4">
                                             <div className="flex flex-col">
-                                                <span className="font-medium text-surface-900 dark:text-surface-100">{order.full_name}</span>
+                                                <span className="font-medium text-fg">{order.full_name}</span>
                                                 <span className="text-sm text-fg-subtle">{order.email}</span>
                                                 <span className="text-sm text-fg-subtle">{order.phone}</span>
                                             </div>
                                         </td>
                                         <td className="px-4 py-4">
                                             <div className="flex flex-col">
-                                                <span className="font-medium text-surface-900 dark:text-surface-100">
+                                                <span className="font-medium text-fg">
                                                     {(order.products as any)?.name}
                                                 </span>
                                                 <div className="flex flex-col mt-1">
@@ -398,7 +398,7 @@ export default function AdminOrdersPage() {
                                                             submitting: false
                                                         })}
                                                         disabled={approving[order.id]}
-                                                        className="inline-flex items-center gap-1 px-2.5 py-1.5 border border-surface-200 dark:border-surface-700 text-surface-600 dark:text-surface-300 hover:border-brand-300 hover:text-brand-600 dark:hover:text-brand-400 hover:bg-brand-50 dark:hover:bg-brand-900/10 hover:scale-105 hover:shadow-md text-xs font-medium rounded-lg transition-all whitespace-nowrap disabled:opacity-50"
+                                                        className="inline-flex items-center gap-1 px-2.5 py-1.5 border border-surface-200 dark:border-surface-700 text-fg-muted hover:border-brand-300 hover:text-brand-600 dark:hover:text-brand-400 hover:bg-brand-50 dark:hover:bg-brand-900/10 hover:scale-105 hover:shadow-md text-xs font-medium rounded-lg transition-all whitespace-nowrap disabled:opacity-50"
                                                         title="Sửa giá (Khuyến mãi)"
                                                     >
                                                         <Pencil className="w-3 h-3" /> Sửa giá
@@ -458,9 +458,9 @@ export default function AdminOrdersPage() {
             {/* Edit Amount Modal */}
             {editAmountModal.isOpen && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-                    <div className="bg-white dark:bg-surface-900 rounded-2xl w-full max-w-md shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
-                        <div className="flex items-center justify-between p-4 border-b border-surface-200 dark:border-surface-800">
-                            <h3 className="text-lg font-bold text-surface-900 dark:text-surface-100">Sửa giá đơn hàng</h3>
+                    <div className="bg-card rounded-2xl w-full max-w-md shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+                        <div className="flex items-center justify-between p-4 border-b border-line">
+                            <h3 className="text-lg font-bold text-fg">Sửa giá đơn hàng</h3>
                             <button
                                 onClick={() => setEditAmountModal(prev => ({ ...prev, isOpen: false }))}
                                 className="text-fg-faint hover:text-surface-600 transition-colors"
@@ -494,7 +494,7 @@ export default function AdminOrdersPage() {
                                         type="number"
                                         required
                                         min="0"
-                                        className="w-full px-3 py-2 bg-white dark:bg-surface-900 border border-surface-300 dark:border-surface-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500/50 text-surface-900 dark:text-surface-100 text-sm transition-shadow"
+                                        className="w-full px-3 py-2 bg-card border border-surface-300 dark:border-surface-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500/50 text-fg text-sm transition-shadow"
                                         value={editAmountModal.newAmount}
                                         onChange={e => setEditAmountModal(prev => ({ ...prev, newAmount: Number(e.target.value) }))}
                                     />
@@ -505,7 +505,7 @@ export default function AdminOrdersPage() {
                                 <textarea
                                     rows={2}
                                     placeholder="Ví dụ: Giảm giá 20% nhân dịp..."
-                                    className="w-full px-3 py-2 bg-white dark:bg-surface-900 border border-surface-300 dark:border-surface-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500/50 text-surface-900 dark:text-surface-100 text-sm transition-shadow resize-none"
+                                    className="w-full px-3 py-2 bg-card border border-surface-300 dark:border-surface-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500/50 text-fg text-sm transition-shadow resize-none"
                                     value={editAmountModal.note}
                                     onChange={e => setEditAmountModal(prev => ({ ...prev, note: e.target.value }))}
                                 />
@@ -521,7 +521,7 @@ export default function AdminOrdersPage() {
                                 <button
                                     type="submit"
                                     disabled={editAmountModal.submitting}
-                                    className="px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white font-medium flex items-center gap-2 rounded-xl transition-colors shadow-md shadow-brand-500/20 disabled:opacity-50 text-sm"
+                                    className="px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white font-medium flex items-center gap-2 rounded-xl transition-colors shadow-lg shadow-brand-600/25 disabled:opacity-50 text-sm"
                                 >
                                     {editAmountModal.submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <CheckCircle2 className="w-4 h-4" />}
                                     Cập nhật
@@ -535,9 +535,9 @@ export default function AdminOrdersPage() {
             {/* Create Order Modal */}
             {createModal.isOpen && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-                    <div className="bg-white dark:bg-surface-900 rounded-2xl w-full max-w-lg shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
-                        <div className="flex items-center justify-between p-4 border-b border-surface-200 dark:border-surface-800">
-                            <h3 className="text-lg font-bold text-surface-900 dark:text-surface-100">Tạo đơn hàng thủ công</h3>
+                    <div className="bg-card rounded-2xl w-full max-w-lg shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+                        <div className="flex items-center justify-between p-4 border-b border-line">
+                            <h3 className="text-lg font-bold text-fg">Tạo đơn hàng thủ công</h3>
                             <button
                                 onClick={() => setCreateModal(prev => ({ ...prev, isOpen: false }))}
                                 className="text-fg-faint hover:text-surface-600 transition-colors"
@@ -553,7 +553,7 @@ export default function AdminOrdersPage() {
                                         type="email"
                                         required
                                         placeholder="customer@email.com"
-                                        className="w-full px-3 py-2 bg-white dark:bg-surface-900 border border-surface-300 dark:border-surface-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500/50 text-sm"
+                                        className="w-full px-3 py-2 bg-card border border-surface-300 dark:border-surface-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500/50 text-sm"
                                         value={createModal.email}
                                         onChange={e => setCreateModal(prev => ({ ...prev, email: e.target.value }))}
                                     />
@@ -563,7 +563,7 @@ export default function AdminOrdersPage() {
                                     <input
                                         type="text"
                                         placeholder="Nguyễn Văn A"
-                                        className="w-full px-3 py-2 bg-white dark:bg-surface-900 border border-surface-300 dark:border-surface-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500/50 text-sm"
+                                        className="w-full px-3 py-2 bg-card border border-surface-300 dark:border-surface-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500/50 text-sm"
                                         value={createModal.full_name}
                                         onChange={e => setCreateModal(prev => ({ ...prev, full_name: e.target.value }))}
                                     />
@@ -573,7 +573,7 @@ export default function AdminOrdersPage() {
                                     <input
                                         type="text"
                                         placeholder="0912 345 678"
-                                        className="w-full px-3 py-2 bg-white dark:bg-surface-900 border border-surface-300 dark:border-surface-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500/50 text-sm"
+                                        className="w-full px-3 py-2 bg-card border border-surface-300 dark:border-surface-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500/50 text-sm"
                                         value={createModal.phone}
                                         onChange={e => setCreateModal(prev => ({ ...prev, phone: e.target.value }))}
                                     />
@@ -583,7 +583,7 @@ export default function AdminOrdersPage() {
                                 <label className="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-1">Sản phẩm *</label>
                                 <select
                                     required
-                                    className="w-full px-3 py-2 bg-white dark:bg-surface-900 border border-surface-300 dark:border-surface-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500/50 text-sm"
+                                    className="w-full px-3 py-2 bg-card border border-surface-300 dark:border-surface-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500/50 text-sm"
                                     value={createModal.product_id}
                                     onChange={e => {
                                         const pid = e.target.value;
@@ -604,7 +604,7 @@ export default function AdminOrdersPage() {
                                         type="number"
                                         required
                                         min="0"
-                                        className="w-full px-3 py-2 bg-white dark:bg-surface-900 border border-surface-300 dark:border-surface-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500/50 text-sm"
+                                        className="w-full px-3 py-2 bg-card border border-surface-300 dark:border-surface-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500/50 text-sm"
                                         value={createModal.amount}
                                         onChange={e => setCreateModal(prev => ({ ...prev, amount: Number(e.target.value) }))}
                                     />
@@ -645,7 +645,7 @@ export default function AdminOrdersPage() {
                                 <textarea
                                     rows={2}
                                     placeholder="Lý do tạo đơn, ghi chú..."
-                                    className="w-full px-3 py-2 bg-white dark:bg-surface-900 border border-surface-300 dark:border-surface-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500/50 text-sm resize-none"
+                                    className="w-full px-3 py-2 bg-card border border-surface-300 dark:border-surface-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500/50 text-sm resize-none"
                                     value={createModal.admin_note}
                                     onChange={e => setCreateModal(prev => ({ ...prev, admin_note: e.target.value }))}
                                 />
@@ -661,7 +661,7 @@ export default function AdminOrdersPage() {
                                 <button
                                     type="submit"
                                     disabled={createModal.submitting}
-                                    className="px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white font-medium flex items-center gap-2 rounded-xl transition-colors shadow-md shadow-brand-500/20 disabled:opacity-50 text-sm"
+                                    className="px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white font-medium flex items-center gap-2 rounded-xl transition-colors shadow-lg shadow-brand-600/25 disabled:opacity-50 text-sm"
                                 >
                                     {createModal.submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4" />}
                                     Tạo đơn hàng

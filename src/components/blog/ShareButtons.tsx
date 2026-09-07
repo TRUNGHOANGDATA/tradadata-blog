@@ -57,7 +57,7 @@ export function ShareButtons({ title, url, orientation = "horizontal" }: ShareBu
     return (
         <div className={containerClass}>
             {orientation === "horizontal" && (
-                <span className="text-sm font-semibold text-surface-900 dark:text-surface-100 uppercase tracking-wider hidden sm:block">Chia sẻ:</span>
+                <span className="text-sm font-semibold text-fg uppercase tracking-wider hidden sm:block">Chia sẻ:</span>
             )}
 
             <button
@@ -76,7 +76,7 @@ export function ShareButtons({ title, url, orientation = "horizontal" }: ShareBu
             </button>
             <button
                 onClick={handleShare}
-                className={`${buttonClass} ${orientation === "horizontal" ? "ml-auto" : ""} rounded-full bg-white dark:bg-surface-900 border border-surface-200 dark:border-surface-800 flex items-center justify-center text-surface-600 dark:text-surface-400 hover:text-brand-600 hover:border-brand-200 dark:hover:text-brand-400 dark:hover:border-brand-800 shadow-sm transition-all shadow-md group`}
+                className={`${buttonClass} ${orientation === "horizontal" ? "ml-auto" : ""} rounded-full bg-card border border-line flex items-center justify-center text-surface-600 dark:text-surface-400 hover:text-brand-600 hover:border-brand-200 dark:hover:text-brand-400 dark:hover:border-brand-800 shadow-sm transition-all shadow-md group`}
                 title="Copy đường dẫn"
             >
                 <Share2 className="h-4 w-4 group-hover:scale-110 transition-transform" />

@@ -105,7 +105,7 @@ export default function CategoriesPage() {
     return (
         <>
             <div className="flex items-center justify-between mb-6">
-                <h1 className="text-2xl font-bold text-surface-900 dark:text-surface-100">Quản lý chủ đề</h1>
+                <h1 className="text-2xl font-bold text-fg">Quản lý chủ đề</h1>
                 <button
                     onClick={openCreateModal}
                     className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-brand-600 text-white text-sm font-medium hover:bg-brand-700 transition-colors shadow-lg shadow-brand-600/25"
@@ -117,12 +117,12 @@ export default function CategoriesPage() {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 {categories.map((cat) => (
-                    <div key={cat.id} className="bg-white dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-800 p-5 hover:shadow-lg transition-shadow">
+                    <div key={cat.id} className="bg-card rounded-2xl border border-line p-5 hover:shadow-lg transition-shadow">
                         <div className="flex items-start justify-between mb-3">
                             <div className="flex items-center gap-3">
                                 <span className="text-2xl">{cat.icon || '📁'}</span>
                                 <div>
-                                    <h3 className="font-semibold text-surface-900 dark:text-surface-100">{cat.name}</h3>
+                                    <h3 className="font-semibold text-fg">{cat.name}</h3>
                                     <p className="text-xs text-fg-faint">/{cat.slug}</p>
                                 </div>
                             </div>
@@ -162,9 +162,9 @@ export default function CategoriesPage() {
             {/* Modal */}
             {showModal && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm" onClick={() => setShowModal(false)}>
-                    <div className="bg-white dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-700 p-6 w-full max-w-md shadow-2xl" onClick={(e) => e.stopPropagation()}>
+                    <div className="bg-card rounded-2xl border border-surface-200 dark:border-surface-700 p-6 w-full max-w-md shadow-2xl" onClick={(e) => e.stopPropagation()}>
                         <div className="flex items-center justify-between mb-5">
-                            <h2 className="text-lg font-bold text-surface-900 dark:text-surface-100">
+                            <h2 className="text-lg font-bold text-fg">
                                 {editingCat ? 'Sửa chủ đề' : 'Thêm chủ đề mới'}
                             </h2>
                             <button onClick={() => setShowModal(false)} className="p-1 rounded-lg hover:bg-surface-100 dark:hover:bg-surface-800">

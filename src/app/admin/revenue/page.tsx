@@ -177,19 +177,19 @@ export default function AdminRevenuePage() {
         <>
             {/* Header */}
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
-                <h1 className="text-2xl font-bold text-surface-900 dark:text-surface-100">Báo cáo Doanh thu</h1>
-                <div className="flex items-center gap-2 bg-white dark:bg-surface-900 border border-surface-200 dark:border-surface-800 rounded-xl px-3 py-1.5 shadow-sm">
+                <h1 className="text-2xl font-bold text-fg">Báo cáo Doanh thu</h1>
+                <div className="flex items-center gap-2 bg-card border border-line rounded-xl px-3 py-1.5 shadow-sm">
                     <span className="text-sm font-medium text-fg-subtle">Từ ngày:</span>
                     <input
                         type="date"
-                        className="bg-transparent text-sm focus:outline-none text-surface-900 dark:text-surface-100 placeholder-surface-400"
+                        className="bg-transparent text-sm focus:outline-none text-fg placeholder-surface-400"
                         value={fromDate}
                         onChange={(e) => setFromDate(e.target.value)}
                     />
                     <span className="text-sm font-medium text-fg-subtle">đến:</span>
                     <input
                         type="date"
-                        className="bg-transparent text-sm focus:outline-none text-surface-900 dark:text-surface-100 placeholder-surface-400"
+                        className="bg-transparent text-sm focus:outline-none text-fg placeholder-surface-400"
                         value={toDate}
                         onChange={(e) => setToDate(e.target.value)}
                     />
@@ -198,45 +198,45 @@ export default function AdminRevenuePage() {
 
             {/* Summary Cards */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-                <div className="bg-white dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-800 p-5 hover:shadow-lg transition-shadow">
+                <div className="bg-card rounded-2xl border border-line p-5 hover:shadow-lg transition-shadow">
                     <div className="flex items-center justify-between mb-3">
                         <span className="text-sm font-medium text-fg-subtle">Tổng doanh thu</span>
                         <div className="p-2 rounded-xl bg-emerald-50 text-emerald-600 dark:bg-emerald-900/20">
                             <DollarSign className="h-4 w-4" />
                         </div>
                     </div>
-                    <p className="text-2xl font-bold text-surface-900 dark:text-surface-100">
+                    <p className="text-2xl font-bold text-fg">
                         {stats ? formatCurrency(stats.totalRevenue) : '0 ₫'}
                     </p>
                 </div>
 
-                <div className="bg-white dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-800 p-5 hover:shadow-lg transition-shadow">
+                <div className="bg-card rounded-2xl border border-line p-5 hover:shadow-lg transition-shadow">
                     <div className="flex items-center justify-between mb-3">
                         <span className="text-sm font-medium text-fg-subtle">Doanh thu tháng này</span>
                         <div className="p-2 rounded-xl bg-blue-50 text-blue-600 dark:bg-blue-900/20">
                             <Calendar className="h-4 w-4" />
                         </div>
                     </div>
-                    <p className="text-2xl font-bold text-surface-900 dark:text-surface-100">
+                    <p className="text-2xl font-bold text-fg">
                         {stats ? formatCurrency(stats.monthlyRevenue) : '0 ₫'}
                     </p>
                 </div>
 
                 {(fromDate && toDate) && (
-                    <div className="bg-white dark:bg-surface-900 rounded-2xl border border-brand-200 dark:border-brand-800 p-5 hover:shadow-lg transition-shadow bg-brand-50/50 dark:bg-brand-900/10">
+                    <div className="bg-card rounded-2xl border border-brand-200 dark:border-brand-800 p-5 hover:shadow-lg transition-shadow bg-brand-50/50 dark:bg-brand-900/10">
                         <div className="flex items-center justify-between mb-3">
                             <span className="text-sm font-medium text-brand-700 dark:text-brand-300">Doanh thu chọn lọc</span>
                             <div className="p-2 rounded-xl bg-brand-100 text-brand-600 dark:bg-brand-800/50">
                                 <DollarSign className="h-4 w-4" />
                             </div>
                         </div>
-                        <p className="text-2xl font-bold text-surface-900 dark:text-surface-100">
+                        <p className="text-2xl font-bold text-fg">
                             {stats ? formatCurrency(stats.periodRevenue || 0) : '0 ₫'}
                         </p>
                     </div>
                 )}
 
-                <Link href="/admin/orders" className={`bg-white dark:bg-surface-900 rounded-2xl border ${stats && stats.pendingOrders > 0 ? 'border-amber-400 dark:border-amber-600 shadow-md shadow-amber-500/10 animate-pulse' : 'border-surface-200 dark:border-surface-800'} p-5 hover:shadow-lg transition-all block group cursor-pointer`}>
+                <Link href="/admin/orders" className={`bg-card rounded-2xl border ${stats && stats.pendingOrders > 0 ? 'border-amber-400 dark:border-amber-600 shadow-md shadow-amber-500/10 animate-pulse' : 'border-line'} p-5 hover:shadow-lg transition-all block group cursor-pointer`}>
                     <div className="flex items-center justify-between mb-3">
                         <span className={`text-sm font-medium ${stats && stats.pendingOrders > 0 ? 'text-amber-600 dark:text-amber-500' : 'text-surface-500'}`}>Đơn chờ duyệt</span>
                         <div className={`p-2 rounded-xl ${stats && stats.pendingOrders > 0 ? 'bg-amber-100 text-amber-600 dark:bg-amber-900/30' : 'bg-surface-50 text-fg-subtle dark:bg-surface-800'}`}>
@@ -244,7 +244,7 @@ export default function AdminRevenuePage() {
                         </div>
                     </div>
                     <div className="flex items-end justify-between">
-                        <p className="text-2xl font-bold text-surface-900 dark:text-surface-100">
+                        <p className="text-2xl font-bold text-fg">
                             {stats?.pendingOrders || 0}
                         </p>
                         <span className="text-xs text-brand-600 font-medium group-hover:underline opacity-0 group-hover:opacity-100 transition-opacity">Xem ngay →</span>
@@ -253,10 +253,10 @@ export default function AdminRevenuePage() {
             </div>
 
             {/* Daily Revenue Chart */}
-            <div className="bg-white dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-800 p-6 mb-6">
+            <div className="bg-card rounded-2xl border border-line p-6 mb-6">
                 <div className="flex items-center gap-2 mb-5">
                     <TrendingUp className="h-5 w-5 text-brand-500" />
-                    <h2 className="text-lg font-bold text-surface-900 dark:text-surface-100">Doanh thu 30 ngày gần nhất</h2>
+                    <h2 className="text-lg font-bold text-fg">Doanh thu 30 ngày gần nhất</h2>
                 </div>
                 <div className="flex items-end gap-[3px] h-[200px] relative">
                     {dailyRevenue.map((d, i) => {
@@ -310,10 +310,10 @@ export default function AdminRevenuePage() {
             {/* Two-column: Product Breakdown + Coupon Impact */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
                 {/* Product Breakdown */}
-                <div className="bg-white dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-800 p-6">
+                <div className="bg-card rounded-2xl border border-line p-6">
                     <div className="flex items-center gap-2 mb-5">
                         <Package className="h-5 w-5 text-blue-500" />
-                        <h2 className="text-lg font-bold text-surface-900 dark:text-surface-100">Doanh thu theo sản phẩm</h2>
+                        <h2 className="text-lg font-bold text-fg">Doanh thu theo sản phẩm</h2>
                     </div>
                     {productBreakdown.length === 0 ? (
                         <p className="text-fg-faint text-sm text-center py-8">Chưa có dữ liệu</p>
@@ -329,7 +329,7 @@ export default function AdminRevenuePage() {
                                     <div key={p.name}>
                                         <div className="flex items-center justify-between mb-1.5">
                                             <span className="text-sm font-medium text-surface-700 dark:text-surface-300 truncate mr-2">{p.name}</span>
-                                            <span className="text-sm font-bold text-surface-900 dark:text-surface-100 whitespace-nowrap">
+                                            <span className="text-sm font-bold text-fg whitespace-nowrap">
                                                 {formatCurrency(p.revenue)}
                                             </span>
                                         </div>
@@ -350,10 +350,10 @@ export default function AdminRevenuePage() {
                 </div>
 
                 {/* Coupon Impact */}
-                <div className="bg-white dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-800 p-6">
+                <div className="bg-card rounded-2xl border border-line p-6">
                     <div className="flex items-center gap-2 mb-5">
                         <Ticket className="h-5 w-5 text-green-500" />
-                        <h2 className="text-lg font-bold text-surface-900 dark:text-surface-100">Tác động mã giảm giá</h2>
+                        <h2 className="text-lg font-bold text-fg">Tác động mã giảm giá</h2>
                     </div>
                     {!couponImpact || couponImpact.usedCount === 0 ? (
                         <p className="text-fg-faint text-sm text-center py-8">Chưa có mã giảm giá nào được sử dụng</p>
@@ -380,7 +380,7 @@ export default function AdminRevenuePage() {
                                         {couponImpact.topCoupons.map((c) => (
                                             <div key={c.code} className="flex items-center justify-between p-2.5 bg-surface-50 dark:bg-surface-800 rounded-xl">
                                                 <div className="flex items-center gap-2">
-                                                    <span className="font-mono text-sm font-bold text-surface-900 dark:text-surface-100 bg-surface-200 dark:bg-surface-700 px-2 py-0.5 rounded-md">
+                                                    <span className="font-mono text-sm font-bold text-fg bg-surface-200 dark:bg-surface-700 px-2 py-0.5 rounded-md">
                                                         {c.code}
                                                     </span>
                                                     <span className="text-xs text-fg-subtle">{c.count} lần</span>
@@ -399,11 +399,11 @@ export default function AdminRevenuePage() {
             </div>
 
             {/* Recent Orders */}
-            <div className="bg-white dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-800 p-6">
+            <div className="bg-card rounded-2xl border border-line p-6">
                 <div className="flex items-center justify-between mb-5">
                     <div className="flex items-center gap-2">
                         <ShoppingCart className="h-5 w-5 text-amber-500" />
-                        <h2 className="text-lg font-bold text-surface-900 dark:text-surface-100">Đơn hàng gần đây</h2>
+                        <h2 className="text-lg font-bold text-fg">Đơn hàng gần đây</h2>
                     </div>
                     <Link href="/admin/orders" className="text-sm text-brand-600 hover:underline font-medium">
                         Xem tất cả →
@@ -415,7 +415,7 @@ export default function AdminRevenuePage() {
                     <div className="overflow-x-auto">
                         <table className="w-full">
                             <thead>
-                                <tr className="border-b border-surface-200 dark:border-surface-800">
+                                <tr className="border-b border-line">
                                     <th className="text-left px-4 py-2.5 text-xs font-semibold text-fg-subtle uppercase">Mã đơn</th>
                                     <th className="text-left px-4 py-2.5 text-xs font-semibold text-fg-subtle uppercase">Khách hàng</th>
                                     <th className="text-left px-4 py-2.5 text-xs font-semibold text-fg-subtle uppercase">Sản phẩm</th>
@@ -433,13 +433,13 @@ export default function AdminRevenuePage() {
                                         </td>
                                         <td className="px-4 py-3">
                                             <div className="flex flex-col">
-                                                <span className="text-sm font-medium text-surface-900 dark:text-surface-100">{o.full_name}</span>
+                                                <span className="text-sm font-medium text-fg">{o.full_name}</span>
                                                 <span className="text-xs text-fg-faint">{o.email}</span>
                                             </div>
                                         </td>
                                         <td className="px-4 py-3 text-sm text-surface-600 dark:text-surface-400">{o.product_name}</td>
                                         <td className="px-4 py-3 text-right">
-                                            <span className="text-sm font-bold text-surface-900 dark:text-surface-100">{formatCurrency(o.amount)}</span>
+                                            <span className="text-sm font-bold text-fg">{formatCurrency(o.amount)}</span>
                                             {o.coupon_code && (
                                                 <span className="block text-xs text-green-600 dark:text-green-400">🎫 {o.coupon_code}</span>
                                             )}
@@ -455,8 +455,8 @@ export default function AdminRevenuePage() {
 
             {/* Data Insights */}
             {insights.length > 0 && (
-                <div className="bg-white dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-800 p-6 shadow-sm mt-6">
-                    <h2 className="text-lg font-bold text-surface-900 dark:text-surface-100 mb-4 flex items-center gap-2">
+                <div className="bg-card rounded-2xl border border-line p-6 shadow-sm mt-6">
+                    <h2 className="text-lg font-bold text-fg mb-4 flex items-center gap-2">
                         <Lightbulb className="h-5 w-5 text-amber-500" />
                         Phân tích & Nhận định
                     </h2>

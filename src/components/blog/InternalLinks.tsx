@@ -13,7 +13,7 @@ export function InternalLinks({ relatedPosts }: InternalLinksProps) {
         <div className="my-10 p-6 bg-gradient-to-br from-brand-50/80 to-surface-50 dark:from-brand-950/30 dark:to-surface-900/60 rounded-2xl border border-brand-200/50 dark:border-brand-800/30">
             <div className="flex items-center gap-2 mb-4">
                 <span className="text-xl">📚</span>
-                <h3 className="text-lg font-bold text-surface-900 dark:text-surface-100">
+                <h3 className="text-lg font-bold text-fg">
                     Bài viết liên quan
                 </h3>
             </div>

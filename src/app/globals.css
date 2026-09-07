@@ -157,21 +157,42 @@
   --text-6xl--line-height: 4rem;
   --text-6xl--letter-spacing: -0.032em;
 
-  /* ── THANG BO GÓC ────────────────────────────────────────────────────
-     4 bậc. Quy ước: control dùng `md`, thẻ dùng `lg`, panel lớn dùng `xl`. */
-  --radius-sm: 0.375rem;
-  /* 6px  — badge, tag */
-  --radius-md: 0.625rem;
-  /* 10px — nút, input, ô chọn */
-  --radius-lg: 1rem;
-  /* 16px — thẻ, dropdown */
-  --radius-xl: 1.5rem;
-  /* 24px — panel lớn, khối hero */
+  /* ── BO GÓC ──────────────────────────────────────────────────────────
+     KHÔNG khai `--radius-sm/md/lg/xl` ở đây. Đó đúng là tên Tailwind dùng cho
+     `rounded-sm/md/lg/xl`, nên khai lại là đổi thầm bo góc của toàn bộ code cũ:
+     `rounded-xl` (312 chỗ) nhảy 12px -> 24px, `rounded-lg` (118 chỗ) 8px -> 16px,
+     `rounded-md` (21 chỗ) 6px -> 10px. Tổng 451 element tròn hơn mà không ai yêu
+     cầu, và thang còn bị sập vì --radius-lg trùng --radius-2xl.
+
+     Giữ nguyên thang mặc định của Tailwind (4/6/8/12/16/24px) và dùng theo quy
+     ước dưới đây — chính là quy ước code hiện tại đang theo:
+
+       badge, tag, nhãn nhỏ      rounded-md    6px
+       nút, input, ô chọn        rounded-xl   12px
+       thẻ, dropdown, panel      rounded-2xl  16px
+       khối lớn, hero            rounded-3xl  24px
+       chip tròn, avatar         rounded-full
+
+     Cần cỡ khác thì viết thẳng `rounded-[10px]` ở chỗ đó, đừng sửa thang.     */
 
   /* ── THANG ĐỘ NỔI ────────────────────────────────────────────────────
      Trước đây cả trang chỉ có 1 giá trị shadow nên không phân biệt được lớp.
      3 bậc, đổ bóng lạnh theo màu surface chứ không phải đen thuần —
-     đen thuần trên nền hơi xanh làm bóng bị "bẩn".                       */
+     đen thuần trên nền hơi xanh làm bóng bị "bẩn".
+
+     Quy ước dùng:
+       shadow-e1   thẻ nằm yên, ô thống kê
+       shadow-e2   thẻ khi hover, dropdown, slide-over
+       shadow-e3   modal, popover, thứ nổi trên cùng
+
+     Nút chính KHÔNG dùng thang này mà dùng quầng sáng thương hiệu, đúng một
+     biến thể: `shadow-lg shadow-brand-600/25`, hover `hover:shadow-brand-600/40`.
+     Trước đây có 6 biến thể khác nhau (brand-500/20, /25, /30, /5, brand-600/25…)
+     nên các nút cùng cấp trông nặng nhẹ khác nhau. Thêm biến thể mới là quay lại
+     đúng vấn đề đó.
+
+     Độ nhấc khi hover cũng chỉ 2 mức: thẻ `hover:-translate-y-1` (4px),
+     nút `hover:-translate-y-0.5` (2px).                                  */
   --shadow-e1: 0 1px 2px 0 rgb(15 23 42 / 0.04), 0 1px 3px 0 rgb(15 23 42 / 0.06);
   --shadow-e2: 0 2px 4px -1px rgb(15 23 42 / 0.05), 0 8px 16px -4px rgb(15 23 42 / 0.08);
   --shadow-e3: 0 4px 8px -2px rgb(15 23 42 / 0.06), 0 20px 32px -8px rgb(15 23 42 / 0.12);

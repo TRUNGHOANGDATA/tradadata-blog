@@ -182,7 +182,7 @@ export default async function BlogPostPage({ params, searchParams }: Props) {
                     <div class="p-4 bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 rounded-full mb-4">
                         <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
                     </div>
-                    <h3 class="text-2xl font-bold text-surface-900 dark:text-surface-100 mb-2">Phần còn lại dành cho thành viên Premium</h3>
+                    <h3 class="text-2xl font-bold text-fg mb-2">Phần còn lại dành cho thành viên Premium</h3>
                     <p class="text-surface-600 dark:text-surface-400 max-w-md mb-8">Đăng ký gói Premium để đọc trọn bài viết và toàn bộ nội dung chất lượng cao khác.</p>
                     ${session?.user
                 ? `<a href="/courses" class="inline-flex items-center justify-center px-6 py-3 bg-amber-500 hover:bg-amber-600 !text-white !no-underline font-medium rounded-xl transition-colors shadow-lg">Nâng cấp Premium</a>`
@@ -255,7 +255,7 @@ export default async function BlogPostPage({ params, searchParams }: Props) {
             <ViewTracker slug={post.slug} />
 
             {/* Breadcrumbs — above cover image */}
-            <div className="bg-surface-50 dark:bg-surface-950 border-b border-surface-200 dark:border-surface-800 mt-16 md:mt-20">
+            <div className="bg-surface-50 dark:bg-surface-950 border-b border-line mt-16 md:mt-20">
                 <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex items-center gap-2 text-sm text-surface-500 dark:text-surface-400">
                     <Link href="/" className="hover:text-brand-600 dark:hover:text-brand-400 transition-colors">Trang chủ</Link>
                     <ChevronRight className="h-4 w-4 text-fg-faint" />
@@ -314,7 +314,7 @@ export default async function BlogPostPage({ params, searchParams }: Props) {
                                 <div className="flex items-center gap-2 mb-4">
                                     <Link
                                         href={`/admin/posts/${post.id}/edit`}
-                                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-card/15 text-white border border-white/25 text-xs font-medium hover:bg-white/25 transition-colors backdrop-blur-sm"
+                                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/15 text-white border border-white/25 text-xs font-medium hover:bg-white/25 transition-colors backdrop-blur-sm"
                                     >
                                         <Pencil className="h-3 w-3" />
                                         Sửa bài viết
@@ -353,7 +353,7 @@ export default async function BlogPostPage({ params, searchParams }: Props) {
                                         <Link
                                             key={tag.id}
                                             href={`/tag/${tag.slug}`}
-                                            className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-card/10 text-surface-300 border border-white/20 text-xs font-medium hover:bg-white/20 hover:text-white transition-colors backdrop-blur-sm"
+                                            className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-white/10 text-surface-300 border border-white/20 text-xs font-medium hover:bg-white/20 hover:text-white transition-colors backdrop-blur-sm"
                                         >
                                             <Tag className="h-3 w-3" />
                                             {tag.name}
@@ -384,7 +384,7 @@ export default async function BlogPostPage({ params, searchParams }: Props) {
                             <div>
                                 <BookmarkButton postId={post.id} variant="button" className="w-full justify-center mb-8" />
 
-                                <h3 className="text-sm font-semibold text-surface-900 dark:text-surface-100 uppercase tracking-wider mb-4">
+                                <h3 className="text-sm font-semibold text-fg uppercase tracking-wider mb-4">
                                     Chia sẻ
                                 </h3>
                                 <ShareButtons title={post.title} orientation="vertical" />
@@ -395,7 +395,7 @@ export default async function BlogPostPage({ params, searchParams }: Props) {
                     {/* Article Content */}
                     <div className="col-span-1 lg:col-span-7">
                         {/* Mobile Share & Bookmark (Hidden on Desktop) */}
-                        <div className="lg:hidden pb-6 border-b border-surface-200 dark:border-surface-800 mb-8 space-y-6">
+                        <div className="lg:hidden pb-6 border-b border-line mb-8 space-y-6">
                             <BookmarkButton postId={post.id} variant="button" className="w-full justify-center" />
                             <ShareButtons title={post.title} orientation="horizontal" />
                         </div>
@@ -435,7 +435,7 @@ export default async function BlogPostPage({ params, searchParams }: Props) {
 
                         {/* Tag List */}
                         {postTags.length > 0 && (
-                            <div className="mt-12 pt-8 border-t border-surface-200 dark:border-surface-800 flex flex-wrap gap-2">
+                            <div className="mt-12 pt-8 border-t border-line flex flex-wrap gap-2">
                                 {/* Category as a primary tag */}
                                 {post.category && (
                                     <Link
@@ -466,8 +466,8 @@ export default async function BlogPostPage({ params, searchParams }: Props) {
                         <div className="sticky top-24 space-y-8">
                             {/* Table of Contents */}
                             {toc.length > 0 && (
-                                <div className="bg-white dark:bg-surface-900 rounded-2xl p-6 border border-surface-200 dark:border-surface-800 shadow-sm">
-                                    <h3 className="font-bold text-surface-900 dark:text-surface-100 mb-4 flex items-center gap-2">
+                                <div className="bg-card rounded-2xl p-6 border border-line shadow-sm">
+                                    <h3 className="font-bold text-fg mb-4 flex items-center gap-2">
                                         <BookOpen className="h-5 w-5 text-brand-600 dark:text-brand-400" />
                                         Mục lục
                                     </h3>
@@ -493,7 +493,7 @@ export default async function BlogPostPage({ params, searchParams }: Props) {
                                     <Sparkles className="h-32 w-32" />
                                 </div>
                                 <div className="relative z-10">
-                                    <div className="inline-flex px-2 py-1 bg-card/20 backdrop-blur-sm rounded-lg text-xs font-bold tracking-wider uppercase mb-4 text-brand-100">
+                                    <div className="inline-flex px-2 py-1 bg-white/20 backdrop-blur-sm rounded-lg text-xs font-bold tracking-wider uppercase mb-4 text-brand-100">
                                         Khoá học chuyên sâu
                                     </div>
                                     <h3 className="text-lg font-bold mb-2">Muốn làm chủ {post.category?.name}?</h3>
@@ -502,7 +502,7 @@ export default async function BlogPostPage({ params, searchParams }: Props) {
                                     </p>
                                     <Link
                                         href="/courses"
-                                        className="inline-flex items-center justify-center w-full px-4 py-2.5 bg-card text-brand-700 font-bold rounded-xl hover:bg-brand-50 transition-colors"
+                                        className="inline-flex items-center justify-center w-full px-4 py-2.5 bg-white text-brand-700 font-bold rounded-xl hover:bg-brand-50 transition-colors"
                                     >
                                         Tìm hiểu ngay
                                         <ArrowRight className="ml-2 h-4 w-4" />
@@ -521,7 +521,7 @@ export default async function BlogPostPage({ params, searchParams }: Props) {
             </div>
 
             {/* Newsletter Subscription (Full width) */}
-            <div className="bg-surface-50 dark:bg-surface-950 px-4 sm:px-6 lg:px-8 mt-16 pt-16 pb-16 border-t border-surface-200 dark:border-surface-800">
+            <div className="bg-surface-50 dark:bg-surface-950 px-4 sm:px-6 lg:px-8 mt-16 pt-16 pb-16 border-t border-line">
                 <div className="max-w-7xl mx-auto">
                     <Newsletter />
                 </div>
@@ -529,10 +529,10 @@ export default async function BlogPostPage({ params, searchParams }: Props) {
 
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 {/* Related Posts Section */}
-                <div className="mt-20 pt-16 border-t border-surface-200 dark:border-surface-800">
+                <div className="mt-20 pt-16 border-t border-line">
                     <div className="flex items-center justify-between mb-8">
                         <div>
-                            <h2 className="text-2xl font-bold text-surface-900 dark:text-surface-100">Bài viết liên quan</h2>
+                            <h2 className="text-2xl font-bold text-fg">Bài viết liên quan</h2>
                             <p className="text-fg-subtle mt-1">Khám phá thêm các bài viết cùng chủ đề</p>
                         </div>
                         <Link href="/blog" className="hidden md:inline-flex items-center font-medium text-brand-600 hover:text-brand-700 dark:text-brand-400 dark:hover:text-brand-300">

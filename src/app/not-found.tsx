@@ -15,7 +15,7 @@ export default function NotFound() {
                     </div>
                 </div>
 
-                <h1 className="text-2xl md:text-3xl font-bold text-surface-900 dark:text-surface-100 mb-3">
+                <h1 className="text-2xl md:text-3xl font-bold text-fg mb-3">
                     Không tìm thấy trang
                 </h1>
                 <p className="text-surface-500 dark:text-surface-400 mb-8 leading-relaxed">

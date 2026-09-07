@@ -222,7 +222,7 @@ export default function PhanMemBanHangPage() {
             <section className="relative overflow-hidden bg-gradient-to-br from-surface-900 via-surface-900 to-brand-900">
                 <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24">
                     <div className="text-center max-w-3xl mx-auto">
-                        <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-card/10 border border-white/20 text-brand-300 text-sm font-medium mb-6">
+                        <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/20 text-brand-300 text-sm font-medium mb-6">
                             <PackageCheck className="h-4 w-4" />
                             Dành cho doanh nghiệp thương mại vừa và nhỏ
                         </span>
@@ -262,7 +262,7 @@ export default function PhanMemBanHangPage() {
             {/* ===== VẤN ĐỀ ===== */}
             <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-20">
                 <div className="text-center max-w-3xl mx-auto mb-12">
-                    <h2 className="text-2xl md:text-4xl font-extrabold! text-surface-900 dark:text-surface-100 mb-4">
+                    <h2 className="text-2xl md:text-4xl font-extrabold! text-fg mb-4">
                         Bạn có đang gặp những chuyện này?
                     </h2>
                     <p className="text-lg text-surface-600 dark:text-surface-400">
@@ -271,11 +271,11 @@ export default function PhanMemBanHangPage() {
                 </div>
                 <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
                     {PAIN_POINTS.map((p) => (
-                        <div key={p.title} className="p-6 rounded-2xl bg-white dark:bg-surface-900 border border-surface-200 dark:border-surface-800">
+                        <div key={p.title} className="p-6 rounded-2xl bg-card border border-line">
                             <div className="w-11 h-11 rounded-xl bg-red-50 dark:bg-red-900/20 text-red-500 flex items-center justify-center mb-4 mx-auto">
                                 <p.icon className="h-5 w-5" />
                             </div>
-                            <h3 className="font-bold text-surface-900 dark:text-surface-100 mb-2 text-center">{p.title}</h3>
+                            <h3 className="font-bold text-fg mb-2 text-center">{p.title}</h3>
                             <p className="text-sm text-surface-600 dark:text-surface-400 leading-relaxed text-center">{p.body}</p>
                         </div>
                     ))}
@@ -283,10 +283,10 @@ export default function PhanMemBanHangPage() {
             </section>
 
             {/* ===== TÍNH NĂNG ===== */}
-            <section className="bg-white dark:bg-surface-900 border-y border-surface-200 dark:border-surface-800">
+            <section className="bg-card border-y border-line">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-20">
                     <div className="text-center max-w-3xl mx-auto mb-12">
-                        <h2 className="text-2xl md:text-4xl font-extrabold! text-surface-900 dark:text-surface-100 mb-4">
+                        <h2 className="text-2xl md:text-4xl font-extrabold! text-fg mb-4">
                             Đủ nghiệp vụ để chạy cả công ty
                         </h2>
                         <p className="text-lg text-surface-600 dark:text-surface-400 mb-6">
@@ -299,11 +299,11 @@ export default function PhanMemBanHangPage() {
                     </div>
                     <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
                         {FEATURE_GROUPS.map((g) => (
-                            <div key={g.title} className="p-6 rounded-2xl bg-surface-50 dark:bg-surface-950 border border-surface-200 dark:border-surface-800">
+                            <div key={g.title} className="p-6 rounded-2xl bg-surface-50 dark:bg-surface-950 border border-line">
                                 <div className="w-11 h-11 rounded-xl bg-brand-50 dark:bg-brand-900/20 text-brand-600 dark:text-brand-400 flex items-center justify-center mb-4">
                                     <g.icon className="h-6 w-6" />
                                 </div>
-                                <h3 className="text-lg font-bold text-surface-900 dark:text-surface-100 mb-3">{g.title}</h3>
+                                <h3 className="text-lg font-bold text-fg mb-3">{g.title}</h3>
                                 <ul className="space-y-2.5">
                                     {g.items.map((it) => (
                                         <li key={it.t} className="flex items-start gap-2 text-sm text-surface-600 dark:text-surface-400 leading-snug">
@@ -326,7 +326,7 @@ export default function PhanMemBanHangPage() {
             {/* ===== ẢNH MÀN HÌNH ===== */}
             <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-20">
                 <div className="text-center max-w-3xl mx-auto mb-12">
-                    <h2 className="text-2xl md:text-4xl font-extrabold! text-surface-900 dark:text-surface-100 mb-4">
+                    <h2 className="text-2xl md:text-4xl font-extrabold! text-fg mb-4">
                         Giao diện thực tế
                     </h2>
                     <p className="text-lg text-surface-600 dark:text-surface-400">
@@ -336,7 +336,7 @@ export default function PhanMemBanHangPage() {
                 <div className="grid md:grid-cols-2 gap-8">
                     {SCREENSHOTS.map((s) => (
                         <figure key={s.src} className="group">
-                            <div className="relative aspect-[16/9] rounded-xl overflow-hidden border border-surface-200 dark:border-surface-800 bg-card shadow-sm">
+                            <div className="relative aspect-[16/9] rounded-xl overflow-hidden border border-line bg-card shadow-sm">
                                 <Image
                                     src={s.src}
                                     alt={s.alt}
@@ -354,10 +354,10 @@ export default function PhanMemBanHangPage() {
             </section>
 
             {/* ===== YÊU CẦU HỆ THỐNG ===== */}
-            <section className="bg-white dark:bg-surface-900 border-y border-surface-200 dark:border-surface-800">
+            <section className="bg-card border-y border-line">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
                     <div className="text-center max-w-3xl mx-auto mb-12">
-                        <h2 className="text-2xl md:text-4xl font-extrabold! text-surface-900 dark:text-surface-100 mb-4">
+                        <h2 className="text-2xl md:text-4xl font-extrabold! text-fg mb-4">
                             Yêu cầu hệ thống
                         </h2>
                         <p className="text-lg text-surface-600 dark:text-surface-400">
@@ -365,19 +365,19 @@ export default function PhanMemBanHangPage() {
                         </p>
                     </div>
                     <div className="grid md:grid-cols-3 gap-6">
-                        <div className="p-6 rounded-2xl border border-surface-200 dark:border-surface-800">
+                        <div className="p-6 rounded-2xl border border-line">
                             <Monitor className="h-6 w-6 text-brand-600 dark:text-brand-400 mb-3" />
-                            <h3 className="font-bold text-surface-900 dark:text-surface-100 mb-2">Máy nhân viên</h3>
+                            <h3 className="font-bold text-fg mb-2">Máy nhân viên</h3>
                             <p className="text-sm text-surface-600 dark:text-surface-400">Windows, Microsoft Excel 2016 trở lên.</p>
                         </div>
-                        <div className="p-6 rounded-2xl border border-surface-200 dark:border-surface-800">
+                        <div className="p-6 rounded-2xl border border-line">
                             <Database className="h-6 w-6 text-brand-600 dark:text-brand-400 mb-3" />
-                            <h3 className="font-bold text-surface-900 dark:text-surface-100 mb-2">Máy chủ dữ liệu</h3>
+                            <h3 className="font-bold text-fg mb-2">Máy chủ dữ liệu</h3>
                             <p className="text-sm text-surface-600 dark:text-surface-400">SQL Server 2014 trở lên, dùng được cả bản Express miễn phí.</p>
                         </div>
                         <div className="p-6 rounded-2xl border border-amber-200 dark:border-amber-900/40 bg-amber-50/60 dark:bg-amber-900/10">
                             <X className="h-6 w-6 text-amber-600 dark:text-amber-500 mb-3" />
-                            <h3 className="font-bold text-surface-900 dark:text-surface-100 mb-2">Không chạy trên macOS / Linux</h3>
+                            <h3 className="font-bold text-fg mb-2">Không chạy trên macOS / Linux</h3>
                             <p className="text-sm text-surface-600 dark:text-surface-400">Máy Mac cần cài máy ảo Windows mới dùng được.</p>
                         </div>
                     </div>
@@ -386,13 +386,13 @@ export default function PhanMemBanHangPage() {
 
             {/* ===== FAQ ===== */}
             <section className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-20">
-                <h2 className="text-2xl md:text-4xl font-extrabold! text-surface-900 dark:text-surface-100 mb-10 text-center">
+                <h2 className="text-2xl md:text-4xl font-extrabold! text-fg mb-10 text-center">
                     Câu hỏi thường gặp
                 </h2>
                 <div className="space-y-4">
                     {FAQ.map((f) => (
-                        <details key={f.q} className="group rounded-2xl bg-white dark:bg-surface-900 border border-surface-200 dark:border-surface-800 p-6">
-                            <summary className="font-semibold text-surface-900 dark:text-surface-100 cursor-pointer list-none flex items-center justify-between gap-4">
+                        <details key={f.q} className="group rounded-2xl bg-card border border-line p-6">
+                            <summary className="font-semibold text-fg cursor-pointer list-none flex items-center justify-between gap-4">
                                 {f.q}
                                 <span className="text-brand-600 dark:text-brand-400 shrink-0 transition-transform group-open:rotate-45 text-2xl leading-none">+</span>
                             </summary>
@@ -403,11 +403,11 @@ export default function PhanMemBanHangPage() {
             </section>
 
             {/* ===== CTA CUỐI ===== */}
-            <section id="lien-he" className="bg-white dark:bg-surface-900 border-t border-surface-200 dark:border-surface-800">
+            <section id="lien-he" className="bg-card border-t border-line">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-20">
                     <div className="grid lg:grid-cols-2 gap-12">
                         <div>
-                            <h2 className="text-2xl md:text-3xl font-extrabold! text-surface-900 dark:text-surface-100 mb-4">
+                            <h2 className="text-2xl md:text-3xl font-extrabold! text-fg mb-4">
                                 Để lại thông tin, mình gọi lại tư vấn
                             </h2>
                             <p className="text-surface-600 dark:text-surface-400 mb-6 leading-relaxed">
@@ -417,7 +417,7 @@ export default function PhanMemBanHangPage() {
                             <p className="text-surface-600 dark:text-surface-400 mb-8">Hoặc liên hệ trực tiếp:</p>
                             <ContactButtons />
                         </div>
-                        <div className="p-6 md:p-8 rounded-2xl bg-surface-50 dark:bg-surface-950 border border-surface-200 dark:border-surface-800">
+                        <div className="p-6 md:p-8 rounded-2xl bg-surface-50 dark:bg-surface-950 border border-line">
                             <LeadForm />
                         </div>
                     </div>

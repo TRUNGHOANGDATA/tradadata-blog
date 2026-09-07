@@ -63,7 +63,7 @@ export default async function BlogPage({ searchParams }: Props) {
             {/* Header */}
             <section className="bg-gradient-to-b from-brand-50 to-surface-50 dark:from-surface-900 dark:to-surface-950 py-12">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <h1 className="text-3xl md:text-4xl font-bold text-surface-900 dark:text-surface-100 mb-2">
+                    <h1 className="text-3xl md:text-4xl font-bold text-fg mb-2">
                         Bài viết
                     </h1>
                     <p className="text-fg-subtle text-lg">

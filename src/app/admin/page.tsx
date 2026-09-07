@@ -67,7 +67,7 @@ export default function AdminDashboard() {
     return (
         <>
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
-                <h1 className="text-2xl font-bold text-surface-900 dark:text-surface-100">Dashboard</h1>
+                <h1 className="text-2xl font-bold text-fg">Dashboard</h1>
                 <div className="flex flex-wrap items-center gap-3">
                     <Link
                         href="/admin/posts/new"
@@ -82,14 +82,14 @@ export default function AdminDashboard() {
             {/* Stats Cards */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
                 {statCards.map((card) => (
-                    <div key={card.label} className="bg-white dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-800 p-5 hover:shadow-lg transition-shadow">
+                    <div key={card.label} className="bg-card rounded-2xl border border-line p-5 hover:shadow-lg transition-shadow">
                         <div className="flex items-center justify-between mb-3">
                             <span className="text-sm text-fg-subtle">{card.label}</span>
                             <div className={`p-2 rounded-xl ${card.color}`}>
                                 <card.icon className="h-4 w-4" />
                             </div>
                         </div>
-                        <p className="text-2xl font-bold text-surface-900 dark:text-surface-100">
+                        <p className="text-2xl font-bold text-fg">
                             {card.value.toLocaleString()}
                         </p>
                     </div>
@@ -98,8 +98,8 @@ export default function AdminDashboard() {
 
             {/* Quick overview */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-8">
-                <div className="bg-white dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-800 p-5">
-                    <h3 className="font-semibold text-surface-900 dark:text-surface-100 mb-3">Trạng thái bài viết</h3>
+                <div className="bg-card rounded-2xl border border-line p-5">
+                    <h3 className="font-semibold text-fg mb-3">Trạng thái bài viết</h3>
                     <div className="space-y-3">
                         <div className="flex items-center justify-between">
                             <span className="text-sm text-fg-subtle">Đã xuất bản</span>
@@ -111,8 +111,8 @@ export default function AdminDashboard() {
                         </div>
                     </div>
                 </div>
-                <div className="lg:col-span-2 bg-white dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-800 p-5">
-                    <h3 className="font-semibold text-surface-900 dark:text-surface-100 mb-1">Liên kết nhanh</h3>
+                <div className="lg:col-span-2 bg-card rounded-2xl border border-line p-5">
+                    <h3 className="font-semibold text-fg mb-1">Liên kết nhanh</h3>
                     <div className="grid grid-cols-2 gap-2 mt-3">
                         <Link href="/admin/posts" className="px-3 py-2 rounded-xl bg-surface-50 dark:bg-surface-800 text-sm text-surface-700 dark:text-surface-300 hover:bg-surface-100 dark:hover:bg-surface-700 transition-colors">📝 Quản lý bài viết</Link>
                         <Link href="/admin/categories" className="px-3 py-2 rounded-xl bg-surface-50 dark:bg-surface-800 text-sm text-surface-700 dark:text-surface-300 hover:bg-surface-100 dark:hover:bg-surface-700 transition-colors">📁 Quản lý chủ đề</Link>
@@ -123,14 +123,14 @@ export default function AdminDashboard() {
             </div>
 
             {/* Recent Posts */}
-            <div className="bg-white dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-800 overflow-hidden">
-                <div className="px-6 py-4 border-b border-surface-200 dark:border-surface-800">
-                    <h3 className="font-semibold text-surface-900 dark:text-surface-100">Bài viết gần đây</h3>
+            <div className="bg-card rounded-2xl border border-line overflow-hidden">
+                <div className="px-6 py-4 border-b border-line">
+                    <h3 className="font-semibold text-fg">Bài viết gần đây</h3>
                 </div>
                 <div className="overflow-x-auto">
                     <table className="w-full">
                         <thead>
-                            <tr className="border-b border-surface-200 dark:border-surface-800 bg-surface-50 dark:bg-surface-800/50">
+                            <tr className="border-b border-line bg-surface-50 dark:bg-surface-800/50">
                                 <th className="text-left px-6 py-3 text-xs font-semibold text-fg-subtle uppercase">Tiêu đề</th>
                                 <th className="text-left px-6 py-3 text-xs font-semibold text-fg-subtle uppercase">Trạng thái</th>
                                 <th className="text-left px-6 py-3 text-xs font-semibold text-fg-subtle uppercase">Ngày</th>
@@ -149,7 +149,7 @@ export default function AdminDashboard() {
                                         <td className="px-6 py-3">
                                             <Link
                                                 href={`/admin/posts/${post.id}/edit`}
-                                                className="text-sm font-medium text-surface-900 dark:text-surface-100 hover:text-brand-600 transition-colors"
+                                                className="text-sm font-medium text-fg hover:text-brand-600 transition-colors"
                                             >
                                                 {post.title}
                                             </Link>

@@ -109,7 +109,7 @@ export default function AdminLeadsPage() {
         <div>
             <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
                 <div>
-                    <h1 className="text-2xl font-bold text-surface-900 dark:text-surface-100">Khách quan tâm phần mềm</h1>
+                    <h1 className="text-2xl font-bold text-fg">Khách quan tâm phần mềm</h1>
                     <p className="text-sm text-fg-subtle mt-1">Thông tin gửi từ trang /phan-mem-ban-hang</p>
                 </div>
                 <button
@@ -129,7 +129,7 @@ export default function AdminLeadsPage() {
                         onClick={() => setFilter(s)}
                         className={`px-3.5 py-1.5 rounded-lg text-sm font-medium transition-colors ${filter === s
                             ? 'bg-brand-600 text-white'
-                            : 'bg-white dark:bg-surface-900 text-surface-600 dark:text-surface-400 border border-surface-200 dark:border-surface-800 hover:bg-surface-100 dark:hover:bg-surface-800'
+                            : 'bg-card text-surface-600 dark:text-surface-400 border border-line hover:bg-surface-100 dark:hover:bg-surface-800'
                             }`}
                     >
                         {s === 'all' ? 'Tất cả' : STATUS_META[s].label} ({counts[s] || 0})
@@ -143,12 +143,12 @@ export default function AdminLeadsPage() {
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
                     placeholder="Tìm theo tên, số điện thoại, công ty, nội dung..."
-                    className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-white dark:bg-surface-900 border border-surface-200 dark:border-surface-800 text-sm text-surface-900 dark:text-surface-100 focus:outline-none focus:ring-2 focus:ring-brand-500/50"
+                    className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-card border border-line text-sm text-fg focus:outline-none focus:ring-2 focus:ring-brand-500/50"
                 />
             </div>
 
             {shown.length === 0 ? (
-                <div className="text-center py-20 rounded-2xl bg-white dark:bg-surface-900 border border-surface-200 dark:border-surface-800">
+                <div className="text-center py-20 rounded-2xl bg-card border border-line">
                     <Inbox className="h-10 w-10 text-surface-300 dark:text-surface-700 mx-auto mb-3" />
                     <p className="text-fg-subtle">
                         {leads.length === 0 ? 'Chưa có ai để lại thông tin.' : 'Không có kết quả khớp bộ lọc.'}
@@ -159,12 +159,12 @@ export default function AdminLeadsPage() {
                     {shown.map((l) => (
                         <div
                             key={l.id}
-                            className="p-4 md:p-5 rounded-2xl bg-white dark:bg-surface-900 border border-surface-200 dark:border-surface-800"
+                            className="p-4 md:p-5 rounded-2xl bg-card border border-line"
                         >
                             <div className="flex flex-wrap items-start justify-between gap-3 mb-2">
                                 <div className="min-w-0">
                                     <div className="flex flex-wrap items-center gap-2">
-                                        <span className="font-bold text-surface-900 dark:text-surface-100">{l.full_name}</span>
+                                        <span className="font-bold text-fg">{l.full_name}</span>
                                         <span className={`px-2 py-0.5 rounded-md text-xs font-medium ${STATUS_META[l.status]?.cls || STATUS_META.new.cls}`}>
                                             {STATUS_META[l.status]?.label || l.status}
                                         </span>

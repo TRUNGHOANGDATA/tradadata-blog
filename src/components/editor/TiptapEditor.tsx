@@ -763,7 +763,7 @@ export function TiptapEditor({ content, onChange, placeholder = 'Bắt đầu vi
 
     if (!editor) {
         return (
-            <div className="bg-white dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-700 overflow-hidden">
+            <div className="bg-card rounded-2xl border border-surface-200 dark:border-surface-700 overflow-hidden">
                 <div className="p-6 min-h-[400px] flex items-center justify-center">
                     <div className="animate-pulse text-fg-faint">Đang tải editor...</div>
                 </div>
@@ -772,7 +772,7 @@ export function TiptapEditor({ content, onChange, placeholder = 'Bắt đầu vi
     }
 
     return (
-        <div className="bg-white dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-700 relative flex flex-col">
+        <div className="bg-card rounded-2xl border border-surface-200 dark:border-surface-700 relative flex flex-col">
             <EditorToolbar editor={editor} onToggleHtml={handleToggleHtml} isHtmlMode={isHtmlMode} />
             {isHtmlMode ? (
                 <div className="relative">

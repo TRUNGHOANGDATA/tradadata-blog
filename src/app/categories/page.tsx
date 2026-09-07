@@ -34,7 +34,7 @@ export default async function CategoriesPage() {
             {/* Header */}
             <section className="bg-gradient-to-b from-brand-50 to-surface-50 dark:from-surface-900 dark:to-surface-950 py-12 md:py-20 mt-16">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-                    <h1 className="text-3xl md:text-5xl font-bold text-surface-900 dark:text-surface-100 mb-4">
+                    <h1 className="text-3xl md:text-5xl font-bold text-fg mb-4">
                         Tất cả Chủ đề
                     </h1>
                     <p className="text-fg-subtle text-lg md:text-xl max-w-2xl mx-auto">

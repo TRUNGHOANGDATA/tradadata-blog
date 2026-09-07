@@ -87,7 +87,7 @@ export function BlogListClient({
                         placeholder="Tìm kiếm bài viết..."
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
-                        className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-white dark:bg-surface-900 border border-surface-200 dark:border-surface-700 focus:outline-none focus:ring-2 focus:ring-brand-500/30 focus:border-brand-500 transition-all text-sm"
+                        className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-card border border-surface-200 dark:border-surface-700 focus:outline-none focus:ring-2 focus:ring-brand-500/30 focus:border-brand-500 transition-all text-sm"
                     />
                 </div>
 
@@ -118,9 +118,9 @@ export function BlogListClient({
                     ))}
                 </div>
             ) : (
-                <div className="text-center py-16 bg-white/50 dark:bg-surface-900/50 rounded-2xl border border-surface-200 dark:border-surface-800">
+                <div className="text-center py-16 bg-white/50 dark:bg-surface-900/50 rounded-2xl border border-line">
                     <div className="text-4xl mb-4">🔍</div>
-                    <h3 className="text-lg font-medium text-surface-900 dark:text-surface-100 mb-1">Không tìm thấy kết quả</h3>
+                    <h3 className="text-lg font-medium text-fg mb-1">Không tìm thấy kết quả</h3>
                     <p className="text-fg-subtle text-sm">Vui lòng thử lại với từ khóa hoặc chủ đề khác.</p>
                     <button
                         onClick={() => { setSearchQuery(''); handleCategoryChange(''); }}
@@ -138,7 +138,7 @@ export function BlogListClient({
                     {currentPage > 1 && (
                         <Link
                             href={buildUrl(currentPage - 1)}
-                            className="px-4 py-2 rounded-xl text-sm font-medium border bg-white dark:bg-surface-900 text-surface-600 dark:text-surface-400 border-surface-200 dark:border-surface-700 hover:bg-surface-50 dark:hover:bg-surface-800 transition-colors"
+                            className="px-4 py-2 rounded-xl text-sm font-medium border bg-card text-surface-600 dark:text-surface-400 border-surface-200 dark:border-surface-700 hover:bg-surface-50 dark:hover:bg-surface-800 transition-colors"
                         >
                             ← Trước
                         </Link>
@@ -154,7 +154,7 @@ export function BlogListClient({
                                 href={buildUrl(page)}
                                 className={`px-4 py-2 rounded-xl text-sm font-medium border transition-colors ${currentPage === page
                                     ? 'bg-brand-600 text-white border-brand-600'
-                                    : 'bg-white dark:bg-surface-900 text-surface-600 dark:text-surface-400 border-surface-200 dark:border-surface-700 hover:bg-surface-50 dark:hover:bg-surface-800'
+                                    : 'bg-card text-surface-600 dark:text-surface-400 border-surface-200 dark:border-surface-700 hover:bg-surface-50 dark:hover:bg-surface-800'
                                     }`}
                             >
                                 {page}
@@ -166,7 +166,7 @@ export function BlogListClient({
                     {currentPage < totalPages && (
                         <Link
                             href={buildUrl(currentPage + 1)}
-                            className="px-4 py-2 rounded-xl text-sm font-medium border bg-white dark:bg-surface-900 text-surface-600 dark:text-surface-400 border-surface-200 dark:border-surface-700 hover:bg-surface-50 dark:hover:bg-surface-800 transition-colors"
+                            className="px-4 py-2 rounded-xl text-sm font-medium border bg-card text-surface-600 dark:text-surface-400 border-surface-200 dark:border-surface-700 hover:bg-surface-50 dark:hover:bg-surface-800 transition-colors"
                         >
                             Tiếp →
                         </Link>

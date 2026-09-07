@@ -146,7 +146,7 @@ export default async function CoursesPage() {
                                 {group.products.map((product: Product) => (
                                     <div
                                         key={product.id}
-                                        className="bg-card rounded-2xl border border-line overflow-hidden shadow-e1 hover:shadow-e3 hover:border-brand-300 dark:hover:border-brand-800 hover:-translate-y-0.5 transition-all duration-300 flex flex-col group relative"
+                                        className="bg-card rounded-2xl border border-line overflow-hidden shadow-e1 hover:shadow-e3 hover:border-brand-300 dark:hover:border-brand-800 hover:-translate-y-1 transition-all duration-300 flex flex-col group relative"
                                     >
                                         {product.slug === 'premium-blog' && (
                                             <div className="absolute top-3 right-3 z-10 bg-brand-600 text-white text-2xs font-bold uppercase px-2.5 py-1 rounded-md shadow-e1">

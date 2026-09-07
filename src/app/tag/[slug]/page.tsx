@@ -107,7 +107,7 @@ export default async function TagPage({ params }: Props) {
                         <div className="p-2.5 rounded-xl bg-brand-100 dark:bg-brand-900/20 text-brand-600 dark:text-brand-400">
                             <Tag className="h-6 w-6" />
                         </div>
-                        <h1 className="text-3xl font-bold text-surface-900 dark:text-surface-100">
+                        <h1 className="text-3xl font-bold text-fg">
                             {tag.name}
                         </h1>
                     </div>

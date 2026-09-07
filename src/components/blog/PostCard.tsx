@@ -20,7 +20,7 @@ export function PostCard({ post, variant = 'default' }: PostCardProps) {
 
     return (
         <Link href={`/blog/${post.slug}`} className="group block animate-fade-in relative">
-            <article className="h-full rounded-2xl overflow-hidden bg-white dark:bg-surface-900 border border-surface-200 dark:border-surface-800 hover:border-brand-300 dark:hover:border-brand-700 shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 relative">
+            <article className="h-full rounded-2xl overflow-hidden bg-card border border-line hover:border-brand-300 dark:hover:border-brand-700 shadow-e1 hover:shadow-e2 transition-all duration-300 hover:-translate-y-1 relative">
                 {/* Bookmark Button (Absolute overlay) */}
                 <div className="absolute top-3 right-3 z-10">
                     <BookmarkButton postId={post.id} variant="icon" />
@@ -38,7 +38,7 @@ export function PostCard({ post, variant = 'default' }: PostCardProps) {
                             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                         />
                         {post.is_premium && (
-                            <div className="absolute top-3 left-3 flex items-center gap-1 px-2 py-1 rounded-lg bg-amber-500/90 text-white text-xs font-medium backdrop-blur-sm">
+                            <div className="absolute top-3 left-3 flex items-center gap-1 px-2 py-1 rounded-md bg-amber-500/90 text-white text-xs font-medium backdrop-blur-sm">
                                 <Lock className="h-3 w-3" />
                                 Premium
                             </div>
@@ -50,7 +50,7 @@ export function PostCard({ post, variant = 'default' }: PostCardProps) {
                     {/* Category */}
                     {post.category && (
                         <span
-                            className="inline-block text-xs font-semibold px-2.5 py-1 rounded-lg mb-3"
+                            className="inline-block text-xs font-semibold px-2.5 py-1 rounded-md mb-3"
                             style={{
                                 backgroundColor: `${post.category.color}15`,
                                 color: post.category.color || undefined,
@@ -61,19 +61,19 @@ export function PostCard({ post, variant = 'default' }: PostCardProps) {
                     )}
 
                     {/* Title */}
-                    <h3 className="text-lg font-bold text-surface-900 dark:text-surface-100 group-hover:text-brand-600 dark:group-hover:text-brand-400 transition-colors line-clamp-2 mb-2">
+                    <h3 className="text-lg font-bold text-fg group-hover:text-brand-600 dark:group-hover:text-brand-400 transition-colors line-clamp-2 mb-2">
                         {post.title}
                     </h3>
 
                     {/* Excerpt */}
                     {post.excerpt && (
-                        <p className="text-sm text-surface-600 dark:text-surface-300 line-clamp-2 mb-4">
+                        <p className="text-sm text-fg-muted line-clamp-2 mb-4">
                             {post.excerpt}
                         </p>
                     )}
 
                     {/* Meta */}
-                    <div className="flex items-center gap-4 text-xs text-surface-500 dark:text-surface-300">
+                    <div className="flex items-center gap-4 text-xs text-fg-subtle">
                         {post.published_at && (
                             <span>{formatDate(post.published_at)}</span>
                         )}
@@ -110,13 +110,13 @@ function FeaturedCard({ post }: { post: Post }) {
 
                 <div className="absolute bottom-0 left-0 right-0 p-6 md:p-8">
                     {post.is_premium && (
-                        <span className="inline-flex items-center gap-1 px-2 py-1 rounded-lg bg-amber-500/90 text-white text-xs font-medium mb-3 backdrop-blur-sm">
+                        <span className="inline-flex items-center gap-1 px-2 py-1 rounded-md bg-amber-500/90 text-white text-xs font-medium mb-3 backdrop-blur-sm">
                             <Lock className="h-3 w-3" />
                             Premium
                         </span>
                     )}
                     {post.category && (
-                        <span className="inline-block text-xs font-semibold px-2.5 py-1 rounded-lg bg-card/20 text-white backdrop-blur-sm mb-3 ml-2">
+                        <span className="inline-block text-xs font-semibold px-2.5 py-1 rounded-md bg-white/20 text-white backdrop-blur-sm mb-3 ml-2">
                             {post.category.icon} {post.category.name}
                         </span>
                     )}
@@ -169,10 +169,10 @@ function CompactCard({ post }: { post: Post }) {
                 </div>
             )}
             <div className="flex-1 min-w-0">
-                <h4 className="text-sm font-semibold text-surface-900 dark:text-surface-100 group-hover:text-brand-600 dark:group-hover:text-brand-400 transition-colors line-clamp-2 mb-1">
+                <h4 className="text-sm font-semibold text-fg group-hover:text-brand-600 dark:group-hover:text-brand-400 transition-colors line-clamp-2 mb-1">
                     {post.title}
                 </h4>
-                <div className="flex items-center gap-2 text-xs text-surface-500 dark:text-surface-300">
+                <div className="flex items-center gap-2 text-xs text-fg-subtle">
                     {post.published_at && <span>{formatDate(post.published_at)}</span>}
                     <span className="flex items-center gap-1">
                         <Clock className="h-3 w-3" />

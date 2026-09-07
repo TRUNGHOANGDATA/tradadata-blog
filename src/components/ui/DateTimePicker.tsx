@@ -109,7 +109,7 @@ export default function DateTimePicker({ value, onChange, placeholder = 'Chọn 
                 onClick={() => setIsOpen(!isOpen)}
                 className="w-full flex items-center justify-between gap-2 px-3 py-2 bg-surface-50 dark:bg-surface-950 border border-surface-200 dark:border-surface-700 rounded-xl text-sm text-left transition-colors hover:border-brand-400 dark:hover:border-brand-500"
             >
-                <span className={displayValue ? 'text-surface-900 dark:text-surface-100' : 'text-surface-400'}>
+                <span className={displayValue ? 'text-fg' : 'text-surface-400'}>
                     {displayValue || placeholder}
                 </span>
                 <div className="flex items-center gap-1">
@@ -127,13 +127,13 @@ export default function DateTimePicker({ value, onChange, placeholder = 'Chọn 
 
             {/* Dropdown calendar */}
             {isOpen && (
-                <div className="absolute z-50 mt-1 bg-white dark:bg-surface-900 border border-surface-200 dark:border-surface-700 rounded-xl shadow-xl p-4 w-[300px] animate-in fade-in slide-in-from-top-2 duration-200">
+                <div className="absolute z-50 mt-1 bg-card border border-surface-200 dark:border-surface-700 rounded-xl shadow-xl p-4 w-[300px] animate-in fade-in slide-in-from-top-2 duration-200">
                     {/* Month navigation */}
                     <div className="flex items-center justify-between mb-3">
                         <button type="button" onClick={prevMonth} className="p-1 hover:bg-surface-100 dark:hover:bg-surface-800 rounded-lg transition-colors">
                             <ChevronLeft className="w-4 h-4 text-surface-600 dark:text-surface-400" />
                         </button>
-                        <span className="text-sm font-semibold text-surface-900 dark:text-surface-100">
+                        <span className="text-sm font-semibold text-fg">
                             {monthNames[month]} {year}
                         </span>
                         <button type="button" onClick={nextMonth} className="p-1 hover:bg-surface-100 dark:hover:bg-surface-800 rounded-lg transition-colors">
@@ -185,7 +185,7 @@ export default function DateTimePicker({ value, onChange, placeholder = 'Chọn 
                                     max={23}
                                     value={hours.toString().padStart(2, '0')}
                                     onChange={(e) => setHours(Math.min(23, Math.max(0, parseInt(e.target.value) || 0)))}
-                                    className="w-14 px-2 py-1.5 text-center bg-surface-50 dark:bg-surface-950 border border-surface-200 dark:border-surface-700 rounded-lg text-sm font-mono font-semibold text-surface-900 dark:text-surface-100"
+                                    className="w-14 px-2 py-1.5 text-center bg-surface-50 dark:bg-surface-950 border border-surface-200 dark:border-surface-700 rounded-lg text-sm font-mono font-semibold text-fg"
                                 />
                                 <span className="text-fg-faint font-bold">:</span>
                                 <input
@@ -194,7 +194,7 @@ export default function DateTimePicker({ value, onChange, placeholder = 'Chọn 
                                     max={59}
                                     value={minutes.toString().padStart(2, '0')}
                                     onChange={(e) => setMinutes(Math.min(59, Math.max(0, parseInt(e.target.value) || 0)))}
-                                    className="w-14 px-2 py-1.5 text-center bg-surface-50 dark:bg-surface-950 border border-surface-200 dark:border-surface-700 rounded-lg text-sm font-mono font-semibold text-surface-900 dark:text-surface-100"
+                                    className="w-14 px-2 py-1.5 text-center bg-surface-50 dark:bg-surface-950 border border-surface-200 dark:border-surface-700 rounded-lg text-sm font-mono font-semibold text-fg"
                                 />
                             </div>
                             <button

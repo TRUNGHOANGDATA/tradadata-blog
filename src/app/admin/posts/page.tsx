@@ -199,7 +199,7 @@ export default function PostsPage() {
     return (
         <>
             <div className="flex items-center justify-between mb-6">
-                <h1 className="text-2xl font-bold text-surface-900 dark:text-surface-100">Quản lý bài viết</h1>
+                <h1 className="text-2xl font-bold text-fg">Quản lý bài viết</h1>
                 <div className="flex items-center gap-3">
                     <button
                         onClick={handleBulkIndex}
@@ -244,13 +244,13 @@ export default function PostsPage() {
                         placeholder="Tìm bài viết..."
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
-                        className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-white dark:bg-surface-900 border border-surface-200 dark:border-surface-700 focus:outline-none focus:ring-2 focus:ring-brand-500/30 text-sm"
+                        className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-card border border-surface-200 dark:border-surface-700 focus:outline-none focus:ring-2 focus:ring-brand-500/30 text-sm"
                     />
                 </div>
                 <select
                     value={statusFilter}
                     onChange={(e) => setStatusFilter(e.target.value)}
-                    className="px-3 py-2.5 rounded-xl bg-white dark:bg-surface-900 border border-surface-200 dark:border-surface-700 text-sm"
+                    className="px-3 py-2.5 rounded-xl bg-card border border-surface-200 dark:border-surface-700 text-sm"
                 >
                     <option value="all">Tất cả trạng thái</option>
                     <option value="published">Đã xuất bản</option>
@@ -271,11 +271,11 @@ export default function PostsPage() {
             </div>
 
             {/* Table */}
-            <div className="bg-white dark:bg-surface-900 rounded-2xl border border-surface-200 dark:border-surface-800 overflow-hidden">
+            <div className="bg-card rounded-2xl border border-line overflow-hidden">
                 <div className="overflow-x-auto">
                     <table className="w-full">
                         <thead>
-                            <tr className="border-b border-surface-200 dark:border-surface-800 bg-surface-50 dark:bg-surface-800/50">
+                            <tr className="border-b border-line bg-surface-50 dark:bg-surface-800/50">
                                 <th className="text-left px-6 py-3 text-xs font-semibold text-fg-subtle uppercase">Tiêu đề</th>
                                 <th className="text-left px-6 py-3 text-xs font-semibold text-fg-subtle uppercase">Chủ đề</th>
                                 <th className="text-left px-6 py-3 text-xs font-semibold text-fg-subtle uppercase">Trạng thái</th>
@@ -297,7 +297,7 @@ export default function PostsPage() {
                                             <div className="flex items-center gap-2">
                                                 <Link
                                                     href={`/admin/posts/${post.id}/edit`}
-                                                    className="text-sm font-medium text-surface-900 dark:text-surface-100 hover:text-brand-600 dark:hover:text-brand-400 transition-colors"
+                                                    className="text-sm font-medium text-fg hover:text-brand-600 dark:hover:text-brand-400 transition-colors"
                                                 >
                                                     {post.title}
                                                 </Link>
@@ -408,7 +408,7 @@ export default function PostsPage() {
                     <button
                         onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
                         disabled={currentPage === 1}
-                        className="px-3 py-2 rounded-xl text-sm font-medium border bg-white dark:bg-surface-900 text-surface-600 dark:text-surface-400 border-surface-200 dark:border-surface-700 hover:bg-surface-50 dark:hover:bg-surface-800 transition-colors disabled:opacity-40 disabled:cursor-not-allowed inline-flex items-center gap-1"
+                        className="px-3 py-2 rounded-xl text-sm font-medium border bg-card text-surface-600 dark:text-surface-400 border-surface-200 dark:border-surface-700 hover:bg-surface-50 dark:hover:bg-surface-800 transition-colors disabled:opacity-40 disabled:cursor-not-allowed inline-flex items-center gap-1"
                     >
                         <ChevronLeft className="h-4 w-4" />
                         Trước
@@ -423,7 +423,7 @@ export default function PostsPage() {
                                 onClick={() => setCurrentPage(page)}
                                 className={`px-4 py-2 rounded-xl text-sm font-medium border transition-colors ${currentPage === page
                                     ? 'bg-brand-600 text-white border-brand-600'
-                                    : 'bg-white dark:bg-surface-900 text-surface-600 dark:text-surface-400 border-surface-200 dark:border-surface-700 hover:bg-surface-50 dark:hover:bg-surface-800'
+                                    : 'bg-card text-surface-600 dark:text-surface-400 border-surface-200 dark:border-surface-700 hover:bg-surface-50 dark:hover:bg-surface-800'
                                     }`}
                             >
                                 {page}
@@ -434,7 +434,7 @@ export default function PostsPage() {
                     <button
                         onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
                         disabled={currentPage === totalPages}
-                        className="px-3 py-2 rounded-xl text-sm font-medium border bg-white dark:bg-surface-900 text-surface-600 dark:text-surface-400 border-surface-200 dark:border-surface-700 hover:bg-surface-50 dark:hover:bg-surface-800 transition-colors disabled:opacity-40 disabled:cursor-not-allowed inline-flex items-center gap-1"
+                        className="px-3 py-2 rounded-xl text-sm font-medium border bg-card text-surface-600 dark:text-surface-400 border-surface-200 dark:border-surface-700 hover:bg-surface-50 dark:hover:bg-surface-800 transition-colors disabled:opacity-40 disabled:cursor-not-allowed inline-flex items-center gap-1"
                     >
                         Tiếp
                         <ChevronRight className="h-4 w-4" />

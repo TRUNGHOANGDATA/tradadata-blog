@@ -75,24 +75,24 @@ export default function CheckoutClient({ order, productName, bankInfo }: Checkou
             {/* Left column */}
             <div className="flex-1 space-y-6">
                 {/* Order Info */}
-                <div className="bg-white dark:bg-surface-900 rounded-2xl p-6 shadow-sm border border-surface-200 dark:border-surface-800">
-                    <h2 className="text-lg font-bold text-surface-900 dark:text-surface-100 mb-4 pb-4 border-b border-surface-100 dark:border-surface-800">
+                <div className="bg-card rounded-2xl p-6 shadow-sm border border-line">
+                    <h2 className="text-lg font-bold text-fg mb-4 pb-4 border-b border-surface-100 dark:border-surface-800">
                         Thông tin đơn hàng
                     </h2>
                     <div className="space-y-3 text-sm">
                         <div className="flex justify-between">
                             <span className="text-fg-subtle">Mã đơn hàng:</span>
-                            <span className="font-bold text-surface-900 dark:text-surface-100">{order.order_code}</span>
+                            <span className="font-bold text-fg">{order.order_code}</span>
                         </div>
                         <div className="flex justify-between">
                             <span className="text-fg-subtle">Sản phẩm:</span>
-                            <span className="font-medium text-surface-900 dark:text-surface-100 text-right max-w-[200px] truncate">
+                            <span className="font-medium text-fg text-right max-w-[200px] truncate">
                                 {productName}
                             </span>
                         </div>
                         <div className="flex justify-between">
                             <span className="text-fg-subtle">Khách hàng:</span>
-                            <span className="font-medium text-surface-900 dark:text-surface-100">{order.full_name}</span>
+                            <span className="font-medium text-fg">{order.full_name}</span>
                         </div>
 
                         {/* Price breakdown */}
@@ -192,12 +192,12 @@ export default function CheckoutClient({ order, productName, bankInfo }: Checkou
 
             {/* Right column — QR */}
             <div className="w-full md:w-[400px]">
-                <div className="bg-white dark:bg-surface-900 rounded-2xl p-8 shadow-sm border border-surface-200 dark:border-surface-800 text-center sticky top-24">
-                    <h2 className="text-xl font-bold text-surface-900 dark:text-surface-100 mb-6">
+                <div className="bg-card rounded-2xl p-8 shadow-sm border border-line text-center sticky top-24">
+                    <h2 className="text-xl font-bold text-fg mb-6">
                         Quét mã QR để thanh toán
                     </h2>
 
-                    <div className="bg-card p-2 rounded-xl mb-6 mx-auto inline-block border border-surface-100">
+                    <div className="bg-white p-2 rounded-xl mb-6 mx-auto inline-block border border-surface-100">
                         <img
                             key={qrUrl}
                             src={qrUrl}
@@ -209,11 +209,11 @@ export default function CheckoutClient({ order, productName, bankInfo }: Checkou
                     <div className="bg-surface-50 dark:bg-surface-800/50 rounded-xl p-4 text-left border border-surface-100 dark:border-surface-700 mb-6">
                         <div className="flex justify-between items-center mb-2">
                             <span className="text-xs text-fg-subtle uppercase font-semibold">Ngân hàng</span>
-                            <span className="font-medium text-surface-900 dark:text-surface-100">{bankInfo.bankId}</span>
+                            <span className="font-medium text-fg">{bankInfo.bankId}</span>
                         </div>
                         <div className="flex justify-between items-center mb-2">
                             <span className="text-xs text-fg-subtle uppercase font-semibold">Chủ TK</span>
-                            <span className="font-medium text-surface-900 dark:text-surface-100 uppercase">{bankInfo.accountName}</span>
+                            <span className="font-medium text-fg uppercase">{bankInfo.accountName}</span>
                         </div>
                         <div className="flex justify-between items-center mb-2">
                             <span className="text-xs text-fg-subtle uppercase font-semibold">Số TK</span>

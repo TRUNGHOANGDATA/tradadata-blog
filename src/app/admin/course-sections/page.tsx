@@ -89,7 +89,7 @@ export default function AdminCourseSectionsPage() {
         <div className="space-y-6">
             <div className="flex items-center justify-between">
                 <div>
-                    <h1 className="text-2xl font-bold text-surface-900 dark:text-surface-100">
+                    <h1 className="text-2xl font-bold text-fg">
                         Đầu mục Khoá học
                     </h1>
                     <p className="text-sm text-fg-subtle mt-1">
@@ -107,8 +107,8 @@ export default function AdminCourseSectionsPage() {
 
             {/* Add Form */}
             {showAdd && (
-                <div className="bg-white dark:bg-surface-900 rounded-xl border border-brand-200 dark:border-brand-800 p-6 shadow-sm">
-                    <h3 className="text-lg font-semibold mb-4 text-surface-900 dark:text-surface-100">
+                <div className="bg-card rounded-xl border border-brand-200 dark:border-brand-800 p-6 shadow-sm">
+                    <h3 className="text-lg font-semibold mb-4 text-fg">
                         Thêm đầu mục mới
                     </h3>
                     <EditForm form={form} setForm={setForm} onSave={handleSave} onCancel={cancelEdit} saving={saving} />
@@ -120,7 +120,7 @@ export default function AdminCourseSectionsPage() {
                 {sections.map((section) => (
                     <div
                         key={section.id}
-                        className="bg-white dark:bg-surface-900 rounded-xl border border-surface-200 dark:border-surface-800 overflow-hidden"
+                        className="bg-card rounded-xl border border-line overflow-hidden"
                     >
                         {editing === section.id ? (
                             <div className="p-6">
@@ -131,7 +131,7 @@ export default function AdminCourseSectionsPage() {
                                 <GripVertical className="w-5 h-5 text-fg-faint shrink-0" />
                                 <div className="flex-1 min-w-0">
                                     <div className="flex items-center gap-2">
-                                        <h3 className="font-semibold text-surface-900 dark:text-surface-100 truncate">
+                                        <h3 className="font-semibold text-fg truncate">
                                             {section.name}
                                         </h3>
                                         {!section.is_active && (
@@ -204,7 +204,7 @@ function EditForm({
                         value={form.name}
                         onChange={(e) => setForm({ ...form, name: e.target.value })}
                         placeholder="VD: Data Visualization & Reporting"
-                        className="w-full px-3 py-2 border border-surface-300 dark:border-surface-700 rounded-lg bg-white dark:bg-surface-800 text-surface-900 dark:text-surface-100 focus:ring-2 focus:ring-brand-500"
+                        className="w-full px-3 py-2 border border-surface-300 dark:border-surface-700 rounded-lg bg-white dark:bg-surface-800 text-fg focus:ring-2 focus:ring-brand-500"
                     />
                 </div>
                 <div className="flex gap-4">
@@ -216,7 +216,7 @@ function EditForm({
                             type="number"
                             value={form.sort_order}
                             onChange={(e) => setForm({ ...form, sort_order: parseInt(e.target.value) || 0 })}
-                            className="w-full px-3 py-2 border border-surface-300 dark:border-surface-700 rounded-lg bg-white dark:bg-surface-800 text-surface-900 dark:text-surface-100 focus:ring-2 focus:ring-brand-500"
+                            className="w-full px-3 py-2 border border-surface-300 dark:border-surface-700 rounded-lg bg-white dark:bg-surface-800 text-fg focus:ring-2 focus:ring-brand-500"
                         />
                     </div>
                     <div className="flex items-end pb-1">
@@ -241,7 +241,7 @@ function EditForm({
                     value={form.description}
                     onChange={(e) => setForm({ ...form, description: e.target.value })}
                     placeholder="Mô tả ngắn cho đầu mục này"
-                    className="w-full px-3 py-2 border border-surface-300 dark:border-surface-700 rounded-lg bg-white dark:bg-surface-800 text-surface-900 dark:text-surface-100 focus:ring-2 focus:ring-brand-500"
+                    className="w-full px-3 py-2 border border-surface-300 dark:border-surface-700 rounded-lg bg-white dark:bg-surface-800 text-fg focus:ring-2 focus:ring-brand-500"
                 />
             </div>
             <div className="flex gap-2 justify-end">
