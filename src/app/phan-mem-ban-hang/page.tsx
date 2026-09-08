@@ -250,17 +250,32 @@ export default function PhanMemBanHangPage() {
                         </p>
                     </div>
 
-                    {/* Ảnh dashboard tỉ lệ 2.66:1 — đặt full width bên dưới thì hợp
-                        khổ ảnh, kẹp cạnh khối chữ sẽ bị dẹt như sợi chỉ. */}
+                    {/* Ảnh hero là ảnh chụp CẢ CỬA SỔ EXCEL, không phải ảnh dashboard
+                        cắt sát như trước.
+
+                        Lý do: luận điểm bán hàng số một của trang nằm ngay ở tiêu đề —
+                        "Giao diện Excel quen thuộc". Ảnh dashboard cắt sát không có
+                        ribbon, không có thanh công thức, không có tên cột, nên nó không
+                        chứng minh được câu đó; nhìn như một ảnh BI bất kỳ.
+
+                        Ảnh này cho thấy dải ribbon "Quản Lý Bán Hàng" với 27 nút chia 10
+                        nhóm nghiệp vụ — thứ chứng minh ngay đây là add-in Excel thật và
+                        có chiều sâu. Ảnh dashboard vẫn còn trong SCREENSHOTS bên dưới nên
+                        không mất gì.
+
+                        Tỉ lệ 2.45:1 (1600x652), đặt full width bên dưới khối chữ vì kẹp
+                        cạnh sẽ bị dẹt như sợi chỉ. */}
                     <div className="mt-14 rounded-2xl overflow-hidden shadow-xl ring-1 ring-line">
                         <Image
-                            src="/images/phan-mem/dashboard.webp"
-                            alt="Dashboard quản trị kinh doanh của phần mềm"
-                            width={1200}
-                            height={451}
+                            src="/images/phan-mem/giao-dien-excel.webp"
+                            alt="Phần mềm chạy trong Excel: dải ribbon Quản Lý Bán Hàng với các nhóm nghiệp vụ, tra cứu, danh mục, công nợ, báo cáo và quản trị"
+                            width={1600}
+                            height={652}
                             className="w-full h-auto"
                             priority
-                            unoptimized
+                            // Khung thật: max-w-6xl (1152px) trừ lg:px-8 hai bên = 1088px.
+                            // Thiếu `sizes` là trình duyệt Retina xin bản to vô ích.
+                            sizes="(max-width: 1200px) 100vw, 1088px"
                         />
                     </div>
                 </div>
