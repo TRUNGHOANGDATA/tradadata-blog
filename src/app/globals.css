@@ -323,6 +323,33 @@
     --fg-faint: #7d8ca3;
   }
 
+  /* ── Vùng LUÔN SÁNG, không theo nút Dark ──────────────────────────────
+     Dùng cho landing page bán hàng (/phan-mem-ban-hang): trang chào khách
+     cần một diện mạo duy nhất, và ảnh chụp màn hình phần mềm trong bài đều
+     là nền sáng — đảo màu quanh chúng trông vênh.
+
+     Vì sao khai lại biến chứ không dùng `!important`: custom property khai ở
+     một element luôn thắng giá trị kế thừa từ tổ tiên, kể cả khi tổ tiên là
+     `html.dark`. Không có cuộc thi specificity nào ở đây, nên rule nằm trong
+     `@layer base` vẫn ăn.
+
+     ⚠️ Nó KHÔNG vô hiệu hoá biến thể `dark:` — `dark:` là `&:is(.dark, .dark *)`
+     nên vẫn khớp mọi thẻ nằm trong `html.dark`. Code bên trong vùng này phải
+     dùng token nghĩa và TUYỆT ĐỐI không viết `dark:`, nếu không sẽ ra cảnh
+     nền sáng mà chữ màu dark mode. */
+  .light-only {
+    color-scheme: light;
+    --page: #f8fafc;
+    --card: #ffffff;
+    --sunken: #f1f5f9;
+    --line: #e2e8f0;
+    --line-strong: #cbd5e1;
+    --fg: #0f172a;
+    --fg-muted: #475569;
+    --fg-subtle: #64748b;
+    --fg-faint: #94a3b8;
+  }
+
   html {
     scroll-behavior: smooth;
     -webkit-text-size-adjust: 100%;

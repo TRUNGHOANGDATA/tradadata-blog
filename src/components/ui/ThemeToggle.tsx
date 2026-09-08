@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { Sun, Moon } from 'lucide-react';
+import { KHOA_THEME } from '@/lib/constants';
 
 export function ThemeToggle() {
     const [dark, setDark] = useState(false);
@@ -18,7 +19,7 @@ export function ThemeToggle() {
         // data) nen phai boc try/catch, va khi loi thi roi ve light.
         let isDark = false;
         try {
-            isDark = localStorage.getItem('theme') === 'dark';
+            isDark = localStorage.getItem(KHOA_THEME) === 'dark';
         } catch {
             isDark = false;
         }
@@ -34,7 +35,7 @@ export function ThemeToggle() {
         setDark(next);
         document.documentElement.classList.toggle('dark', next);
         try {
-            localStorage.setItem('theme', next ? 'dark' : 'light');
+            localStorage.setItem(KHOA_THEME, next ? 'dark' : 'light');
         } catch {
             // Khong luu duoc thi lan sau vao lai ve light — chap nhan duoc,
             // khong duoc de nem loi lam vo ca nut.

@@ -43,3 +43,15 @@ export const DEFAULT_CATEGORIES = [
 // ============================================
 
 export const POSTS_PER_PAGE = 12;
+
+/**
+ * Khoa localStorage luu lua chon sang/toi cua nguoi doc.
+ *
+ * Vi sao la `-v2`: truoc day khoa la `'theme'`, va theme mac dinh con doc ca
+ * `prefers-color-scheme` cua he dieu hanh. Nhieu khach vi vay da bi luu
+ * `theme=dark` ma khong he tu chon. Doi khoa la cach reset sach nhat — moi
+ * nguoi tro lai light, ai muon toi thi tu bam nut va luu vao khoa moi.
+ *
+ * Khoa cu `'theme'` duoc xoa trong script chong nhay o layout goc.
+ */
+export const KHOA_THEME = 'tdd-theme-v2';

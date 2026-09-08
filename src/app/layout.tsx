@@ -5,7 +5,7 @@ import { Footer } from '@/components/layout/Footer';
 import { Providers } from '@/components/Providers';
 import { FloatingActions } from '@/components/layout/FloatingActions';
 import { LayoutShell } from '@/components/layout/LayoutShell';
-import { SITE_CONFIG } from '@/lib/constants';
+import { SITE_CONFIG, KHOA_THEME } from '@/lib/constants';
 import './globals.css';
 
 /**
@@ -91,6 +91,30 @@ export default function RootLayout({
   return (
     <html lang="vi" suppressHydrationWarning>
       <body className={`${fontChinh.variable} ${jetbrainsMono.variable} font-sans`}>
+        {/*
+          Script chong nhay mau — PHAI la thu dau tien trong <body>. Trinh duyet
+          chay no truoc khi phan tich phan con lai cua body, nen class `.dark` co
+          mat truoc khi ve khung dau tien. Neu de React useEffect lam viec nay
+          (nhu truoc day) thi nguoi chon dark thay mot nhip nhay SANG -> TOI moi
+          lan tai trang.
+
+          `suppressHydrationWarning` tren <html> la danh cho dung viec nay: script
+          sua `classList` cua <html> nen HTML server va client khac nhau mot class
+          — co y, khong phai loi hydration.
+
+          Boc try/catch: `localStorage` NEM LOI o cua so an danh va trinh duyet
+          chan site data. Loi thi khong lam gi, tuc roi ve light.
+
+          `removeItem('theme')` don khoa doi truoc. Khoa do tung luu `dark` cho ca
+          nhung khach chua bao gio tu chon, vi theme mac dinh con doc
+          `prefers-color-scheme`. Doi sang khoa moi la reset, va don khoa cu de
+          khong de rac lai trong may nguoi doc.
+        */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `try{if(localStorage.getItem('${KHOA_THEME}')==='dark')document.documentElement.classList.add('dark');localStorage.removeItem('theme')}catch(e){}`,
+          }}
+        />
         <Providers>
           <div className="flex flex-col min-h-screen">
             <Header />
