@@ -347,7 +347,7 @@ COVER_IMAGE: Tạo một bức ảnh bìa blog có chất lượng cao, tỉ l�
                             const saved = await handleSave(undefined, { silent: true });
                             if (saved) {
                                 const slug = displaySlug;
-                                if (slug) window.open(`/blog/${slug}?preview=true`, '_blank');
+                                if (slug) window.open(`/blog/${slug}/xem-truoc`, '_blank');
                             }
                         }}
                         className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white dark:bg-surface-800 border border-surface-200 dark:border-surface-700 text-sm font-medium text-surface-700 dark:text-surface-300 hover:bg-surface-50 dark:hover:bg-surface-700 transition-colors"
