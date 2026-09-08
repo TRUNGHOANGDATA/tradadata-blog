@@ -3,6 +3,7 @@ import 'highlight.js/styles/vs2015.css';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Calendar, Clock, ArrowLeft, ChevronRight, BookOpen, Sparkles, ArrowRight, Tag } from 'lucide-react';
+import type { ReactNode } from 'react';
 import type { Post } from '@/types';
 import { SITE_CONFIG } from '@/lib/constants';
 import { PostCard } from '@/components/blog/PostCard';
@@ -14,7 +15,6 @@ import { CommentSection } from '@/components/blog/CommentSection';
 import { CodeBlockClient } from '@/components/blog/CodeBlockClient';
 import { ReadingProgress } from '@/components/blog/ReadingProgress';
 import { ViewTracker } from '@/components/blog/ViewTracker';
-import { PreviewBanner } from '@/components/blog/PreviewBanner';
 import { DemoDownloadButton } from '@/components/blog/DemoDownloadButton';
 import { ArticleContent } from '@/components/blog/ArticleContent';
 import { NutQuanTri } from '@/components/blog/NutQuanTri';
@@ -46,11 +46,19 @@ type Props = {
        luon cho chan. */
     postTags: { id: string; name: string; slug: string }[];
     relatedPosts: Post[];
-    /** Hiện banner "đang xem bản nháp" — chỉ route xem-truoc truyền true. */
+    /** Bài Premium hiện trọn nội dung (route xem-truoc đã kiểm quyền ở server). */
     laXemTruoc?: boolean;
+    /**
+     * Banner "đang xem bản nháp", do route xem-truoc TRUYỀN VÀO dưới dạng node.
+     *
+     * Cố ý không `import PreviewBanner` ở đây: file này dùng chung cho trang
+     * công khai, nên import tĩnh là component đó bị gói vào bundle của mọi
+     * trang bài viết dù không bao giờ chạy. Đo được 08/09/2026: ~0,7 KB gz.
+     */
+    banner?: ReactNode;
 };
 
-export function BaiViet({ post, htmlContent, toc, postTags, relatedPosts, laXemTruoc = false }: Props) {
+export function BaiViet({ post, htmlContent, toc, postTags, relatedPosts, laXemTruoc = false, banner }: Props) {
     // Manually format date to avoid hydration mismatches between Server and Client
     const d = new Date(post.published_at || post.created_at);
     const formattedDate = `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}/${d.getFullYear()}`;
@@ -132,9 +140,7 @@ export function BaiViet({ post, htmlContent, toc, postTags, relatedPosts, laXemT
             </div>
 
             {/* Preview Banner */}
-            {laXemTruoc && (
-                <PreviewBanner postId={post.id} postStatus={post.status} />
-            )}
+            {banner}
 
             {/* Hero Section — contained like slider */}
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4">

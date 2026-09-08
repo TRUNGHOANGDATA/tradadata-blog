@@ -1,6 +1,9 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+// Skeleton cua /admin — truoc day nam trong globals.css nen moi trang khach
+// deu phai tai. Chuyen ve day de chi khu vuc admin tai.
+import './admin-skeleton.css';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useSession } from 'next-auth/react';
