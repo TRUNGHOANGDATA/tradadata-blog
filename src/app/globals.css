@@ -336,7 +336,13 @@
      ⚠️ Nó KHÔNG vô hiệu hoá biến thể `dark:` — `dark:` là `&:is(.dark, .dark *)`
      nên vẫn khớp mọi thẻ nằm trong `html.dark`. Code bên trong vùng này phải
      dùng token nghĩa và TUYỆT ĐỐI không viết `dark:`, nếu không sẽ ra cảnh
-     nền sáng mà chữ màu dark mode. */
+     nền sáng mà chữ màu dark mode.
+
+     Header/Footer nằm ở layout gốc, NGOÀI vùng này và vẫn còn 15 chỗ `dark:`.
+     Chúng sáng theo bằng cơ chế khác: ở các route trong `ROUTE_LUON_SANG`
+     (`src/lib/constants.ts`) class `.dark` bị gỡ hẳn khỏi <html>. Class này vì
+     vậy chỉ còn là lớp chắn cho phần thân trang trong nhịp trước khi React kịp
+     gỡ class lúc điều hướng trong trang — giữ để không loé tối một khung hình. */
   .light-only {
     color-scheme: light;
     --page: #f8fafc;

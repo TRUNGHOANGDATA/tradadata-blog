@@ -55,3 +55,22 @@ export const POSTS_PER_PAGE = 12;
  * Khoa cu `'theme'` duoc xoa trong script chong nhay o layout goc.
  */
 export const KHOA_THEME = 'tdd-theme-v2';
+
+/**
+ * Cac route LUON hien mau sang, khong theo nut Dark tren header.
+ *
+ * Landing ban hang can mot dien mao duy nhat: anh chup man hinh phan mem deu
+ * la nen sang, dao mau quanh chung trong venh.
+ *
+ * Cach thuc thi la GO han class `.dark` khoi <html> khi o cac route nay, chu
+ * khong sua tung component. Nho vay Header/Footer — dung chung toan site va con
+ * 15 cho viet `dark:` — tu dong sang theo, khoi phai viet lai.
+ * Xem `ThemeToggle` (dieu huong trong trang) va script chong nhay o layout goc
+ * (lan tai trang dau tien).
+ */
+export const ROUTE_LUON_SANG = ['/phan-mem-ban-hang'];
+
+export function laRouteLuonSang(pathname: string): boolean {
+    const p = pathname.replace(/\/+$/, '') || '/';
+    return ROUTE_LUON_SANG.some((r) => p === r || p.startsWith(`${r}/`));
+}
