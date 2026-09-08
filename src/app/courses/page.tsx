@@ -1,4 +1,5 @@
 import { supabaseAdmin } from '@/lib/supabase/server';
+import Image from 'next/image';
 import { BookOpen, CheckCircle, ShoppingCart, FileText, Landmark, KeyRound } from 'lucide-react';
 import { AddToCartButton } from '@/components/cart/AddToCartButton';
 import { SITE_CONFIG } from '@/lib/constants';
@@ -158,12 +159,14 @@ export default async function CoursesPage() {
                                             đặt trên ảnh với lớp phủ đen mờ nên gặp ảnh sáng là không đọc được. */}
                                         <div className="relative aspect-[16/9] bg-sunken overflow-hidden">
                                             {product.image_url ? (
-                                                // eslint-disable-next-line @next/next/no-img-element
-                                                <img
+                                                <Image
                                                     src={product.image_url}
                                                     alt=""
-                                                    className="w-full h-full object-cover"
-                                                    loading="lazy"
+                                                    fill
+                                                    // Khung that: 3 cot trong max-w-7xl ~= 389px; khi chi
+                                                    // ban 1 goi thi max-w-md = 448px. Lay 420px la du.
+                                                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 420px"
+                                                    className="object-cover"
                                                 />
                                             ) : (
                                                 <>

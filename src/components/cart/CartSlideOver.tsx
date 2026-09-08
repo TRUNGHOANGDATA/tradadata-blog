@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import { X, ShoppingBag, Trash2, Tag } from 'lucide-react';
 import { useCart } from '@/lib/cart/CartContext';
 import Link from 'next/link';
+import Image from 'next/image';
 
 export function CartSlideOver() {
     const { isCartOpen, setCartOpen, items, removeFromCart, subTotal, coupon, applyCoupon, removeCoupon, discountAmount, total } = useCart();
@@ -118,7 +119,14 @@ export function CartSlideOver() {
                                     <li key={item.product_id} className="flex py-6">
                                         <div className="h-20 w-20 shrink-0 overflow-hidden rounded-xl bg-gradient-to-br from-brand-500/10 to-brand-600/20 dark:from-brand-500/5 dark:to-brand-600/10 border border-surface-200 dark:border-surface-700 flex items-center justify-center">
                                             {item.image_url ? (
-                                                <img src={item.image_url} alt={item.name} className="w-full h-full object-cover" />
+                                                <Image
+                                                    src={item.image_url}
+                                                    alt={item.name}
+                                                    width={80}
+                                                    height={80}
+                                                    sizes="80px"
+                                                    className="w-full h-full object-cover"
+                                                />
                                             ) : (
                                                 <ShoppingBag className="w-8 h-8 text-brand-500/50 dark:text-brand-400/40" />
                                             )}

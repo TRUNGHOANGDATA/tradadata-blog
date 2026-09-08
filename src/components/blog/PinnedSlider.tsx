@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
+import Image from 'next/image';
 import Link from 'next/link';
 import { ChevronLeft, ChevronRight, Clock, Calendar } from 'lucide-react';
 import type { Post } from '@/types';
@@ -67,12 +68,14 @@ export function PinnedSlider({ posts }: PinnedSliderProps) {
                         >
                             {/* Background Image with parallax feel */}
                             <div className="absolute inset-0 overflow-hidden">
-                                <img
+                                <Image
                                     src={post.cover_image || 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=1600&h=900&fit=crop'}
                                     alt={post.title}
-                                    className={`w-full h-full object-cover transition-transform duration-[2000ms] ease-out ${index === current ? 'scale-110' : 'scale-100'
+                                    fill
+                                    sizes="100vw"
+                                    priority={index === 0}
+                                    className={`object-cover transition-transform duration-[2000ms] ease-out ${index === current ? 'scale-110' : 'scale-100'
                                         }`}
-                                    loading={index === 0 ? 'eager' : 'lazy'}
                                 />
                                 {/* Multi-layer gradient overlay */}
                                 <div className="absolute inset-0 bg-gradient-to-r from-surface-900/95 via-surface-900/70 to-surface-900/30" />
