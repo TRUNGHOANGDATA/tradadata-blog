@@ -46,3 +46,6 @@ service-account*.json
 credentials*.json
 client_secret*.json
 .env_tmp_val
+
+# Thu muc tam khi chay `node nhap-bai-viet.js --thu`
+noi-dung/**/_tiptap/

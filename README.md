@@ -52,12 +52,13 @@ npm run lint         # eslint — đang có sẵn ~37 lỗi no-explicit-any, ch�
 
 Site chạy trên **cụm Kubernetes tự dựng**, không phải Vercel.
 
-Deploy bằng workflow **`deploy-blog`** ở repo [`ke-truyen`](https://github.com/TRUNGHOANGDATA/ke-truyen)
-(Actions → deploy-blog → Run workflow). Workflow nằm ở đó vì bộ secret SSH vào cụm chỉ có
-trong repo đó, và repo đó public nên Actions miễn phí.
+Repo này đã public nên tự có CI riêng, không còn mượn workflow của `ke-truyen` nữa.
+Workflow **`deploy`** (`.github/workflows/deploy.yml`) tự chạy mỗi khi push vào `main`
+(typecheck → build image → push ghcr → `kubectl set image` → chờ rollout → đối chiếu
+`/api/health`). Cần deploy lại mà không có commit mới thì bấm tay:
 
 ```bash
-gh workflow run deploy-blog --repo TRUNGHOANGDATA/ke-truyen -f ref=main
+gh workflow run deploy --repo TRUNGHOANGDATA/tradadata-blog -f ref=main
 ```
 
 Nghiệm thu — bắt buộc:
@@ -127,6 +128,9 @@ k8s/              manifest CronJob + hướng dẫn deploy tay
 | `seed-email-templates.js` | Nạp lại bảng `email_templates` |
 | `check-users.js` | In danh sách `profiles` |
 | `scrape-hocexcel.js` | Tải sitemap hocexcel.online, gom chủ đề — dùng khi lên kế hoạch nội dung |
+| `tao-anh-bai-viet.js` | Module dựng ảnh bảng tính Excel (SVG → PNG) — file khai ảnh gọi vào |
+| `tao-anh-bia.js` | Module dựng ảnh bìa bài viết 1200x630 |
+| `nhap-bai-viet.js` | Nhập bài từ Markdown trong `noi-dung/` vào `posts` dạng nháp |
 | `create-favicon.js` | Sinh `favicon.ico` từ logo (cần `npm i sharp`) |
 | `submit-index.mjs` | Đẩy URL lên Google Indexing API |
 | `test-send-emails.js` | Thử gửi email |

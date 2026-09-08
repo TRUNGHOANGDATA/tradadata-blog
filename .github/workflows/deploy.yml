@@ -1,14 +1,12 @@
 # tradadata-blog — CI/CD: build image, push lên ghcr.io, rollout vào cụm k8s nhà
 # (namespace `bizflow`, Deployment `tradadata`, container `blog`).
 #
-# Cùng pattern với repo ke-truyen: build/push chạy trên runner GitHub, bước deploy
-# chỉ gửi vài lệnh kubectl qua SSH nên không cần self-hosted runner.
+# Repo này đã public (Actions miễn phí) nên đây là đường deploy CHÍNH THỨC —
+# không còn mượn workflow `deploy-blog` bên repo ke-truyen nữa. Build/push chạy
+# trên runner GitHub, bước deploy chỉ gửi vài lệnh kubectl qua SSH nên không cần
+# self-hosted runner.
 #
-# ⚠️ CHỈ chạy bằng tay (`workflow_dispatch`). Khối `push:` đã bị bỏ ở commit 34fbb08
-#    để tiết kiệm phút Actions — repo này private nên phút bị tính tiền. Muốn deploy
-#    tự động lại thì thêm `push: { branches: [main] }` vào khối `on:`.
-#    Đường đang dùng thực tế là workflow `deploy-blog` ở repo ke-truyen (repo đó public
-#    nên phút Actions miễn phí, và bộ secret SSH vào cụm cũng nằm ở đó).
+# ⚠️ Tự chạy khi push vào `main`, và vẫn bấm tay được (`workflow_dispatch`) khi cần.
 #    Container `blog` và `ke-truyen` nằm CHUNG 1 pod với `strategy: Recreate`, nên mỗi
 #    lần deploy blog thì truyen.tradadata.com cũng downtime ~1-2 phút, và ngược lại.
 #
@@ -35,14 +33,12 @@
 
 name: deploy
 
-# ⚠️ ĐANG TẮT TỰ ĐỘNG. Deploy thật hiện chạy từ repo `ke-truyen`
-# (workflow `deploy-blog`), vì bộ secret SSH vào cụm chỉ có ở đó và repo đó
-# public nên Actions miễn phí. Repo này private, mỗi lần chạy đều trừ vào
-# hạn mức 2.000 phút/tháng.
-#
-# Workflow này chỉ chạy khi bấm tay, và CHỈ chạy được sau khi đã khai đủ
-# các secret liệt kê ở trên. Chưa có thì nó sẽ dừng ở bước deploy.
+# Chạy tự động mỗi khi có push vào main (kể cả merge PR), và có thể bấm tay
+# (workflow_dispatch) khi cần deploy lại mà không có commit mới. CHỈ chạy được
+# sau khi đã khai đủ các secret liệt kê ở trên — chưa có thì dừng ở bước deploy.
 on:
+  push:
+    branches: [main]
   workflow_dispatch:
 
 env:
@@ -72,9 +68,8 @@ jobs:
 
   build-push:
     needs: check
-    # Không build Docker khi mở PR — build image Next.js tốn vài phút mỗi lần,
-    # trong khi hạn mức Actions của tài khoản chỉ có 2.000 phút/tháng.
-    # PR vẫn được chặn bởi job `check` (typecheck) ở trên.
+    # Không build Docker khi mở PR — image Next.js tốn vài phút mỗi lần, không cần
+    # cho một PR chưa merge. PR vẫn được chặn bởi job `check` (typecheck) ở trên.
     if: github.event_name != 'pull_request'
     runs-on: ubuntu-latest
     permissions:

@@ -11,15 +11,22 @@ Domain chuẩn: `https://www.tradadata.com`.
   `192.168.1.250` chỉ tới được qua gateway (ProxyJump).
 - Manifest Deployment/Service KHÔNG nằm trong repo này — chúng ở trên control plane.
   Repo chỉ giữ `k8s/cronjobs.yaml` (lịch chạy nền).
-- **Deploy**: KHÔNG có deploy tự động. Push vào `main` không kích hoạt gì
-  (`push:` đã bị bỏ ở commit `34fbb08` để tiết kiệm phút Actions — repo này private nên
-  phút bị tính tiền). Hai đường bấm tay, cùng làm một việc:
+- **Deploy**: repo này đã public (08/09/2026) ⇒ có CI riêng, KHÔNG còn mượn
+  `deploy-blog` của repo `ke-truyen` nữa. `.github/workflows/deploy.yml` tự chạy khi
+  push vào `main` (và vẫn bấm tay được qua `workflow_dispatch`):
   typecheck → build image → push ghcr → `kubectl set image ... blog=<image>` → chờ rollout
   → **đối chiếu `/api/health` trả đúng commit SHA** mới coi là thành công.
-  - `deploy-blog` ở repo **ke-truyen** — đường đang dùng, vì repo đó public nên phút Actions
-    miễn phí không giới hạn, và bộ secret SSH vào cụm cũng nằm ở đó.
-  - `.github/workflows/deploy.yml` ở repo này (`workflow_dispatch`) — chỉ dùng khi repo blog
-    còn hạn mức phút và đã khai đủ secret.
+  ⚠️ Vì vậy **mọi push vào `main` giờ là DEPLOY thật** — container `blog` chung pod với
+  `ke-truyen` (`strategy: Recreate`) nên mỗi lần deploy là **cả hai site down ~1-2 phút**.
+  Repo `ke-truyen` vẫn còn workflow `deploy-blog` cũ nhưng không nên dùng nữa — hai
+  workflow chạy chồng lên nhau vào cùng 1 pod là giẫm chân nhau.
+  Secret cần khai ở repo này (Settings → Secrets and variables → Actions):
+  `SSH_PRIVATE_KEY`, `SSH_KNOWN_HOSTS`, `SSH_USER`, `SSH_GATEWAY`, `K8S_HOST`,
+  `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`,
+  `NEXT_PUBLIC_SERVICE_ACCOUNT_EMAIL` (tuỳ chọn). Tính đến 08/09/2026 mới khai
+  `K8S_HOST`, `NEXT_PUBLIC_SUPABASE_URL`, `SSH_GATEWAY`, `SSH_USER` — còn thiếu
+  `SSH_PRIVATE_KEY`/`SSH_KNOWN_HOSTS`/`NEXT_PUBLIC_SUPABASE_ANON_KEY`/`SUPABASE_SERVICE_ROLE_KEY`
+  nên workflow sẽ dừng ở bước deploy cho tới khi khai đủ.
   Image chạy Next.js standalone bằng `node server.js` (KHÔNG phải `next start`).
   Deployment mà khai `command:`/`args:` kiểu `npm start` là container không boot được.
 - Env đọc từ Secret/env của k8s, KHÔNG phải từ Vercel. Mọi script đẩy env lên Vercel
@@ -41,9 +48,10 @@ Domain chuẩn: `https://www.tradadata.com`.
   trong log). Vì cùng lý do workflow đó cố ý không có ô "nhập lệnh kubectl tự do".
   Mỗi lần `rollout restart` là **cả blog và ke-truyen down ~1-2 phút** (`Recreate`, chung pod).
 - ⚠️ **Push vào `main` của repo `ke-truyen` là DEPLOY, kể cả khi chỉ sửa workflow.**
-  `deploy.yml` bên đó có trigger `push: branches: [main]` (khác repo này — repo này
-  đã bỏ `push:` ở commit `34fbb08`). Deploy trang truyện thì recreate pod, nên
-  **blog down theo**.
+  `deploy.yml` bên đó có trigger `push: branches: [main]` — và từ 08/09/2026 repo
+  này cũng vậy (`.github/workflows/deploy.yml`), nên push vào `main` ở CẢ HAI repo
+  đều là deploy thật. Deploy trang truyện thì recreate pod, nên **blog down theo**
+  (và ngược lại).
   Nó có `paths-ignore` nhưng đã từng hở: mẫu `.github/workflows/blog-*.yml` khớp
   `blog-cron.yml` mà KHÔNG khớp `deploy-blog.yml`. Ngày 07/09/2026 mình sửa
   `deploy-blog.yml` và làm cả hai site 502 khoảng 3-5 phút vì đúng lỗ này.
