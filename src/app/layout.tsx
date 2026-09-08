@@ -110,6 +110,12 @@ export default function RootLayout({
           vay Header/Footer dung chung — von con 15 cho viet `dark:` — cung sang
           theo ma khong phai viet lai. Dieu huong trong trang do `ThemeToggle` lo.
 
+          ⚠️ Cat dau `/` cuoi bang `slice` chu KHONG bang regex. Trong template
+          literal, chuoi `/` co dau `\` dang truoc bi nuot mat, nen mot regex
+          `/.../` viet o day sinh ra `//...` — tuc mot COMMENT, va ca script chet cu
+          phap im lang (try/catch khong bat duoc loi parse). Deploy ngay 08/09/2026
+          da dinh dung loi nay. Sua script thi kiem lai bang `new Function(...)`,
+          hoac curl HTML production va doc lai dong script.
           `removeItem('theme')` don khoa doi truoc. Khoa do tung luu `dark` cho ca
           nhung khach chua bao gio tu chon, vi theme mac dinh con doc
           `prefers-color-scheme`. Doi sang khoa moi la reset, va don khoa cu de
@@ -119,7 +125,8 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{
             __html:
               `try{` +
-              `var p=location.pathname.replace(/\/+$/,'')||'/';` +
+              `var p=location.pathname;` +
+              `if(p.length>1&&p.charAt(p.length-1)==='/')p=p.slice(0,-1);` +
               `var sang=${JSON.stringify(ROUTE_LUON_SANG)}.some(function(r){return p===r||p.indexOf(r+'/')===0});` +
               `if(!sang&&localStorage.getItem('${KHOA_THEME}')==='dark')document.documentElement.classList.add('dark');` +
               `localStorage.removeItem('theme')` +
