@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { Inter, JetBrains_Mono } from 'next/font/google';
+import { Be_Vietnam_Pro, JetBrains_Mono } from 'next/font/google';
 import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
 import { Providers } from '@/components/Providers';
@@ -8,9 +8,33 @@ import { LayoutShell } from '@/components/layout/LayoutShell';
 import { SITE_CONFIG } from '@/lib/constants';
 import './globals.css';
 
-const inter = Inter({
+/**
+ * Font chu chinh — Be Vietnam Pro, do Lam Bao, Tony Le va VietAnh Nguyen thiet ke
+ * RIENG cho tieng Viet. Site nay 100% tieng Viet nen chat luong chu co dau la
+ * tieu chi dung nhat, va no la font duy nhat trong nhung font da xet duoc ve cho
+ * muc dich do.
+ *
+ * ⚠️ Day la font TINH, khong co truc bien the. Moi weight la MOT file rieng cho
+ * MOI dai Unicode, nen chi phi tang theo so weight — khac hoan toan Inter truoc
+ * day (bien thé, 1 file phu ca dai 400-700 chi 57KB).
+ *
+ * Do ngay 08/09/2026 (latin + vietnamese):
+ *     4 weight (400/500/600/700)  8 file  132 KB   <- dang dung
+ *     5 weight (them 800)        10 file  166 KB
+ *     6 weight (them 900)        12 file  199 KB
+ *
+ * Vi sao dung o 4 weight: trong `src/` co 13 cho dung `font-extrabold` (800) va
+ * `font-black` (900) — 7 trong so do o /phan-mem-ban-hang. Theo quy tac khop font
+ * cua CSS, weight 800 khi khong co face 800 se chon face NANG NHAT con lai duoi
+ * no, tuc 700; trinh duyet KHONG bia dam gia. Nen 13 cho do render o 700 va
+ * khong can sua mot dong code nao.
+ *
+ * Muon 800 dung nghia thi them '800' vao mang duoi, doi lai +34 KB.
+ */
+const fontChinh = Be_Vietnam_Pro({
+  weight: ['400', '500', '600', '700'],
   subsets: ['latin', 'vietnamese'],
-  variable: '--font-inter',
+  variable: '--font-be-vietnam-pro',
   display: 'swap',
 });
 
@@ -66,7 +90,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="vi" suppressHydrationWarning>
-      <body className={`${inter.variable} ${jetbrainsMono.variable} font-sans`}>
+      <body className={`${fontChinh.variable} ${jetbrainsMono.variable} font-sans`}>
         <Providers>
           <div className="flex flex-col min-h-screen">
             <Header />
