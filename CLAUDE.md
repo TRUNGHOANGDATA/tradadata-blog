@@ -192,6 +192,40 @@ trong khi luồng auto-activate ở `orders/create` lại đọc đúng `product
   server không gửi được byte nào cho tới khi truy vấn xong ⇒ mọi trang động trả giá,
   và `loading.tsx` cũng không có cơ hội hiện ra. Đã bọc `unstable_cache` tag `settings`.
 
+- **KHÔNG được thêm `loading.tsx` ở gốc `src/app/`.** Nó đặt một Suspense boundary
+  ở tầng cao nhất của **mọi** route, nên Next xả HTML shell với status 200 ngay lập
+  tức. Đến khi `notFound()` hay `redirect()` được gọi thì dòng status đã gửi đi rồi —
+  Next chỉ còn cách nhét chỉ thị vào trong stream. Body của một route `redirect()`
+  thử nghiệm chứa nguyên văn `REDIRECT;replace;/;307;` bên trong một phản hồi 200.
+
+  Đây là gốc của cả một lớp lỗi từng bị coi là bí ẩn:
+  - `/pricing` thành trang trắng 200 ở PR #8 (`permanentRedirect()` không sinh
+    `Location`) — đã vòng qua bằng `redirects()` trong `next.config.ts` (PR #12),
+    nhưng lúc đó chưa biết vì sao.
+  - `/blog/trang/999`, `/category/<không-tồn-tại>`, `/tag/<không-tồn-tại>`,
+    `/blog/<slug-không-tồn-tại>` đều trả **soft 404** (mã 200 kèm giao diện 404).
+
+  Cách xác định (08/09/2026): chạy `next dev` cục bộ để loại trừ nginx, rồi bỏ lần
+  lượt `error.tsx`, `not-found.tsx`, `middleware` — vẫn 200. Bỏ `src/app/loading.tsx`
+  thì `/category/x` và `/tag/x` trả **404 thật** ngay.
+
+  ⚠️ `loading.tsx` ở segment con cũng gây đúng chuyện đó cho segment đó và con của
+  nó. Đo được:
+
+  | bỏ gì | `/category/x` | `/tag/x` | `/blog/x` | `/blog/trang/999` |
+  |---|---|---|---|---|
+  | nguyên trạng | 200 | 200 | 200 | 200 |
+  | chỉ `src/app/loading.tsx` | 404 | 404 | 200 | 200 |
+  | thêm `blog/loading.tsx` + `blog/[slug]/loading.tsx` | 404 | 404 | 404 | 404 |
+
+  Hiện đã bỏ ở gốc. `blog/loading.tsx` và `blog/[slug]/loading.tsx` **còn giữ**, nên
+  hai đường `/blog/*` vẫn là soft 404 — giữ có ý thức để còn skeleton khi điều hướng
+  trong trang. Muốn 404 thật ở đó thì phải bỏ chúng, hoặc chuyển sang bọc `<Suspense>`
+  **bên trong** page ở dưới điểm quyết định `notFound()`.
+
+  Muốn có skeleton mà vẫn giữ mã đúng: đừng dùng `loading.tsx`, hãy `await` truy vấn
+  quyết định 404 trước, rồi mới bọc `<Suspense>` quanh phần chậm còn lại.
+
 - **Invalidate**: `revalidatePost(slugs, postId)` / `revalidateTaxonomy()` /
   `revalidateSettings()` trong `src/lib/cache.ts` —
   **bắt buộc gọi ở mọi API route ghi vào posts / post_tags / post_categories /

@@ -8,6 +8,11 @@
  *
  * Quy tắc: skeleton phải có CÙNG kích thước và khoảng cách với nội dung thật.
  * Sai kích thước thì còn tệ hơn không có, vì layout sẽ giật khi dữ liệu về.
+ *
+ * ⚠️ ĐỪNG tạo `loading.tsx` ở gốc `src/app/`. Nó đặt Suspense boundary ở tầng
+ * cao nhất của MỌI route, nên Next xả HTML shell với status 200 ngay; đến lúc
+ * `notFound()` được gọi thì không sửa được mã nữa và trang trả soft 404.
+ * Đã bỏ file đó ngày 08/09/2026 — xem CLAUDE.md, mục về `loading.tsx`.
  */
 export function Sk({ className = '' }: { className?: string }) {
     return <div aria-hidden="true" className={`animate-pulse rounded-md bg-sunken ${className}`} />;
