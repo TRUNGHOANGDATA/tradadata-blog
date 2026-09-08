@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Mail, ExternalLink, Phone } from 'lucide-react';
+import { Mail, Phone } from 'lucide-react';
 import { SITE_CONFIG, DEFAULT_CATEGORIES } from '@/lib/constants';
 import { unstable_cache } from 'next/cache';
 import { supabaseAdmin } from '@/lib/supabase/server';
@@ -41,22 +41,7 @@ export async function Footer() {
     const settings = await getFooterSettings();
 
     return (
-        <footer className="bg-sunken text-fg-muted mt-20">
-            {/* Wave Separator */}
-            <div className="relative -mt-px">
-                <svg
-                    viewBox="0 0 1440 48"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="w-full h-12 text-sunken"
-                >
-                    <path
-                        d="M0 48h1440V16c-120 10-240 16-360 16S840 22 720 12 480 0 360 0 120 6 0 16v32z"
-                        fill="currentColor"
-                    />
-                </svg>
-            </div>
-
+        <footer className="bg-sunken text-fg-muted border-t border-line mt-20">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-10">
                     {/* Brand */}
