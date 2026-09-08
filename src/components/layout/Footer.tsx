@@ -41,14 +41,14 @@ export async function Footer() {
     const settings = await getFooterSettings();
 
     return (
-        <footer className="bg-surface-900 dark:bg-surface-950 text-fg-faint mt-20">
+        <footer className="bg-sunken text-fg-muted mt-20">
             {/* Wave Separator */}
             <div className="relative -mt-px">
                 <svg
                     viewBox="0 0 1440 48"
                     fill="none"
                     xmlns="http://www.w3.org/2000/svg"
-                    className="w-full h-12 text-surface-900 dark:text-surface-950"
+                    className="w-full h-12 text-sunken"
                 >
                     <path
                         d="M0 48h1440V16c-120 10-240 16-360 16S840 22 720 12 480 0 360 0 120 6 0 16v32z"
@@ -71,13 +71,13 @@ export async function Footer() {
 
                     {/* Categories */}
                     <div>
-                        <h3 className="text-white font-semibold mb-4">Chủ đề</h3>
+                        <h3 className="text-fg font-semibold mb-4">Chủ đề</h3>
                         <ul className="space-y-2">
                             {DEFAULT_CATEGORIES.slice(0, 6).map((cat) => (
                                 <li key={cat.slug}>
                                     <Link
                                         href={`/category/${cat.slug}`}
-                                        className="text-sm py-1.5 hover:text-white transition-colors flex items-center gap-2"
+                                        className="text-sm py-1.5 hover:text-fg transition-colors flex items-center gap-2"
                                     >
                                         <span>{cat.icon}</span>
                                         {cat.name}
@@ -89,30 +89,30 @@ export async function Footer() {
 
                     {/* Quick Links */}
                     <div>
-                        <h3 className="text-white font-semibold mb-4">Liên kết</h3>
+                        <h3 className="text-fg font-semibold mb-4">Liên kết</h3>
                         <ul className="space-y-2">
                             <li>
-                                <Link href="/blog" className="text-sm py-1.5 hover:text-white transition-colors">
+                                <Link href="/blog" className="text-sm py-1.5 hover:text-fg transition-colors">
                                     Tất cả bài viết
                                 </Link>
                             </li>
                             <li>
-                                <Link href="/about" className="text-sm py-1.5 hover:text-white transition-colors">
+                                <Link href="/about" className="text-sm py-1.5 hover:text-fg transition-colors">
                                     Giới thiệu
                                 </Link>
                             </li>
                             <li>
-                                <Link href="/courses" className="text-sm py-1.5 hover:text-white transition-colors flex items-center gap-1">
+                                <Link href="/courses" className="text-sm py-1.5 hover:text-fg transition-colors flex items-center gap-1">
                                     Khóa học
                                 </Link>
                             </li>
                             <li>
-                                <Link href="/terms" className="text-sm py-1.5 hover:text-white transition-colors">
+                                <Link href="/terms" className="text-sm py-1.5 hover:text-fg transition-colors">
                                     Điều khoản sử dụng
                                 </Link>
                             </li>
                             <li>
-                                <Link href="/privacy" className="text-sm py-1.5 hover:text-white transition-colors">
+                                <Link href="/privacy" className="text-sm py-1.5 hover:text-fg transition-colors">
                                     Chính sách bảo mật
                                 </Link>
                             </li>
@@ -121,12 +121,12 @@ export async function Footer() {
 
                     {/* Contact */}
                     <div>
-                        <h3 className="text-white font-semibold mb-4">Liên hệ</h3>
+                        <h3 className="text-fg font-semibold mb-4">Liên hệ</h3>
                         <ul className="space-y-3">
                             <li>
                                 <a
                                     href={`mailto:${settings.email}`}
-                                    className="text-sm py-1.5 hover:text-white transition-colors flex items-center gap-2"
+                                    className="text-sm py-1.5 hover:text-fg transition-colors flex items-center gap-2"
                                 >
                                     <Mail className="h-4 w-4" />
                                     {settings.email}
@@ -136,7 +136,7 @@ export async function Footer() {
                                 <li>
                                     <a
                                         href={`tel:${settings.phone}`}
-                                        className="text-sm py-1.5 hover:text-white transition-colors flex items-center gap-2"
+                                        className="text-sm py-1.5 hover:text-fg transition-colors flex items-center gap-2"
                                     >
                                         <Phone className="h-4 w-4" />
                                         {settings.phone}
@@ -148,7 +148,7 @@ export async function Footer() {
                 </div>
 
                 {/* Bottom Bar */}
-                <div className="mt-12 pt-6 border-t border-surface-800 flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div className="mt-12 pt-6 border-t border-line-strong flex flex-col sm:flex-row items-center justify-between gap-4">
                     <p className="text-sm">
                         © {new Date().getFullYear()} {SITE_CONFIG.author}. All rights reserved.
                     </p>
