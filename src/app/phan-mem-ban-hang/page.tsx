@@ -214,38 +214,41 @@ export default function PhanMemBanHangPage() {
         publisher: { '@type': 'Organization', name: SITE_CONFIG.name, url: SITE_CONFIG.url },
     };
 
+    // `light-only` neo bảng màu về sáng cho cả cây con, kể cả khi khách bật nút
+    // Dark trên header (xem @layer base trong globals.css). Biến thể `dark:` VẪN
+    // khớp trong vùng này, nên cả trang tuyệt đối không được viết `dark:`.
     return (
-        <div className="bg-surface-50 dark:bg-surface-950">
+        <div className="light-only bg-page text-fg">
             <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
 
             {/* ===== HERO ===== */}
-            <section className="relative overflow-hidden bg-gradient-to-br from-surface-900 via-surface-900 to-brand-900">
+            <section className="relative overflow-hidden border-b border-line bg-gradient-to-b from-brand-50 via-page to-page">
                 <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24">
                     <div className="text-center max-w-3xl mx-auto">
-                        <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/20 text-brand-300 text-sm font-medium mb-6">
+                        <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-card border border-brand-200 text-brand-700 text-sm font-medium mb-6 shadow-sm">
                             <PackageCheck className="h-4 w-4" />
                             Dành cho doanh nghiệp thương mại vừa và nhỏ
                         </span>
-                        <h1 className="text-3xl md:text-5xl font-extrabold! text-white leading-tight mb-6">
+                        <h1 className="text-3xl md:text-5xl font-extrabold! text-fg leading-tight mb-6">
                             Quản lý bán hàng, kho và công nợ{' '}
-                            <span className="text-brand-400">trên một cơ sở dữ liệu duy nhất</span>
+                            <span className="text-brand-600">trên một cơ sở dữ liệu duy nhất</span>
                         </h1>
-                        <p className="text-lg text-surface-300 mb-8 leading-relaxed">
+                        <p className="text-lg text-fg-muted mb-8 leading-relaxed">
                             Giao diện Excel quen thuộc, dữ liệu tập trung trên SQL Server. Cả công ty
                             cùng nhập liệu vào một chỗ — hết cảnh mỗi người một file, cuối tháng ngồi
                             đối chiếu số lệch.
                         </p>
                         <div className="flex justify-center">
-                            <ContactButtons variant="dark" />
+                            <ContactButtons />
                         </div>
-                        <p className="text-sm text-fg-faint mt-6">
+                        <p className="text-sm text-fg-subtle mt-6">
                             Tư vấn miễn phí · Khảo sát nghiệp vụ trước khi báo giá
                         </p>
                     </div>
 
                     {/* Ảnh dashboard tỉ lệ 2.66:1 — đặt full width bên dưới thì hợp
                         khổ ảnh, kẹp cạnh khối chữ sẽ bị dẹt như sợi chỉ. */}
-                    <div className="mt-14 rounded-2xl overflow-hidden shadow-2xl ring-1 ring-white/10">
+                    <div className="mt-14 rounded-2xl overflow-hidden shadow-xl ring-1 ring-line">
                         <Image
                             src="/images/phan-mem/dashboard.webp"
                             alt="Dashboard quản trị kinh doanh của phần mềm"
@@ -265,18 +268,18 @@ export default function PhanMemBanHangPage() {
                     <h2 className="text-2xl md:text-4xl font-extrabold! text-fg mb-4">
                         Bạn có đang gặp những chuyện này?
                     </h2>
-                    <p className="text-lg text-surface-600 dark:text-surface-400">
+                    <p className="text-lg text-fg-muted">
                         Bốn vấn đề gặp đi gặp lại ở các doanh nghiệp thương mại còn quản lý bằng Excel rời.
                     </p>
                 </div>
                 <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
                     {PAIN_POINTS.map((p) => (
                         <div key={p.title} className="p-6 rounded-2xl bg-card border border-line">
-                            <div className="w-11 h-11 rounded-xl bg-red-50 dark:bg-red-900/20 text-red-500 flex items-center justify-center mb-4 mx-auto">
+                            <div className="w-11 h-11 rounded-xl bg-red-50 text-red-500 flex items-center justify-center mb-4 mx-auto">
                                 <p.icon className="h-5 w-5" />
                             </div>
                             <h3 className="font-bold text-fg mb-2 text-center">{p.title}</h3>
-                            <p className="text-sm text-surface-600 dark:text-surface-400 leading-relaxed text-center">{p.body}</p>
+                            <p className="text-sm text-fg-muted leading-relaxed text-center">{p.body}</p>
                         </div>
                     ))}
                 </div>
@@ -289,28 +292,28 @@ export default function PhanMemBanHangPage() {
                         <h2 className="text-2xl md:text-4xl font-extrabold! text-fg mb-4">
                             Đủ nghiệp vụ để chạy cả công ty
                         </h2>
-                        <p className="text-lg text-surface-600 dark:text-surface-400 mb-6">
+                        <p className="text-lg text-fg-muted mb-6">
                             40 nghiệp vụ, bao trọn từ lúc nhập hàng tới lúc chốt lãi lỗ.
                         </p>
-                        <p className="inline-flex items-center gap-2 text-sm text-amber-700 dark:text-amber-500 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-900/40 rounded-full px-4 py-1.5">
+                        <p className="inline-flex items-center gap-2 text-sm text-amber-700 bg-amber-50 border border-amber-200 rounded-full px-4 py-1.5">
                             <Sparkles className="h-4 w-4" />
                             Mục có dấu này là nghiệp vụ phần mềm phổ thông thường không có
                         </p>
                     </div>
                     <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
                         {FEATURE_GROUPS.map((g) => (
-                            <div key={g.title} className="p-6 rounded-2xl bg-surface-50 dark:bg-surface-950 border border-line">
-                                <div className="w-11 h-11 rounded-xl bg-brand-50 dark:bg-brand-900/20 text-brand-600 dark:text-brand-400 flex items-center justify-center mb-4">
+                            <div key={g.title} className="p-6 rounded-2xl bg-page border border-line">
+                                <div className="w-11 h-11 rounded-xl bg-brand-50 text-brand-600 flex items-center justify-center mb-4">
                                     <g.icon className="h-6 w-6" />
                                 </div>
                                 <h3 className="text-lg font-bold text-fg mb-3">{g.title}</h3>
                                 <ul className="space-y-2.5">
                                     {g.items.map((it) => (
-                                        <li key={it.t} className="flex items-start gap-2 text-sm text-surface-600 dark:text-surface-400 leading-snug">
+                                        <li key={it.t} className="flex items-start gap-2 text-sm text-fg-muted leading-snug">
                                             {it.rare ? (
                                                 <Sparkles className="h-4 w-4 text-amber-500 shrink-0 mt-0.5" aria-label="Nghiệp vụ ít phần mềm có" />
                                             ) : (
-                                                <Check className="h-4 w-4 text-brand-600 dark:text-brand-400 shrink-0 mt-0.5" />
+                                                <Check className="h-4 w-4 text-brand-600 shrink-0 mt-0.5" />
                                             )}
                                             <span>{it.t}</span>
                                         </li>
@@ -329,7 +332,7 @@ export default function PhanMemBanHangPage() {
                     <h2 className="text-2xl md:text-4xl font-extrabold! text-fg mb-4">
                         Giao diện thực tế
                     </h2>
-                    <p className="text-lg text-surface-600 dark:text-surface-400">
+                    <p className="text-lg text-fg-muted">
                         Ảnh chụp từ tài liệu hướng dẫn sử dụng. Số liệu trong ảnh là dữ liệu mẫu.
                     </p>
                 </div>
@@ -347,7 +350,7 @@ export default function PhanMemBanHangPage() {
                                     unoptimized
                                 />
                             </div>
-                            <figcaption className="mt-3 text-sm text-surface-600 dark:text-surface-400 text-center">{s.caption}</figcaption>
+                            <figcaption className="mt-3 text-sm text-fg-muted text-center">{s.caption}</figcaption>
                         </figure>
                     ))}
                 </div>
@@ -360,25 +363,25 @@ export default function PhanMemBanHangPage() {
                         <h2 className="text-2xl md:text-4xl font-extrabold! text-fg mb-4">
                             Yêu cầu hệ thống
                         </h2>
-                        <p className="text-lg text-surface-600 dark:text-surface-400">
+                        <p className="text-lg text-fg-muted">
                             Nói trước cho rõ để bạn khỏi mất thời gian nếu không phù hợp.
                         </p>
                     </div>
                     <div className="grid md:grid-cols-3 gap-6">
                         <div className="p-6 rounded-2xl border border-line">
-                            <Monitor className="h-6 w-6 text-brand-600 dark:text-brand-400 mb-3" />
+                            <Monitor className="h-6 w-6 text-brand-600 mb-3" />
                             <h3 className="font-bold text-fg mb-2">Máy nhân viên</h3>
-                            <p className="text-sm text-surface-600 dark:text-surface-400">Windows, Microsoft Excel 2016 trở lên.</p>
+                            <p className="text-sm text-fg-muted">Windows, Microsoft Excel 2016 trở lên.</p>
                         </div>
                         <div className="p-6 rounded-2xl border border-line">
-                            <Database className="h-6 w-6 text-brand-600 dark:text-brand-400 mb-3" />
+                            <Database className="h-6 w-6 text-brand-600 mb-3" />
                             <h3 className="font-bold text-fg mb-2">Máy chủ dữ liệu</h3>
-                            <p className="text-sm text-surface-600 dark:text-surface-400">SQL Server 2014 trở lên, dùng được cả bản Express miễn phí.</p>
+                            <p className="text-sm text-fg-muted">SQL Server 2014 trở lên, dùng được cả bản Express miễn phí.</p>
                         </div>
-                        <div className="p-6 rounded-2xl border border-amber-200 dark:border-amber-900/40 bg-amber-50/60 dark:bg-amber-900/10">
-                            <X className="h-6 w-6 text-amber-600 dark:text-amber-500 mb-3" />
+                        <div className="p-6 rounded-2xl border border-amber-200 bg-amber-50/60">
+                            <X className="h-6 w-6 text-amber-600 mb-3" />
                             <h3 className="font-bold text-fg mb-2">Không chạy trên macOS / Linux</h3>
-                            <p className="text-sm text-surface-600 dark:text-surface-400">Máy Mac cần cài máy ảo Windows mới dùng được.</p>
+                            <p className="text-sm text-fg-muted">Máy Mac cần cài máy ảo Windows mới dùng được.</p>
                         </div>
                     </div>
                 </div>
@@ -394,9 +397,9 @@ export default function PhanMemBanHangPage() {
                         <details key={f.q} className="group rounded-2xl bg-card border border-line p-6">
                             <summary className="font-semibold text-fg cursor-pointer list-none flex items-center justify-between gap-4">
                                 {f.q}
-                                <span className="text-brand-600 dark:text-brand-400 shrink-0 transition-transform group-open:rotate-45 text-2xl leading-none">+</span>
+                                <span className="text-brand-600 shrink-0 transition-transform group-open:rotate-45 text-2xl leading-none">+</span>
                             </summary>
-                            <p className="mt-4 text-surface-600 dark:text-surface-400 leading-relaxed">{f.a}</p>
+                            <p className="mt-4 text-fg-muted leading-relaxed">{f.a}</p>
                         </details>
                     ))}
                 </div>
@@ -410,14 +413,14 @@ export default function PhanMemBanHangPage() {
                             <h2 className="text-2xl md:text-3xl font-extrabold! text-fg mb-4">
                                 Để lại thông tin, mình gọi lại tư vấn
                             </h2>
-                            <p className="text-surface-600 dark:text-surface-400 mb-6 leading-relaxed">
+                            <p className="text-fg-muted mb-6 leading-relaxed">
                                 Mỗi doanh nghiệp một cách làm khác nhau, nên trước khi báo giá mình muốn nghe
                                 bạn đang vận hành thế nào và vướng ở đâu. Không ràng buộc gì cả.
                             </p>
-                            <p className="text-surface-600 dark:text-surface-400 mb-8">Hoặc liên hệ trực tiếp:</p>
+                            <p className="text-fg-muted mb-8">Hoặc liên hệ trực tiếp:</p>
                             <ContactButtons />
                         </div>
-                        <div className="p-6 md:p-8 rounded-2xl bg-surface-50 dark:bg-surface-950 border border-line">
+                        <div className="p-6 md:p-8 rounded-2xl bg-page border border-line">
                             <LeadForm />
                         </div>
                     </div>
