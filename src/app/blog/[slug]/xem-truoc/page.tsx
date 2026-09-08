@@ -8,6 +8,7 @@ import {
 } from '@/lib/data/posts';
 import { renderPostContent } from '@/lib/highlight-utils';
 import { BaiViet } from '../BaiViet';
+import { PreviewBanner } from '@/components/blog/PreviewBanner';
 
 type Props = {
     params: Promise<{ slug: string }>;
@@ -71,6 +72,7 @@ export default async function XemTruocPage({ params }: Props) {
             postTags={postTags}
             relatedPosts={relatedPosts}
             laXemTruoc
+            banner={<PreviewBanner postId={post.id} postStatus={post.status} />}
         />
     );
 }

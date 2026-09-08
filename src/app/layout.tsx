@@ -18,6 +18,15 @@ const jetbrainsMono = JetBrains_Mono({
   subsets: ['latin'],
   variable: '--font-jetbrains',
   display: 'swap',
+  // `next/font` mac dinh `preload: true`, va font nay khai o layout GOC nen
+  // moi trang deu duoc `rel=preload` -> tai 39KB font monospace ngay ca khi
+  // trang khong co mot dong code nao. Do tren production 08/09/2026: `/blog`
+  // co 0 the <pre>/<code> nhung van tai bb3ef058b751a6ad.woff2 (JetBrains Mono).
+  //
+  // Bo preload thi trinh duyet chi tai khi that su co chu dung den font, tuc
+  // gan nhu chi o trang bai viet co code block. `display: 'swap'` da co san nen
+  // luc dau code block hien bang font du phong roi doi sang, khong bi trang.
+  preload: false,
 });
 
 export const metadata: Metadata = {
