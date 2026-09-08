@@ -7,11 +7,23 @@ export function ThemeToggle() {
     const [dark, setDark] = useState(false);
 
     useEffect(() => {
-        const saved = localStorage.getItem('theme');
-        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-        const isDark = saved === 'dark' || (!saved && prefersDark);
-        // Doc localStorage + prefers-color-scheme: chi co o trinh duyet. Tinh trong render
-        // dau la hydration mismatch, nen phai doc sau khi mount.
+        // MAC DINH LA LIGHT, khong theo `prefers-color-scheme` cua he dieu hanh.
+        //
+        // Truoc day o day co `|| (!saved && prefersDark)`, nen khach nao dat may
+        // o dark mode la vao site thay dark ngay du chua bao gio bam nut. Chu y
+        // hien tai: giao dien sang la mac dinh, dark chi bat khi nguoi dung TU
+        // chon — nen `localStorage` la nguon duy nhat quyet dinh.
+        //
+        // localStorage co the nem loi (cua so an danh, trinh duyet chan site
+        // data) nen phai boc try/catch, va khi loi thi roi ve light.
+        let isDark = false;
+        try {
+            isDark = localStorage.getItem('theme') === 'dark';
+        } catch {
+            isDark = false;
+        }
+        // Doc localStorage chi co o trinh duyet. Tinh trong render dau la
+        // hydration mismatch, nen phai doc sau khi mount.
         // eslint-disable-next-line react-hooks/set-state-in-effect
         setDark(isDark);
         document.documentElement.classList.toggle('dark', isDark);
@@ -21,7 +33,12 @@ export function ThemeToggle() {
         const next = !dark;
         setDark(next);
         document.documentElement.classList.toggle('dark', next);
-        localStorage.setItem('theme', next ? 'dark' : 'light');
+        try {
+            localStorage.setItem('theme', next ? 'dark' : 'light');
+        } catch {
+            // Khong luu duoc thi lan sau vao lai ve light — chap nhan duoc,
+            // khong duoc de nem loi lam vo ca nut.
+        }
     };
 
     return (
