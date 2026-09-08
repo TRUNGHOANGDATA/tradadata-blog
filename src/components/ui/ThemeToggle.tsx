@@ -1,11 +1,19 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { usePathname } from 'next/navigation';
 import { Sun, Moon } from 'lucide-react';
-import { KHOA_THEME } from '@/lib/constants';
+import { KHOA_THEME, laRouteLuonSang } from '@/lib/constants';
 
 export function ThemeToggle() {
     const [dark, setDark] = useState(false);
+    const pathname = usePathname();
+
+    // Landing ban hang luon sang, khong theo lua chon nay. Script o layout goc
+    // lo lan tai trang dau tien; cho nay lo dieu huong TRONG trang, luc script
+    // do khong chay lai. Thieu no thi di tu bai viet (dang dark) sang landing la
+    // header/footer van toi.
+    const luonSang = laRouteLuonSang(pathname);
 
     useEffect(() => {
         // MAC DINH LA LIGHT, khong theo `prefers-color-scheme` cua he dieu hanh.
@@ -27,8 +35,8 @@ export function ThemeToggle() {
         // hydration mismatch, nen phai doc sau khi mount.
         // eslint-disable-next-line react-hooks/set-state-in-effect
         setDark(isDark);
-        document.documentElement.classList.toggle('dark', isDark);
-    }, []);
+        document.documentElement.classList.toggle('dark', isDark && !luonSang);
+    }, [luonSang]);
 
     const toggle = () => {
         const next = !dark;
@@ -41,6 +49,10 @@ export function ThemeToggle() {
             // khong duoc de nem loi lam vo ca nut.
         }
     };
+
+    // O route luon sang, bam nut se khong doi duoc gi — an di thay vi de mot nut
+    // chet tren header.
+    if (luonSang) return null;
 
     return (
         <button

@@ -214,9 +214,13 @@ export default function PhanMemBanHangPage() {
         publisher: { '@type': 'Organization', name: SITE_CONFIG.name, url: SITE_CONFIG.url },
     };
 
-    // `light-only` neo bảng màu về sáng cho cả cây con, kể cả khi khách bật nút
-    // Dark trên header (xem @layer base trong globals.css). Biến thể `dark:` VẪN
-    // khớp trong vùng này, nên cả trang tuyệt đối không được viết `dark:`.
+    // Trang này luôn sáng. Hai lớp bảo vệ, cố ý chồng nhau:
+    //   1. Route nằm trong `ROUTE_LUON_SANG` ⇒ class `.dark` bị gỡ khỏi <html>,
+    //      nên Header/Footer dùng chung cũng sáng theo.
+    //   2. `light-only` neo bảng màu ngay tại đây, chắn nhịp loé tối khi khách
+    //      đang ở dark điều hướng trong trang sang đây (React gỡ class sau khi vẽ).
+    // Biến thể `dark:` VẪN khớp nếu `.dark` còn trên <html>, nên cả trang tuyệt
+    // đối không được viết `dark:` — chỉ dùng token nghĩa.
     return (
         <div className="light-only bg-page text-fg">
             <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
@@ -376,7 +380,7 @@ export default function PhanMemBanHangPage() {
                         <div className="p-6 rounded-2xl border border-line">
                             <Database className="h-6 w-6 text-brand-600 mb-3" />
                             <h3 className="font-bold text-fg mb-2">Máy chủ dữ liệu</h3>
-                            <p className="text-sm text-fg-muted">SQL Server 2014 trở lên, dùng được cả bản Express miễn phí.</p>
+                            <p className="text-sm text-fg-muted">SQL Server 2019 Express trở lên — bản miễn phí là đủ dùng.</p>
                         </div>
                         <div className="p-6 rounded-2xl border border-amber-200 bg-amber-50/60">
                             <X className="h-6 w-6 text-amber-600 mb-3" />

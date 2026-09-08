@@ -5,7 +5,7 @@ import { Footer } from '@/components/layout/Footer';
 import { Providers } from '@/components/Providers';
 import { FloatingActions } from '@/components/layout/FloatingActions';
 import { LayoutShell } from '@/components/layout/LayoutShell';
-import { SITE_CONFIG, KHOA_THEME } from '@/lib/constants';
+import { SITE_CONFIG, KHOA_THEME, ROUTE_LUON_SANG } from '@/lib/constants';
 import './globals.css';
 
 /**
@@ -105,6 +105,11 @@ export default function RootLayout({
           Boc try/catch: `localStorage` NEM LOI o cua so an danh va trinh duyet
           chan site data. Loi thi khong lam gi, tuc roi ve light.
 
+          Kiem `location.pathname` ngay trong script: cac route trong
+          ROUTE_LUON_SANG (landing ban hang) khong bao gio duoc them `.dark`, nho
+          vay Header/Footer dung chung — von con 15 cho viet `dark:` — cung sang
+          theo ma khong phai viet lai. Dieu huong trong trang do `ThemeToggle` lo.
+
           `removeItem('theme')` don khoa doi truoc. Khoa do tung luu `dark` cho ca
           nhung khach chua bao gio tu chon, vi theme mac dinh con doc
           `prefers-color-scheme`. Doi sang khoa moi la reset, va don khoa cu de
@@ -112,7 +117,13 @@ export default function RootLayout({
         */}
         <script
           dangerouslySetInnerHTML={{
-            __html: `try{if(localStorage.getItem('${KHOA_THEME}')==='dark')document.documentElement.classList.add('dark');localStorage.removeItem('theme')}catch(e){}`,
+            __html:
+              `try{` +
+              `var p=location.pathname.replace(/\/+$/,'')||'/';` +
+              `var sang=${JSON.stringify(ROUTE_LUON_SANG)}.some(function(r){return p===r||p.indexOf(r+'/')===0});` +
+              `if(!sang&&localStorage.getItem('${KHOA_THEME}')==='dark')document.documentElement.classList.add('dark');` +
+              `localStorage.removeItem('theme')` +
+              `}catch(e){}`,
           }}
         />
         <Providers>
