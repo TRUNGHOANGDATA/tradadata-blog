@@ -376,7 +376,7 @@ export default function PhanMemBanHangPage() {
                         <div className="p-6 rounded-2xl border border-line">
                             <Database className="h-6 w-6 text-brand-600 mb-3" />
                             <h3 className="font-bold text-fg mb-2">Máy chủ dữ liệu</h3>
-                            <p className="text-sm text-fg-muted">SQL Server 2014 trở lên, dùng được cả bản Express miễn phí.</p>
+                            <p className="text-sm text-fg-muted">SQL Server 2019 Express trở lên — bản miễn phí là đủ dùng.</p>
                         </div>
                         <div className="p-6 rounded-2xl border border-amber-200 bg-amber-50/60">
                             <X className="h-6 w-6 text-amber-600 mb-3" />
