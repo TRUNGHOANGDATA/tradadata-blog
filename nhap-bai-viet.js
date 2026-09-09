@@ -384,6 +384,42 @@ async function chay() {
     const [URL, KEY] = requireEnv('NEXT_PUBLIC_SUPABASE_URL', 'SUPABASE_SERVICE_ROLE_KEY');
     const db = createClient(URL, KEY);
 
+    // Ảnh phải nằm ở URL tuyệt đối thì trình soạn thảo và trang blog mới hiện được
+    // (đường dẫn /images/... chỉ tồn tại sau khi deploy, và vỡ trong editor).
+    // Upload mọi ảnh /images/... referenced lên Supabase Storage rồi trả URL công khai.
+    // Cùng bucket `blog-images` mà các bài cũ đang dùng.
+    const BUCKET_ANH = 'blog-images';
+    const cacheUpload = {}; // '/images/..' -> URL, tránh upload lại trong 1 lần chạy
+    async function uploadAnh(webPath) {
+        if (!webPath || !webPath.startsWith('/images/')) return webPath; // đã là URL tuyệt đối thì giữ nguyên
+        if (cacheUpload[webPath]) return cacheUpload[webPath];
+        const tepCucBo = path.join(__dirname, 'public', webPath.replace(/^\//, ''));
+        if (!fs.existsSync(tepCucBo)) {
+            console.warn(`  ! không thấy file ảnh ${tepCucBo}, giữ nguyên đường dẫn`);
+            return webPath;
+        }
+        // /images/bai-viet/<...>.png -> posts/bai-viet/<...>.png trong bucket
+        const duongStorage = 'posts' + webPath.replace('/images', '');
+        const buf = fs.readFileSync(tepCucBo);
+        const { error } = await db.storage.from(BUCKET_ANH).upload(duongStorage, buf, {
+            contentType: 'image/png', upsert: true,
+        });
+        if (error) { console.warn(`  ! upload ảnh lỗi (${duongStorage}): ${error.message}`); return webPath; }
+        const { data } = db.storage.from(BUCKET_ANH).getPublicUrl(duongStorage);
+        cacheUpload[webPath] = data.publicUrl;
+        return data.publicUrl;
+    }
+    // Duyệt cây TipTap, upload & đổi src mọi node ảnh
+    async function upAnhTrongDoc(node) {
+        if (!node || typeof node !== 'object') return;
+        if (node.type === 'image' && node.attrs && node.attrs.src) {
+            node.attrs.src = await uploadAnh(node.attrs.src);
+        }
+        if (Array.isArray(node.content)) {
+            for (const con of node.content) await upAnhTrongDoc(con);
+        }
+    }
+
     // Tác giả
     let tacGiaId = null;
     if (ts.tacGia) {
@@ -423,12 +459,16 @@ async function chay() {
             console.warn(`  ! ${ten}: slug đã tồn tại, dùng "${slug}"`);
         }
 
+        // Upload ảnh lên Storage, đổi src trong bài + ảnh bìa sang URL công khai
+        await upAnhTrongDoc(doc);
+        const anhBia = await uploadAnh(meta.anh_bia);
+
         const banGhi = {
             title: meta.tieu_de,
             slug,
             excerpt: meta.mo_ta || null,
             content: JSON.stringify(doc),
-            cover_image: meta.anh_bia || null,
+            cover_image: anhBia || null,
             category_id: danhMucId,
             status: meta.trang_thai || 'draft',
             is_premium: meta.premium === 'true',
@@ -445,10 +485,12 @@ async function chay() {
             continue;
         }
 
-        // Bảng nối danh mục (app cho phép 1 bài nhiều chủ đề)
+        // Bảng nối danh mục (app cho phép 1 bài nhiều chủ đề). DB có trigger tự
+        // sinh dòng này từ posts.category_id, nên dùng upsert bỏ qua trùng để
+        // không cảnh báo "duplicate key" khi trigger đã tạo sẵn.
         if (danhMucId) {
             const { error: eDm } = await db.from('post_categories')
-                .insert({ post_id: bai.id, category_id: danhMucId });
+                .upsert({ post_id: bai.id, category_id: danhMucId }, { onConflict: 'post_id,category_id', ignoreDuplicates: true });
             if (eDm) console.warn(`  ! ${ten}: không ghi được post_categories — ${eDm.message}`);
         }
 
@@ -472,7 +514,7 @@ async function chay() {
     }
 
     console.log('\nXong. Vào /admin/posts để đọc lại rồi bấm đăng.');
-    console.log('Lưu ý: ảnh nằm trong public/ nên chỉ hiện sau khi deploy.');
+    console.log('Ảnh đã upload lên Supabase Storage (bucket blog-images) nên hiện ngay, không cần deploy.');
 }
 
 chay().catch(e => { console.error(e); process.exit(1); });
