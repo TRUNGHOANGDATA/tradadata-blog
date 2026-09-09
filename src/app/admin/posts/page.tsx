@@ -3,7 +3,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { loiThanhChu } from '@/lib/errors';
 import Link from 'next/link';
-import { Plus, Search, Edit, Trash2, Eye, Send, Loader2, ChevronLeft, ChevronRight, Globe, CheckCircle2, XCircle } from 'lucide-react';
+import { Plus, Search, Edit, Trash2, Eye, Send, Loader2, ChevronLeft, ChevronRight, Globe, CheckCircle2, XCircle, Rocket } from 'lucide-react';
 
 const POSTS_PER_PAGE = 15;
 
@@ -29,6 +29,10 @@ export default function PostsPage() {
     const [currentPage, setCurrentPage] = useState(1);
     const [bulkIndexing, setBulkIndexing] = useState(false);
     const [bulkResult, setBulkResult] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
+    // Id cac bai dang duoc tick. Dung Set vi thao tac chinh la them/bo/kiem-co,
+    // deu O(1); mang thi moi lan bo tick phai quet lai ca danh sach.
+    const [chon, setChon] = useState<Set<string>>(new Set());
+    const [dangDangLoat, setDangDangLoat] = useState(false);
 
     useEffect(() => {
         fetchPosts();
@@ -152,6 +156,103 @@ export default function PostsPage() {
         }
     };
 
+    /** Bat/tat tick mot bai. */
+    const doiTick = (id: string) => {
+        setChon(truoc => {
+            const moi = new Set(truoc);
+            if (moi.has(id)) { moi.delete(id); } else { moi.add(id); }
+            return moi;
+        });
+    };
+
+    /** Tick/bo tick toan bo bai dang hien tren trang nay. */
+    const doiTickCaTrang = () => {
+        setChon(truoc => {
+            const idTrang = paginatedPosts.map(p => p.id);
+            const daDuChua = idTrang.length > 0 && idTrang.every(id => truoc.has(id));
+            const moi = new Set(truoc);
+            // Bo tick thi chi bo cac bai TRANG NAY, giu nguyen bai da tick o trang khac.
+            for (const id of idTrang) { if (daDuChua) { moi.delete(id); } else { moi.add(id); } }
+            return moi;
+        });
+    };
+
+    /**
+     * Xuat ban roi gui index cho cac bai da tick.
+     *
+     * Hai buoc, KHONG gop thanh mot request: gui Google Indexing API mat ~200ms
+     * moi URL va co the loi vi ly do ben ngoai (quota, service account chua duoc
+     * them vao Search Console). Gop lai thi loi index se lam hong ca viec xuat ban.
+     * Nen xuat ban truoc; index that bai thi bai VAN da len song, chi can bam
+     * "Index trang nay" lai sau.
+     */
+    const handleDangVaIndex = async () => {
+        const dsChon = posts.filter(p => chon.has(p.id));
+        if (dsChon.length === 0) return;
+
+        const soNhap = dsChon.filter(p => p.status !== 'published').length;
+        const soDaDang = dsChon.length - soNhap;
+        const loiNhac = soDaDang > 0
+            ? `Xuất bản ${soNhap} bài nháp và gửi index cả ${dsChon.length} bài đã chọn?
+(${soDaDang} bài đã xuất bản trước đó sẽ chỉ được gửi index lại)`
+            : `Xuất bản và gửi index ${soNhap} bài đã chọn?`;
+        if (!confirm(loiNhac)) return;
+
+        setDangDangLoat(true);
+        setBulkResult(null);
+        try {
+            const resDang = await fetch('/api/admin/posts/dang-loat', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ ids: dsChon.map(p => p.id) }),
+            });
+            const dataDang = await resDang.json();
+            if (!resDang.ok) {
+                setBulkResult({ message: dataDang.error || 'Không xuất bản được', type: 'error' });
+                return;
+            }
+
+            // Cap nhat ngay tren UI de nguoi dung thay ket qua, khong phai cho tai lai.
+            const bayGio = new Date().toISOString();
+            const idDaDang = new Set((dataDang.daDang || []).map((p: { id: string }) => p.id));
+            setPosts(truoc => truoc.map(p => idDaDang.has(p.id)
+                ? { ...p, status: 'published', published_at: bayGio }
+                : p));
+
+            const slugs: string[] = dataDang.slugs || [];
+            if (slugs.length === 0) {
+                setBulkResult({ message: dataDang.message, type: 'success' });
+                setChon(new Set());
+                return;
+            }
+
+            const resIndex = await fetch('/api/admin/index-url', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ postSlugs: slugs }),
+            });
+            const dataIndex = await resIndex.json();
+
+            if (resIndex.ok) {
+                const slugDaGui = new Set(slugs);
+                setPosts(truoc => truoc.map(p => slugDaGui.has(p.slug) ? { ...p, indexed_at: bayGio } : p));
+                setBulkResult({ message: `${dataDang.message} ${dataIndex.message}`, type: 'success' });
+            } else {
+                // Xuat ban DA xong — noi ro de nguoi dung khong tuong ca viec that bai.
+                setBulkResult({
+                    message: `${dataDang.message} Nhưng gửi index thất bại: ${dataIndex.error || 'lỗi không rõ'}. Bài đã lên sóng, bấm "Index trang này" để thử lại.`,
+                    type: 'error',
+                });
+            }
+            setChon(new Set());
+        } catch (error) {
+            setBulkResult({ message: loiThanhChu(error), type: 'error' });
+        } finally {
+            setDangDangLoat(false);
+            setTimeout(() => setBulkResult(null), 12000);
+        }
+    };
+
     const formatDate = (dateStr: string) => {
         const d = new Date(dateStr);
         return `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}/${d.getFullYear()}`;
@@ -271,12 +372,63 @@ export default function PostsPage() {
                 </p>
             </div>
 
+            {/* Thanh hanh dong theo lo — chi hien khi co bai duoc tick.
+                Dat ngay tren bang de nut nam gan cac o tick vua bam, khong phai
+                keo len dau trang tim. */}
+            {chon.size > 0 && (
+                <div className="flex flex-wrap items-center gap-3 mb-3 px-4 py-3 rounded-xl border border-brand-200 dark:border-brand-800 bg-brand-50 dark:bg-brand-900/20">
+                    <span className="text-sm font-semibold text-brand-800 dark:text-brand-200">
+                        Đã chọn {chon.size} bài
+                    </span>
+                    {(() => {
+                        // Dem theo trang thai de nut noi dung THAT su se lam gi,
+                        // thay vi mot nhan chung chung.
+                        const dsChon = posts.filter(p => chon.has(p.id));
+                        const soNhap = dsChon.filter(p => p.status !== 'published').length;
+                        return (
+                            <span className="text-sm text-brand-700 dark:text-brand-300">
+                                {soNhap > 0 ? `${soNhap} bài nháp sẽ được xuất bản` : 'tất cả đã xuất bản, chỉ gửi index lại'}
+                            </span>
+                        );
+                    })()}
+                    <div className="flex items-center gap-2 ml-auto">
+                        <button
+                            onClick={() => setChon(new Set())}
+                            disabled={dangDangLoat}
+                            className="px-3 py-2 rounded-xl text-sm font-medium text-fg-muted hover:bg-surface-100 dark:hover:bg-surface-800 transition-colors disabled:opacity-50"
+                        >
+                            Bỏ chọn
+                        </button>
+                        <button
+                            onClick={handleDangVaIndex}
+                            disabled={dangDangLoat}
+                            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-brand-600 text-white text-sm font-semibold hover:bg-brand-700 transition-colors disabled:opacity-60"
+                            title="Xuất bản các bài nháp đã chọn, rồi gửi tất cả lên Google để index"
+                        >
+                            {dangDangLoat
+                                ? <Loader2 className="h-4 w-4 animate-spin" />
+                                : <Rocket className="h-4 w-4" />}
+                            {dangDangLoat ? 'Đang xử lý...' : `Đăng và index ${chon.size} bài`}
+                        </button>
+                    </div>
+                </div>
+            )}
+
             {/* Table */}
             <div className="bg-card rounded-2xl border border-line overflow-hidden">
                 <div className="overflow-x-auto">
                     <table className="w-full">
                         <thead>
                             <tr className="border-b border-line bg-surface-50 dark:bg-surface-800/50">
+                                <th className="w-12 px-4 py-3">
+                                    <input
+                                        type="checkbox"
+                                        checked={paginatedPosts.length > 0 && paginatedPosts.every(p => chon.has(p.id))}
+                                        onChange={doiTickCaTrang}
+                                        aria-label="Chọn tất cả bài trên trang này"
+                                        className="h-4 w-4 rounded border-line-strong text-brand-600 focus:ring-2 focus:ring-brand-500 cursor-pointer"
+                                    />
+                                </th>
                                 <th className="text-left px-6 py-3 text-xs font-semibold text-fg-subtle uppercase">Tiêu đề</th>
                                 <th className="text-left px-6 py-3 text-xs font-semibold text-fg-subtle uppercase">Chủ đề</th>
                                 <th className="text-left px-6 py-3 text-xs font-semibold text-fg-subtle uppercase">Trạng thái</th>
@@ -287,13 +439,28 @@ export default function PostsPage() {
                         <tbody className="divide-y divide-surface-200 dark:divide-surface-800">
                             {paginatedPosts.length === 0 ? (
                                 <tr>
-                                    <td colSpan={6} className="px-6 py-12 text-center text-fg-faint">
+                                    <td colSpan={7} className="px-6 py-12 text-center text-fg-faint">
                                         {posts.length === 0 ? 'Chưa có bài viết nào. Hãy viết bài đầu tiên!' : 'Không tìm thấy bài viết phù hợp.'}
                                     </td>
                                 </tr>
                             ) : (
                                 paginatedPosts.map((post) => (
-                                    <tr key={post.id} className="hover:bg-surface-50 dark:hover:bg-surface-800/50 transition-colors">
+                                    <tr
+                                        key={post.id}
+                                        className={`transition-colors ${chon.has(post.id)
+                                            ? 'bg-brand-50/70 dark:bg-brand-900/15'
+                                            : 'hover:bg-surface-50 dark:hover:bg-surface-800/50'
+                                            }`}
+                                    >
+                                        <td className="w-12 px-4 py-4">
+                                            <input
+                                                type="checkbox"
+                                                checked={chon.has(post.id)}
+                                                onChange={() => doiTick(post.id)}
+                                                aria-label={`Chọn bài: ${post.title}`}
+                                                className="h-4 w-4 rounded border-line-strong text-brand-600 focus:ring-2 focus:ring-brand-500 cursor-pointer"
+                                            />
+                                        </td>
                                         <td className="px-6 py-4">
                                             <div className="flex items-center gap-2">
                                                 <Link
