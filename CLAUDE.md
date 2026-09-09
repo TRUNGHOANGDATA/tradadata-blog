@@ -40,8 +40,9 @@ Domain chuẩn: `https://www.tradadata.com`.
   được nướng vào image lúc build, khớp SHA thì mới coi là xong.
   ⚠️ `blog` chung pod với `ke-truyen`, `strategy: Recreate` ⇒ rollout là **cả hai site
   down ~1-2 phút**.
-  Package ghcr `tradadata-blog` phải để **public**, không thì cụm không pull được image
-  (hoặc tự tạo `imagePullSecret` kiểu `ghcr-secret` trong namespace `bizflow`).
+  Package ghcr `tradadata-blog` **đã public** (kiểm 09/09/2026) nên cụm pull được luôn,
+  không cần `imagePullSecret`. Đừng đổi sang private. (Package `ke-truyen` đang private —
+  nó cần secret riêng, chuyện khác.)
   Đường rollout cũ — workflow `deploy-blog` bên repo `ke-truyen` — vẫn còn dùng được và
   đang là cách đã chạy thật nhiều lần; secret SSH nằm ở repo đó, không ở repo này.
   Image chạy Next.js standalone bằng `node server.js` (KHÔNG phải `next start`).

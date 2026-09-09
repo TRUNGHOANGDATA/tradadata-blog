@@ -23,12 +23,13 @@
 #   SSH_USER / SSH_GATEWAY / K8S_HOST từ workflow deploy cũ thì xoá đi cho sạch.
 #
 # ─── Việc phải làm MỘT LẦN ────────────────────────────────────────────────────
-# 1. Để package ghcr `tradadata-blog` sang PUBLIC
-#    (Profile > Packages > tradadata-blog > Package settings > Change visibility).
-#    Không làm bước này thì cụm không pull được image, phải tự tạo imagePullSecret:
+# 1. Package ghcr `tradadata-blog` phải để PUBLIC — kiểm tra 09/09/2026: ĐÃ public,
+#    nên cụm pull được mà không cần imagePullSecret. Đừng đổi sang private; đổi rồi
+#    thì phải tự tạo secret trong namespace:
 #      kubectl create secret docker-registry ghcr-secret -n bizflow \
 #        --docker-server=ghcr.io --docker-username=<user> \
 #        --docker-password=<PAT scope read:packages>
+#    (Package `ke-truyen` thì đang private — đó là lý do nó cần secret, không liên quan.)
 # 2. Image chạy Next.js standalone bằng `node server.js`. Deployment mà khai
 #    `command:`/`args:` kiểu `npm start` hay `next start` là container không boot.
 #
