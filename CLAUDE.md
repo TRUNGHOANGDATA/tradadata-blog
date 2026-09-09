@@ -11,22 +11,39 @@ Domain chuẩn: `https://www.tradadata.com`.
   `192.168.1.250` chỉ tới được qua gateway (ProxyJump).
 - Manifest Deployment/Service KHÔNG nằm trong repo này — chúng ở trên control plane.
   Repo chỉ giữ `k8s/cronjobs.yaml` (lịch chạy nền).
-- **Deploy**: repo này đã public (08/09/2026) ⇒ có CI riêng, KHÔNG còn mượn
-  `deploy-blog` của repo `ke-truyen` nữa. `.github/workflows/deploy.yml` tự chạy khi
-  push vào `main` (và vẫn bấm tay được qua `workflow_dispatch`):
-  typecheck → build image → push ghcr → `kubectl set image ... blog=<image>` → chờ rollout
-  → **đối chiếu `/api/health` trả đúng commit SHA** mới coi là thành công.
-  ⚠️ Vì vậy **mọi push vào `main` giờ là DEPLOY thật** — container `blog` chung pod với
-  `ke-truyen` (`strategy: Recreate`) nên mỗi lần deploy là **cả hai site down ~1-2 phút**.
-  Repo `ke-truyen` vẫn còn workflow `deploy-blog` cũ nhưng không nên dùng nữa — hai
-  workflow chạy chồng lên nhau vào cùng 1 pod là giẫm chân nhau.
-  Secret cần khai ở repo này (Settings → Secrets and variables → Actions):
-  `SSH_PRIVATE_KEY`, `SSH_KNOWN_HOSTS`, `SSH_USER`, `SSH_GATEWAY`, `K8S_HOST`,
-  `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`,
-  `NEXT_PUBLIC_SERVICE_ACCOUNT_EMAIL` (tuỳ chọn). Tính đến 08/09/2026 mới khai
-  `K8S_HOST`, `NEXT_PUBLIC_SUPABASE_URL`, `SSH_GATEWAY`, `SSH_USER` — còn thiếu
-  `SSH_PRIVATE_KEY`/`SSH_KNOWN_HOSTS`/`NEXT_PUBLIC_SUPABASE_ANON_KEY`/`SUPABASE_SERVICE_ROLE_KEY`
-  nên workflow sẽ dừng ở bước deploy cho tới khi khai đủ.
+- **CI**: repo này là `https://github.com/TRUNGHOANGDATA/tradadata-blog` (public từ 08/09/2026).
+  `.github/workflows/ci.yml` chạy khi push vào `main`, khi mở PR, và bấm tay được
+  (`workflow_dispatch`): typecheck (`tsc --noEmit`) → lint (`npm run lint`) → build image →
+  push `ghcr.io/trunghoangdata/tradadata-blog:<sha>` và `:latest`.
+  Job `build-push` bị bỏ qua với PR — PR từ fork KHÔNG được cấp secret nên `next build` sẽ
+  chết ở bước prerender Supabase; PR vẫn bị chặn bởi job `check`.
+  **CI dừng ở đây — nó CỐ Ý KHÔNG deploy. Push vào `main` của repo này KHÔNG làm site down.**
+  Vì sao không deploy ở đây: cụm nằm trong LAN, chỉ vào được bằng SSH qua gateway public.
+  Muốn CI tự rollout thì phải nhét khoá riêng SSH vào secret của repo — tức là ai có quyền
+  write repo cũng viết được một workflow để moi khoá đó ra rồi SSH thẳng vào LAN.
+  Không đánh đổi như vậy chỉ để tiết kiệm một lệnh `kubectl`.
+  Secret cần khai (Settings → Secrets and variables → Actions): `NEXT_PUBLIC_SUPABASE_URL`,
+  `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`,
+  `NEXT_PUBLIC_SERVICE_ACCOUNT_EMAIL` (tuỳ chọn). Tính đến 09/09/2026 đã khai đủ.
+  **Không cần secret SSH nào** — có `SSH_*`/`K8S_HOST` sót lại từ workflow cũ thì xoá cho sạch.
+  ⚠️ `SUPABASE_SERVICE_ROLE_KEY` là **bắt buộc**: `next build` prerender `/blog`, `/category`…
+  bằng cách query Supabase ngay lúc build, thiếu là fail với `supabaseKey is required`.
+  (Đúng lỗi này đã làm run 09:49 ngày 08/09/2026 đỏ, vì secret mới khai lúc 09:57.)
+- **Rollout** — việc RIÊNG, làm sau khi CI xanh, cần quyền SSH vào cụm. Job `build-push` in
+  sẵn lệnh ở phần Summary của run:
+  ```bash
+  kubectl set image deployment/tradadata blog=<image> -n bizflow
+  kubectl rollout status deployment/tradadata -n bizflow --timeout=10m
+  curl -s https://www.tradadata.com/api/health   # `version` phải ĐÚNG commit SHA
+  ```
+  Rollout xong không có nghĩa là code mới đang phục vụ — `/api/health` trả `APP_VERSION`
+  được nướng vào image lúc build, khớp SHA thì mới coi là xong.
+  ⚠️ `blog` chung pod với `ke-truyen`, `strategy: Recreate` ⇒ rollout là **cả hai site
+  down ~1-2 phút**.
+  Package ghcr `tradadata-blog` phải để **public**, không thì cụm không pull được image
+  (hoặc tự tạo `imagePullSecret` kiểu `ghcr-secret` trong namespace `bizflow`).
+  Đường rollout cũ — workflow `deploy-blog` bên repo `ke-truyen` — vẫn còn dùng được và
+  đang là cách đã chạy thật nhiều lần; secret SSH nằm ở repo đó, không ở repo này.
   Image chạy Next.js standalone bằng `node server.js` (KHÔNG phải `next start`).
   Deployment mà khai `command:`/`args:` kiểu `npm start` là container không boot được.
 - Env đọc từ Secret/env của k8s, KHÔNG phải từ Vercel. Mọi script đẩy env lên Vercel
@@ -48,10 +65,9 @@ Domain chuẩn: `https://www.tradadata.com`.
   trong log). Vì cùng lý do workflow đó cố ý không có ô "nhập lệnh kubectl tự do".
   Mỗi lần `rollout restart` là **cả blog và ke-truyen down ~1-2 phút** (`Recreate`, chung pod).
 - ⚠️ **Push vào `main` của repo `ke-truyen` là DEPLOY, kể cả khi chỉ sửa workflow.**
-  `deploy.yml` bên đó có trigger `push: branches: [main]` — và từ 08/09/2026 repo
-  này cũng vậy (`.github/workflows/deploy.yml`), nên push vào `main` ở CẢ HAI repo
-  đều là deploy thật. Deploy trang truyện thì recreate pod, nên **blog down theo**
-  (và ngược lại).
+  `deploy.yml` bên đó có trigger `push: branches: [main]`. Deploy trang truyện thì recreate
+  pod, nên **blog down theo**. Ngược lại thì KHÔNG: `ci.yml` của repo này chỉ build/push
+  image, không đụng vào cụm, nên push vào `main` ở đây không làm site nào down.
   Nó có `paths-ignore` nhưng đã từng hở: mẫu `.github/workflows/blog-*.yml` khớp
   `blog-cron.yml` mà KHÔNG khớp `deploy-blog.yml`. Ngày 07/09/2026 mình sửa
   `deploy-blog.yml` và làm cả hai site 502 khoảng 3-5 phút vì đúng lỗ này.
@@ -165,8 +181,9 @@ trong khi luồng auto-activate ở `orders/create` lại đọc đúng `product
 - Indent 4 space trong `src/`.
 - API route: luôn mở đầu bằng `const session = await auth()` rồi check
   `session.user.role !== 'admin'` (một số route cho phép cả `editor`).
-- `next.config.ts` đang bật `eslint.ignoreDuringBuilds` và `typescript.ignoreBuildErrors`
-  ⇒ **lỗi type không chặn deploy**. Chạy `npx tsc --noEmit` thủ công trước khi push.
+- `next.config.ts` đã **tắt** `eslint.ignoreDuringBuilds` và `typescript.ignoreBuildErrors`
+  (189 lỗi eslint đã dọn sạch) ⇒ lỗi type và lỗi lint đều chặn `next build`, tức chặn cả CI.
+  Chạy `npx tsc --noEmit && npm run lint` trước khi push để không phải chờ CI mới biết.
 - Ảnh remote phải khai báo hostname trong `next.config.ts` → `images.remotePatterns`.
 
 ## Điểm cần lưu ý khi phát triển tiếp
