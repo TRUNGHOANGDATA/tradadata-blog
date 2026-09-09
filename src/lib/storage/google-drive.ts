@@ -48,6 +48,36 @@ function getDriveClient() {
     return google.drive({ version: 'v3', auth });
 }
 
+/**
+ * Dịch lỗi thô của Google Drive/OAuth thành một câu tiếng Việt chỉ đúng nguyên
+ * nhân, để admin/editor biết ngay phải xoay token hay dọn quota — thay vì câu
+ * chung chung "Check Google Drive configuration" giấu hết manh mối trong log pod.
+ */
+function moTaLoiDrive(error: unknown): string {
+    const chiTiet = thuocTinhLoi<{ error?: unknown; error_description?: unknown; errors?: Array<{ reason?: string; message?: string }> }>(
+        thuocTinhLoi<{ data?: unknown }>(error, 'response')?.data ?? error,
+        'error',
+    );
+    const goc = (loiThanhChu(error) + ' ' + JSON.stringify(chiTiet ?? '')).toLowerCase();
+
+    if (goc.includes('invalid_grant')) {
+        return 'Refresh token Google đã hết hạn hoặc bị thu hồi — cần sinh lại GOOGLE_OAUTH_REFRESH_TOKEN (đưa OAuth consent screen sang "In production" để token không hết hạn sau 7 ngày).';
+    }
+    if (goc.includes('storagequotaexceeded')) {
+        return 'Google Drive đã hết dung lượng (quota). Nếu đang chạy bằng service account thì nó có 0 quota — phải dùng OAuth2 refresh token của tài khoản có dung lượng.';
+    }
+    if (goc.includes('invalid_client') || goc.includes('unauthorized_client')) {
+        return 'AUTH_GOOGLE_ID / AUTH_GOOGLE_SECRET không khớp với client đã sinh refresh token.';
+    }
+    if (goc.includes('insufficientpermissions') || goc.includes('forbidden') || goc.includes('403')) {
+        return 'Không đủ quyền ghi vào thư mục Drive — kiểm tra quyền chia sẻ của folder và GOOGLE_DRIVE_FOLDER_ID.';
+    }
+    if (goc.includes('notfound') || goc.includes('404')) {
+        return 'Không tìm thấy thư mục Drive — GOOGLE_DRIVE_FOLDER_ID có thể sai hoặc đã bị xoá.';
+    }
+    return 'Lỗi Google Drive: ' + loiThanhChu(error);
+}
+
 const IMAGE_FOLDER_ID = process.env.GOOGLE_DRIVE_FOLDER_ID || '';
 const FILES_FOLDER_ID = process.env.GOOGLE_DRIVE_FILES_FOLDER_ID || '';
 const VIDEOS_FOLDER_ID = process.env.GOOGLE_DRIVE_VIDEOS_FOLDER_ID || '';
@@ -96,7 +126,7 @@ async function uploadToDriveFolder(
     const drive = getDriveClient();
     if (!drive) {
         console.error('Google Drive client not available');
-        return null;
+        throw new Error('Chưa cấu hình Google Drive credentials (thiếu AUTH_GOOGLE_ID / AUTH_GOOGLE_SECRET / GOOGLE_OAUTH_REFRESH_TOKEN trong Secret k8s).');
     }
 
     try {
@@ -139,7 +169,7 @@ async function uploadToDriveFolder(
         if (chiTiet) {
             console.error('Google Drive API Error Details:', JSON.stringify(chiTiet, null, 2));
         }
-        return null;
+        throw new Error(moTaLoiDrive(error));
     }
 }
 

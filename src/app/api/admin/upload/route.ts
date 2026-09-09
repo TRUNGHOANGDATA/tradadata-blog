@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
+import { loiThanhChu } from '@/lib/errors';
 import { uploadToGoogleDrive } from '@/lib/storage/google-drive';
 
 const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml'];
@@ -58,7 +59,7 @@ export async function POST(request: Request) {
     } catch (error) {
         console.error('Upload error:', error);
         return NextResponse.json(
-            { error: 'Internal server error' },
+            { error: loiThanhChu(error) },
             { status: 500 }
         );
     }
