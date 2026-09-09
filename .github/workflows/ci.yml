@@ -77,8 +77,15 @@ jobs:
       - run: npm ci --no-audit --no-fund
       - name: Typecheck
         run: npx tsc --noEmit
+      # CỐ Ý là `eslint src`, KHÔNG phải `npm run lint`. Script `lint` trong
+      # package.json là `eslint` không tham số ⇒ soát cả repo, kể cả mấy script
+      # tiện tay ở gốc (`tao-anh-bia.js`, `test-send-emails.js`, `submit-index.mjs`)
+      # dùng `require()` → 40 lỗi no-require-imports, đỏ vĩnh viễn.
+      # `next build` chỉ lint trong `src/`, nên lint đúng `src` để CI chặn đúng
+      # cái mà build chặn, không hơn. Còn 63 warning trong src — warning không
+      # chặn build, dọn dần.
       - name: Lint
-        run: npm run lint
+        run: npx eslint src
 
   build-push:
     needs: check
