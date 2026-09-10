@@ -2,6 +2,15 @@ import { MetadataRoute } from 'next';
 import { supabaseAdmin } from '@/lib/supabase/server';
 import { SITE_CONFIG } from '@/lib/constants';
 
+/**
+ * Lưới an toàn: `revalidatePost()` trong `src/lib/cache.ts` đã gọi
+ * `revalidatePath('/sitemap.xml')` nên bài mới vào sitemap ngay khi xuất bản.
+ * Nhưng route này prerender lúc build, nên nếu có route ghi bài nào quên gọi
+ * hàm đó thì sitemap sẽ đứng nguyên trong image cho tới lần rollout kế tiếp.
+ * Một tiếng sinh lại một lần là đủ để lỗi kiểu đó không âm thầm kéo dài.
+ */
+export const revalidate = 3600;
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     const baseUrl = SITE_CONFIG.url;
     const now = new Date();
