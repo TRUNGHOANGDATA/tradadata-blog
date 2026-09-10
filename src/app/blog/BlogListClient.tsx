@@ -107,7 +107,7 @@ export function BlogListClient({
                             prefetch
                             className={`shrink-0 px-3 py-1.5 rounded-lg text-sm font-medium transition-all border ${currentCategory === cat.slug
                                 ? 'bg-brand-50 text-brand-700 border-brand-200 dark:bg-brand-900/30 dark:text-brand-300 dark:border-brand-800'
-                                : 'bg-card text-surface-600 dark:text-surface-400 border-surface-200 dark:border-surface-700 hover:bg-brand-50 hover:text-brand-700 hover:border-brand-200 hover:shadow-sm dark:hover:bg-brand-900/20 dark:hover:text-brand-300 dark:hover:border-brand-800'
+                                : 'bg-card text-surface-600 dark:text-surface-400 border-surface-200 dark:border-surface-700 hover:bg-brand-100 hover:text-brand-700 hover:border-brand-300 hover:shadow-sm hover:-translate-y-px dark:hover:bg-brand-900/40 dark:hover:text-brand-300 dark:hover:border-brand-700'
                                 }`}
                         >
                             {'icon' in cat && cat.icon && <span className="mr-1">{cat.icon}</span>}
