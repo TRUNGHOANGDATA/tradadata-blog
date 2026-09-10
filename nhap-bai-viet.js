@@ -494,13 +494,18 @@ async function chay() {
             if (eDm) console.warn(`  ! ${ten}: không ghi được post_categories — ${eDm.message}`);
         }
 
-        // Thẻ: có thì dùng, chưa có thì tạo
+        // Thẻ: có thì dùng, chưa có thì tạo. Tìm theo SLUG chứ không phải theo
+        // tên — cột `name` không có ràng buộc unique, chỉ `slug` mới có, và
+        // nhiều tag cũ trong DB được đặt tên viết thường (vd. "vlookup") khác
+        // hẳn cách viết in hoa/có dấu ở đây. So theo tên chính xác từng chữ sẽ
+        // không thấy tag cũ, cố tạo mới thì đụng unique constraint trên slug.
         const theIds = [];
         for (const tenThe of meta.the || []) {
-            const { data: co } = await db.from('tags').select('id').eq('name', tenThe).maybeSingle();
+            const slugThe = taoSlug(tenThe);
+            const { data: co } = await db.from('tags').select('id').eq('slug', slugThe).maybeSingle();
             if (co) { theIds.push(co.id); continue; }
             const { data: moi, error: eThe } = await db.from('tags')
-                .insert({ name: tenThe, slug: taoSlug(tenThe) }).select('id').single();
+                .insert({ name: tenThe, slug: slugThe }).select('id').single();
             if (eThe) console.warn(`  ! ${ten}: không tạo được thẻ "${tenThe}" — ${eThe.message}`);
             else theIds.push(moi.id);
         }

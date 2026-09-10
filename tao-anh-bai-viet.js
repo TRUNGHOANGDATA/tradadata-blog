@@ -104,11 +104,17 @@ function dungSvg(spec) {
         + '" viewBox="0 0 ' + rongBang + ' ' + cao + '">');
     p.push('<rect width="' + rongBang + '" height="' + cao + '" fill="#ffffff"/>');
 
-    // Thanh tiêu đề xanh
+    // Thanh tiêu đề xanh — tự co cỡ chữ, rồi cắt bớt kèm dấu "…" nếu bảng quá hẹp
+    // so với tiêu đề dài. Không có bước này, tiêu đề dài sẽ tràn ra ngoài canvas
+    // và bị cắt cụt giữa chữ mà không có dấu hiệu gì.
     if (coTieuDe) {
+        const rongChoChu = rongBang - 24; // trừ lề 12px hai bên
+        let coTd = 14;
+        while (coTd > 10 && beRong(spec.tieuDe, coTd, false) > rongChoChu) coTd -= 1;
+        const tieuDeHienThi = catChu(spec.tieuDe, rongChoChu, coTd, false);
         p.push('<rect x="0" y="0" width="' + rongBang + '" height="' + CAO_TIEU_DE + '" fill="' + MAU.xanhExcel + '"/>');
-        p.push('<text x="12" y="21" font-family="' + CHU + '" font-size="14" font-weight="600" fill="#ffffff">'
-            + thoat(spec.tieuDe) + '</text>');
+        p.push('<text x="12" y="21" font-family="' + CHU + '" font-size="' + coTd + '" font-weight="600" fill="#ffffff">'
+            + thoat(tieuDeHienThi) + '</text>');
     }
 
     // Thanh công thức: [ô đang chọn]  fx  =CÔNG THỨC
