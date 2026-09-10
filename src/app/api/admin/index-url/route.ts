@@ -14,20 +14,53 @@ const supabase = createClient(
 // nếu submit non-www thì Google báo lỗi redirect và không index.
 const SITE_URL = SITE_CONFIG.url;
 
-// Build auth client from service account credentials
-function getAuthClient() {
-    const creds = JSON.parse(process.env.GOOGLE_DRIVE_CREDENTIALS || '{}');
-    if (!creds.client_email || !creds.private_key) {
-        return null;
+type KetQuaToken = { token: string } | { loi: string };
+
+/**
+ * Lấy access token cho Google Indexing API từ service account.
+ *
+ * Trả về lý do CỤ THỂ khi thất bại. Trước đây mọi thất bại ở bước này đều báo
+ * chung một câu "cần thêm service account vào Search Console" — câu đó luôn sai,
+ * vì bước lấy token chạy TRƯỚC khi gọi Google Indexing, Search Console không thể
+ * là nguyên nhân. Thiếu quyền Search Console chỉ hiện ra ở từng URL, dạng 403.
+ */
+async function layAccessToken(): Promise<KetQuaToken> {
+    const raw = process.env.GOOGLE_DRIVE_CREDENTIALS;
+    if (!raw) {
+        return { loi: 'thiếu GOOGLE_DRIVE_CREDENTIALS trong env của môi trường đang chạy' };
     }
-    return new google.auth.JWT({
-        email: creds.client_email,
-        key: creds.private_key,
-        scopes: ['https://www.googleapis.com/auth/indexing'],
-    });
+
+    let creds: { client_email?: string; private_key?: string };
+    try {
+        creds = JSON.parse(raw);
+    } catch {
+        return { loi: 'GOOGLE_DRIVE_CREDENTIALS không phải JSON hợp lệ' };
+    }
+
+    if (!creds.client_email || !creds.private_key) {
+        return { loi: 'GOOGLE_DRIVE_CREDENTIALS thiếu client_email hoặc private_key' };
+    }
+
+    try {
+        const client = new google.auth.JWT({
+            email: creds.client_email,
+            key: creds.private_key,
+            scopes: ['https://www.googleapis.com/auth/indexing'],
+        });
+        const res = await client.authorize();
+        const token = (res as { access_token?: string }).access_token;
+        if (!token) {
+            return { loi: 'Google không trả về access_token' };
+        }
+        return { token };
+    } catch (error) {
+        return {
+            loi: `không lấy được access token (${loiThanhChu(error)}) — kiểm tra "Web Search Indexing API" đã bật trong project của service account chưa, và private_key trong JSON có còn nguyên các ký tự \\n không`,
+        };
+    }
 }
 
-// Submit URL to Google Indexing API
+/** Gửi một URL lên Google Indexing API. */
 async function submitToGoogleIndexing(
     url: string,
     accessToken: string
@@ -49,25 +82,59 @@ async function submitToGoogleIndexing(
 
         if (res.ok) {
             return { success: true, message: `Đã gửi yêu cầu index: ${url}` };
-        } else {
-            return {
-                success: false,
-                message: data.error?.message || `Lỗi: ${res.status}`,
-            };
         }
+
+        let message = data.error?.message || `Lỗi: ${res.status}`;
+        if (res.status === 403) {
+            // Lỗi hay gặp nhất và khó đoán nhất: token hợp lệ nhưng service
+            // account không phải Owner của property chứa URL này.
+            message += ' — service account phải là Owner của property trong Google Search Console (Full/Restricted không đủ)';
+        }
+        return { success: false, message };
     } catch (error) {
         return { success: false, message: loiThanhChu(error) };
     }
 }
 
-// Ping Google with sitemap
-async function pingSitemap(): Promise<void> {
+/**
+ * Đẩy danh sách URL sang IndexNow (Bing, Yandex, Seznam, Naver).
+ *
+ * Thay cho `https://www.google.com/ping?sitemap=` — endpoint đó Google đã tắt từ
+ * tháng 6/2023 và chỉ trả 404, nên hàm ping cũ là no-op nuốt lỗi rồi báo về
+ * "Đã ping sitemap", tức báo thành công cho một việc không hề xảy ra.
+ *
+ * Cần `INDEXNOW_KEY` (chuỗi hex 8-128 ký tự, tự sinh) và key đó phải đọc được
+ * công khai tại `${SITE_URL}/indexnow-key.txt` — do route
+ * `src/app/indexnow-key.txt/route.ts` trả về, đọc cùng biến env.
+ */
+async function guiIndexNow(urls: string[]): Promise<{ ok: boolean; message: string }> {
+    const key = process.env.INDEXNOW_KEY;
+    if (!key) {
+        return { ok: false, message: 'Bỏ qua IndexNow (thiếu INDEXNOW_KEY)' };
+    }
+
     try {
-        await fetch(
-            `https://www.google.com/ping?sitemap=${encodeURIComponent(`${SITE_URL}/sitemap.xml`)}`
-        );
-    } catch {
-        // Ignore
+        const res = await fetch('https://api.indexnow.org/indexnow', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json; charset=utf-8' },
+            body: JSON.stringify({
+                host: new URL(SITE_URL).host,
+                key,
+                keyLocation: `${SITE_URL}/indexnow-key.txt`,
+                urlList: urls,
+            }),
+        });
+
+        // 200 = nhận, 202 = nhận nhưng đang chờ xác thực key.
+        if (res.ok) {
+            return { ok: true, message: `IndexNow đã nhận ${urls.length} URL` };
+        }
+        if (res.status === 403) {
+            return { ok: false, message: 'IndexNow từ chối key (403) — kiểm tra /indexnow-key.txt có trả đúng key không' };
+        }
+        return { ok: false, message: `IndexNow trả ${res.status}` };
+    } catch (error) {
+        return { ok: false, message: `IndexNow lỗi: ${loiThanhChu(error)}` };
     }
 }
 
@@ -94,41 +161,26 @@ export async function POST(req: NextRequest) {
             url: `${SITE_URL}/blog/${slug}`,
         }));
 
-        // Try to get auth token via google-auth-library JWT
-        const authClient = getAuthClient();
-        let accessToken: string | null = null;
+        const ketQuaToken = await layAccessToken();
 
-        if (authClient) {
-            try {
-                const tokenRes = await authClient.authorize();
-                accessToken = (tokenRes as { access_token?: string }).access_token || null;
-            } catch (authError) {
-                console.error('Google auth failed:', loiThanhChu(authError));
-            }
-        }
-
-        if (!accessToken) {
-            // Fallback: sitemap ping only
-            await pingSitemap();
-
-            const now = new Date().toISOString();
-            for (const { slug } of urlsToIndex) {
-                await supabase
-                    .from('posts')
-                    .update({ indexed_at: now })
-                    .eq('slug', slug);
-            }
+        if ('loi' in ketQuaToken) {
+            // Không gửi được lên Google. Vẫn đẩy IndexNow, nhưng KHÔNG ghi
+            // `indexed_at`: đánh dấu "đã index" khi chưa gửi gì làm nút "index
+            // bài chưa index" bỏ qua các bài này vĩnh viễn.
+            const indexNow = await guiIndexNow(urlsToIndex.map((u) => u.url));
+            console.error('Indexing API không dùng được:', ketQuaToken.loi);
 
             return NextResponse.json({
-                message: `Đã ping sitemap cho ${postSlugs.length} bài. Google Indexing API chưa được cấu hình (cần thêm service account vào Search Console).`,
+                message: `Chưa gửi lên Google được: ${ketQuaToken.loi}. ${indexNow.message}. ${postSlugs.length} bài vẫn ở trạng thái chưa index.`,
                 results: urlsToIndex.map((u: { slug: string; url: string }) => ({
                     ...u,
-                    success: true,
-                    message: 'Đã ping sitemap',
+                    success: false,
+                    message: ketQuaToken.loi,
                 })),
-                successCount: postSlugs.length,
-                failCount: 0,
-                note: 'Chỉ ping sitemap. Để dùng Indexing API, cần thêm service account làm owner trong Google Search Console.',
+                successCount: 0,
+                failCount: postSlugs.length,
+                indexNow: indexNow.message,
+                note: ketQuaToken.loi,
             });
         }
 
@@ -137,7 +189,7 @@ export async function POST(req: NextRequest) {
         const now = new Date().toISOString();
 
         for (const { slug, url } of urlsToIndex) {
-            const result = await submitToGoogleIndexing(url, accessToken);
+            const result = await submitToGoogleIndexing(url, ketQuaToken.token);
             results.push({ slug, url, ...result });
 
             if (result.success) {
@@ -150,16 +202,17 @@ export async function POST(req: NextRequest) {
             await new Promise((resolve) => setTimeout(resolve, 200));
         }
 
-        await pingSitemap();
+        const indexNow = await guiIndexNow(urlsToIndex.map((u) => u.url));
 
         const successCount = results.filter((r) => r.success).length;
         const failCount = results.filter((r) => !r.success).length;
 
         return NextResponse.json({
-            message: `Đã gửi ${successCount}/${postSlugs.length} URL lên Google (domain: ${SITE_URL})`,
+            message: `Đã gửi ${successCount}/${postSlugs.length} URL lên Google (domain: ${SITE_URL}). ${indexNow.message}.`,
             results,
             successCount,
             failCount,
+            indexNow: indexNow.message,
         });
     } catch (error) {
         console.error('Index URL error:', error);

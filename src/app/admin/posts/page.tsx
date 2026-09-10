@@ -139,12 +139,24 @@ export default function PostsPage() {
             });
             const data = await res.json();
             if (res.ok) {
-                setBulkResult({ message: data.message, type: 'success' });
-                // Update local state
-                const now = new Date().toISOString();
-                setPosts(prev => prev.map(p =>
-                    postsToIndex.some(pi => pi.slug === p.slug) ? { ...p, indexed_at: now } : p
-                ));
+                // Chi danh dau nhung bai THAT SU gui duoc. Truoc day danh dau ca
+                // lo mien la res.ok, nen khi Indexing API chua cau hinh thi UI bao
+                // "da index" cho bai chua he gui — va nut nay bo qua chung mai mai.
+                const slugThanhCong = new Set<string>(
+                    (data.results || [])
+                        .filter((r: { success?: boolean }) => r.success)
+                        .map((r: { slug: string }) => r.slug)
+                );
+                if (slugThanhCong.size > 0) {
+                    const now = new Date().toISOString();
+                    setPosts(prev => prev.map(p =>
+                        slugThanhCong.has(p.slug) ? { ...p, indexed_at: now } : p
+                    ));
+                }
+                setBulkResult({
+                    message: data.message,
+                    type: data.successCount > 0 ? 'success' : 'error',
+                });
             } else {
                 setBulkResult({ message: data.error || 'Có lỗi xảy ra', type: 'error' });
             }
@@ -234,9 +246,19 @@ export default function PostsPage() {
             const dataIndex = await resIndex.json();
 
             if (resIndex.ok) {
-                const slugDaGui = new Set(slugs);
-                setPosts(truoc => truoc.map(p => slugDaGui.has(p.slug) ? { ...p, indexed_at: bayGio } : p));
-                setBulkResult({ message: `${dataDang.message} ${dataIndex.message}`, type: 'success' });
+                // Chi bai gui duoc that moi mang dau indexed_at (xem handleBulkIndex).
+                const slugDaGui = new Set<string>(
+                    (dataIndex.results || [])
+                        .filter((r: { success?: boolean }) => r.success)
+                        .map((r: { slug: string }) => r.slug)
+                );
+                if (slugDaGui.size > 0) {
+                    setPosts(truoc => truoc.map(p => slugDaGui.has(p.slug) ? { ...p, indexed_at: bayGio } : p));
+                }
+                setBulkResult({
+                    message: `${dataDang.message} ${dataIndex.message}`,
+                    type: dataIndex.successCount > 0 ? 'success' : 'error',
+                });
             } else {
                 // Xuat ban DA xong — noi ro de nguoi dung khong tuong ca viec that bai.
                 setBulkResult({
