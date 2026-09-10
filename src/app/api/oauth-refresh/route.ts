@@ -1,16 +1,33 @@
 import { NextResponse } from 'next/server';
 import { loiThanhChu } from '@/lib/errors';
 import { google } from 'googleapis';
+import { auth } from '@/lib/auth';
 
-// Temporary endpoint to generate a new OAuth refresh token
-// Step 1: GET /api/oauth-refresh → redirects to Google consent
-// Step 2: Google redirects back with ?code=XXX → exchanges for refresh token
+// Sinh lại refresh token Google Drive khi token cũ bị `invalid_grant`.
+// Bước 1: GET /api/oauth-refresh → chuyển sang trang đồng ý của Google
+// Bước 2: Google trả về kèm ?code=XXX → đổi code lấy refresh token
+//
+// Dùng chính AUTH_GOOGLE_ID/SECRET — cùng cặp mà `src/lib/storage/google-drive.ts`
+// ưu tiên đọc — nên token sinh ra khớp client theo cấu tạo. Đó là lý do nên xoay
+// token bằng route này chứ không bằng `get-google-token.js` (script đó xin scope
+// `drive.file`, hẹp hơn `drive`, sẽ làm chết demo-download/revoke-public-access).
 
+// Phải là www: middleware 301 non-www sang www. Cả hai bản đã được khai trong
+// Authorized redirect URIs của OAuth client, nhưng dùng www thì luồng không phải
+// đi qua một cú 301 nữa.
 const REDIRECT_URI = process.env.NODE_ENV === 'production'
-    ? 'https://tradadata.com/api/oauth-refresh'
+    ? 'https://www.tradadata.com/api/oauth-refresh'
     : 'http://localhost:3000/api/oauth-refresh';
 
 export async function GET(request: Request) {
+    // Route này in refresh_token — chìa khoá full scope `drive` vào Drive của chủ
+    // site — thẳng ra trình duyệt, nên KHÔNG được để public. Middleware loại trừ
+    // `api/` khỏi `auth()` nên phải tự chốt ở đây.
+    const session = await auth();
+    if (!session?.user || session.user.role !== 'admin') {
+        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
     const url = new URL(request.url);
     const code = url.searchParams.get('code');
 
