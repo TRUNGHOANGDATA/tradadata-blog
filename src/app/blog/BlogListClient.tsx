@@ -79,9 +79,9 @@ export function BlogListClient({
     return (
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
             {/* Filter Bar */}
-            <div className="flex flex-col md:flex-row gap-4 mb-8">
+            <div className="flex flex-col gap-4 mb-8">
                 {/* Search */}
-                <div className="relative flex-1 max-w-md">
+                <div className="relative w-full max-w-md">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-fg-faint" />
                     <input
                         type="text"
@@ -94,20 +94,23 @@ export function BlogListClient({
 
                 {/* Category Filter */}
                 {/*
-                 * Dung <Link> thay vi router.push: Next tu prefetch route khi chip
-                 * nam trong viewport / khi hover, nen bam la chuyen trang gan nhu
-                 * tuc thi thay vi phai cho fetch RSC payload luc bam moi tai.
+                 * flex-wrap thay vi overflow-x-auto: them bao nhieu chu de thi chip
+                 * tu xuong hang, khong bi cat cut nhu luc cuon ngang an ca thanh cuon.
+                 * <Link prefetch> de Next tai truoc route -> bam la chuyen gan nhu tuc thi.
+                 * Ba trang thai ro rang: thuong -> hover (nhac len + nen xanh nhat + bong)
+                 * -> dang chon (xanh dac, chu trang).
                  */}
-                <div className="flex items-center gap-2 overflow-x-auto pb-2 md:pb-0 scrollbar-hide">
+                <div className="flex flex-wrap items-center gap-2">
                     <SlidersHorizontal className="h-4 w-4 text-fg-faint shrink-0" />
                     {filterCategories.map((cat) => (
                         <Link
                             key={cat.slug}
                             href={cat.slug ? `/category/${cat.slug}` : '/blog'}
                             prefetch
-                            className={`shrink-0 px-3 py-1.5 rounded-lg text-sm font-medium transition-all border ${currentCategory === cat.slug
-                                ? 'bg-brand-50 text-brand-700 border-brand-200 dark:bg-brand-900/30 dark:text-brand-300 dark:border-brand-800'
-                                : 'bg-card text-surface-600 dark:text-surface-400 border-surface-200 dark:border-surface-700 hover:bg-brand-100 hover:text-brand-700 hover:border-brand-300 hover:shadow-sm hover:-translate-y-px dark:hover:bg-brand-900/40 dark:hover:text-brand-300 dark:hover:border-brand-700'
+                            aria-current={currentCategory === cat.slug ? 'page' : undefined}
+                            className={`shrink-0 px-3.5 py-1.5 rounded-lg text-sm font-medium border transition-all duration-200 ${currentCategory === cat.slug
+                                ? 'bg-brand-600 text-white border-brand-600 shadow-md shadow-brand-600/20'
+                                : 'bg-card text-surface-600 dark:text-surface-400 border-surface-200 dark:border-surface-700 hover:-translate-y-0.5 hover:bg-brand-50 hover:text-brand-700 hover:border-brand-300 hover:shadow-lg hover:shadow-brand-600/10 dark:hover:bg-brand-900/40 dark:hover:text-brand-300 dark:hover:border-brand-700'
                                 }`}
                         >
                             {'icon' in cat && cat.icon && <span className="mr-1">{cat.icon}</span>}
