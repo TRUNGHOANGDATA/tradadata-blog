@@ -44,7 +44,7 @@ Công thức này không kiểm tra được số điện thoại có **đúng**
 
 {{anh:lr-04-loi-khoang-trang}}
 
-Cách phòng lỗi này: luôn bọc `TRIM` quanh dữ liệu trước khi đếm độ dài, đúng kỹ thuật đã nói ở bài [lỗi #N/A trong VLOOKUP](/blog/loi-na-vlookup-6-nguyen-nhan-va-cach-sua):
+Cách phòng lỗi này: luôn bọc `TRIM` quanh dữ liệu trước khi đếm độ dài — cùng kỹ thuật đã nói ở [Xử Lý Lỗi Trong Excel: #N/A, #VALUE!, #REF!, #DIV/0!](/blog/xu-ly-loi-trong-excel-na-value-ref-div0-cach-khac-phuc):
 
 ```excel
 =IF(LEN(TRIM(A2))=10, "Hợp lệ", "Sai định dạng")

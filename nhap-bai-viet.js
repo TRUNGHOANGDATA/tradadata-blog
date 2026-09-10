@@ -288,11 +288,12 @@ function napAltAnh(thuMucLo) {
 // ─────────────────────────────────────────────────────────────
 
 function docThamSo(argv) {
-    const ts = { duong: [], ghi: false, tacGia: null, thu: false };
+    const ts = { duong: [], ghi: false, tacGia: null, thu: false, capNhat: false };
     for (let i = 0; i < argv.length; i++) {
         const a = argv[i];
         if (a === '--ghi') ts.ghi = true;
         else if (a === '--thu') ts.thu = true;
+        else if (a === '--cap-nhat') { ts.ghi = true; ts.capNhat = true; }
         else if (a === '--tac-gia') ts.tacGia = argv[++i];
         else ts.duong.push(a);
     }
@@ -315,7 +316,7 @@ function gomFileMd(duongDan) {
 async function chay() {
     const ts = docThamSo(process.argv.slice(2));
     if (!ts.duong.length) {
-        console.error('Cách dùng: node nhap-bai-viet.js <file.md | thư mục> [--ghi] [--tac-gia email]');
+        console.error('Cách dùng: node nhap-bai-viet.js <file.md | thư mục> [--ghi | --cap-nhat] [--tac-gia email]');
         process.exit(1);
     }
 
@@ -451,8 +452,39 @@ async function chay() {
             else console.warn(`  ! ${ten}: không có danh mục "${meta.danh_muc}", để trống`);
         }
 
+        const slugGoc = meta.slug || taoSlug(meta.tieu_de);
+        let slug = slugGoc;
+
+        // --cap-nhat: sửa lại NỘI DUNG của một bài đã có, theo đúng slug khai
+        // trong frontmatter — dùng khi phát hiện lỗi trong bài đã --ghi trước
+        // đó (vd. link chết trỏ tới một bài khác đã bị xoá). Không đụng tới
+        // status/author/category/tags hiện có, chỉ làm mới nội dung + ảnh.
+        if (ts.capNhat) {
+            const { data: daCo, error: eTim } = await db.from('posts').select('id, slug').eq('slug', slugGoc).maybeSingle();
+            if (eTim || !daCo) {
+                console.error(`✗ ${ten}: --cap-nhat nhưng không thấy bài có slug "${slugGoc}" — kiểm lại frontmatter`);
+                continue;
+            }
+
+            await upAnhTrongDoc(doc);
+            const anhBia = await uploadAnh(meta.anh_bia);
+
+            const { error: eUp } = await db.from('posts').update({
+                title: meta.tieu_de,
+                excerpt: meta.mo_ta || null,
+                content: JSON.stringify(doc),
+                cover_image: anhBia || null,
+                meta_description: meta.mo_ta || null,
+                keywords: meta.tu_khoa ? meta.tu_khoa.split(',').map(k => k.trim()).filter(Boolean) : null,
+                reading_time: thoiGianDoc(doc),
+            }).eq('id', daCo.id);
+
+            if (eUp) console.error(`✗ ${ten}: cập nhật lỗi — ${eUp.message}`);
+            else console.log(`✓ ${ten} -> /blog/${daCo.slug}  (đã cập nhật nội dung)`);
+            continue;
+        }
+
         // Slug: nếu đã tồn tại thì thêm hậu tố cho khỏi đè bài cũ
-        let slug = meta.slug || taoSlug(meta.tieu_de);
         const { data: daCo } = await db.from('posts').select('slug').eq('slug', slug).maybeSingle();
         if (daCo) {
             slug = `${slug}-${Date.now().toString(36)}`;

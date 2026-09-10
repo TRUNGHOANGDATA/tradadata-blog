@@ -79,7 +79,7 @@ Biết được con số `88` là doanh số cao thứ nhì chưa đủ hữu í
 
 Đọc theo từng lớp: `LARGE(B2:B7, 2)` tìm ra con số `88`. `MATCH` tìm vị trí của con số `88` đó trong cột doanh số. `INDEX` lấy tên tương ứng ở đúng vị trí đó trong cột tên. Kết quả trả về **"Lê Văn C"**.
 
-Cách ghép này chính là kỹ thuật đã nói ở bài [INDEX và MATCH](/blog/index-match-do-tim-hai-chieu-thay-the-vlookup) trong một cụm bài trước — chỉ khác chỗ giá trị cần tìm không phải nhập tay, mà lấy trực tiếp từ kết quả của `LARGE`.
+Cách ghép này chính là kỹ thuật `INDEX`/`MATCH` — xem thêm ở [INDEX MATCH Trong Excel: Tra Cứu Dữ Liệu Linh Hoạt Hơn VLOOKUP](/blog/index-match-trong-excel-tra-cuu-du-lieu-linh-hoat) — chỉ khác chỗ giá trị cần tìm không phải nhập tay, mà lấy trực tiếp từ kết quả của `LARGE`.
 
 ## Cẩn thận khi có giá trị trùng nhau
 

@@ -32,7 +32,7 @@ Trả về `TRUE` nếu ô chứa giá trị số, `FALSE` cho mọi trường h
 
 {{anh:is-02-isnumber}}
 
-Đây chính là công cụ chẩn đoán nhanh nhất cho lỗi "số lưu dạng văn bản" đã nói ở bài [lỗi #N/A trong VLOOKUP](/blog/loi-na-vlookup-6-nguyen-nhan-va-cach-sua): một ô ghi `1024` nhưng thực chất được nhập dưới dạng văn bản sẽ khiến `ISNUMBER` trả về `FALSE`, dù mắt nhìn thấy toàn chữ số. Đây là cách xác nhận chắc chắn nhất, đáng tin hơn nhiều so với chỉ nhìn vị trí căn lề trái/phải của ô.
+Đây chính là công cụ chẩn đoán nhanh nhất cho lỗi "số lưu dạng văn bản" (xem thêm ở [Xử Lý Lỗi Trong Excel: #N/A, #VALUE!, #REF!, #DIV/0!](/blog/xu-ly-loi-trong-excel-na-value-ref-div0-cach-khac-phuc)): một ô ghi `1024` nhưng thực chất được nhập dưới dạng văn bản sẽ khiến `ISNUMBER` trả về `FALSE`, dù mắt nhìn thấy toàn chữ số. Đây là cách xác nhận chắc chắn nhất, đáng tin hơn nhiều so với chỉ nhìn vị trí căn lề trái/phải của ô.
 
 ## ISTEXT — ô này có phải là văn bản không
 
@@ -60,7 +60,7 @@ Trả về `TRUE` chỉ khi ô hoàn toàn không có gì. Đúng như đã nói
 =ISERROR(A2)
 ```
 
-Trả về `TRUE` nếu ô chứa bất kỳ loại lỗi nào — `#N/A`, `#VALUE!`, `#REF!`, `#DIV/0!`, và các loại lỗi khác đã liệt kê ở bài [xử lý lỗi trong VLOOKUP](/blog/loi-na-vlookup-6-nguyen-nhan-va-cach-sua).
+Trả về `TRUE` nếu ô chứa bất kỳ loại lỗi nào — `#N/A`, `#VALUE!`, `#REF!`, `#DIV/0!`, và các loại lỗi khác đã liệt kê ở bài [Xử Lý Lỗi Trong Excel: #N/A, #VALUE!, #REF!, #DIV/0!](/blog/xu-ly-loi-trong-excel-na-value-ref-div0-cach-khac-phuc).
 
 {{anh:is-05-iserror}}
 

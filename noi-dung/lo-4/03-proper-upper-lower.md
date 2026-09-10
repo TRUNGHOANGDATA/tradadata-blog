@@ -68,7 +68,7 @@ Vậy khi nào thật sự cần ba hàm này? Không phải để **dò tìm** 
 
 ## Kết hợp với TRIM để dọn dữ liệu triệt để
 
-`PROPER`, `UPPER`, `LOWER` chỉ xử lý phần chữ hoa/thường — chúng không đụng tới khoảng trắng thừa, một lỗi dữ liệu khác cũng rất phổ biến và đã nói ở bài [lỗi #N/A trong VLOOKUP](/blog/loi-na-vlookup-6-nguyen-nhan-va-cach-sua). Kết hợp cả hai để dọn dữ liệu triệt để hơn:
+`PROPER`, `UPPER`, `LOWER` chỉ xử lý phần chữ hoa/thường — chúng không đụng tới khoảng trắng thừa, một lỗi dữ liệu khác cũng rất phổ biến (xem thêm ở [Xử Lý Lỗi Trong Excel: #N/A, #VALUE!, #REF!, #DIV/0!](/blog/xu-ly-loi-trong-excel-na-value-ref-div0-cach-khac-phuc)). Kết hợp cả hai để dọn dữ liệu triệt để hơn:
 
 ```excel
 =PROPER(TRIM(A2))
