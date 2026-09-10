@@ -51,29 +51,44 @@ Domain chuẩn: `https://www.tradadata.com`.
   đã được xoá khỏi repo.
 - **Vận hành cụm khi cần sửa env / xem log**: máy dev KHÔNG có `kubectl`, control plane
   `192.168.1.250` chỉ vào được qua gateway bằng khoá SSH — khoá đó nằm trong secret của
-  repo `TRUNGHOANGDATA/ke-truyen`, không có ở repo này. Đường vào là workflow `blog-cron`
-  bên repo đó (`workflow_dispatch`, 5 chế độ):
-  - `diagnose` — chỉ đọc: CronJob, TÊN các Secret, image, job cron gần nhất.
-  - `apply-cronjobs` — áp `k8s/cronjobs.yaml` của repo này lên cụm.
-  - `test-run` — chạy ngay một CronJob, không chờ tới giờ.
-  - `check-lead-mail` — chỉ đọc, chẩn đoán mail: đếm số dòng log theo dấu hiệu, in mã lỗi
-    SMTP, che địa chỉ email, in độ dài `EMAIL_PASS` chứ không in giá trị.
-  - `set-mail-secret` — ghi `EMAIL_USER`/`EMAIL_PASS`/`LEAD_NOTIFY_EMAIL` vào Secret
-    `tradadata-blog-secret` rồi `rollout restart`. Lấy giá trị từ **secret của repo
-    ke-truyen** (`BLOG_EMAIL_USER`, `BLOG_EMAIL_PASS`, `BLOG_LEAD_NOTIFY_EMAIL`).
+  repo `TRUNGHOANGDATA/ke-truyen`, không có ở repo này. Đường vào là workflow
+  **`rescue-blog`** bên repo đó (`workflow_dispatch`, 6 chế độ — kiểm 10/09/2026):
+  - `diagnose` — chỉ đọc: pods, events, trạng thái từng container, image đang khai.
+  - `fix-pullsecret` — làm mới `ghcr-secret` khi PAT hết hạn gây 403 ImagePullBackOff.
+  - `force-restart` — xoá cứng pod để k8s tạo lại (gỡ pod kẹt Terminating/Pending).
+  - `rollout-undo` — quay Deployment về revision trước.
+  - `blog-env-check` — chỉ đọc: container `blog` nạp env từ Secret/ConfigMap nào, và
+    Secret `tradadata-blog-secret` đang có những TÊN khoá gì.
+  - `blog-env-set` — ghi `GOOGLE_INDEXING_CREDENTIALS`, `INDEXNOW_KEY`, và
+    `GOOGLE_OAUTH_REFRESH_TOKEN` (nếu có secret `BLOG_GOOGLE_OAUTH_REFRESH_TOKEN`).
+    Cố ý KHÔNG restart — để `deploy-blog` recreate một lần, đỡ một lần downtime.
+  ⚠️ **KHÔNG có workflow `blog-cron`** — bản CLAUDE.md trước mô tả nó với 5 chế độ
+  (`apply-cronjobs`, `test-run`, `check-lead-mail`, `set-mail-secret`) đều không tồn tại.
+  Muốn sửa env mail thì thêm khoá vào `blog-env-set` theo đúng khuôn của nó.
+  Container `blog` nạp env bằng `envFrom` (`secretRef: tradadata-blog-secret` +
+  `configMapRef: tradadata-blog-config`), KHÔNG khai lẻ `secretKeyRef` ⇒ thêm khoá vào
+  Secret là container có, không phải sửa Deployment. Nhưng Secret mới **không** vào pod
+  đang chạy: phải `force-restart` hoặc để `deploy-blog` recreate.
   ⚠️ Repo `ke-truyen` là **public** ⇒ tuyệt đối không in giá trị secret, log ứng dụng hay
   dữ liệu khách vào Actions log, và không nhận secret qua `inputs` (input hiện nguyên văn
-  trong log). Vì cùng lý do workflow đó cố ý không có ô "nhập lệnh kubectl tự do".
-  Mỗi lần `rollout restart` là **cả blog và ke-truyen down ~1-2 phút** (`Recreate`, chung pod).
-- ⚠️ **Push vào `main` của repo `ke-truyen` là DEPLOY, kể cả khi chỉ sửa workflow.**
-  `deploy.yml` bên đó có trigger `push: branches: [main]`. Deploy trang truyện thì recreate
-  pod, nên **blog down theo**. Ngược lại thì KHÔNG: `ci.yml` của repo này chỉ build/push
-  image, không đụng vào cụm, nên push vào `main` ở đây không làm site nào down.
-  Nó có `paths-ignore` nhưng đã từng hở: mẫu `.github/workflows/blog-*.yml` khớp
-  `blog-cron.yml` mà KHÔNG khớp `deploy-blog.yml`. Ngày 07/09/2026 mình sửa
-  `deploy-blog.yml` và làm cả hai site 502 khoảng 3-5 phút vì đúng lỗ này.
-  Trước khi push bất cứ thứ gì vào `ke-truyen`, kiểm `paths-ignore` trong
-  `deploy.yml` xem đường dẫn của mình có được loại trừ chưa.
+  trong log); giá trị phải đi `secrets` → `env` → **stdin**, không lên dòng lệnh (args
+  hiện trong `ps` của control plane). Vì cùng lý do workflow đó cố ý không có ô "nhập
+  lệnh kubectl tự do".
+  Mỗi lần recreate pod là **cả blog và ke-truyen down ~1-2 phút** (`Recreate`, chung pod).
+- **Push vào `main` của repo `ke-truyen` là DEPLOY nếu có đụng code app.**
+  `deploy.yml` bên đó có trigger `push: branches: [main]`, và deploy trang truyện thì
+  recreate pod nên **blog down theo**. Ngược lại thì KHÔNG: `ci.yml` của repo này chỉ
+  build/push image, không đụng vào cụm, nên push vào `main` ở đây không làm site nào down.
+  Push **chỉ** đụng file workflow thì được loại trừ: `paths-ignore` bên đó giờ là
+  `'.github/workflows/**'` (kiểm 10/09/2026) ⇒ sửa/thêm workflow không deploy, không
+  downtime. Lỗ cũ đã bịt — mẫu hẹp `.github/workflows/blog-*.yml` từng khớp
+  `blog-cron.yml` mà KHÔNG khớp `deploy-blog.yml`, và ngày 07/09/2026 sửa
+  `deploy-blog.yml` đã làm cả hai site 502 khoảng 3-5 phút vì đúng lỗ đó.
+  Push có đụng code app (dù kèm sửa workflow) vẫn deploy như thường — `paths-ignore` chỉ
+  bỏ qua khi MỌI file thay đổi đều khớp mẫu.
+- **Rollout blog** dùng workflow `deploy-blog` bên `ke-truyen`: `workflow_dispatch`,
+  input `sha` phải là **40 ký tự** hex của commit blog (image do `ci.yml` repo này push
+  sẵn lên ghcr), rồi `kubectl set image` + `rollout status` + nghiệm thu `/api/health`.
 
 ## Chạy dự án
 
@@ -99,7 +114,11 @@ Cần file `.env.local` (không có trong repo). Các biến đang được dùn
 `GOOGLE_DRIVE_FOLDER_ID` / `_FILES_FOLDER_ID` / `_VIDEOS_FOLDER_ID`,
 `EMAIL_USER`, `EMAIL_PASS` (Gmail app password), `NEWSLETTER_FROM_NAME`,
 `GEMINI_API_KEY`, `CRON_SECRET`, `NEXT_PUBLIC_SERVICE_ACCOUNT_EMAIL`,
-`UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN`.
+`UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN`,
+`GOOGLE_INDEXING_CREDENTIALS` (service account cho Google Indexing API — biến RIÊNG,
+fallback về `GOOGLE_DRIVE_CREDENTIALS`; tách ra để đổi bên này không làm chết upload
+Drive / ghi log Sheet), `INDEXNOW_KEY` (chuỗi hex, phục vụ ở `/indexnow-key.txt` để
+IndexNow xác thực host).
 
 ## Kiến trúc
 
@@ -129,8 +148,10 @@ Cần file `.env.local` (không có trong repo). Các biến đang được dùn
   `cron/check-subscriptions`, `cron/process-email-queue`, `newsletter/send`,
   `newsletter/subscribe`, `api/leads`) ⇒ **một điểm chết duy nhất làm mất sạch mail**, nặng
   nhất là khách đặt hàng không nhận được hướng dẫn chuyển khoản.
-  Kiểm tra nhanh mail còn sống không: chạy `blog-cron` chế độ `check-lead-mail`, xem
-  `[lead] Da bao mail ve` và `Message sent:` có > 0 không.
+  Kiểm tra nhanh mail còn sống không: gửi thử form ở `/phan-mem-ban-hang` rồi xem log pod.
+  Chế độ `check-lead-mail` mô tả trước đây KHÔNG tồn tại (nó thuộc workflow `blog-cron`
+  vốn không có) — `rescue-blog` hiện chưa có chế độ đọc log; thêm thì phải che địa chỉ
+  email, chỉ in số đếm + mã lỗi SMTP, vì repo `ke-truyen` là public.
   `LEAD_NOTIFY_EMAIL` là nơi nhận mail báo khách quan tâm phần mềm; thiếu thì rơi về `EMAIL_USER`.
 - **Cron**: 2 endpoint `/api/cron/process-email-queue` và `/api/cron/check-subscriptions`,
   cả hai yêu cầu header `Authorization: Bearer $CRON_SECRET`.
@@ -269,6 +290,18 @@ trong khi luồng auto-activate ở `orders/create` lại đọc đúng `product
   Mọi hàm trả về danh sách trong `src/lib/data/posts.ts` phải dùng `formatPostForList`
   (đã bỏ `content`); chỉ `getPostBySlug`/`getPostBySlugForPreview` mới giữ `content`.
   Thêm hàm danh sách mới mà quên là lộ sạch nội dung bài Premium.
+- **Index & SEO — đừng lặp lại cuộc điều tra ngày 10/09/2026.** Google Indexing API
+  (`/api/admin/index-url`) đã cấu hình ĐÚNG hoàn toàn: service account
+  `tradadata-bot@tradadata-blog-auth`, API đã bật, đã là Owner của property Domain
+  `tradadata.com` trong Search Console (xác minh bằng TXT ở DNS — **đừng xoá bản ghi
+  đó**). Nhưng đo được là Google **nhận rồi bỏ**: `urlNotifications:publish` trả 200 mà
+  body không có `latestUpdate`/`notifyTime`, và đọc lại `urlNotifications/metadata` vẫn
+  404. Đúng chính sách của Google: API này chỉ dành cho `JobPosting`/`BroadcastEvent`.
+  ⇒ **200 OK nghĩa là "đã nhận", không phải "sẽ index"**, và cột `posts.indexed_at` chỉ
+  có nghĩa "đã gửi yêu cầu". Kênh thật cho blog: sitemap (`revalidatePost()` đã xoá cache
+  `/sitemap.xml`), Search Console → URL Inspection → Request Indexing, và IndexNow
+  (Bing/Yandex) qua `INDEXNOW_KEY`. Endpoint ping sitemap của Google đã tắt từ 6/2023 —
+  đừng thêm lại.
 - Các fallback `|| 'https://tradadata.com'` trong email/order route vẫn là non-www,
   chỉ dùng khi thiếu `NEXT_PUBLIC_APP_URL`. Không ảnh hưởng nếu env được set đúng.
 - **Secret**: đã gỡ hết secret hardcode khỏi working tree (commit `e610833`), các script gốc repo

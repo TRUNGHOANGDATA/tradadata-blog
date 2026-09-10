@@ -61,7 +61,12 @@ function moTaLoiDrive(error: unknown): string {
     const goc = (loiThanhChu(error) + ' ' + JSON.stringify(chiTiet ?? '')).toLowerCase();
 
     if (goc.includes('invalid_grant')) {
-        return 'Refresh token Google đã hết hạn hoặc bị thu hồi — cần sinh lại GOOGLE_OAUTH_REFRESH_TOKEN (đưa OAuth consent screen sang "In production" để token không hết hạn sau 7 ngày).';
+        // Đừng đoán "consent screen đang Testing nên token hết hạn sau 7 ngày" —
+        // câu đó từng nằm ở đây và luôn sai: app đã ở "In production" từ lâu.
+        // `invalid_grant` hay gặp nhất là token KHÔNG KHỚP CLIENT: refresh token bị
+        // ràng buộc vào client đã sinh ra nó, mà Secret cụm có cả AUTH_GOOGLE_* lẫn
+        // GOOGLE_OAUTH_CLIENT_*, còn getAuthClient() ưu tiên AUTH_GOOGLE_*.
+        return 'Refresh token Google không dùng được (invalid_grant). Hay gặp nhất: token được sinh bằng OAuth client KHÁC với AUTH_GOOGLE_ID hiện tại — sinh lại bằng /api/oauth-refresh (route đó dùng đúng cặp AUTH_GOOGLE_*). Các khả năng khác: quyền đã bị thu hồi ở myaccount.google.com/permissions, mật khẩu Google vừa đổi, hoặc token không dùng suốt 6 tháng.';
     }
     if (goc.includes('storagequotaexceeded')) {
         return 'Google Drive đã hết dung lượng (quota). Nếu đang chạy bằng service account thì nó có 0 quota — phải dùng OAuth2 refresh token của tài khoản có dung lượng.';
