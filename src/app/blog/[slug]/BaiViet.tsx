@@ -152,9 +152,24 @@ export function BaiViet({ post, htmlContent, toc, postTags, relatedPosts, laXemT
                         className="object-cover"
                         priority
                         // BAT BUOC co `sizes` khi dung `fill`: thieu no thi Next coi
-                        // anh rong 100vw va trinh duyet xin ban 3840px. Khung that
-                        // chi rong toi da ~1216px (max-w-7xl tru padding).
-                        sizes="(max-width: 1280px) 100vw, 1216px"
+                        // anh rong 100vw va trinh duyet xin ban 3840px.
+                        //
+                        // Khung that rong 1216px (max-w-7xl 1280 tru px-8 hai ben),
+                        // NHUNG khai dung 1216px la tu ban chan minh: `deviceSizes` co
+                        // bac 1200 va 1920, khong co 1280. Trinh duyet phai chon bac
+                        // NHO NHAT >= 1216 => nhay len 1920. Tuc 16px thieu hut lam
+                        // pod encode ban to gap doi.
+                        // Do tren anh hero that (10/09/2026):
+                        //     w=1200  encode  95ms -> 54KB
+                        //     w=1920  encode 208ms -> 88KB
+                        // Khai 1200px de roi dung bac co san: nhanh gap 2,2 lan, nhe
+                        // hon 39%, va anh bi keo gian 1,3% - khong the thay bang mat,
+                        // nhat la khi tren no con mot lop gradient toi.
+                        // Day la anh `priority` (LCP cua trang bai viet) nen no la
+                        // thu nguoi doc phai cho truoc khi thay gi.
+                        // KHONG sua bang cach them bac 1280 vao deviceSizes: them bac
+                        // la moi anh `100vw` deu sinh thanh mot bien the nua phai encode.
+                        sizes="(max-width: 1280px) 100vw, 1200px"
                     />
                     {/* Gradient overlay */}
                     <div className="absolute inset-0 bg-gradient-to-t from-surface-900 via-surface-900/60 to-transparent" />
