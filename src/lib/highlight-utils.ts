@@ -170,6 +170,40 @@ function transformCodeBlocks(html: string): string {
     return result.join('');
 }
 
+/**
+ * Ảnh trong thân bài là `<img>` THÔ trỏ thẳng Google Drive
+ * (`lh3.googleusercontent.com/d/<id>...`), CỐ Ý không đi qua `/_next/image` vì
+ * optimizer trên cụm chậm 1,3-6s mỗi ảnh khi cache lạnh.
+ *
+ * Nhưng URL lưu lúc upload là đuôi `=s0` — "size 0" = ảnh GỐC full-size, không
+ * resize. Trình duyệt phải tải nguyên file gốc (screenshot PNG / ảnh nhiều MB)
+ * trong khi khung nội dung chỉ rộng tối đa 590px (`max-w-[55ch]`) ⇒ đây là lý do
+ * "ảnh trong bài load chậm".
+ *
+ * lh3 tự resize + trả WebP khi URL có tham số kích thước, phục vụ từ CDN Google.
+ * Ở đây rewrite mọi đuôi (`=s0`, `=sN`, `=wN`, hoặc không có) về `=w800`
+ * (khung nội dung tối đa 590px nên w800 vẫn dư nét, nhẹ hơn nữa) và thêm `srcset`
+ * để mobile chỉ tải `=w640`.
+ * Đặt trong tầng render ⇒ áp cho mọi bài cũ mà không phải đụng DB, và kết quả đã
+ * nằm trong `unstable_cache`.
+ */
+function optimizeContentImages(html: string): string {
+    const LH3_SRC = /src="(https:\/\/lh3\.googleusercontent\.com\/d\/[^"=]+)(?:=[^"]*)?"/;
+    return html.replace(/<img\b[^>]*>/g, (tag) => {
+        const m = tag.match(LH3_SRC);
+        if (!m) return tag; // Không phải ảnh Drive — để nguyên.
+        const base = m[1]; // .../d/<fileId>
+        let out = tag.replace(/src="[^"]*"/, `src="${base}=w800"`);
+        if (!/\ssrcset=/.test(out)) {
+            out = out.replace(
+                /<img\b/,
+                `<img srcset="${base}=w640 640w, ${base}=w800 800w" sizes="(max-width: 640px) 100vw, 590px"`
+            );
+        }
+        return out;
+    });
+}
+
 // ==============================
 // Vietnamese text slugify
 // ==============================
@@ -245,6 +279,9 @@ export function renderPostContent(content: unknown): RenderResult {
         rawHtml = rawHtml.replace(/<table([\s\S]*?)<\/table>/g, (match) => {
             return `<div class="table-wrapper">${match}</div>`;
         });
+
+        // Rewrite ảnh Drive full-size (=s0) về bản đã resize + srcset cho nhẹ.
+        rawHtml = optimizeContentImages(rawHtml);
 
         // Inject IDs to HTML tags for TOC linking
         let tocIndex = 0;
