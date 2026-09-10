@@ -25,20 +25,27 @@ type KetQuaToken = { token: string } | { loi: string };
  * là nguyên nhân. Thiếu quyền Search Console chỉ hiện ra ở từng URL, dạng 403.
  */
 async function layAccessToken(): Promise<KetQuaToken> {
-    const raw = process.env.GOOGLE_DRIVE_CREDENTIALS;
+    // Ưu tiên biến RIÊNG cho Indexing API. Service account dùng ở đây phải là Owner
+    // của property trong Search Console, còn `GOOGLE_DRIVE_CREDENTIALS` là service
+    // account đã được share thư mục Drive và Google Sheet — không nhất thiết cùng một
+    // cái. Tách biến ra để đổi bên này không làm chết upload Drive / ghi log Sheet.
+    const tenBien = process.env.GOOGLE_INDEXING_CREDENTIALS
+        ? 'GOOGLE_INDEXING_CREDENTIALS'
+        : 'GOOGLE_DRIVE_CREDENTIALS';
+    const raw = process.env.GOOGLE_INDEXING_CREDENTIALS || process.env.GOOGLE_DRIVE_CREDENTIALS;
     if (!raw) {
-        return { loi: 'thiếu GOOGLE_DRIVE_CREDENTIALS trong env của môi trường đang chạy' };
+        return { loi: 'thiếu GOOGLE_INDEXING_CREDENTIALS (và cả GOOGLE_DRIVE_CREDENTIALS) trong env của môi trường đang chạy' };
     }
 
     let creds: { client_email?: string; private_key?: string };
     try {
         creds = JSON.parse(raw);
     } catch {
-        return { loi: 'GOOGLE_DRIVE_CREDENTIALS không phải JSON hợp lệ' };
+        return { loi: `${tenBien} không phải JSON hợp lệ` };
     }
 
     if (!creds.client_email || !creds.private_key) {
-        return { loi: 'GOOGLE_DRIVE_CREDENTIALS thiếu client_email hoặc private_key' };
+        return { loi: `${tenBien} thiếu client_email hoặc private_key` };
     }
 
     try {
