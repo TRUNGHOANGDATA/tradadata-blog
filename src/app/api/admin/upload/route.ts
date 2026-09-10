@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
 import { loiThanhChu } from '@/lib/errors';
 import { uploadToGoogleDrive } from '@/lib/storage/google-drive';
+import { toiUuAnh } from '@/lib/storage/toi-uu-anh';
 
 const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml'];
 const MAX_SIZE = 10 * 1024 * 1024; // 10MB
@@ -40,8 +41,14 @@ export async function POST(request: Request) {
         // Convert File to Buffer
         const buffer = Buffer.from(await file.arrayBuffer());
 
+        // Thu nhỏ + nén lại trước khi lưu. Drive không resize theo tham số, nên ảnh
+        // gốc bao nhiêu là Next Image optimizer phải tải và encode bấy nhiêu mỗi lần
+        // cache lạnh. Hàm này không throw — lỗi thì trả lại buffer gốc.
+        const anh = await toiUuAnh(buffer, file.name, file.type);
+        console.log(`[upload] ${file.name}: ${anh.ghiChu}`);
+
         // Upload to Google Drive
-        const result = await uploadToGoogleDrive(buffer, file.name, file.type);
+        const result = await uploadToGoogleDrive(anh.buffer, anh.ten, anh.mime);
 
         if (!result) {
             return NextResponse.json(
