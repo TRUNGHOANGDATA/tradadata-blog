@@ -181,8 +181,9 @@ function transformCodeBlocks(html: string): string {
  * "ảnh trong bài load chậm".
  *
  * lh3 tự resize + trả WebP khi URL có tham số kích thước, phục vụ từ CDN Google.
- * Ở đây rewrite mọi đuôi (`=s0`, `=sN`, `=wN`, hoặc không có) về `=w1000`
- * (dư nét cho màn retina ở khung 590px) và thêm `srcset` để mobile chỉ tải `=w640`.
+ * Ở đây rewrite mọi đuôi (`=s0`, `=sN`, `=wN`, hoặc không có) về `=w800`
+ * (khung nội dung tối đa 590px nên w800 vẫn dư nét, nhẹ hơn nữa) và thêm `srcset`
+ * để mobile chỉ tải `=w640`.
  * Đặt trong tầng render ⇒ áp cho mọi bài cũ mà không phải đụng DB, và kết quả đã
  * nằm trong `unstable_cache`.
  */
@@ -192,11 +193,11 @@ function optimizeContentImages(html: string): string {
         const m = tag.match(LH3_SRC);
         if (!m) return tag; // Không phải ảnh Drive — để nguyên.
         const base = m[1]; // .../d/<fileId>
-        let out = tag.replace(/src="[^"]*"/, `src="${base}=w1000"`);
+        let out = tag.replace(/src="[^"]*"/, `src="${base}=w800"`);
         if (!/\ssrcset=/.test(out)) {
             out = out.replace(
                 /<img\b/,
-                `<img srcset="${base}=w640 640w, ${base}=w1000 1000w" sizes="(max-width: 640px) 100vw, 590px"`
+                `<img srcset="${base}=w640 640w, ${base}=w800 800w" sizes="(max-width: 640px) 100vw, 590px"`
             );
         }
         return out;
