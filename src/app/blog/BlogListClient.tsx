@@ -93,20 +93,26 @@ export function BlogListClient({
                 </div>
 
                 {/* Category Filter */}
+                {/*
+                 * Dung <Link> thay vi router.push: Next tu prefetch route khi chip
+                 * nam trong viewport / khi hover, nen bam la chuyen trang gan nhu
+                 * tuc thi thay vi phai cho fetch RSC payload luc bam moi tai.
+                 */}
                 <div className="flex items-center gap-2 overflow-x-auto pb-2 md:pb-0 scrollbar-hide">
                     <SlidersHorizontal className="h-4 w-4 text-fg-faint shrink-0" />
                     {filterCategories.map((cat) => (
-                        <button
+                        <Link
                             key={cat.slug}
-                            onClick={() => handleCategoryChange(cat.slug)}
-                            className={`shrink-0 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors border ${currentCategory === cat.slug
+                            href={cat.slug ? `/category/${cat.slug}` : '/blog'}
+                            prefetch
+                            className={`shrink-0 px-3 py-1.5 rounded-lg text-sm font-medium transition-all border ${currentCategory === cat.slug
                                 ? 'bg-brand-50 text-brand-700 border-brand-200 dark:bg-brand-900/30 dark:text-brand-300 dark:border-brand-800'
-                                : 'text-surface-600 dark:text-surface-400 hover:bg-surface-50 dark:hover:bg-surface-800 border-surface-200 dark:border-surface-700'
+                                : 'bg-card text-surface-600 dark:text-surface-400 border-surface-200 dark:border-surface-700 hover:bg-brand-50 hover:text-brand-700 hover:border-brand-200 hover:shadow-sm dark:hover:bg-brand-900/20 dark:hover:text-brand-300 dark:hover:border-brand-800'
                                 }`}
                         >
                             {'icon' in cat && cat.icon && <span className="mr-1">{cat.icon}</span>}
                             {cat.name}
-                        </button>
+                        </Link>
                     ))}
                 </div>
             </div>
