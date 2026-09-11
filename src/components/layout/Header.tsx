@@ -83,8 +83,8 @@ export function Header({
 
                                                 {catOpen && categories.length > 0 && (
                                                     <div className="absolute left-1/2 -translate-x-1/2 top-full pt-2 w-[36rem] animate-slide-down">
-                                                        <div className="glass rounded-2xl shadow-e3 p-3 overflow-hidden">
-                                                            <div className="grid grid-cols-2 gap-1">
+                                                        <div className="rounded-2xl border border-line bg-card shadow-e3 p-3">
+                                                            <div className="grid grid-cols-2 gap-1 max-h-[70vh] overflow-y-auto">
                                                                 {categories.map((cat) => (
                                                                     <Link
                                                                         key={cat.id}

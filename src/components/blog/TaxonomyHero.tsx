@@ -102,9 +102,12 @@ export function TaxonomyHero({
                     </div>
                 </div>
 
-                {/* Hang chip dieu huong danh muc */}
+                {/* Hang chip dieu huong danh muc.
+                    Desktop: xuong dong hien het (flex-wrap) de chon duoc tat ca ngay.
+                    Mobile: cuon ngang mot hang + vet mo mep phai bao con nua. */}
                 {categories.length > 0 && (
-                    <div className="mt-6 flex gap-2 overflow-x-auto pb-1 -mx-1 px-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+                    <div className="relative mt-6">
+                    <div className="flex flex-nowrap md:flex-wrap gap-2 overflow-x-auto md:overflow-visible pb-1 -mx-1 px-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
                         <Link
                             href="/categories"
                             className={`inline-flex shrink-0 items-center gap-1.5 rounded-full border px-3.5 py-1.5 text-sm font-medium transition-colors ${!activeSlug
@@ -136,6 +139,12 @@ export function TaxonomyHero({
                                 </Link>
                             );
                         })}
+                    </div>
+                        {/* Vet mo mep phai — chi hien tren mobile khi hang chip cuon ngang */}
+                        <div
+                            aria-hidden="true"
+                            className="pointer-events-none absolute inset-y-0 right-0 w-12 bg-gradient-to-l from-page to-transparent md:hidden"
+                        />
                     </div>
                 )}
             </div>
