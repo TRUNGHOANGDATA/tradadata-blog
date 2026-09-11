@@ -1,13 +1,7 @@
 import { supabaseAdmin } from '@/lib/supabase/server';
 import { unstable_cache } from 'next/cache';
+import { extractTextFromContent, calculateReadingTime } from '@/lib/utils';
 import type { Post, Category, HangBaiVietTho } from '@/types';
-
-// Utility to calculate reading time based on content or excerpt length
-function calculateReadingTime(text: string): number {
-    const wordsPerMinute = 200;
-    const noOfWords = text.split(/\s/g).length;
-    return Math.ceil(noOfWords / wordsPerMinute);
-}
 
 // Enhance post with computed fields if necessary
 //
@@ -18,16 +12,15 @@ function calculateReadingTime(text: string): number {
 // Không cắt ở đây thì toàn bộ nội dung bài Premium tải được từ /blog dù có paywall.
 // Danh sách cũng không cần `content` — chỉ dùng title/excerpt/cover.
 function formatPost(post: HangBaiVietTho, { stripContent = false }: { stripContent?: boolean } = {}): Post {
-    let textForReadingTime = post.excerpt || '';
-    if (post.content && typeof post.content === 'object') {
-        // Rough estimate if tiptap json
-        textForReadingTime += JSON.stringify(post.content);
-    }
+    // `content` lưu dạng chuỗi JSON Tiptap ⇒ phải bóc text thuần bằng
+    // extractTextFromContent (khớp cách admin tính reading_time), không dùng
+    // typeof === 'object' vì chuỗi luôn trượt điều kiện đó ⇒ mọi bài ra 1 phút.
+    const textForReadingTime = extractTextFromContent(post.content) || post.excerpt || '';
 
     // Tính reading_time TRƯỚC khi bỏ content
     const formatted = {
         ...post,
-        reading_time: calculateReadingTime(textForReadingTime) || 3, // Default 3 mins
+        reading_time: calculateReadingTime(textForReadingTime),
     };
 
     if (stripContent) {
