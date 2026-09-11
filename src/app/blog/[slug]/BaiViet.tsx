@@ -395,23 +395,12 @@ export function BaiViet({ post, htmlContent, toc, postTags, relatedPosts, laXemT
 
             </div>
 
-            {/* Comment Section */}
-            <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-                <CommentSection postId={post.id} />
-            </div>
-
-            {/* Newsletter Subscription (Full width) */}
-            <div className="bg-surface-50 dark:bg-surface-950 px-4 sm:px-6 lg:px-8 mt-16 pt-16 pb-16 border-t border-line">
-                <div className="max-w-7xl mx-auto">
-                    <Newsletter />
-                </div>
-            </div>
-
-            {/* Bài không có bài liên quan nào thì ẩn hẳn section — trước đây vẫn
-                render nên trơ mỗi tiêu đề + lưới trống, trông như lỗi. */}
+            {/* Bài viết liên quan — đặt NGAY sau thân bài, trước bình luận và
+                newsletter: đây là lúc người đọc vừa đọc xong và đang tìm "đọc gì
+                tiếp". Trước đây khối này nằm cuối cùng nên gần như không ai cuộn
+                tới. Ẩn hẳn khi rỗng để không trơ tiêu đề + lưới trống. */}
             {relatedPosts.length > 0 && (
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    {/* Related Posts Section */}
                     <div className="mt-20 pt-16 border-t border-line">
                         <div className="flex items-center justify-between mb-8">
                             <div>
@@ -431,6 +420,19 @@ export function BaiViet({ post, htmlContent, toc, postTags, relatedPosts, laXemT
                     </div>
                 </div>
             )}
+
+            {/* Comment Section */}
+            <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+                <CommentSection postId={post.id} />
+            </div>
+
+            {/* Newsletter Subscription (Full width) */}
+            <div className="bg-surface-50 dark:bg-surface-950 px-4 sm:px-6 lg:px-8 mt-16 pt-16 pb-16 border-t border-line">
+                <div className="max-w-7xl mx-auto">
+                    <Newsletter />
+                </div>
+            </div>
+
         </article >
     );
 }
