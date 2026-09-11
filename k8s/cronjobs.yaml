@@ -124,3 +124,58 @@ spec:
                 limits:
                   cpu: 200m
                   memory: 64Mi
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: tradadata-blog-flush-views
+  namespace: bizflow
+  labels:
+    app: tradadata
+    component: cron
+spec:
+  # Gộp lượt xem đang đệm trong Redis rồi ghi Postgres một lần cho mỗi bài.
+  # Mỗi 5 phút là đủ: số đếm view không cần chính xác tức thì, mà càng thưa thì
+  # càng ít lần UPDATE hàng `posts` nặng => càng ít Disk IO. Muốn số cập nhật
+  # nhanh hơn thì hạ xuống "*/2 * * * *", muốn tiết kiệm IO tối đa thì nâng lên.
+  schedule: "*/5 * * * *"
+  timeZone: "Etc/UTC"
+  # Không cho 2 lần chạy chồng nhau — tránh trừ nhầm bộ đếm Redis.
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  startingDeadlineSeconds: 300
+  jobTemplate:
+    spec:
+      backoffLimit: 0
+      # Ghi hỏng thì route KHÔNG trừ Redis nên chu kỳ sau gộp lại được — không
+      # cần thử lại ngay, để lần chạy sau (5 phút nữa) làm nốt.
+      activeDeadlineSeconds: 120
+      template:
+        spec:
+          restartPolicy: Never
+          containers:
+            - name: curl
+              image: curlimages/curl:8.11.1
+              env:
+                - name: CRON_SECRET
+                  valueFrom:
+                    secretKeyRef:
+                      name: tradadata-blog-secret # tên Secret thật trên cụm (đã xác minh)
+                      key: CRON_SECRET
+                - name: BASE_URL
+                  value: "https://www.tradadata.com"
+              command:
+                - sh
+                - -c
+                - >
+                  curl --fail-with-body -sS -m 60
+                  -H "Authorization: Bearer $CRON_SECRET"
+                  "$BASE_URL/api/cron/flush-views"
+              resources:
+                requests:
+                  cpu: 10m
+                  memory: 16Mi
+                limits:
+                  cpu: 200m
+                  memory: 64Mi

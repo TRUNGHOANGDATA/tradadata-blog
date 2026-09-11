@@ -10,7 +10,7 @@
  */
 
 import { Ratelimit } from '@upstash/ratelimit';
-import { Redis } from '@upstash/redis';
+import { redis, isRedisConfigured } from '@/lib/redis';
 
 export interface RateLimitConfig {
     /** Max requests allowed in the window */
@@ -35,13 +35,8 @@ const DEFAULT_CONFIG: RateLimitConfig = {
 // Upstash
 // ==============================
 
-const upstashUrl = process.env.UPSTASH_REDIS_REST_URL;
-const upstashToken = process.env.UPSTASH_REDIS_REST_TOKEN;
-const isUpstashConfigured = Boolean(upstashUrl && upstashToken);
-
-const redis = isUpstashConfigured
-    ? new Redis({ url: upstashUrl!, token: upstashToken! })
-    : null;
+// Client Redis dùng chung ở src/lib/redis.ts (đừng tạo instance riêng nữa).
+const isUpstashConfigured = isRedisConfigured;
 
 // Mỗi cặp (maxRequests, windowSizeSeconds) cần một instance riêng — cache lại
 // để không tạo mới mỗi request.
