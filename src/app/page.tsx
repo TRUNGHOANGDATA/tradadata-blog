@@ -8,7 +8,15 @@ import { SITE_CONFIG } from '@/lib/constants';
 import { getLatestPosts, getPosts, getPinnedPosts } from '@/lib/data/posts';
 import { getCategories, getCategoryPostCounts } from '@/lib/data/categories';
 
-export const revalidate = 60;
+// Render động để bài ghim ăn hiệu lực TỨC THÌ khi admin bấm ghim/bỏ ghim.
+// Trước đây trang chủ dùng `revalidate = 60` ⇒ được cache ở tầng route với header
+// `s-maxage=60, stale-while-revalidate=~1 năm`. `revalidatePath('/')` trong route
+// pin xoá được cache của Next, nhưng cửa sổ stale-while-revalidate cho phép cache
+// dùng chung (nginx gateway/proxy) phục vụ bản cũ ⇒ slider ghim không đổi ngay.
+// Đổi sang động thì KHÔNG mất tốc độ: mọi truy vấn (getPinnedPosts, getLatestPosts,
+// getCategories, getPosts, getCategoryPostCounts) đều đã bọc `unstable_cache` nên
+// không đụng DB — giống hệt cách /blog và /blog/[slug] đang chạy nhanh.
+export const dynamic = 'force-dynamic';
 
 export default async function HomePage() {
   const [categories, recentPosts, { count: totalPosts }, pinnedPosts] = await Promise.all([
