@@ -1,8 +1,9 @@
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
-import { ArrowLeft, Filter, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Filter, ChevronLeft, ChevronRight } from 'lucide-react';
 import { PostCard } from '@/components/blog/PostCard';
-import { getCategoryBySlug } from '@/lib/data/categories';
+import { TaxonomyHero } from '@/components/blog/TaxonomyHero';
+import { getCategoryBySlug, getCategories, getCategoryPostCounts } from '@/lib/data/categories';
 import { getPosts } from '@/lib/data/posts';
 
 export const POSTS_PER_PAGE = 9;
@@ -38,12 +39,13 @@ export async function NoiDungDanhMuc({ slug, trang }: { slug: string; trang: num
         notFound();
     }
 
-    // Fetch posts for this category with pagination
-    const { data: categoryPosts, count: totalPosts } = await getPosts({
-        categoryId: category.id,
-        limit: POSTS_PER_PAGE,
-        page: currentPage,
-    });
+    // Bai trong danh muc (co phan trang) + du lieu cho hang chip dieu huong.
+    // getCategories / getCategoryPostCounts deu co unstable_cache nen khong pha cache route.
+    const [{ data: categoryPosts, count: totalPosts }, allCategories, categoryCounts] = await Promise.all([
+        getPosts({ categoryId: category.id, limit: POSTS_PER_PAGE, page: currentPage }),
+        getCategories(),
+        getCategoryPostCounts(),
+    ]);
 
     const totalPages = Math.ceil(totalPosts / POSTS_PER_PAGE);
 
@@ -53,43 +55,30 @@ export async function NoiDungDanhMuc({ slug, trang }: { slug: string; trang: num
     const buildUrl = (page: number) =>
         page === 1 ? `/category/${slug}` : `/category/${slug}/trang/${page}`;
 
+    const statLabel = totalPages > 1
+        ? `${totalPosts} bài viết · Trang ${currentPage}/${totalPages}`
+        : `${totalPosts} bài viết`;
+
     return (
-        <div className="min-h-screen bg-surface-50 dark:bg-surface-950 pb-16">
-            {/* Header */}
-            <section className="bg-gradient-to-b from-brand-50 to-surface-50 dark:from-surface-900 dark:to-surface-950 py-12 md:py-20 mt-16 text-center">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="inline-flex items-center justify-center h-16 w-16 rounded-full bg-brand-100 dark:bg-brand-900/40 text-brand-600 dark:text-brand-400 text-3xl mb-6 shadow-sm border border-brand-200 dark:border-brand-800">
-                        {category.icon}
-                    </div>
-                    <h1 className="text-3xl md:text-5xl font-bold text-fg mb-4">
-                        {category.name}
-                    </h1>
-                    <p className="text-fg-subtle text-lg md:text-xl max-w-2xl mx-auto">
-                        {category.description || `Tuyển tập các bài viết chia sẻ về ${category.name} giúp nâng cao kỹ năng Data & AI của bạn.`}
-                    </p>
-                </div>
-            </section>
+        <div className="min-h-screen bg-page pb-16">
+            <TaxonomyHero
+                icon={category.icon}
+                title={category.name}
+                description={category.description || `Tuyển tập các bài viết chia sẻ về ${category.name} giúp nâng cao kỹ năng Data & AI của bạn.`}
+                accentColor={category.color}
+                breadcrumb={[
+                    { label: 'Trang chủ', href: '/' },
+                    { label: 'Chủ đề', href: '/categories' },
+                    { label: category.name },
+                ]}
+                categories={allCategories}
+                categoryCounts={categoryCounts}
+                activeSlug={category.slug}
+                stat={statLabel}
+            />
 
             {/* List */}
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-                <div className="flex items-center justify-between mb-8">
-                    <p className="text-surface-600 dark:text-surface-400 font-medium">
-                        Có <span className="font-bold text-brand-600 dark:text-brand-400">{totalPosts}</span> bài viết trong danh mục này.
-                        {totalPages > 1 && (
-                            <span className="text-fg-faint text-sm ml-2">
-                                (Trang {currentPage}/{totalPages})
-                            </span>
-                        )}
-                    </p>
-                    <Link
-                        href="/categories"
-                        className="inline-flex items-center gap-2 text-sm font-medium text-fg-subtle hover:text-brand-600 dark:hover:text-brand-400 transition-colors"
-                    >
-                        <ArrowLeft className="h-4 w-4" />
-                        Danh mục khác
-                    </Link>
-                </div>
-
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 md:py-12">
                 {categoryPosts.length > 0 ? (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         {categoryPosts.map((post) => (

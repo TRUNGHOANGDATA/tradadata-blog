@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { Be_Vietnam_Pro, JetBrains_Mono } from 'next/font/google';
-import { Header } from '@/components/layout/Header';
+import { HeaderData } from '@/components/layout/HeaderData';
 import { Footer } from '@/components/layout/Footer';
 import { Providers } from '@/components/Providers';
 import { FloatingActions } from '@/components/layout/FloatingActions';
@@ -135,7 +135,7 @@ export default function RootLayout({
         />
         <Providers>
           <div className="flex flex-col min-h-screen">
-            <Header />
+            <HeaderData />
             <main className="flex-1">{children}</main>
             <LayoutShell>
               <Footer />
