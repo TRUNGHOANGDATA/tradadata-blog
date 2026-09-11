@@ -176,66 +176,74 @@ export async function getPostBySlugForPreview(slug: string): Promise<Post | null
 }
 
 // Cached version — related posts don't change frequently
+//
+// CHẤM ĐIỂM thay vì "ưu tiên tag rồi fallback danh mục": mỗi ứng viên được cộng
+// điểm theo SỐ tag chung và SỐ danh mục chung với bài đang đọc, rồi sort giảm dần.
+// Nhờ vậy bài chung 3 tag đứng trên bài chung 1 tag — bản cũ chỉ sort theo ngày
+// nên xếp ngang nhau. Danh mục lấy từ junction `post_categories` (đa chủ đề),
+// không chỉ cột `category_id` cũ, nên bài nhiều chủ đề match đủ mọi hướng.
 export const getRelatedPosts = unstable_cache(
-    async (categoryId: string, currentPostId: string, limit = 3, tagIds?: string[]): Promise<Post[]> => {
+    async (currentPostId: string, tagIds: string[] = [], limit = 3): Promise<Post[]> => {
         if (!supabaseAdmin) return [];
 
-        const relatedPosts: Post[] = [];
-        const seenIds = new Set<string>([currentPostId]);
+        // Danh mục của chính bài đang đọc — lấy từ junction để phủ bài đa chủ đề.
+        const { data: ownCats } = await supabaseAdmin
+            .from('post_categories')
+            .select('category_id')
+            .eq('post_id', currentPostId);
+        const categoryIds = [...new Set((ownCats || []).map(r => r.category_id))];
 
-        // Priority 1: Posts sharing the same tags
-        if (tagIds && tagIds.length > 0) {
-            const { data: taggedPostIds } = await supabaseAdmin
+        // Chung tag là tín hiệu "cùng chủ đề" mạnh hơn chung danh mục (danh mục rộng),
+        // nên tag nặng điểm hơn.
+        const TAG_WEIGHT = 3;
+        const CAT_WEIGHT = 1;
+        const scores = new Map<string, number>();
+
+        if (tagIds.length > 0) {
+            const { data } = await supabaseAdmin
                 .from('post_tags')
                 .select('post_id')
                 .in('tag_id', tagIds)
                 .neq('post_id', currentPostId);
-
-            if (taggedPostIds && taggedPostIds.length > 0) {
-                const uniqueIds = [...new Set(taggedPostIds.map(r => r.post_id))];
-                const { data: tagPosts } = await supabaseAdmin
-                    .from('posts')
-                    .select('*, author:profiles(*), category:categories!category_id(*)')
-                    .eq('status', 'published')
-                    .in('id', uniqueIds)
-                    .order('published_at', { ascending: false })
-                    .limit(limit);
-
-                if (tagPosts) {
-                    for (const p of tagPosts) {
-                        if (!seenIds.has(p.id) && relatedPosts.length < limit) {
-                            seenIds.add(p.id);
-                            relatedPosts.push(formatPostForList(p));
-                        }
-                    }
-                }
+            for (const r of data || []) {
+                scores.set(r.post_id, (scores.get(r.post_id) || 0) + TAG_WEIGHT);
             }
         }
 
-        // Priority 2 (fallback): Posts in same category
-        if (relatedPosts.length < limit && categoryId) {
-            const { data: catPosts } = await supabaseAdmin
-                .from('posts')
-                .select('*, author:profiles(*), category:categories!category_id(*)')
-                .eq('status', 'published')
-                .eq('category_id', categoryId)
-                .neq('id', currentPostId)
-                .order('published_at', { ascending: false })
-                .limit(limit);
-
-            if (catPosts) {
-                for (const p of catPosts) {
-                    if (!seenIds.has(p.id) && relatedPosts.length < limit) {
-                        seenIds.add(p.id);
-                        relatedPosts.push(formatPostForList(p));
-                    }
-                }
+        if (categoryIds.length > 0) {
+            const { data } = await supabaseAdmin
+                .from('post_categories')
+                .select('post_id')
+                .in('category_id', categoryIds)
+                .neq('post_id', currentPostId);
+            for (const r of data || []) {
+                scores.set(r.post_id, (scores.get(r.post_id) || 0) + CAT_WEIGHT);
             }
         }
 
-        return relatedPosts;
+        if (scores.size === 0) return [];
+
+        // Chỉ giữ bài đã publish; cần `published_at` để tie-break khi cùng điểm.
+        const candidateIds = [...scores.keys()];
+        const { data: posts } = await supabaseAdmin
+            .from('posts')
+            .select('*, author:profiles(*), category:categories!category_id(*)')
+            .eq('status', 'published')
+            .in('id', candidateIds);
+
+        if (!posts) return [];
+
+        return posts
+            .sort((a, b) => {
+                const diff = (scores.get(b.id) || 0) - (scores.get(a.id) || 0);
+                if (diff !== 0) return diff;
+                // Cùng điểm: bài mới hơn lên trước.
+                return new Date(b.published_at || 0).getTime() - new Date(a.published_at || 0).getTime();
+            })
+            .slice(0, limit)
+            .map(formatPostForList);
     },
-    ['related-posts'],
+    ['related-posts-v2'],
     { revalidate: 600, tags: ['posts'] } // Cache 10 phút
 );
 

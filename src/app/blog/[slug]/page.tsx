@@ -120,7 +120,7 @@ export default async function BlogPostPage({ params }: Props) {
                 html: '<p class="text-fg-subtle italic">Bài viết này chưa có nội dung.</p>',
                 toc: [] as { id: string; text: string; level: number }[],
             }),
-        post.category_id ? getRelatedPosts(post.category_id, post.id, 3, tagIds) : Promise.resolve([]),
+        getRelatedPosts(post.id, tagIds, 3),
     ]);
 
     return (

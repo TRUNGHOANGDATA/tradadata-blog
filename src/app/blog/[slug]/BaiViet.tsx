@@ -407,26 +407,30 @@ export function BaiViet({ post, htmlContent, toc, postTags, relatedPosts, laXemT
                 </div>
             </div>
 
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                {/* Related Posts Section */}
-                <div className="mt-20 pt-16 border-t border-line">
-                    <div className="flex items-center justify-between mb-8">
-                        <div>
-                            <h2 className="text-2xl font-bold text-fg">Bài viết liên quan</h2>
-                            <p className="text-fg-subtle mt-1">Khám phá thêm các bài viết cùng chủ đề</p>
+            {/* Bài không có bài liên quan nào thì ẩn hẳn section — trước đây vẫn
+                render nên trơ mỗi tiêu đề + lưới trống, trông như lỗi. */}
+            {relatedPosts.length > 0 && (
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    {/* Related Posts Section */}
+                    <div className="mt-20 pt-16 border-t border-line">
+                        <div className="flex items-center justify-between mb-8">
+                            <div>
+                                <h2 className="text-2xl font-bold text-fg">Bài viết liên quan</h2>
+                                <p className="text-fg-subtle mt-1">Khám phá thêm các bài viết cùng chủ đề</p>
+                            </div>
+                            <Link href="/blog" className="hidden md:inline-flex items-center font-medium text-brand-600 hover:text-brand-700 dark:text-brand-400 dark:hover:text-brand-300">
+                                Xem tất cả <ArrowRight className="ml-1.5 h-4 w-4" />
+                            </Link>
                         </div>
-                        <Link href="/blog" className="hidden md:inline-flex items-center font-medium text-brand-600 hover:text-brand-700 dark:text-brand-400 dark:hover:text-brand-300">
-                            Xem tất cả <ArrowRight className="ml-1.5 h-4 w-4" />
-                        </Link>
-                    </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        {relatedPosts.map(p => (
-                            <PostCard key={p.id} post={p} />
-                        ))}
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            {relatedPosts.map(p => (
+                                <PostCard key={p.id} post={p} />
+                            ))}
+                        </div>
                     </div>
                 </div>
-            </div>
+            )}
         </article >
     );
 }

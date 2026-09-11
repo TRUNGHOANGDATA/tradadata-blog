@@ -60,9 +60,7 @@ export default async function XemTruocPage({ params }: Props) {
         ? renderPostContent(post.content)
         : { html: '<p class="text-fg-subtle italic">Bài viết này chưa có nội dung.</p>', toc: [] };
 
-    const relatedPosts = post.category_id
-        ? await getRelatedPosts(post.category_id, post.id, 3, tagIds)
-        : [];
+    const relatedPosts = await getRelatedPosts(post.id, tagIds, 3);
 
     return (
         <BaiViet
