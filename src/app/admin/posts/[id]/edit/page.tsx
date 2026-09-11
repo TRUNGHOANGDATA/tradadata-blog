@@ -235,7 +235,11 @@ export default function EditPostPage() {
             const data = await res.json();
 
             if (res.ok) {
-                if (!silent) alert('Đã lưu thành công!');
+                // Đồng bộ trạng thái vào state để UI phản ánh đúng ngay (nút "Xuất bản"
+                // ẩn đi, dropdown nhảy sang "Xuất bản") — trước đây bấm "Xuất bản" ghi DB
+                // thành công nhưng state vẫn 'draft' nên trông như chưa đăng.
+                setStatus(finalStatus);
+                if (!silent) alert(finalStatus === 'published' ? 'Đã xuất bản bài viết!' : 'Đã lưu thành công!');
                 return true;
             } else {
                 alert('Lỗi: ' + (data.error || 'Unknown error'));
