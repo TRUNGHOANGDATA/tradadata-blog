@@ -19,12 +19,13 @@ const anh = [
     },
     {
         ten: 'cl-02-ba-model',
-        tieuDe: 'Ba dòng model Claude: Haiku, Sonnet, Opus',
+        tieuDe: 'Các dòng model Claude: Haiku, Sonnet, Opus, Fable',
         kieu: 'cards',
         the: [
-            { tieu: 'Haiku', mau: 'lam', phu: 'Nhẹ · Nhanh nhất', dong: ['Việc đơn giản, hỏi nhanh', 'Xử lý số lượng lớn', 'Tiết kiệm nhất'] },
-            { tieu: 'Sonnet', mau: 'luc', phu: 'Cân bằng · Mặc định', dong: ['Tốt cho việc hằng ngày', 'Nhanh mà vẫn chất lượng', 'Lựa chọn an toàn'] },
-            { tieu: 'Opus', mau: 'tim', phu: 'Mạnh nhất', dong: ['Lập luận phức tạp', 'Viết dài, phân tích sâu', 'Lập trình khó'] },
+            { tieu: 'Haiku', mau: 'lam', phu: 'Nhẹ · Nhanh nhất', dong: ['Hỏi đáp nhanh', 'Xử lý số lượng lớn', 'Tiết kiệm nhất'] },
+            { tieu: 'Sonnet', mau: 'luc', phu: 'Cân bằng · Mặc định', dong: ['Việc hằng ngày', 'Nhanh & chất lượng', 'Lựa chọn an toàn'] },
+            { tieu: 'Opus', mau: 'tim', phu: 'Bản cao cấp', dong: ['Lập luận phức tạp', 'Phân tích sâu', 'Lập trình khó'] },
+            { tieu: 'Fable', mau: 'hong', phu: 'Mới & mạnh nhất', dong: ['Suy luận sâu nhất', 'Tác vụ dài hơi', 'Việc khó nhất'] },
         ],
     },
     {

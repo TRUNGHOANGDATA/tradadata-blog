@@ -11,7 +11,7 @@ const BIA = [
         eyebrow: 'AI · Claude cơ bản',
         hook: 'Claude?',
         tieuDe: 'Claude là gì? Giải thích dễ hiểu về trợ lý AI của Anthropic',
-        phu: 'Ba dòng model, dùng ở đâu, và ba thứ khiến Claude hơn một hộp chat.',
+        phu: 'Các dòng model, dùng ở đâu, và ba thứ khiến Claude hơn một hộp chat.',
     },
     {
         thuMuc: 'cai-dat-claude',

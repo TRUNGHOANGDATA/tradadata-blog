@@ -55,6 +55,10 @@ Bạn dùng ChatGPT miễn phí được. Các gói trả phí nới giới hạ
 
 Ngoài ra có **Business** và **Enterprise** cho tổ chức. *Giá và tên gói thay đổi khá thường xuyên — hãy xem mức mới nhất ngay trong phần nâng cấp của ứng dụng.* Lời khuyên: **bắt đầu bằng Free**, chỉ lên Plus khi bạn dùng nhiều và cần model mạnh liên tục.
 
+## Các model hiện tại
+
+Giống Claude, ChatGPT có nhiều model xếp theo mức mạnh–nhanh. Tính đến tháng 9/2026, model **mới và mạnh nhất là GPT-6 Astra** (dành cho các gói trả phí Plus/Pro trở lên), bên cạnh họ **GPT-5.6** — trong đó bản **Luna** nhanh, rẻ và là mặc định cho gói Free. Danh sách này đổi khá thường xuyên, nên đừng bận tâm nhớ hết tên: cứ để mặc định, khi cần mạnh hơn thì đổi lên bản cao hơn ngay tại ô chọn model.
+
 ## Làm quen giao diện
 
 - **Ô chat ở giữa** — gõ yêu cầu, càng rõ càng tốt.

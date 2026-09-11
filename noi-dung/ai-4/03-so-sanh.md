@@ -18,6 +18,8 @@ trang_thai: "draft"
 
 Cần nói ngay: đây là những xu hướng *thường được người dùng ghi nhận*, không phải chân lý cố định — cả hai bên ra model mới liên tục và thế mạnh có thể đổi chỗ theo thời gian.
 
+Cả hai đều có **nhiều dòng model** xếp theo mức mạnh–nhanh và cập nhật rất nhanh: Claude có Haiku, Sonnet, Opus và **Fable** (mới nhất, mạnh nhất); ChatGPT có họ **GPT-5.6** và **GPT-6 Astra**. Đừng chọn theo tên một model tại một thời điểm — vài tháng là danh sách đã khác.
+
 ## Đặt cạnh nhau theo từng tiêu chí
 
 | Tiêu chí | Claude | ChatGPT |

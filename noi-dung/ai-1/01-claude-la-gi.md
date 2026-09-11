@@ -3,7 +3,7 @@ tieu_de: "Claude là gì? Giải thích dễ hiểu về trợ lý AI của Anth
 slug: "claude-la-gi-tro-ly-ai-cua-anthropic"
 danh_muc: "AI"
 the: ["Claude", "Anthropic", "AI cơ bản"]
-mo_ta: "Claude là trợ lý AI của công ty Anthropic, dùng được trên web, máy tính và điện thoại. Bài này giải thích Claude là gì, ba dòng model Opus/Sonnet/Haiku khác nhau ra sao, dùng ở đâu, và ba thứ khiến Claude vượt xa một hộp chat thông thường: Skills, Connectors, Plugins."
+mo_ta: "Claude là trợ lý AI của công ty Anthropic, dùng được trên web, máy tính và điện thoại. Bài này giải thích Claude là gì, các dòng model hiện nay (Haiku, Sonnet, Opus, Fable) khác nhau ra sao, dùng ở đâu, và ba thứ khiến Claude vượt xa một hộp chat thông thường: Skills, Connectors, Plugins."
 tu_khoa: "Claude la gi, Claude AI, Anthropic, Claude vs ChatGPT, tro ly AI"
 anh_bia: "/images/bai-viet/claude-la-gi/cover.png"
 thu_muc_anh: "claude-la-gi"
@@ -35,17 +35,18 @@ Claude có mặt ở nhiều nơi, cùng một tài khoản dùng được hết
 
 Với đa số người dùng phổ thông, **web** và **app máy tính** là hai nơi bạn sẽ ở nhiều nhất. Cách cài và đăng nhập cụ thể nằm ở bài kế: [Hướng dẫn cài đặt và bắt đầu với Claude](/blog/huong-dan-cai-dat-va-bat-dau-voi-claude).
 
-## Ba dòng model: Opus, Sonnet, Haiku
+## Các dòng model của Claude: Haiku, Sonnet, Opus, Fable
 
-Khi dùng Claude, bạn sẽ thấy có thể chọn giữa vài "model" với tên khác nhau. Anthropic đặt tên theo ba thể thơ, và cách phân biệt rất đơn giản: **càng "nặng" thì càng thông minh nhưng càng chậm và tốn hơn**.
+Khi dùng Claude, bạn có thể chọn giữa vài "model" với tên khác nhau — đây là thế hệ hiện tại (họ Claude 5). Anthropic đặt tên theo các thể loại sáng tác, và cách phân biệt rất đơn giản: **càng "nặng" thì càng thông minh nhưng càng chậm và tốn hơn**.
 
 {{anh:cl-02-ba-model}}
 
 - **Haiku** — nhẹ và nhanh nhất, hợp việc đơn giản, hỏi đáp nhanh, xử lý số lượng lớn.
-- **Sonnet** — cân bằng giữa tốc độ và chất lượng, là lựa chọn mặc định tốt cho hầu hết công việc hằng ngày.
-- **Opus** — mạnh nhất, dành cho việc khó: lập luận phức tạp, viết dài, phân tích sâu, lập trình.
+- **Sonnet** — cân bằng giữa tốc độ và chất lượng, lựa chọn mặc định tốt cho hầu hết công việc hằng ngày.
+- **Opus** — bản cao cấp, dành cho việc khó: lập luận phức tạp, viết dài, phân tích sâu, lập trình.
+- **Fable** — model **mới và mạnh nhất** hiện nay, dành cho những tác vụ đòi hỏi suy luận sâu và dài hơi nhất.
 
-Nếu chưa chắc chọn gì, cứ để mặc định. Khi thấy câu trả lời chưa đủ sâu cho một việc khó, hãy đổi lên model cao hơn.
+Danh sách model thay đổi theo thời gian và tuỳ gói bạn dùng, nên đừng bận tâm nhớ hết tên. Nếu chưa chắc chọn gì, cứ để mặc định; khi thấy câu trả lời chưa đủ sâu cho một việc khó, hãy đổi lên model cao hơn.
 
 ## Claude làm được những gì
 
