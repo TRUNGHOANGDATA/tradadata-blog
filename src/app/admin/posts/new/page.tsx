@@ -581,12 +581,12 @@ COVER_IMAGE: Tạo một bức ảnh bìa blog có chất lượng cao, tỉ l�
                                         </div>
                                         <div className="mt-2 p-2 bg-white dark:bg-surface-950 border border-line rounded-md flex items-start gap-2 group">
                                             <p className="text-[11px] text-surface-600 dark:text-surface-400 font-mono flex-1 break-words select-all">
-                                                Tạo một bức ảnh bìa blog có chất lượng cao, tỉ lệ 16:9, kích thước 1200x630px, với phong cách chuyên nghiệp và hiện đại, thể hiện chủ đề: &quot;{coverKeyword}&quot;
+                                                Tạo một bức ảnh bìa blog có chất lượng cao, tỉ lệ 16:9, kích thước 1200x630px, với phong cách chuyên nghiệp và hiện đại, thể hiện chủ đề: &quot;{title.trim()}&quot;
                                             </p>
                                             <button
                                                 onClick={(e) => {
                                                     e.preventDefault();
-                                                    navigator.clipboard.writeText(`Tạo một bức ảnh bìa blog có chất lượng cao, tỉ lệ 16:9, kích thước 1200x630px, với phong cách chuyên nghiệp và hiện đại, thể hiện chủ đề: "${coverKeyword}"`);
+                                                    navigator.clipboard.writeText(`Tạo một bức ảnh bìa blog có chất lượng cao, tỉ lệ 16:9, kích thước 1200x630px, với phong cách chuyên nghiệp và hiện đại, thể hiện chủ đề: "${title.trim()}"`);
                                                     const btn = e.currentTarget;
                                                     const originalHTML = btn.innerHTML;
                                                     btn.innerHTML = '✓';
