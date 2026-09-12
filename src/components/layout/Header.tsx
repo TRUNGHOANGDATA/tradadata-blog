@@ -36,6 +36,8 @@ export function Header({
     const [profileOpen, setProfileOpen] = useState(false);
     const [catOpen, setCatOpen] = useState(false);
     const [mobileCatOpen, setMobileCatOpen] = useState(false);
+    const [prodOpen, setProdOpen] = useState(false);
+    const [mobileProdOpen, setMobileProdOpen] = useState(false);
     const { cartCount, setCartOpen } = useCart();
 
     const isAdmin = session?.user?.role === 'admin' || session?.user?.role === 'editor';
@@ -117,6 +119,48 @@ export function Header({
                                                                 Xem tất cả chủ đề
                                                                 <ChevronDown className="h-4 w-4 -rotate-90" />
                                                             </Link>
+                                                        </div>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        );
+                                    }
+
+                                    // Mục có `children` -> dropdown đơn giản (vd "Sản phẩm và dịch vụ").
+                                    if (item.children) {
+                                        return (
+                                            <div
+                                                key={item.href}
+                                                className="relative"
+                                                onMouseEnter={() => setProdOpen(true)}
+                                                onMouseLeave={() => setProdOpen(false)}
+                                            >
+                                                <Link
+                                                    href={item.href}
+                                                    onClick={() => setProdOpen(false)}
+                                                    aria-expanded={prodOpen}
+                                                    className={`inline-flex items-center gap-1 shrink-0 whitespace-nowrap px-3 py-2 rounded-xl text-sm font-medium transition-all duration-200 ${active
+                                                        ? 'text-brand-700 dark:text-brand-300 bg-brand-50 dark:bg-brand-900/30'
+                                                        : 'text-fg-muted hover:text-fg hover:bg-sunken'
+                                                        }`}
+                                                >
+                                                    {item.label}
+                                                    <ChevronDown className={`h-3.5 w-3.5 transition-transform duration-200 ${prodOpen ? 'rotate-180' : ''}`} />
+                                                </Link>
+
+                                                {prodOpen && (
+                                                    <div className="absolute left-1/2 -translate-x-1/2 top-full pt-2 w-56 animate-slide-down">
+                                                        <div className="rounded-2xl border border-line bg-card shadow-e3 p-2">
+                                                            {item.children.map((c) => (
+                                                                <Link
+                                                                    key={c.href}
+                                                                    href={c.href}
+                                                                    onClick={() => setProdOpen(false)}
+                                                                    className="block px-3 py-2.5 rounded-xl text-sm font-medium text-fg-muted hover:bg-sunken hover:text-fg transition-colors"
+                                                                >
+                                                                    {c.label}
+                                                                </Link>
+                                                            ))}
                                                         </div>
                                                     </div>
                                                 )}
@@ -292,6 +336,39 @@ export function Header({
                                                                 </span>
                                                                 <span className="flex-1 truncate">{cat.name}</span>
                                                                 <span className="text-xs text-fg-faint">{categoryCounts[cat.id] || 0}</span>
+                                                            </Link>
+                                                        ))}
+                                                    </div>
+                                                )}
+                                            </div>
+                                        );
+                                    }
+
+                                    if (item.children) {
+                                        return (
+                                            <div key={item.href}>
+                                                <button
+                                                    onClick={() => setMobileProdOpen((v) => !v)}
+                                                    aria-expanded={mobileProdOpen}
+                                                    className={`flex items-center justify-between w-full min-h-11 px-3 rounded-xl text-sm font-medium transition-colors ${active
+                                                        ? 'text-brand-700 dark:text-brand-300 bg-brand-50 dark:bg-brand-900/30'
+                                                        : 'text-fg-muted hover:bg-sunken'
+                                                        }`}
+                                                >
+                                                    {item.label}
+                                                    <ChevronDown className={`h-4 w-4 transition-transform ${mobileProdOpen ? 'rotate-180' : ''}`} />
+                                                </button>
+
+                                                {mobileProdOpen && (
+                                                    <div className="mt-1 mb-1 ml-3 pl-3 border-l border-line grid grid-cols-1 gap-0.5">
+                                                        {item.children.map((c) => (
+                                                            <Link
+                                                                key={c.href}
+                                                                href={c.href}
+                                                                onClick={() => setMobileOpen(false)}
+                                                                className="flex items-center min-h-11 px-2.5 rounded-lg text-sm text-fg-muted hover:bg-sunken hover:text-fg transition-colors"
+                                                            >
+                                                                {c.label}
                                                             </Link>
                                                         ))}
                                                     </div>
