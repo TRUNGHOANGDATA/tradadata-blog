@@ -25,7 +25,7 @@ import { CHUAN_ANH, layUrlAnh, type LoaiAnhThuongHieu } from '@/lib/brand';
  * giữ `LOGO_TRA_DA_DATA.jpg`, `banner-default.jpg`, `og-default.jpg`.
  */
 
-const LOAI_HOP_LE: LoaiAnhThuongHieu[] = ['logo', 'logo-toi', 'banner', 'og'];
+const LOAI_HOP_LE: LoaiAnhThuongHieu[] = ['logo', 'logo-toi', 'hero', 'banner', 'og'];
 
 const MIME_THEO_DUOI: Record<string, string> = {
     '.jpg': 'image/jpeg',

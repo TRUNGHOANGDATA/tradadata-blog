@@ -25,7 +25,7 @@ import { CHUAN_ANH, type LoaiAnhThuongHieu } from '@/lib/brand';
  * đen. Đây cũng là lý do ô "logo cho nền tối" khuyến nghị PNG.
  */
 
-const LOAI_HOP_LE: LoaiAnhThuongHieu[] = ['logo', 'logo-toi', 'banner', 'og'];
+const LOAI_HOP_LE: LoaiAnhThuongHieu[] = ['logo', 'logo-toi', 'hero', 'banner', 'og'];
 const KIEU_CHO_PHEP = ['image/jpeg', 'image/png', 'image/webp'];
 const KICH_THUOC_TOI_DA = 10 * 1024 * 1024;
 

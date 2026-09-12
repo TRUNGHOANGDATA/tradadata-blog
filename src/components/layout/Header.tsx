@@ -65,13 +65,13 @@ export function Header({
                                     alt={`${SITE_CONFIG.name} — trang chủ`}
                                     className="h-11 w-11 transition-transform group-hover:scale-105 shadow-sm ring-1 ring-line"
                                 />
-                                <span className="hidden lg:block font-bold text-lg text-fg tracking-tight group-hover:text-brand-600 dark:group-hover:text-brand-400 transition-colors">
+                                <span className="hidden xl:block whitespace-nowrap font-bold text-lg text-fg tracking-tight group-hover:text-brand-600 dark:group-hover:text-brand-400 transition-colors">
                                     Trà Đá Data
                                 </span>
                             </Link>
 
                             {/* Desktop Nav */}
-                            <nav className="hidden lg:flex items-center justify-center gap-0.5 flex-1">
+                            <nav className="hidden lg:flex min-w-0 items-center justify-center gap-0.5 flex-1">
                                 {NAV_ITEMS.map((item) => {
                                     const active = laActive(pathname, item.href);
 
@@ -200,7 +200,10 @@ export function Header({
                             </nav>
 
                             {/* Right Actions */}
-                            <div className="flex items-center gap-2">
+                            {/* `shrink-0`: day la cum thao tac, khong duoc co lai. Thieu
+                                no thi flex bop cum nay truoc va chu trong cac nut xuong
+                                dong. Phan nhuong cho la `nav` o giua (co `min-w-0`). */}
+                            <div className="flex shrink-0 items-center gap-2">
                                 <SearchBar />
                                 <ThemeToggle />
 
@@ -293,10 +296,11 @@ export function Header({
                                 ) : (
                                     <button
                                         onClick={() => signIn('google')}
-                                        className="flex items-center justify-center gap-2 min-h-11 px-4 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-sm font-medium transition-all duration-200 shadow-lg shadow-brand-600/25 hover:shadow-brand-600/40"
+                                        aria-label="Đăng nhập"
+                                        className="flex shrink-0 items-center justify-center gap-2 min-h-11 px-4 whitespace-nowrap rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-sm font-medium transition-all duration-200 shadow-lg shadow-brand-600/25 hover:shadow-brand-600/40"
                                     >
-                                        <LogIn className="h-4 w-4" />
-                                        <span className="hidden sm:inline">Đăng nhập</span>
+                                        <LogIn className="h-4 w-4" aria-hidden="true" />
+                                        <span className="hidden xl:inline">Đăng nhập</span>
                                     </button>
                                 )}
 

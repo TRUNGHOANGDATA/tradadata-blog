@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import Image from 'next/image';
-import { ArrowRight, Sparkles, BookOpen, TrendingUp } from 'lucide-react';
+import { ArrowRight, BookOpen, TrendingUp } from 'lucide-react';
 import { PostCard } from '@/components/blog/PostCard';
 import { Newsletter } from '@/components/blog/Newsletter';
 import { CategoryCard } from '@/components/blog/CategoryCard';
@@ -92,79 +92,103 @@ export default async function HomePage() {
           </div>
         </div>
 
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16">
-          <div className="text-center max-w-3xl mx-auto">
-            {/* Banner mang san toan bo thong diep (ten, slogan, danh sach cong nghe)
-                nen tu 768px tro len no THAY cho khoi chu — giu ca hai la lap y.
-                Duoi 768px thi an: chu nam trong anh o be ngang 375px khong doc noi.
-
-                Anh de `alt=""`: <h1> va doan mo ta ngay duoi van con trong DOM
-                (chi `sr-only` o man lon), nen trinh doc man hinh da co nguyen van
-                thong diep roi — dat alt o day la doc trung hai lan.
-
-                Khung khoa ti le 16/9 san (dung ti le that cua file: 1600x900) de
-                anh vao khong lam nhay layout. Toi da 760px chu khong tran vien:
-                16:9 o container 1280px la CAO 720px, nuot tron man hinh dau. */}
-            <div className="hidden md:block mb-10">
-              <Image
-                src={duongDanAnh('banner', brand)}
-                alt=""
-                width={1600}
-                height={900}
-                // Duoi 768px banner bi an han, nen khai 1px de trinh duyet chon
-                // bien the nho nhat thay vi tai ban 828px ve roi khong dung.
-                sizes="(min-width: 768px) 760px, 1px"
-                priority
-                className="mx-auto w-full max-w-[760px] rounded-3xl ring-1 ring-line shadow-e2"
-              />
-            </div>
-
-            <div className="inline-flex md:hidden items-center gap-2 px-4 py-1.5 rounded-full bg-white/60 dark:bg-white/10 text-brand-700 dark:text-white/90 text-sm backdrop-blur-sm border border-brand-200 dark:border-white/20 mb-6 font-medium shadow-sm">
-              <Sparkles className="h-4 w-4" aria-hidden="true" />
-              Kiến thức thực tế, chia sẻ tận tâm
-            </div>
-            <h1 className="md:sr-only text-4xl font-bold text-surface-900 dark:text-white mb-6 leading-tight">
+        {/* Chu THAT tren trang, anh chi lam minh hoa.
+            Truoc day ca thong diep nam trong mot file JPEG (banner co san chu):
+            khong co dong chu that nao o hero, nen chu khong co gian, khong doi
+            mau theo che do toi, khong chon duoc, va o khung 760px thi dong mo ta
+            trong anh chi con co ~11px. Logo con bi lap hai lan — mot o header,
+            mot nua trong anh. Banner van duoc dung, nhung dung cho no: `og:image`
+            va dau email. */}
+        <div className="relative mx-auto grid max-w-7xl items-center gap-10 px-4 py-12 sm:px-6 lg:grid-cols-2 lg:gap-0 lg:px-8 lg:py-16">
+          <div className="lg:pr-10">
+            <h1 className="text-4xl font-bold leading-[1.12] tracking-tight text-surface-900 sm:text-5xl lg:text-[3.25rem] dark:text-white">
               Nâng tầm kỹ năng{' '}
-              <span className="bg-gradient-to-r from-brand-600 to-emerald-500 dark:from-emerald-300 dark:to-teal-300 bg-clip-text text-transparent">
-                Data & AI
+              <span className="bg-gradient-to-r from-brand-600 to-emerald-500 bg-clip-text text-transparent dark:from-emerald-300 dark:to-teal-300">
+                Data &amp; AI
               </span>
             </h1>
-            <p className="md:sr-only text-lg text-surface-600 dark:text-white/80 mb-8 leading-relaxed">
-              Blog chia sẻ kiến thức chuyên sâu về Excel, Power Query, VBA, Power BI, SQL, Python,
-              trí tuệ nhân tạo và quản lý chuỗi cung ứng.
+            <p className="mt-5 text-lg leading-relaxed text-surface-600 dark:text-white/75">
+              Kiến thức thực chiến, giải thích bằng ví dụ làm được ngay — từ hàm Excel đầu tiên
+              đến pipeline dữ liệu và AI.
             </p>
+
+            {/* Thay cho hang icon Excel/SQL/Power BI ve san trong banner: day la
+                chu that va BAM DUOC, tuc bien trang tri thanh dieu huong. */}
+            {categories.length > 0 && (
+              <ul className="mt-6 flex flex-wrap gap-2">
+                {categories.slice(0, 7).map((cat) => (
+                  <li key={cat.slug}>
+                    <Link
+                      href={`/category/${cat.slug}`}
+                      className="inline-flex min-h-8 items-center whitespace-nowrap rounded-lg bg-card px-3 text-sm font-medium text-fg-muted ring-1 ring-line transition-colors hover:text-fg hover:ring-line-strong"
+                    >
+                      {cat.name}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            )}
+
             {/* MOT hanh dong chinh moi man hinh. Truoc day hai nut cung do dam nen
                 khong biet nen bam cai nao; "Xem chu de" gio la lien ket phu. */}
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+            <div className="mt-8 flex flex-wrap items-center gap-x-2 gap-y-3">
               <Link
                 href="/blog"
-                className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-brand-600 dark:bg-white text-white dark:text-brand-700 font-semibold hover:bg-brand-700 dark:hover:bg-white/90 transition-all shadow-lg hover:shadow-xl hover:-translate-y-0.5"
+                className="inline-flex min-h-12 items-center gap-2 rounded-xl bg-brand-600 px-6 font-semibold text-white shadow-e2 transition-all hover:-translate-y-0.5 hover:bg-brand-700 hover:shadow-e3"
               >
                 <BookOpen className="h-5 w-5" aria-hidden="true" />
                 Khám phá bài viết
               </Link>
               <Link
                 href="/categories"
-                className="inline-flex items-center gap-2 px-4 py-3 rounded-xl font-medium text-surface-600 dark:text-white/80 hover:text-surface-900 dark:hover:text-white hover:bg-white/60 dark:hover:bg-white/10 transition-colors"
+                className="group inline-flex min-h-12 items-center gap-1.5 rounded-xl px-4 font-medium text-surface-600 transition-colors hover:bg-white/70 hover:text-surface-900 dark:text-white/75 dark:hover:bg-white/10 dark:hover:text-white"
               >
                 Xem chủ đề
-                <ArrowRight className="h-4 w-4" aria-hidden="true" />
+                <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" aria-hidden="true" />
               </Link>
             </div>
+
+            <p className="mt-7 text-sm text-fg-subtle">
+              <span className="font-semibold tabular-nums text-fg">
+                {totalPosts && totalPosts > 0 ? `${totalPosts}+` : '0'}
+              </span>{' '}
+              bài viết
+              <span className="mx-2" aria-hidden="true">·</span>
+              <span className="font-semibold tabular-nums text-fg">{categories.length}</span> chủ đề
+            </p>
           </div>
 
-          {/* Stats */}
-          <div className="mt-16 grid grid-cols-2 gap-8 max-w-xs mx-auto">
-            {[
-              { label: 'Bài viết', value: totalPosts && totalPosts > 0 ? `${totalPosts}+` : '0' },
-              { label: 'Chủ đề', value: categories.length.toString() },
-            ].map((stat) => (
-              <div key={stat.label} className="text-center">
-                <div className="text-2xl md:text-3xl font-bold text-brand-700 dark:text-white">{stat.value}</div>
-                <div className="text-sm font-medium text-surface-600 dark:text-white/60">{stat.label}</div>
-              </div>
-            ))}
+          {/* Ban cho man hinh nho: anh nam duoi khoi chu, trong cung luoi nen
+              khong phai tu che khoang cach. */}
+          <div className="lg:hidden">
+            <Image
+              src={duongDanAnh('hero', brand)}
+              alt=""
+              width={640}
+              height={760}
+              sizes="(min-width: 1024px) 1px, 384px"
+              priority
+              className="mx-auto aspect-[4/5] w-full max-w-sm rounded-3xl object-cover shadow-e2 ring-1 ring-line"
+            />
           </div>
+        </div>
+
+        {/* Tu 1024px: anh tran ra sat mep phai man hinh roi mo dan sang trai de
+            hoa vao nen — het cam giac mot mieng anh dan de len trang.
+            `alt=""` vi <h1> va doan mo ta ben canh da noi het noi dung. */}
+        <div className="pointer-events-none absolute inset-y-0 right-0 hidden w-[42%] lg:block">
+          <Image
+            src={duongDanAnh('hero', brand)}
+            alt=""
+            fill
+            sizes="(min-width: 1024px) 42vw, 1px"
+            priority
+            className="object-cover object-left"
+            style={{
+              maskImage: 'linear-gradient(to right, transparent, black 22%)',
+              WebkitMaskImage: 'linear-gradient(to right, transparent, black 22%)',
+            }}
+          />
         </div>
       </section>
 
