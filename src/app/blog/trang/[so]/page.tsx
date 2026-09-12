@@ -9,9 +9,14 @@ type Props = { params: Promise<{ so: string }> };
  * Sinh sẵn mọi trang danh sách lúc build (trang 2 trở lên — trang 1 là `/blog`).
  * Nhờ vậy cả dãy đều tĩnh và đọc từ cache thay vì render lại mỗi request.
  */
+// KHONG prerender luc build — tra [] de moi trang render ON-DEMAND (ISR) o lan
+// truy cap dau roi cache theo `revalidate`. Vi sao: build prerender ~869 trang
+// param (288 bai x3 truy van + 457 tag) la mot con bao truy van len Supabase
+// goi NANO -> DB `statement timeout (57014)` -> build do (do 12/09/2026, hai lan
+// lien). ISR giu trang van tinh; chi khac la khach dau tien sau deploy cho render
+// mot lan. dynamicParams mac dinh = true nen moi slug van vao duoc.
 export async function generateStaticParams() {
-    const tongTrang = await demSoTrang();
-    return Array.from({ length: Math.max(0, tongTrang - 1) }, (_, i) => ({ so: String(i + 2) }));
+    return [];
 }
 
 export async function generateMetadata({ params }: Props) {
