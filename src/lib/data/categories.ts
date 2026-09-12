@@ -1,5 +1,6 @@
 import { unstable_cache } from 'next/cache';
 import { supabaseAdmin } from '@/lib/supabase/server';
+import { anToan, kiemLoiTruyVan } from '@/lib/data/an-toan';
 import type { Category } from '@/types';
 
 async function getCategoriesUncached(): Promise<Category[]> {
@@ -11,10 +12,10 @@ async function getCategoriesUncached(): Promise<Category[]> {
         .select('*')
         .order('created_at', { ascending: true });
 
-    if (error) {
-        console.error('Error fetching categories:', error);
-        return [];
-    }
+    // Ném chứ không trả rỗng — xem src/lib/data/an-toan.ts. Hàm này nằm trong
+    // layout gốc (HeaderData) nên trả rỗng rồi cache là header mất mục "Chủ đề"
+    // 10 phút chỉ vì DB nghẹn 5 giây.
+    kiemLoiTruyVan(error, 'categories.getCategories');
 
     return data as Category[];
 }
@@ -28,10 +29,8 @@ async function getCategoryBySlugUncached(slug: string): Promise<Category | null>
         .eq('slug', slug)
         .single();
 
-    if (error) {
-        console.error(`Error fetching category ${slug}:`, error);
-        return null;
-    }
+    // Không có danh mục là 404 thật -> null; lỗi hệ thống -> ném (không bọc anToan).
+    if (kiemLoiTruyVan(error, 'categories.getCategoryBySlug', { boQuaKhongCoDong: true })) return null;
 
     return data as Category;
 }
@@ -41,10 +40,13 @@ async function getCategoryBySlugUncached(slug: string): Promise<Category | null>
  * nen cache 10 phut. Tag 'categories' — `revalidateTaxonomy()` trong
  * src/lib/cache.ts xoa ngay khi admin sua danh muc.
  */
-export const getCategories = unstable_cache(
-    getCategoriesUncached,
-    ['categories-all-v1'],
-    { revalidate: 600, tags: ['categories'] }
+export const getCategories = anToan(
+    unstable_cache(
+        getCategoriesUncached,
+        ['categories-all-v1'],
+        { revalidate: 600, tags: ['categories'] }
+    ),
+    []
 );
 
 export const getCategoryBySlug = unstable_cache(
@@ -62,14 +64,19 @@ export const getCategoryBySlug = unstable_cache(
  *
  * Tra ve map { category_id: so_bai }.
  */
-export const getCategoryPostCounts = unstable_cache(
+export const getCategoryPostCounts = anToan(unstable_cache(
     async (): Promise<Record<string, number>> => {
         if (!supabaseAdmin) return {};
 
-        const [{ data: publishedPosts }, { data: junction }] = await Promise.all([
+        const [
+            { data: publishedPosts, error: loiPosts },
+            { data: junction, error: loiJunction },
+        ] = await Promise.all([
             supabaseAdmin.from('posts').select('id').eq('status', 'published'),
             supabaseAdmin.from('post_categories').select('category_id, post_id'),
         ]);
+        kiemLoiTruyVan(loiPosts, 'categories.getCategoryPostCounts/posts');
+        kiemLoiTruyVan(loiJunction, 'categories.getCategoryPostCounts/post_categories');
 
         const publishedIds = new Set((publishedPosts || []).map((p: { id: string }) => p.id));
         const counts: Record<string, number> = {};
@@ -83,4 +90,4 @@ export const getCategoryPostCounts = unstable_cache(
     ['category-post-counts-v1'],
     // Doi khi publish bai moi HOAC sua danh muc -> gan ca hai tag
     { revalidate: 300, tags: ['posts', 'categories'] }
-);
+), {});

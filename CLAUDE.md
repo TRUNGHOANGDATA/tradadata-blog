@@ -248,6 +248,35 @@ trong khi luồng auto-activate ở `orders/create` lại đọc đúng `product
     `profiles.is_subscribed` trong `/blog/[slug]`, `user_bookmarks` ở `/saved`,
     `orders` ở `/checkout/[order_code]`, và `getPostBySlugForPreview` (xem bản nháp).
     Cache dùng chung cho mọi khách nên cache mấy thứ này là rò dữ liệu/quyền.
+  - **Hàm trong `unstable_cache` KHÔNG được `return []` khi truy vấn lỗi — phải
+    NÉM.** Dùng `kiemLoiTruyVan(error, 'ten.ham')` ngay sau mỗi truy vấn và bọc lớp
+    export bằng `anToan(fn, duPhong)` (`src/lib/data/an-toan.ts`). Lý do đo được
+    12/09/2026: Supabase NANO treo ~40 phút đúng lúc pod recreate ⇒ `getCategories`
+    trả `[]` và **cache 10 phút**, `getPosts` cache rỗng 2 phút ⇒ trang chủ hiện
+    "0 bài viết · 0 chủ đề" kéo dài sau khi DB đã hồi, smoke test rollout đỏ. Hàm
+    ném thì Next không cache, dự phòng từ `anToan` chỉ sống một lượt.
+    **Ngoại lệ cố ý**: `getPostBySlug`, `getCategoryBySlug`, `getAllPublishedSlugs`
+    KHÔNG bọc `anToan` — trả `null` khi DB lỗi là biến bài thật thành `notFound()`
+    và trang ISR cache cái 404 đó cả giờ; để lỗi lan ra thì Next giữ bản cũ.
+    `anToan` cũng KHÔNG nuốt lỗi lúc `next build` — nướng trang trống thành HTML
+    tĩnh rồi báo thành công còn tệ hơn build đỏ.
+
+- **Sống với Supabase gói NANO (free) — chủ site không nâng cấp.** Ngân sách Disk
+  IO rất nhỏ; cạn là project chuyển **Unhealthy**, mọi truy vấn treo hàng chục
+  giây tới hàng phút (đo 12/09/2026: REST timeout > 4 phút). Những thứ đốt ngân
+  sách trong một ngày:
+  - `next build` prerender **869 trang** qua 5 route có `generateStaticParams`
+    (`/blog/[slug]`, `/blog/trang/[so]`, `/category/[slug]`,
+    `/category/[slug]/trang/[so]`, `/tag/[slug]`) — mỗi build là hàng trăm truy
+    vấn, nhiều worker song song. **Đừng chạy `npm run build` cục bộ để đối chứng**
+    (đã làm 2 lần ngày 12/09 và góp phần vào sự cố); đối chứng bằng
+    `npx tsc --noEmit` + dev server.
+  - Mỗi lần recreate pod là cache lạnh đồng loạt. Hai rollout sát nhau = hai cơn.
+  - Gói free **không có backup tự động** (LAST BACKUP: No backups). Bản sao dữ liệu
+    xuất qua REST nằm ở `backups/` (gitignore vì có PII). Thiếu schema — cần
+    `pg_dump --schema-only` khi có Supabase CLI + connection string.
+  Trạng thái Unhealthy kẹt lâu: Dashboard → Project Settings → General →
+  *Fast database reboot*, không đỡ thì *Restart project*.
 
 - **Layout gốc KHÔNG được `await` truy vấn không cache.** `Footer` nằm trong layout
   và đọc `site_settings`; trước đây không cache nên React không render nổi shell,
