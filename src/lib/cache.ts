@@ -68,3 +68,13 @@ export function revalidateSettings() {
     revalidateTag('settings');
     revalidatePath('/', 'layout');
 }
+
+/**
+ * Xoá cache danh mục hàm + ví dụ của /thuc-hanh (`src/lib/data/vi-du-ham.ts`).
+ * Gọi ở mọi API route ghi vào bảng `vi_du_ham`. Trang /thuc-hanh là tĩnh và đọc
+ * danh mục lúc render nên phải xoá cả route cache của nó.
+ */
+export function revalidateViDuHam() {
+    revalidateTag('vi-du-ham');
+    revalidatePath('/thuc-hanh');
+}

@@ -49,3 +49,6 @@ client_secret*.json
 
 # Thu muc tam khi chay `node nhap-bai-viet.js --thu`
 noi-dung/**/_tiptap/
+
+# Ban sao du lieu Supabase xuat ve may (co PII: profiles, orders) — KHONG BAO GIO commit
+backups/

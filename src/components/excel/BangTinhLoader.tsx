@@ -4,6 +4,7 @@ import dynamic from 'next/dynamic';
 import { useEffect, useState } from 'react';
 import { useSession, signIn } from 'next-auth/react';
 import { LogIn } from 'lucide-react';
+import type { ViDuHam } from '@/lib/data/vi-du-ham';
 
 // Univer đụng `window` ngay lúc khởi tạo và vẽ bằng canvas -> KHÔNG render ở server.
 const BangTinh = dynamic(() => import('./BangTinh'), {
@@ -29,8 +30,9 @@ const HAM_365_NOI_BAT = [
     'TEXTSPLIT', 'TEXTJOIN', 'VSTACK', 'MAP', 'REDUCE', 'IFS', 'MAXIFS',
 ];
 
-export default function BangTinhLoader() {
-    const { status } = useSession();
+export default function BangTinhLoader({ danhMuc = [] }: { danhMuc?: ViDuHam[] }) {
+    const { status, data: session } = useSession();
+    const laAdmin = session?.user?.role === 'admin';
     // `null` = chưa đo xong. Phải đo ở client vì server không biết bề rộng màn hình.
     const [duManHinh, setDuManHinh] = useState<boolean | null>(null);
 
@@ -83,7 +85,10 @@ export default function BangTinhLoader() {
                     </p>
 
                     <ul className="mt-5 flex flex-wrap gap-1.5" aria-label="Hàm Excel 365 hỗ trợ">
-                        {HAM_365_NOI_BAT.map((ham) => (
+                        {(danhMuc.length > 0
+                            ? danhMuc.filter((h) => h.ho_tro).slice(0, 14).map((h) => h.ten_ham)
+                            : HAM_365_NOI_BAT
+                        ).map((ham) => (
                             <li
                                 key={ham}
                                 className="rounded-md bg-sunken px-2 py-1 font-mono text-xs font-medium text-fg-muted ring-1 ring-line"
@@ -106,5 +111,5 @@ export default function BangTinhLoader() {
         );
     }
 
-    return <BangTinh />;
+    return <BangTinh danhMuc={danhMuc} laAdmin={laAdmin} />;
 }

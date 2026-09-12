@@ -30,6 +30,7 @@ import {
     X,
     Film,
     Inbox,
+    FunctionSquare,
 } from 'lucide-react';
 
 const ADMIN_NAV = [
@@ -41,6 +42,7 @@ const ADMIN_NAV = [
     { label: 'Media', href: '/admin/media', icon: Image },
     { label: 'Files', href: '/admin/files', icon: FileSpreadsheet },
     { label: 'Video', href: '/admin/videos', icon: Film },
+    { label: 'Ví dụ hàm Excel', href: '/admin/vi-du-ham', icon: FunctionSquare },
     { label: 'Sản phẩm', href: '/admin/products', icon: Box },
     { label: 'Đầu mục khách hàng', href: '/admin/course-sections', icon: BookOpen },
     { label: 'Đơn hàng', href: '/admin/orders', icon: ShoppingCart },
