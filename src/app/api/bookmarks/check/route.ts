@@ -20,16 +20,10 @@ export async function GET(request: Request) {
             return NextResponse.json({ error: 'Database connection not available' }, { status: 500 });
         }
 
-        // Resolve user profile ID — verify it exists in DB
+        // Tin `profileId` trong token, KHÔNG query `profiles` để "verify" (đó là
+        // một truy vấn thừa trên mỗi lượt kiểm tra). Chỉ tra `profiles` khi token
+        // thiếu profileId (phiên cũ). Token sai cùng lắm trả "chưa lưu" — vô hại.
         let userId: string | undefined = session.user.profileId;
-        if (userId) {
-            const { data: profileCheck } = await supabaseAdmin
-                .from('profiles')
-                .select('id')
-                .eq('id', userId)
-                .single();
-            if (!profileCheck) userId = undefined;
-        }
         if (!userId) {
             const { data: profile } = await supabaseAdmin
                 .from('profiles')

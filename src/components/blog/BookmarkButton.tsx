@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { Bookmark } from 'lucide-react';
+import { layDanhSachDaLuu, capNhatDaLuu } from '@/lib/bookmarks-client';
 
 interface BookmarkButtonProps {
     postId: string;
@@ -15,23 +16,21 @@ export function BookmarkButton({ postId, className = '', variant = 'icon' }: Boo
     const [isBookmarked, setIsBookmarked] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
 
-    // Fetch initial status
+    // Trạng thái đã lưu lấy từ bộ đệm dùng chung: mọi nút trên trang chung MỘT
+    // request /api/bookmarks/ids thay vì mỗi nút tự gọi /check. Cắt N request/trang
+    // xuống còn 1 (xem src/lib/bookmarks-client.ts).
     useEffect(() => {
-        if (!session?.user) return;
+        const userKey = session?.user?.profileId || session?.user?.email;
+        if (!userKey) return;
 
-        const checkBookmark = async () => {
-            try {
-                const res = await fetch(`/api/bookmarks/check?postId=${postId}`);
-                if (res.ok) {
-                    const data = await res.json();
-                    setIsBookmarked(data.isBookmarked);
-                }
-            } catch (error) {
-                console.error('Failed to check bookmark status', error);
-            }
-        };
+        let huy = false;
+        layDanhSachDaLuu(userKey)
+            .then(set => {
+                if (!huy) setIsBookmarked(set.has(postId));
+            })
+            .catch(() => { /* lỗi mạng: giữ mặc định "chưa lưu" */ });
 
-        checkBookmark();
+        return () => { huy = true; };
     }, [postId, session]);
 
     const toggleBookmark = async (e: React.MouseEvent) => {
@@ -68,6 +67,8 @@ export function BookmarkButton({ postId, className = '', variant = 'icon' }: Boo
             } else {
                 const data = await res.json();
                 setIsBookmarked(data.isBookmarked);
+                // Đồng bộ bộ đệm dùng chung để các nút khác của cùng bài cập nhật.
+                capNhatDaLuu(postId, data.isBookmarked);
             }
         } catch (error) {
             setIsBookmarked((prev) => !prev);
