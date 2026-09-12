@@ -1,5 +1,5 @@
 import { notFound } from 'next/navigation';
-import { getCategories, getCategoryBySlug } from '@/lib/data/categories';
+import { getCategoryBySlug } from '@/lib/data/categories';
 import { NoiDungDanhMuc, demSoTrangDanhMuc } from '../../NoiDungDanhMuc';
 
 export const revalidate = 3600;
@@ -10,14 +10,14 @@ type Props = { params: Promise<{ slug: string; so: string }> };
  * Sinh sẵn mọi trang của mọi danh mục lúc build (trang 2 trở lên — trang 1 là
  * `/category/[slug]`). Danh mục nào chỉ có 1 trang thì không sinh gì.
  */
+// KHONG prerender luc build — tra [] de moi trang render ON-DEMAND (ISR) o lan
+// truy cap dau roi cache theo `revalidate`. Vi sao: build prerender ~869 trang
+// param (288 bai x3 truy van + 457 tag) la mot con bao truy van len Supabase
+// goi NANO -> DB `statement timeout (57014)` -> build do (do 12/09/2026, hai lan
+// lien). ISR giu trang van tinh; chi khac la khach dau tien sau deploy cho render
+// mot lan. dynamicParams mac dinh = true nen moi slug van vao duoc.
 export async function generateStaticParams() {
-    const categories = await getCategories();
-    const out: { slug: string; so: string }[] = [];
-    for (const cat of categories) {
-        const tong = await demSoTrangDanhMuc(cat.id);
-        for (let i = 2; i <= tong; i++) out.push({ slug: cat.slug, so: String(i) });
-    }
-    return out;
+    return [];
 }
 
 export async function generateMetadata({ params }: Props) {
