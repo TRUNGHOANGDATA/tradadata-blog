@@ -6,6 +6,7 @@ import { usePathname } from 'next/navigation';
 import { useSession, signIn, signOut } from 'next-auth/react';
 import { Menu, X, LogIn, LogOut, User, LayoutDashboard, ChevronDown, Bookmark, ShoppingCart } from 'lucide-react';
 import { ThemeToggle } from '@/components/ui/ThemeToggle';
+import { LogoThuongHieu } from '@/components/layout/LogoThuongHieu';
 import { SearchBar } from '@/components/ui/SearchBar';
 import { NAV_ITEMS, SITE_CONFIG } from '@/lib/constants';
 import { useCart } from '@/lib/cart/CartContext';
@@ -26,9 +27,13 @@ function laActive(pathname: string, href: string): boolean {
 export function Header({
     categories = [],
     categoryCounts = {},
+    logoUrl,
+    logoToiUrl,
 }: {
     categories?: Category[];
     categoryCounts?: Record<string, number>;
+    logoUrl: string;
+    logoToiUrl?: string;
 }) {
     const { data: session } = useSession();
     const pathname = usePathname();
@@ -50,7 +55,16 @@ export function Header({
                         <div className="flex items-center justify-between h-16 gap-2">
                             {/* Logo */}
                             <Link href="/" className="flex items-center gap-2.5 group flex-shrink-0">
-                                <img src="/LOGO_TRA_DA_DATA.jpg" alt={SITE_CONFIG.name} className="h-11 w-11 object-cover transition-transform group-hover:scale-105 rounded-full shadow-sm ring-1 ring-line" />
+                                {/* Alt mo ta DICH DEN chu khong phai mo ta anh: duoi 1024px
+                                    chu "Tra Da Data" bi an, nen logo la thu duy nhat dat ten
+                                    cho lien ket nay. */}
+                                <LogoThuongHieu
+                                    src={logoUrl}
+                                    srcToi={logoToiUrl}
+                                    canh={44}
+                                    alt={`${SITE_CONFIG.name} — trang chủ`}
+                                    className="h-11 w-11 transition-transform group-hover:scale-105 shadow-sm ring-1 ring-line"
+                                />
                                 <span className="hidden lg:block font-bold text-lg text-fg tracking-tight group-hover:text-brand-600 dark:group-hover:text-brand-400 transition-colors">
                                     Trà Đá Data
                                 </span>

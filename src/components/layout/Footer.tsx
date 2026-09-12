@@ -1,6 +1,9 @@
 import Link from 'next/link';
 import { Mail, Phone } from 'lucide-react';
 import { SITE_CONFIG, DEFAULT_CATEGORIES } from '@/lib/constants';
+import { LogoThuongHieu } from '@/components/layout/LogoThuongHieu';
+import { getBrandAssets } from '@/lib/data/settings';
+import { coLogoRiengChoNenToi, duongDanAnh } from '@/lib/brand';
 import { unstable_cache } from 'next/cache';
 import { supabaseAdmin } from '@/lib/supabase/server';
 
@@ -38,7 +41,9 @@ const getFooterSettings = unstable_cache(
 );
 
 export async function Footer() {
-    const settings = await getFooterSettings();
+    // Ca hai deu di qua `unstable_cache` tag 'settings' — bat buoc, vi Footer
+    // nam trong layout goc.
+    const [settings, brand] = await Promise.all([getFooterSettings(), getBrandAssets()]);
 
     return (
         <footer className="bg-sunken text-fg-muted border-t border-line mt-20">
@@ -47,7 +52,15 @@ export async function Footer() {
                     {/* Brand */}
                     <div className="md:col-span-1">
                         <Link href="/" className="flex items-center gap-2 mb-4 group w-fit">
-                            <img src="/LOGO_TRA_DA_DATA.jpg" alt={SITE_CONFIG.name} className="h-12 w-12 object-cover transition-transform group-hover:scale-105 rounded-full shadow-sm" />
+                            {/* Lien ket nay KHONG co chu nao ben trong, nen alt bat buoc
+                                phai co noi dung — de trong la lien ket khong co ten. */}
+                            <LogoThuongHieu
+                                src={duongDanAnh('logo', brand)}
+                                srcToi={coLogoRiengChoNenToi(brand) ? duongDanAnh('logo-toi', brand) : undefined}
+                                canh={48}
+                                alt={`${SITE_CONFIG.name} — trang chủ`}
+                                className="h-12 w-12 transition-transform group-hover:scale-105 shadow-sm"
+                            />
                         </Link>
                         <p className="text-sm leading-relaxed">
                             {SITE_CONFIG.description}. Nơi chia sẻ kiến thức thực tế, bài viết chất lượng cho cộng đồng.
