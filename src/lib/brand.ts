@@ -16,7 +16,7 @@
  *     `og-default.png` 640x640 cũ.
  */
 
-export type LoaiAnhThuongHieu = 'logo' | 'logo-toi' | 'banner' | 'og';
+export type LoaiAnhThuongHieu = 'logo' | 'logo-toi' | 'hero' | 'banner' | 'og';
 
 export type ChuanAnhThuongHieu = {
     nhan: string;
@@ -55,9 +55,19 @@ export const CHUAN_ANH: Record<LoaiAnhThuongHieu, ChuanAnhThuongHieu> = {
         tuyChon: true,
         macDinh: '/LOGO_TRA_DA_DATA.jpg',
     },
+    hero: {
+        nhan: 'Ảnh minh hoạ trang chủ',
+        moTa: 'Đứng cạnh tiêu đề ở đầu trang chủ. Ảnh DỌC, và ĐỪNG có chữ trong ảnh — chữ tiêu đề đã nằm trên trang rồi.',
+        rong: 640,
+        cao: 760,
+        dinhDang: 'PNG hoặc JPG, ảnh dọc (khoảng 5:6)',
+        kbToiDa: 300,
+        tuyChon: false,
+        macDinh: '/images/hero-default.jpg',
+    },
     banner: {
-        nhan: 'Banner trang chủ',
-        moTa: 'Hiện ở đầu trang chủ trên màn hình từ 768px trở lên, và ở đầu email gửi khách.',
+        nhan: 'Banner chia sẻ & email',
+        moTa: 'KHÔNG hiện trên trang chủ. Dùng làm đầu email gửi khách, và là nguồn để cắt ra ảnh chia sẻ mạng xã hội.',
         rong: 1600,
         cao: 900,
         dinhDang: 'PNG hoặc JPG, tỉ lệ 16:9',
@@ -78,12 +88,13 @@ export const CHUAN_ANH: Record<LoaiAnhThuongHieu, ChuanAnhThuongHieu> = {
 };
 
 /** Thứ tự hiện các ô trong tab "Thương hiệu" của trang cài đặt. */
-export const THU_TU_O_ANH: LoaiAnhThuongHieu[] = ['logo', 'banner', 'logo-toi', 'og'];
+export const THU_TU_O_ANH: LoaiAnhThuongHieu[] = ['logo', 'hero', 'banner', 'logo-toi', 'og'];
 
 /** Hình dạng object lưu ở `site_settings.brand_assets`. */
 export type BrandAssets = {
     logo_url?: string | null;
     logo_dark_url?: string | null;
+    hero_url?: string | null;
     banner_url?: string | null;
     og_image_url?: string | null;
 };
@@ -94,6 +105,7 @@ export const BRAND_ASSETS_KEY = 'brand_assets';
 export const KHOA_THEO_LOAI: Record<LoaiAnhThuongHieu, keyof BrandAssets> = {
     logo: 'logo_url',
     'logo-toi': 'logo_dark_url',
+    hero: 'hero_url',
     banner: 'banner_url',
     og: 'og_image_url',
 };
