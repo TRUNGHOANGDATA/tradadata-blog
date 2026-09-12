@@ -1,0 +1,22 @@
+/*
+ * Nhuộm màu chủ đạo của bảng tính sang XANH EXCEL (#217346).
+ *
+ * Univer tô màu nhấn (tab đang chọn, nút chính, viền focus) qua các token
+ * `--univer-primary-*`. Giá trị mặc định do theme nạp lúc chạy nên không sửa
+ * trong file CSS gốc được — ta ghi đè ở đây, scope vào `.bang-tinh-excel` để
+ * KHÔNG đụng phần còn lại của site.
+ *
+ * Dải màu dựng quanh #217346 (đúng màu ribbon Excel) làm bậc 600.
+ */
+.bang-tinh-excel {
+    --univer-primary-50: #e9f3ee;
+    --univer-primary-100: #cfe6da;
+    --univer-primary-200: #a3d0b8;
+    --univer-primary-300: #6fb691;
+    --univer-primary-400: #3d9a6d;
+    --univer-primary-500: #2d8a5c;
+    --univer-primary-600: #217346;
+    --univer-primary-700: #1a5c38;
+    --univer-primary-800: #14472b;
+    --univer-primary-900: #0e3520;
+}
