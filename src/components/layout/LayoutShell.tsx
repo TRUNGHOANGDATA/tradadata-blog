@@ -3,15 +3,20 @@
 import { usePathname } from 'next/navigation';
 
 /**
- * Client wrapper that hides its children on /admin pages.
- * Used to conditionally render Footer & FloatingActions
- * without importing them directly (they may be server components).
+ * Vo boc client: AN con (Footer, FloatingActions) o mot so route.
+ * Dung de render co dieu kien ma khong import truc tiep (chung co the la
+ * server component).
+ *
+ * - /admin: trang quan tri, khong can footer/nut lien he.
+ * - /thuc-hanh: bang tinh chiem tron chieu cao man hinh (h-[calc(100vh-4rem)]),
+ *   footer nam duoi fold la thua; con hai nut noi Zalo/Messenger thi DE LEN o
+ *   tinh o goc phai duoi — dung cho nguoi ta dang go cong thuc.
  */
+const ROUTE_AN = ['/admin', '/thuc-hanh'];
+
 export function LayoutShell({ children }: { children: React.ReactNode }) {
     const pathname = usePathname();
-    const isAdmin = pathname.startsWith('/admin');
-
-    if (isAdmin) return null;
+    if (ROUTE_AN.some((r) => pathname === r || pathname.startsWith(`${r}/`))) return null;
 
     return <>{children}</>;
 }

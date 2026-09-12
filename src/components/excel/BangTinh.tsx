@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { Upload, Download, FilePlus2, Maximize2, Minimize2 } from 'lucide-react';
+import { Upload, Download, FilePlus2, Maximize2, Minimize2, CircleHelp, Sheet } from 'lucide-react';
 import { doiNgayVietSangSerial } from '@/lib/excel/ngay-thang';
 import { ghepNgonNgu } from '@/lib/excel/locale';
 import { docPhien, luuPhien, xoaPhien } from '@/lib/excel/luu-phien';
@@ -19,7 +19,12 @@ import '@univerjs/presets/lib/styles/preset-sheets-data-validation.css';
 import '@univerjs/presets/lib/styles/preset-sheets-find-replace.css';
 import '@univerjs/presets/lib/styles/preset-sheets-table.css';
 import '@univerjs/presets/lib/styles/preset-sheets-note.css';
+import '@univerjs/presets/lib/styles/preset-sheets-hyper-link.css';
+import '@univerjs/presets/lib/styles/preset-sheets-thread-comment.css';
+import '@univerjs/presets/lib/styles/preset-sheets-drawing.css';
 // Ghi đè màu chủ đạo sang xanh Excel — import SAU để thắng CSS gốc của Univer.
+// Vẫn cần dù đã dùng `greenTheme`: bậc 600 của theme đó là #057A55 (xanh ngọc),
+// không phải #217346 của ribbon Excel.
 import './excel-theme.css';
 
 /** Định dạng ngày dùng thống nhất cả khi hiện lẫn khi nhận: ngày/tháng/năm. */
@@ -41,6 +46,9 @@ export default function BangTinh() {
     const [loi, setLoi] = useState<string | null>(null);
     const [thongBao, setThongBao] = useState<string | null>(null);
     const [toanManHinh, setToanManHinh] = useState(false);
+    const [hienGiupDo, setHienGiupDo] = useState(false);
+    // Khung ngoài cùng — phần tử được đưa lên toàn màn hình bằng Fullscreen API.
+    const khungRef = useRef<HTMLDivElement>(null);
 
     // --- Khởi tạo Univer một lần ---
     useEffect(() => {
@@ -48,7 +56,7 @@ export default function BangTinh() {
 
         (async () => {
             const [
-                { createUniver, LocaleType, merge },
+                { createUniver, LocaleType, merge, greenTheme },
                 { UniverSheetsCorePreset },
                 { UniverSheetsFilterPreset },
                 { UniverSheetsSortPreset },
@@ -57,8 +65,11 @@ export default function BangTinh() {
                 { UniverSheetsFindReplacePreset },
                 { UniverSheetsTablePreset },
                 { UniverSheetsNotePreset },
+                { UniverSheetsHyperLinkPreset },
+                { UniverSheetsThreadCommentPreset },
+                { UniverSheetsDrawingPreset },
                 enCore, viCore,
-                enFilter, enSort, enCF, enDV, enFR, enTable, enNote,
+                enFilter, enSort, enCF, enDV, enFR, enTable, enNote, enLink, enComment, enDrawing,
             ] = await Promise.all([
                 import('@univerjs/presets'),
                 import('@univerjs/presets/preset-sheets-core'),
@@ -69,6 +80,11 @@ export default function BangTinh() {
                 import('@univerjs/presets/preset-sheets-find-replace'),
                 import('@univerjs/presets/preset-sheets-table'),
                 import('@univerjs/presets/preset-sheets-note'),
+                // Ba preset MIỄN PHÍ đã có trong node_modules nhưng trước đây chưa bật:
+                // siêu liên kết trong ô, ghi chú/thảo luận theo ô, chèn ảnh.
+                import('@univerjs/presets/preset-sheets-hyper-link'),
+                import('@univerjs/presets/preset-sheets-thread-comment'),
+                import('@univerjs/presets/preset-sheets-drawing'),
                 import('@univerjs/presets/preset-sheets-core/locales/en-US'),
                 import('@univerjs/presets/preset-sheets-core/locales/vi-VN'),
                 import('@univerjs/presets/preset-sheets-filter/locales/en-US'),
@@ -78,6 +94,9 @@ export default function BangTinh() {
                 import('@univerjs/presets/preset-sheets-find-replace/locales/en-US'),
                 import('@univerjs/presets/preset-sheets-table/locales/en-US'),
                 import('@univerjs/presets/preset-sheets-note/locales/en-US'),
+                import('@univerjs/presets/preset-sheets-hyper-link/locales/en-US'),
+                import('@univerjs/presets/preset-sheets-thread-comment/locales/en-US'),
+                import('@univerjs/presets/preset-sheets-drawing/locales/en-US'),
             ]);
 
             if (daHuy || !containerRef.current) return;
@@ -87,6 +106,7 @@ export default function BangTinh() {
                 {},
                 enCore.default, enFilter.default, enSort.default, enCF.default,
                 enDV.default, enFR.default, enTable.default, enNote.default,
+                enLink.default, enComment.default, enDrawing.default,
             );
             // Toàn bộ UI tiếng Anh; CHỈ giải thích hàm là tiếng Việt (lấy từ core vi-VN).
             // Bọc merge({}, ...) để khớp kiểu ILanguagePack mà createUniver mong đợi.
@@ -95,8 +115,22 @@ export default function BangTinh() {
             const { univer, univerAPI } = createUniver({
                 locale: LocaleType.EN_US,
                 locales: { [LocaleType.EN_US]: ngonNgu },
+                // Theme xanh chính chủ của Univer làm nền (màu phụ, viền, hover đồng bộ),
+                // rồi excel-theme.css kéo bậc primary về đúng #217346.
+                theme: greenTheme,
+                // Khởi tạo theo đúng chế độ site đang ở, để không nháy trắng->tối.
+                // Đồng bộ về sau do effect bên dưới lo (MutationObserver trên <html>).
+                darkMode: document.documentElement.classList.contains('dark'),
                 presets: [
-                    UniverSheetsCorePreset({ container: containerRef.current }),
+                    UniverSheetsCorePreset({
+                        container: containerRef.current,
+                        // Khai TƯỚNG MINH để ai đọc cũng biết đang ở kiểu nào. Đọc source
+                        // 0.25.1: 'simple' gộp mọi nhóm vào MỘT tab; 'classic' giữ hàng tab
+                        // Start/Insert/Formulas/Data — và 'classic' đang là mặc định, nên
+                        // dòng này không đổi giao diện, chỉ chốt hành vi khỏi lệ thuộc
+                        // mặc định của Univer đổi ở bản sau.
+                        ribbonType: 'classic',
+                    }),
                     UniverSheetsFilterPreset(),
                     UniverSheetsSortPreset(),
                     UniverSheetsConditionalFormattingPreset(),
@@ -104,6 +138,9 @@ export default function BangTinh() {
                     UniverSheetsFindReplacePreset(),
                     UniverSheetsTablePreset(),
                     UniverSheetsNotePreset(),
+                    UniverSheetsHyperLinkPreset(),
+                    UniverSheetsThreadCommentPreset(),
+                    UniverSheetsDrawingPreset(),
                 ],
             });
 
@@ -176,9 +213,54 @@ export default function BangTinh() {
         return () => clearTimeout(t);
     }, [toanManHinh, sanSang]);
 
-    // Esc để thoát toàn màn hình
+    // Bảng tính đi theo nút sáng/tối của site. ThemeToggle chỉ bật/tắt class
+    // `dark` trên <html> (không phát sự kiện), nên theo dõi thẳng attribute đó.
+    // Trước đây grid luôn trắng kể cả khi cả site đã tối — chói và lệch tông.
     useEffect(() => {
-        if (!toanManHinh) return;
+        if (!sanSang) return;
+        const apDung = () => {
+            const toi = document.documentElement.classList.contains('dark');
+            apiRef.current?.toggleDarkMode(toi);
+            // Đo 13/09/2026 trên 0.25.1: `toggleDarkMode(true)` gắn class
+            // `univer-dark` lên <html>, nhưng `toggleDarkMode(false)` KHÔNG gỡ nó
+            // ra — grid kẹt ở chế độ tối sau lần bật đầu tiên. Tự đồng bộ class
+            // cho chắc; nếu Univer có gỡ thì dòng này vô hại.
+            document.documentElement.classList.toggle('univer-dark', toi);
+        };
+        apDung();
+        const quanSat = new MutationObserver(apDung);
+        quanSat.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+        return () => quanSat.disconnect();
+    }, [sanSang]);
+
+    // Toàn màn hình bằng Fullscreen API THẬT (ẩn cả thanh tab trình duyệt) khi có;
+    // trình duyệt không hỗ trợ thì rơi về khung `fixed inset-0` như trước.
+    // Trạng thái đọc từ `fullscreenchange` để Esc / nút F11 của trình duyệt cũng
+    // đồng bộ, không chỉ nút của mình.
+    useEffect(() => {
+        const dongBo = () => setToanManHinh(Boolean(document.fullscreenElement));
+        document.addEventListener('fullscreenchange', dongBo);
+        return () => document.removeEventListener('fullscreenchange', dongBo);
+    }, []);
+
+    const doiToanManHinh = useCallback(async () => {
+        const khung = khungRef.current;
+        if (!khung) return;
+        if (!document.fullscreenEnabled) {
+            setToanManHinh((v) => !v);
+            return;
+        }
+        try {
+            if (document.fullscreenElement) await document.exitFullscreen();
+            else await khung.requestFullscreen();
+        } catch {
+            setToanManHinh((v) => !v);
+        }
+    }, []);
+
+    // Esc để thoát chế độ khung `fixed` (trường hợp không có Fullscreen API).
+    useEffect(() => {
+        if (!toanManHinh || document.fullscreenElement) return;
         const onKey = (e: KeyboardEvent) => {
             if (e.key === 'Escape') setToanManHinh(false);
         };
@@ -242,36 +324,78 @@ export default function BangTinh() {
         thayWorkbook({});
     }, [thayWorkbook]);
 
+    // Nút "ma" (không viền, không nền) theo token của site. Đây là thao tác phụ
+    // (mở/tải/phiên mới) nên không được nổi hơn ribbon của bảng tính bên dưới.
+    // Bản cũ dùng `border-gray-300 bg-white` — xám lạc hệ, và không có bản tối.
     const nutClass =
-        'inline-flex items-center gap-1.5 rounded-md border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-100 disabled:opacity-50';
+        'inline-flex min-h-9 items-center gap-1.5 whitespace-nowrap rounded-lg px-2.5 text-sm font-medium text-fg-muted transition-colors hover:bg-sunken hover:text-fg disabled:opacity-50 disabled:hover:bg-transparent';
 
     return (
         <div
+            ref={khungRef}
             className={
-                toanManHinh
-                    ? 'bang-tinh-excel fixed inset-0 z-[60] flex flex-col bg-white'
-                    : 'bang-tinh-excel flex h-full w-full flex-col'
+                toanManHinh && !document.fullscreenElement
+                    ? 'bang-tinh-excel fixed inset-0 z-[60] flex flex-col bg-card'
+                    : 'bang-tinh-excel flex h-full w-full flex-col bg-card'
             }
         >
-            {/* Thanh thao tác của trang (không phải của Univer) */}
-            <div className="flex flex-wrap items-center gap-2 border-b bg-gray-50 px-3 py-2">
+            {/* Thanh thao tác của trang (không phải của Univer). Một hàng, thấp,
+                cùng màu nền với ribbon để hai thanh đọc như một khối. */}
+            <div className="relative flex items-center gap-1 border-b border-line bg-card px-2 py-1">
+                <span className="mr-2 inline-flex items-center gap-1.5 pl-1 text-sm font-semibold text-fg">
+                    <Sheet className="h-4 w-4 text-brand-600" aria-hidden="true" />
+                    Thực hành Excel
+                </span>
+
                 <button type="button" onClick={() => inputFileRef.current?.click()} disabled={!sanSang || dangXuLy} className={nutClass}>
-                    <Upload className="h-4 w-4" /> Mở file Excel
+                    <Upload className="h-4 w-4" aria-hidden="true" /> Mở file
                 </button>
                 <button type="button" onClick={taiVe} disabled={!sanSang || dangXuLy} className={nutClass}>
-                    <Download className="h-4 w-4" /> Tải về máy
+                    <Download className="h-4 w-4" aria-hidden="true" /> Tải về
                 </button>
                 <button type="button" onClick={phienMoi} disabled={!sanSang || dangXuLy} className={nutClass}>
-                    <FilePlus2 className="h-4 w-4" /> Phiên mới
-                </button>
-                <button type="button" onClick={() => setToanManHinh((v) => !v)} disabled={!sanSang} className={`${nutClass} ml-auto`}>
-                    {toanManHinh ? <Minimize2 className="h-4 w-4" /> : <Maximize2 className="h-4 w-4" />}
-                    {toanManHinh ? 'Thoát toàn màn hình' : 'Toàn màn hình'}
+                    <FilePlus2 className="h-4 w-4" aria-hidden="true" /> Phiên mới
                 </button>
 
-                {dangXuLy && <span className="text-sm text-gray-500">Đang xử lý…</span>}
-                {loi && <span className="text-sm text-red-600">{loi}</span>}
-                {thongBao && !loi && <span className="text-sm text-amber-700">{thongBao}</span>}
+                {/* Trạng thái: hiện tại chỗ, có aria-live để trình đọc màn hình đọc. */}
+                <span aria-live="polite" className="ml-2 min-w-0 truncate text-sm">
+                    {dangXuLy && <span className="text-fg-subtle">Đang xử lý…</span>}
+                    {loi && <span className="text-red-600 dark:text-red-400">{loi}</span>}
+                    {thongBao && !loi && <span className="text-amber-700 dark:text-amber-400">{thongBao}</span>}
+                </span>
+
+                <div className="ml-auto flex items-center gap-1">
+                    <button
+                        type="button"
+                        onClick={() => setHienGiupDo((v) => !v)}
+                        aria-expanded={hienGiupDo}
+                        aria-label="Lưu ý khi dùng bảng tính"
+                        className={`${nutClass} min-w-9 justify-center px-0`}
+                    >
+                        <CircleHelp className="h-4 w-4" aria-hidden="true" />
+                    </button>
+                    <button type="button" onClick={doiToanManHinh} disabled={!sanSang} className={nutClass}>
+                        {toanManHinh ? <Minimize2 className="h-4 w-4" aria-hidden="true" /> : <Maximize2 className="h-4 w-4" aria-hidden="true" />}
+                        <span className="hidden xl:inline">{toanManHinh ? 'Thoát toàn màn hình' : 'Toàn màn hình'}</span>
+                    </button>
+                </div>
+
+                {/* Ba lưu ý trước đây chiếm nguyên một thanh xám phía trên; giờ nằm
+                    trong nút "?" — ai cần mới mở. */}
+                {hienGiupDo && (
+                    <div
+                        role="dialog"
+                        aria-label="Lưu ý khi dùng bảng tính"
+                        className="absolute right-2 top-full z-20 mt-1 w-80 rounded-2xl border border-line bg-card p-4 text-sm leading-relaxed text-fg-muted shadow-e3"
+                    >
+                        <ul className="space-y-2">
+                            <li>Bảng tính chạy ngay trong trình duyệt, không cần cài Excel hay tài khoản Microsoft.</li>
+                            <li>Giao diện tiếng Anh như Excel; giải thích hàm khi gõ là tiếng Việt.</li>
+                            <li>Hỗ trợ hầu hết hàm Excel 365 mới (XLOOKUP, FILTER, LET, LAMBDA, TEXTSPLIT…). Chưa có: GROUPBY, PIVOTBY, REGEXTEST, TRIMRANGE.</li>
+                            <li>Mỗi người một phiên riêng — bấm <b className="text-fg">Tải về</b> để giữ bài dưới dạng .xlsx.</li>
+                        </ul>
+                    </div>
+                )}
 
                 <input ref={inputFileRef} type="file" accept=".xlsx,.xls" onChange={khiChonFile} className="hidden" />
             </div>
