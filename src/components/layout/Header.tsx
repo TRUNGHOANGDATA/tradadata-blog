@@ -135,10 +135,11 @@ export function Header({
                                                 onMouseEnter={() => setProdOpen(true)}
                                                 onMouseLeave={() => setProdOpen(false)}
                                             >
-                                                <Link
-                                                    href={item.href}
-                                                    onClick={() => setProdOpen(false)}
+                                                <button
+                                                    type="button"
+                                                    onClick={() => setProdOpen(true)}
                                                     aria-expanded={prodOpen}
+                                                    aria-haspopup="menu"
                                                     className={`inline-flex items-center gap-1 shrink-0 whitespace-nowrap px-3 py-2 rounded-xl text-sm font-medium transition-all duration-200 ${active
                                                         ? 'text-brand-700 dark:text-brand-300 bg-brand-50 dark:bg-brand-900/30'
                                                         : 'text-fg-muted hover:text-fg hover:bg-sunken'
@@ -146,7 +147,7 @@ export function Header({
                                                 >
                                                     {item.label}
                                                     <ChevronDown className={`h-3.5 w-3.5 transition-transform duration-200 ${prodOpen ? 'rotate-180' : ''}`} />
-                                                </Link>
+                                                </button>
 
                                                 {prodOpen && (
                                                     <div className="absolute left-1/2 -translate-x-1/2 top-full pt-2 w-56 animate-slide-down">
