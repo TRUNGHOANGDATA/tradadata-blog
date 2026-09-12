@@ -14,12 +14,26 @@ export const SITE_CONFIG = {
 // Navigation
 // ============================================
 
-export const NAV_ITEMS = [
+export type NavItem = {
+    label: string;
+    href: string;
+    /** Nếu có, mục này là dropdown; `href` vẫn bấm được (dẫn tới trang tổng). */
+    children?: { label: string; href: string }[];
+};
+
+export const NAV_ITEMS: NavItem[] = [
     { label: 'Trang chủ', href: '/' },
     { label: 'Bài viết', href: '/blog' },
     { label: 'Chủ đề', href: '/categories' },
-    { label: 'Khóa học', href: '/courses' },
-    { label: 'Phần mềm bán hàng', href: '/phan-mem-ban-hang' },
+    { label: 'Excel Online', href: '/thuc-hanh' },
+    {
+        label: 'Sản phẩm và dịch vụ',
+        href: '/courses',
+        children: [
+            { label: 'Khóa học', href: '/courses' },
+            { label: 'Phần mềm bán hàng', href: '/phan-mem-ban-hang' },
+        ],
+    },
     { label: 'Giới thiệu', href: '/about' },
 ];
 
