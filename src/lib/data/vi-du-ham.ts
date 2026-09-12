@@ -1,5 +1,6 @@
 import { unstable_cache } from 'next/cache';
 import { supabaseAdmin } from '@/lib/supabase/server';
+import { anToan, kiemLoiTruyVan } from '@/lib/data/an-toan';
 import type { IWorkbookData } from '@univerjs/core';
 
 /**
@@ -36,7 +37,7 @@ const COT_DANH_MUC = 'id, ten_ham, nhom, mo_ta, cong_thuc_mau, post_slug, ho_tro
 
 const TAG = 'vi-du-ham';
 
-export const getDanhMucHam = unstable_cache(
+export const getDanhMucHam = anToan(unstable_cache(
     async (): Promise<ViDuHam[]> => {
         if (!supabaseAdmin) return [];
         const { data, error } = await supabaseAdmin
@@ -44,18 +45,17 @@ export const getDanhMucHam = unstable_cache(
             .select(COT_DANH_MUC)
             .order('nhom', { ascending: true })
             .order('thu_tu', { ascending: true });
-        if (error) {
-            // Bảng chưa tạo (42P01) là chuyện bình thường ở môi trường mới.
-            if (error.code !== '42P01') console.error('[vi-du-ham] Lỗi đọc danh mục:', error.message);
-            return [];
-        }
+        // Bảng chưa tạo (42P01) là bình thường ở môi trường mới -> rỗng (và được
+        // cache, đúng ý: không có bảng thì không cần hỏi lại DB mỗi lượt).
+        // Lỗi khác -> ném để không cache rỗng; anToan bên ngoài trả [] một lượt.
+        if (kiemLoiTruyVan(error, 'vi-du-ham.getDanhMucHam', { boQuaKhongCoBang: true })) return [];
         return (data ?? []) as ViDuHam[];
     },
     ['vi-du-ham-danh-muc-v1'],
     { revalidate: 600, tags: [TAG] }
-);
+), []);
 
-export const getViDuHam = unstable_cache(
+export const getViDuHam = anToan(unstable_cache(
     async (tenHam: string): Promise<ViDuHamDayDu | null> => {
         if (!supabaseAdmin) return null;
         const { data, error } = await supabaseAdmin
@@ -63,15 +63,12 @@ export const getViDuHam = unstable_cache(
             .select(`${COT_DANH_MUC}, snapshot`)
             .eq('ten_ham', tenHam.toUpperCase())
             .maybeSingle();
-        if (error) {
-            if (error.code !== '42P01') console.error(`[vi-du-ham] Lỗi đọc ${tenHam}:`, error.message);
-            return null;
-        }
+        if (kiemLoiTruyVan(error, 'vi-du-ham.getViDuHam', { boQuaKhongCoDong: true, boQuaKhongCoBang: true })) return null;
         return (data as ViDuHamDayDu | null) ?? null;
     },
     ['vi-du-ham-mot-v1'],
     { revalidate: 600, tags: [TAG] }
-);
+), null);
 
 /** Gom danh mục theo nhóm, giữ đúng thứ tự nhóm xuất hiện. */
 export function gomTheoNhom(ds: ViDuHam[]): Array<{ nhom: string; ham: ViDuHam[] }> {
