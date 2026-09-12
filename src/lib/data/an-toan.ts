@@ -25,8 +25,19 @@ type LoiSupabase = { code?: string; message?: string; details?: string } | null 
 
 /** PostgREST: `.single()` / `.maybeSingle()` không có dòng nào. Đây KHÔNG phải lỗi hệ thống. */
 const MA_KHONG_CO_DONG = 'PGRST116';
-/** Postgres: bảng chưa tồn tại — môi trường mới chưa chạy SQL tay. */
-const MA_KHONG_CO_BANG = '42P01';
+/**
+ * Bảng chưa tồn tại — môi trường mới chưa chạy SQL tay.
+ *
+ * HAI mã, không phải một: Postgres trả `42P01` khi câu lệnh chạm bảng không có,
+ * nhưng PostgREST chặn TRƯỚC ở tầng schema cache và trả `PGRST205`
+ * ("Could not find the table in schema cache"). Đo 13/09/2026 với
+ * `vi_du_ham` chưa tạo: nhận đúng `PGRST205`.
+ *
+ * Thiếu mã này là hàm NÉM thay vì trả rỗng ⇒ `unstable_cache` không cache ⇒
+ * truy vấn lại MỖI REQUEST vào một bảng không tồn tại — đúng kiểu tải vô ích
+ * đang giết Supabase gói NANO.
+ */
+const MA_KHONG_CO_BANG = new Set(['42P01', 'PGRST205']);
 
 export class LoiTruyVan extends Error {
     readonly noi: string;
@@ -51,7 +62,7 @@ export function kiemLoiTruyVan(
 ): boolean {
     if (!error) return false;
     if (opts.boQuaKhongCoDong && error.code === MA_KHONG_CO_DONG) return true;
-    if (opts.boQuaKhongCoBang && error.code === MA_KHONG_CO_BANG) return true;
+    if (opts.boQuaKhongCoBang && error.code && MA_KHONG_CO_BANG.has(error.code)) return true;
     throw new LoiTruyVan(noi, error);
 }
 
