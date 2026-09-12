@@ -75,9 +75,14 @@ export function PinnedSlider({ posts }: PinnedSliderProps) {
     if (total === 0) return null;
 
     return (
-        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-10 relative z-10 mb-8">
+        // KHONG dung `-mt-10` de thut len de hero nua. Cai am le do thiet ke cho
+        // hero GRADIENT cu (khong co gi o goc phai duoi). Voi hero chia doi hien
+        // tai, anh minh hoa tran toi mep man hinh con the slider bi bo trong
+        // `max-w-7xl` => anh tho han ra BEN PHAI the, hai lop chong nhau trong vo
+        // lan. Do 13/09/2026 tren production.
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative mb-12">
             <div
-                className="relative w-full overflow-hidden bg-surface-900 rounded-2xl shadow-2xl"
+                className="relative w-full overflow-hidden bg-surface-900 rounded-2xl shadow-e3"
                 onMouseEnter={() => setIsPaused(true)}
                 onMouseLeave={() => setIsPaused(false)}
                 // Nguoi dung ban phim cung phai dung duoc bang tieu diem: truoc day
