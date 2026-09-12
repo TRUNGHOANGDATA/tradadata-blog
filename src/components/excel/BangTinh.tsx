@@ -1,11 +1,16 @@
 'use client';
 
-import { useCallback, useEffect, useRef, useState } from 'react';
-import { Upload, Download, FilePlus2, Maximize2, Minimize2, CircleHelp, Sheet } from 'lucide-react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import Link from 'next/link';
+import {
+    Upload, Download, FilePlus2, Maximize2, Minimize2, CircleHelp, Sheet,
+    FunctionSquare, PanelRightClose, PanelRightOpen, ExternalLink, RotateCcw, Copy, Check, CloudCheck, CloudOff,
+} from 'lucide-react';
 import { doiNgayVietSangSerial } from '@/lib/excel/ngay-thang';
 import { ghepNgonNgu } from '@/lib/excel/locale';
 import { docPhien, luuPhien, xoaPhien } from '@/lib/excel/luu-phien';
 import { docXlsxSangSnapshot, taiSnapshotXuongXlsx } from '@/lib/excel/xlsx';
+import { gomTheoNhom, type ViDuHam } from '@/lib/data/vi-du-ham';
 import type { FUniver } from '@univerjs/presets';
 import type { IWorkbookData } from '@univerjs/core';
 
@@ -34,7 +39,23 @@ const DINH_DANG_NGAY_KIEU_MY = new Set(['mm/dd/yyyy', 'yyyy-mm-dd']);
 
 const TEN_FILE_TAI_VE = 'thuc-hanh-tradadata.xlsx';
 
-export default function BangTinh() {
+/** Khoá "bảng trắng" trong bai_lam_excel — không gắn hàm nào. */
+const HAM_TU_DO = '_tu_do';
+
+/** Đọc `#ham=XLOOKUP` từ URL. Dùng hash chứ không dùng searchParams để trang giữ tĩnh. */
+function docHamTuHash(): string | null {
+    const m = /(?:^#|&)ham=([A-Za-z0-9._]+)/.exec(window.location.hash);
+    return m ? m[1].toUpperCase() : null;
+}
+
+export default function BangTinh({
+    danhMuc = [],
+    laAdmin = false,
+}: {
+    danhMuc?: ViDuHam[];
+    /** Admin thấy thêm nút "Sao chép snapshot" để soạn ví dụ trong /admin/vi-du-ham. */
+    laAdmin?: boolean;
+}) {
     const containerRef = useRef<HTMLDivElement>(null);
     const inputFileRef = useRef<HTMLInputElement>(null);
     const apiRef = useRef<FUniver | null>(null);
@@ -49,6 +70,24 @@ export default function BangTinh() {
     const [hienGiupDo, setHienGiupDo] = useState(false);
     // Khung ngoài cùng — phần tử được đưa lên toàn màn hình bằng Fullscreen API.
     const khungRef = useRef<HTMLDivElement>(null);
+
+    // --- Sân chơi hàm 365 ---
+    const [hienPanel, setHienPanel] = useState(true);
+    /** Hàm đang chọn; null = bảng tự do. */
+    const [hamDangChon, setHamDangChon] = useState<string | null>(null);
+    const [viDuDangNap, setViDuDangNap] = useState<string | null>(null);
+    const [daSaoChep, setDaSaoChep] = useState(false);
+    /** Trạng thái lưu online: 'chua' | 'dang' | 'xong' | 'loi'. */
+    const [luuOnline, setLuuOnline] = useState<'chua' | 'dang' | 'xong' | 'loi'>('chua');
+    // Đọc trong callback lưu (debounce) mà không kéo state vào deps của effect.
+    const hamDangChonRef = useRef<string | null>(null);
+    hamDangChonRef.current = hamDangChon;
+
+    const nhomHam = useMemo(() => gomTheoNhom(danhMuc), [danhMuc]);
+    const viDuHienTai = useMemo(
+        () => (hamDangChon ? danhMuc.find((h) => h.ten_ham === hamDangChon) ?? null : null),
+        [danhMuc, hamDangChon]
+    );
 
     // --- Khởi tạo Univer một lần ---
     useEffect(() => {
@@ -152,10 +191,22 @@ export default function BangTinh() {
             univerAPI.getActiveWorkbook()?.setNumfmtLocal('en'); // số kiểu Mỹ: 1,234.57
 
             // --- Lưu phiên (debounce) ---
+            // Hai tầng: sessionStorage (tức thì, chống mất khi refresh) và DB qua
+            // /api/thuc-hanh/bai-lam (đổi máy vẫn còn; trang này đã bắt đăng nhập).
+            // Lưu DB lỗi (mạng, DB nghẹn) thì chỉ đổi biểu tượng, KHÔNG làm phiền.
             let hen: ReturnType<typeof setTimeout> | null = null;
             const luuNgay = () => {
                 const snap = univerAPI.getActiveWorkbook()?.save();
-                if (snap) luuPhien(snap);
+                if (!snap) return;
+                luuPhien(snap);
+                setLuuOnline('dang');
+                fetch('/api/thuc-hanh/bai-lam', {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ ten_ham: hamDangChonRef.current ?? HAM_TU_DO, snapshot: snap }),
+                })
+                    .then((r) => setLuuOnline(r.ok ? 'xong' : 'loi'))
+                    .catch(() => setLuuOnline('loi'));
             };
             const luuTre = () => {
                 if (hen) clearTimeout(hen);
@@ -321,8 +372,81 @@ export default function BangTinh() {
         setLoi(null);
         setThongBao(null);
         xoaPhien();
+        setHamDangChon(null);
+        if (window.location.hash) history.replaceState(null, '', window.location.pathname);
         thayWorkbook({});
     }, [thayWorkbook]);
+
+    // --- Chọn một hàm: ưu tiên bài đã lưu của người này, không có thì nạp ví dụ mẫu ---
+    const napHam = useCallback(async (tenHam: string, { epViDuGoc = false } = {}) => {
+        const ten = tenHam.toUpperCase();
+        setLoi(null);
+        setThongBao(null);
+        setViDuDangNap(ten);
+        try {
+            let snapshot: Partial<IWorkbookData> | null = null;
+            let nguon: 'bai-lam' | 'vi-du' = 'vi-du';
+
+            if (!epViDuGoc) {
+                const rBai = await fetch(`/api/thuc-hanh/bai-lam?ten_ham=${encodeURIComponent(ten)}`);
+                if (rBai.ok) {
+                    snapshot = (await rBai.json()).snapshot as Partial<IWorkbookData>;
+                    nguon = 'bai-lam';
+                }
+            }
+            if (!snapshot) {
+                const rViDu = await fetch(`/api/vi-du-ham?ten=${encodeURIComponent(ten)}`);
+                if (!rViDu.ok) throw new Error('khong-co-vi-du');
+                snapshot = (await rViDu.json()).item?.snapshot ?? null;
+            }
+
+            setHamDangChon(ten);
+            history.replaceState(null, '', `${window.location.pathname}#ham=${ten}`);
+
+            if (snapshot) {
+                thayWorkbook(snapshot);
+                if (nguon === 'bai-lam') setThongBao('Đã mở bài bạn làm lần trước. Muốn về ví dụ gốc thì bấm "Nạp lại ví dụ".');
+            } else {
+                // Hàm có trong danh mục nhưng admin chưa soạn ví dụ: mở bảng trắng
+                // kèm công thức mẫu ở A1 để người dùng có chỗ bắt đầu.
+                const vd = danhMuc.find((h) => h.ten_ham === ten);
+                thayWorkbook({});
+                if (vd?.cong_thuc_mau) {
+                    apiRef.current?.getActiveWorkbook()?.getActiveSheet()?.getRange(0, 0).setValue(vd.cong_thuc_mau);
+                }
+                setThongBao('Hàm này chưa có ví dụ nạp sẵn — công thức mẫu đã đặt ở A1, bạn dựng dữ liệu rồi thử.');
+            }
+        } catch {
+            setLoi('Không tải được ví dụ. Kiểm tra mạng rồi bấm lại hàm đó.');
+        } finally {
+            setViDuDangNap(null);
+        }
+    }, [danhMuc, thayWorkbook]);
+
+    // Mở từ bài viết: /thuc-hanh#ham=XLOOKUP. Chờ bảng tính sẵn sàng rồi mới nạp.
+    useEffect(() => {
+        if (!sanSang) return;
+        const ap = () => {
+            const ten = docHamTuHash();
+            if (ten && ten !== hamDangChonRef.current) napHam(ten);
+        };
+        ap();
+        window.addEventListener('hashchange', ap);
+        return () => window.removeEventListener('hashchange', ap);
+    }, [sanSang, napHam]);
+
+    // Admin: sao chép snapshot để dán vào /admin/vi-du-ham.
+    const saoChepSnapshot = useCallback(async () => {
+        const snap = apiRef.current?.getActiveWorkbook()?.save();
+        if (!snap) return;
+        try {
+            await navigator.clipboard.writeText(JSON.stringify(snap));
+            setDaSaoChep(true);
+            setTimeout(() => setDaSaoChep(false), 1800);
+        } catch {
+            setLoi('Trình duyệt không cho sao chép tự động — mở console và dùng "Tải về" thay thế.');
+        }
+    }, []);
 
     // Nút "ma" (không viền, không nền) theo token của site. Đây là thao tác phụ
     // (mở/tải/phiên mới) nên không được nổi hơn ribbon của bảng tính bên dưới.
@@ -365,6 +489,33 @@ export default function BangTinh() {
                 </span>
 
                 <div className="ml-auto flex items-center gap-1">
+                    {/* Trạng thái lưu online — chỉ biểu tượng, có tên cho trình đọc màn hình */}
+                    <span
+                        className="mr-1 inline-flex min-h-9 items-center text-fg-subtle"
+                        title={luuOnline === 'loi' ? 'Chưa lưu được online — bài vẫn giữ trong tab này' : luuOnline === 'xong' ? 'Đã lưu online' : luuOnline === 'dang' ? 'Đang lưu…' : ''}
+                        aria-live="polite"
+                    >
+                        {luuOnline === 'xong' && <CloudCheck className="h-4 w-4 text-brand-600" aria-label="Đã lưu online" />}
+                        {luuOnline === 'loi' && <CloudOff className="h-4 w-4 text-amber-600" aria-label="Chưa lưu được online" />}
+                        {luuOnline === 'dang' && <CloudCheck className="h-4 w-4 animate-pulse opacity-50" aria-label="Đang lưu" />}
+                    </span>
+                    {laAdmin && (
+                        <button type="button" onClick={saoChepSnapshot} disabled={!sanSang} className={nutClass} title="Sao chép JSON snapshot để dán vào /admin/vi-du-ham">
+                            {daSaoChep ? <Check className="h-4 w-4 text-brand-600" aria-hidden="true" /> : <Copy className="h-4 w-4" aria-hidden="true" />}
+                            <span className="hidden xl:inline">{daSaoChep ? 'Đã sao chép' : 'Sao chép snapshot'}</span>
+                        </button>
+                    )}
+                    {danhMuc.length > 0 && (
+                        <button
+                            type="button"
+                            onClick={() => setHienPanel((v) => !v)}
+                            aria-pressed={hienPanel}
+                            className={nutClass}
+                        >
+                            {hienPanel ? <PanelRightClose className="h-4 w-4" aria-hidden="true" /> : <PanelRightOpen className="h-4 w-4" aria-hidden="true" />}
+                            <span className="hidden xl:inline">Hàm 365</span>
+                        </button>
+                    )}
                     <button
                         type="button"
                         onClick={() => setHienGiupDo((v) => !v)}
@@ -400,7 +551,89 @@ export default function BangTinh() {
                 <input ref={inputFileRef} type="file" accept=".xlsx,.xls" onChange={khiChonFile} className="hidden" />
             </div>
 
-            <div ref={containerRef} className="min-h-0 flex-1" />
+            {/* Grid + panel chọn hàm. Panel là aside thật (có tên), thu gọn được. */}
+            <div className="flex min-h-0 flex-1">
+                <div ref={containerRef} className="min-h-0 min-w-0 flex-1" />
+
+                {danhMuc.length > 0 && hienPanel && (
+                    <aside
+                        aria-label="Danh mục hàm Excel 365"
+                        className="flex w-72 shrink-0 flex-col border-l border-line bg-card"
+                    >
+                        {/* Hàm đang chọn: giải thích + công thức mẫu + link bài */}
+                        {viDuHienTai ? (
+                            <div className="border-b border-line p-3">
+                                <div className="flex items-start justify-between gap-2">
+                                    <h2 className="font-mono text-base font-bold text-fg">{viDuHienTai.ten_ham}</h2>
+                                    <button
+                                        type="button"
+                                        onClick={() => napHam(viDuHienTai.ten_ham, { epViDuGoc: true })}
+                                        disabled={viDuDangNap !== null}
+                                        className="inline-flex min-h-8 items-center gap-1 rounded-md px-2 text-xs text-fg-muted hover:bg-sunken hover:text-fg disabled:opacity-50"
+                                        title="Bỏ bài đang làm, nạp lại ví dụ gốc"
+                                    >
+                                        <RotateCcw className="h-3.5 w-3.5" aria-hidden="true" /> Nạp lại ví dụ
+                                    </button>
+                                </div>
+                                {viDuHienTai.mo_ta && <p className="mt-1.5 text-sm leading-relaxed text-fg-muted">{viDuHienTai.mo_ta}</p>}
+                                {viDuHienTai.cong_thuc_mau && (
+                                    <code className="mt-2 block overflow-x-auto rounded-md bg-sunken px-2 py-1.5 font-mono text-xs text-fg">{viDuHienTai.cong_thuc_mau}</code>
+                                )}
+                                {viDuHienTai.post_slug && (
+                                    <Link href={`/blog/${viDuHienTai.post_slug}`} className="mt-2 inline-flex items-center gap-1 text-sm font-medium text-brand-600 hover:underline dark:text-brand-400">
+                                        Đọc bài viết về hàm này <ExternalLink className="h-3.5 w-3.5" aria-hidden="true" />
+                                    </Link>
+                                )}
+                            </div>
+                        ) : (
+                            <div className="border-b border-line p-3">
+                                <h2 className="inline-flex items-center gap-1.5 text-sm font-semibold text-fg">
+                                    <FunctionSquare className="h-4 w-4 text-brand-600" aria-hidden="true" /> Thử hàm Excel 365
+                                </h2>
+                                <p className="mt-1 text-xs leading-relaxed text-fg-subtle">
+                                    Bấm một hàm để nạp dữ liệu mẫu và công thức đã gõ sẵn. Sửa công thức, xem kết quả đổi ngay.
+                                </p>
+                            </div>
+                        )}
+
+                        {/* Danh mục theo nhóm */}
+                        <nav className="min-h-0 flex-1 overflow-y-auto p-2" aria-label="Nhóm hàm">
+                            {nhomHam.map(({ nhom, ham }) => (
+                                <div key={nhom} className="mb-3">
+                                    <p className="px-2 pb-1 text-[11px] font-semibold uppercase tracking-wider text-fg-subtle">{nhom}</p>
+                                    <ul className="space-y-0.5">
+                                        {ham.map((h) => {
+                                            const dangChon = h.ten_ham === hamDangChon;
+                                            const dangNap = h.ten_ham === viDuDangNap;
+                                            return (
+                                                <li key={h.id}>
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => h.ho_tro && napHam(h.ten_ham)}
+                                                        disabled={!h.ho_tro || viDuDangNap !== null}
+                                                        aria-current={dangChon ? 'true' : undefined}
+                                                        title={h.ho_tro ? h.cong_thuc_mau ?? undefined : 'Engine hiện chưa có hàm này'}
+                                                        className={`flex w-full items-center gap-2 rounded-lg px-2 py-1.5 text-left font-mono text-sm transition-colors ${dangChon
+                                                            ? 'bg-brand-50 text-brand-700 dark:bg-brand-900/30 dark:text-brand-300'
+                                                            : h.ho_tro
+                                                                ? 'text-fg hover:bg-sunken'
+                                                                : 'cursor-not-allowed text-fg-faint'
+                                                            }`}
+                                                    >
+                                                        <span className="truncate">{h.ten_ham}</span>
+                                                        {dangNap && <span className="ml-auto text-[11px] text-fg-subtle">đang nạp…</span>}
+                                                        {!h.ho_tro && <span className="ml-auto rounded bg-surface-200 px-1.5 py-0.5 font-sans text-[10px] font-medium text-fg-muted dark:bg-surface-700">chưa có</span>}
+                                                    </button>
+                                                </li>
+                                            );
+                                        })}
+                                    </ul>
+                                </div>
+                            ))}
+                        </nav>
+                    </aside>
+                )}
+            </div>
         </div>
     );
 }
