@@ -1,16 +1,28 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Save, Loader2, Mail, Settings as SettingsIcon } from 'lucide-react';
+import { Save, Loader2, Mail, Settings as SettingsIcon, Palette, CheckCircle2 } from 'lucide-react';
+import { BrandAssetField } from '@/components/admin/BrandAssetField';
+import { KHOA_THEO_LOAI, THU_TU_O_ANH, layUrlAnh, type BrandAssets } from '@/lib/brand';
+
+/** Tên hiển thị của mẫu email. Mẫu lạ thì rơi về chính id, KHÔNG bị ẩn đi. */
+const TEN_MAU_EMAIL: Record<string, string> = {
+    welcome: 'Chào mừng đăng ký',
+    payment_pending: 'Hướng dẫn chuyển khoản',
+    payment_success: 'Thanh toán thành công',
+    renewal_reminder: 'Nhắc gia hạn',
+    new_post: 'Bài mới (Newsletter)',
+};
 
 export default function SettingsPage() {
-    const [activeTab, setActiveTab] = useState<'general' | 'email'>('general');
+    const [activeTab, setActiveTab] = useState<'general' | 'brand' | 'email'>('general');
 
     // States for General Config
     const [bankInfo, setBankInfo] = useState({ bankId: '', accountNo: '', accountName: '' });
     const [socialLinks, setSocialLinks] = useState({ zalo: '', facebook: '', phone: '', email: '' });
     const [googleSheet, setGoogleSheet] = useState({ sheetId: '' });
     const [postsPerPage, setPostsPerPage] = useState(12);
+    const [brandAssets, setBrandAssets] = useState<BrandAssets>({});
 
     // States for Email Templates
     const [templates, setTemplates] = useState<Record<string, { subject: string, html_content: string }>>({});
@@ -18,6 +30,9 @@ export default function SettingsPage() {
 
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
+    /** Kết quả lần lưu gần nhất của tab Thương hiệu — báo ngay trong trang,
+     *  không dùng `alert()` vì nó cướp tiêu điểm bàn phím. */
+    const [ketQuaLuu, setKetQuaLuu] = useState<{ ok: boolean; loi: string } | null>(null);
 
     useEffect(() => {
         fetchSettings();
@@ -33,6 +48,7 @@ export default function SettingsPage() {
                 if (data.settings.social_links) setSocialLinks(data.settings.social_links);
                 if (data.settings.google_sheet_id) setGoogleSheet(data.settings.google_sheet_id);
                 if (data.settings.posts_per_page) setPostsPerPage(Number(data.settings.posts_per_page) || 12);
+                if (data.settings.brand_assets) setBrandAssets(data.settings.brand_assets);
             }
         } catch (error) {
             console.error('Error fetching settings:', error);
@@ -70,6 +86,26 @@ export default function SettingsPage() {
             else alert('Có lỗi xảy ra khi lưu.');
         } catch {
             alert('Lỗi hệ thống');
+        } finally {
+            setSaving(false);
+        }
+    };
+
+    const handleSaveBrand = async () => {
+        setSaving(true);
+        setKetQuaLuu(null);
+        try {
+            const res = await fetch('/api/admin/settings', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ brand_assets: brandAssets })
+            });
+            const data = await res.json().catch(() => ({}));
+            setKetQuaLuu(res.ok
+                ? { ok: true, loi: '' }
+                : { ok: false, loi: data.error || 'Máy chủ từ chối lưu. Thử lại sau ít phút.' });
+        } catch {
+            setKetQuaLuu({ ok: false, loi: 'Không gửi được lên máy chủ. Kiểm tra mạng rồi thử lại.' });
         } finally {
             setSaving(false);
         }
@@ -120,6 +156,16 @@ export default function SettingsPage() {
                 >
                     <SettingsIcon className="w-4 h-4" />
                     Cấu hình chung
+                </button>
+                <button
+                    onClick={() => setActiveTab('brand')}
+                    className={`flex items-center gap-2 px-4 py-2.5 text-sm font-medium border-b-2 transition-colors ${activeTab === 'brand'
+                        ? 'border-brand-500 text-brand-600 dark:text-brand-400'
+                        : 'border-transparent text-fg-subtle hover:text-surface-700 dark:hover:text-surface-300'
+                        }`}
+                >
+                    <Palette className="w-4 h-4" />
+                    Thương hiệu
                 </button>
                 <button
                     onClick={() => setActiveTab('email')}
@@ -283,11 +329,58 @@ export default function SettingsPage() {
                 </div>
             )}
 
+            {/* Brand Assets */}
+            {activeTab === 'brand' && (
+                <div className="space-y-6 animate-in fade-in duration-300">
+                    <p className="text-sm text-fg-muted">
+                        Logo và banner dùng chung cho header, footer, trang chủ, thẻ chia sẻ mạng xã hội và email gửi khách.
+                        Lưu xong là hiện ngay trên site, không cần deploy lại.
+                    </p>
+
+                    {THU_TU_O_ANH.map((loai) => (
+                        <BrandAssetField
+                            key={loai}
+                            loai={loai}
+                            url={layUrlAnh(brandAssets, loai)}
+                            dangLuu={saving}
+                            onChange={(url, ogUrl) => setBrandAssets((truoc) => ({
+                                ...truoc,
+                                [KHOA_THEO_LOAI[loai]]: url,
+                                // Tải banner mới thì ảnh chia sẻ do máy chủ cắt ra đi kèm luôn.
+                                ...(ogUrl ? { og_image_url: ogUrl } : {}),
+                            }))}
+                        />
+                    ))}
+
+                    <div className="flex items-center justify-end gap-4">
+                        <div aria-live="polite" className="text-sm">
+                            {ketQuaLuu?.ok && (
+                                <span className="inline-flex items-center gap-1.5 text-brand-600 dark:text-brand-400">
+                                    <CheckCircle2 className="w-4 h-4" aria-hidden="true" />
+                                    Đã lưu. Ảnh mới đã hiện trên site.
+                                </span>
+                            )}
+                            {ketQuaLuu && !ketQuaLuu.ok && (
+                                <span role="alert" className="text-red-600 dark:text-red-400">{ketQuaLuu.loi}</span>
+                            )}
+                        </div>
+                        <button
+                            onClick={handleSaveBrand}
+                            disabled={saving}
+                            className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-brand-600 text-white font-medium hover:bg-brand-700 transition-colors disabled:opacity-50"
+                        >
+                            {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+                            Lưu ảnh thương hiệu
+                        </button>
+                    </div>
+                </div>
+            )}
+
             {/* Email Templates Array */}
             {activeTab === 'email' && (
                 <div className="space-y-6 animate-in fade-in duration-300">
                     <div className="flex gap-2">
-                        {['welcome', 'payment_success', 'new_post'].map(id => (
+                        {Object.keys(templates).sort().map(id => (
                             <button
                                 key={id}
                                 onClick={() => setSelectedTemplate(id)}
@@ -296,9 +389,7 @@ export default function SettingsPage() {
                                     : 'bg-surface-100 text-surface-600 dark:bg-surface-800 dark:text-surface-400 hover:bg-surface-200 dark:hover:bg-surface-700'
                                     }`}
                             >
-                                {id === 'welcome' && 'Welcome Mail'}
-                                {id === 'payment_success' && 'Thanh toán thành công'}
-                                {id === 'new_post' && 'Bài mới (Newsletter)'}
+                                {TEN_MAU_EMAIL[id] || id}
                             </button>
                         ))}
                     </div>
@@ -330,6 +421,7 @@ export default function SettingsPage() {
                                 ></textarea>
                                 <p className="text-xs text-fg-subtle mt-2">
                                     Các biến hỗ trợ: <code>{`{{name}}`}, {`{{url}}`}, {`{{order_code}}`}, {`{{product_name}}`}, {`{{amount}}`}, {`{{title}}`}, {`{{excerpt}}`}</code>
+                                    <br />Luôn có sẵn, không cần truyền: <code>{`{{banner_url}}`}, {`{{logo_url}}`}, {`{{site_url}}`}, {`{{site_name}}`}</code> — lấy từ tab Thương hiệu.
                                 </p>
                             </div>
                             <div className="flex justify-end">

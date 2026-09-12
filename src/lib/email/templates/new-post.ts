@@ -15,8 +15,11 @@ export function generateNewPostEmailHtml({
     categoryName,
     unsubscribeUrl,
 }: NewPostEmailProps): string {
-    const defaultImage = `${process.env.NEXT_PUBLIC_APP_URL}/images/default-cover.jpg`; // Fallback image if needed
-    const imageToUse = coverImage || defaultImage;
+    const goc = process.env.NEXT_PUBLIC_APP_URL || 'https://www.tradadata.com';
+    // Anh du phong cu tro toi `/images/default-cover.jpg` — file KHONG ton tai,
+    // nen bai khong co anh bia thi khach nhan duoc mot o anh vo.
+    const imageToUse = coverImage || `${goc}/api/brand/og`;
+    const bannerUrl = `${goc}/api/brand/banner`;
 
     return `
 <!DOCTYPE html>
@@ -45,9 +48,14 @@ export function generateNewPostEmailHtml({
             margin-bottom: 40px;
         }
         .header {
-            background-color: #1a1a1a;
-            padding: 24px;
-            text-align: center;
+            background-color: #0b2d12;
+            font-size: 0;
+        }
+        .banner {
+            display: block;
+            width: 100%;
+            height: auto;
+            border: 0;
         }
         .header h1 {
             color: #ffffff;
@@ -136,7 +144,7 @@ export function generateNewPostEmailHtml({
     <div class="container">
         <!-- Header -->
         <div class="header">
-            <h1>Trà Đá Data</h1>
+            <img src="${bannerUrl}" alt="Trà Đá Data" class="banner" />
         </div>
 
         <!-- Content -->

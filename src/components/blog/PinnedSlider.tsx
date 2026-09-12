@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { ChevronLeft, ChevronRight, Clock, Calendar } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Clock, Calendar, Pause, Play } from 'lucide-react';
 import type { Post } from '@/types';
 import { formatDate } from '@/lib/utils';
 
@@ -11,9 +11,21 @@ interface PinnedSliderProps {
     posts: Post[];
 }
 
+/**
+ * Nhip tu chay, khop voi `--animate-progress: progress 5s linear` trong
+ * globals.css. Truoc day la 2000ms trong khi thanh tien do ve theo 5s, nen
+ * thanh do khong bao gio chay het mot vong.
+ */
+const NHIP_TU_CHAY = 5000;
+
 export function PinnedSlider({ posts }: PinnedSliderProps) {
     const [current, setCurrent] = useState(0);
+    /** Tam dung vi con tro hoac tieu diem ban phim dang o trong slider. */
     const [isPaused, setIsPaused] = useState(false);
+    /** Nguoi dung tu bam nut dung — giu nguyen cho toi khi ho bam lai. */
+    const [tuDung, setTuDung] = useState(false);
+    /** He dieu hanh bao "giam chuyen dong" thi khong tu chay. */
+    const [giamChuyenDong, setGiamChuyenDong] = useState(false);
     const [direction, setDirection] = useState<'next' | 'prev'>('next');
     const [isAnimating, setIsAnimating] = useState(true);
 
@@ -37,12 +49,28 @@ export function PinnedSlider({ posts }: PinnedSliderProps) {
         goTo((current - 1 + total) % total, 'prev');
     }, [current, total, goTo]);
 
-    // Auto-play every 2 seconds
+    /**
+     * Ton trong "giam chuyen dong" cua he dieu hanh.
+     *
+     * Khoi `@media (prefers-reduced-motion: reduce)` trong globals.css KHONG
+     * cuu duoc cho nay: no chi tat animation/transition cua CSS, con day la
+     * `setInterval` cua JavaScript. Phai hoi rieng.
+     */
     useEffect(() => {
-        if (isPaused || total <= 1) return;
-        const timer = setInterval(next, 2000);
+        const mq = window.matchMedia('(prefers-reduced-motion: reduce)');
+        const dong = () => setGiamChuyenDong(mq.matches);
+        dong();
+        mq.addEventListener('change', dong);
+        return () => mq.removeEventListener('change', dong);
+    }, []);
+
+    const dangChay = !isPaused && !tuDung && !giamChuyenDong && total > 1;
+
+    useEffect(() => {
+        if (!dangChay) return;
+        const timer = setInterval(next, NHIP_TU_CHAY);
         return () => clearInterval(timer);
-    }, [isPaused, next, total]);
+    }, [dangChay, next]);
 
     if (total === 0) return null;
 
@@ -52,6 +80,11 @@ export function PinnedSlider({ posts }: PinnedSliderProps) {
                 className="relative w-full overflow-hidden bg-surface-900 rounded-2xl shadow-2xl"
                 onMouseEnter={() => setIsPaused(true)}
                 onMouseLeave={() => setIsPaused(false)}
+                // Nguoi dung ban phim cung phai dung duoc bang tieu diem: truoc day
+                // chi co chuot moi dung duoc, nen Tab vao giua slider la noi dung
+                // truot mat duoi tay.
+                onFocus={() => setIsPaused(true)}
+                onBlur={() => setIsPaused(false)}
             >
                 {/* Slides */}
                 <div className="relative h-[380px] md:h-[420px]">
@@ -190,14 +223,15 @@ export function PinnedSlider({ posts }: PinnedSliderProps) {
                                 key={index}
                                 onClick={(e) => { e.preventDefault(); e.stopPropagation(); goTo(index, index > current ? 'next' : 'prev'); }}
                                 className="relative grid place-items-center min-h-11 min-w-11 group"
-                                aria-label={`Slide ${index + 1}`}
+                                aria-label={`Bài ghim ${index + 1} trên ${total}`}
+                                aria-current={index === current}
                             >
                                 <div className={`rounded-full transition-all duration-300 ${index === current
                                     ? 'w-10 h-3 bg-brand-500 shadow-lg shadow-brand-600/25'
                                     : 'w-3 h-3 bg-white/30 group-hover:bg-white/60'
                                     }`} />
                                 {/* Progress bar animation on active dot */}
-                                {index === current && !isPaused && (
+                                {index === current && dangChay && (
                                     <div className="absolute inset-0 m-auto h-3 w-10 rounded-full bg-brand-400/40 origin-left animate-progress" />
                                 )}
                             </button>
@@ -205,10 +239,24 @@ export function PinnedSlider({ posts }: PinnedSliderProps) {
                     </div>
                 )}
 
-                {/* Slide counter */}
+                {/* Bo dem + nut tam dung. Noi dung tu doi cho BAT BUOC phai co nut
+                    dung thay duoc bang chuot lan ban phim. */}
                 {total > 1 && (
-                    <div className="absolute top-4 right-4 z-20 px-3 py-1 rounded-full bg-black/30 text-white/70 text-xs font-medium backdrop-blur-sm">
-                        {current + 1} / {total}
+                    <div className="absolute top-4 right-4 z-20 flex items-center gap-2">
+                        <div className="px-3 py-1 rounded-full bg-black/30 text-white/70 text-xs font-medium backdrop-blur-sm tabular-nums">
+                            {current + 1} / {total}
+                        </div>
+                        {!giamChuyenDong && (
+                            <button
+                                type="button"
+                                onClick={(e) => { e.preventDefault(); e.stopPropagation(); setTuDung((t) => !t); }}
+                                className="grid place-items-center min-h-11 min-w-11 rounded-full bg-black/30 text-white/80 hover:text-white hover:bg-black/50 backdrop-blur-sm transition-colors"
+                                aria-label={tuDung ? 'Cho slider chạy tiếp' : 'Tạm dừng slider'}
+                                aria-pressed={tuDung}
+                            >
+                                {tuDung ? <Play className="h-4 w-4" aria-hidden="true" /> : <Pause className="h-4 w-4" aria-hidden="true" />}
+                            </button>
+                        )}
                     </div>
                 )}
             </div>

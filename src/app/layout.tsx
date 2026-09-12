@@ -68,11 +68,17 @@ export const metadata: Metadata = {
     siteName: SITE_CONFIG.name,
     locale: 'vi_VN',
     type: 'website',
+    // Truoc day KHONG khai `images`, nen chia se link trang chu ra Facebook /
+    // Zalo khong co anh nao. Va anh mac dinh cu (`og-default.png`) la anh VUONG
+    // 640x640 — khai `summary_large_image` ma anh vuong thi Facebook hien
+    // thumbnail be thay vi the lon.
+    images: [{ url: SITE_CONFIG.ogImage, width: 1200, height: 630, alt: SITE_CONFIG.name }],
   },
   twitter: {
     card: 'summary_large_image',
     title: SITE_CONFIG.name,
     description: SITE_CONFIG.description,
+    images: [SITE_CONFIG.ogImage],
   },
   robots: {
     index: true,

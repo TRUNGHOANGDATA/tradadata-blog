@@ -6,7 +6,13 @@ export const SITE_CONFIG = {
     name: 'Trà Đá Data',
     description: 'Chia sẻ kiến thức về Data, AI & Supply Chain',
     url: process.env.NEXT_PUBLIC_APP_URL || 'https://www.tradadata.com',
-    ogImage: '/images/og-default.png',
+    // Duong dan CO DINH tro vao route `/api/brand/og`, khong phai file tinh.
+    // Nho the `metadata` o layout goc va o `/blog/[slug]` van la HANG SO —
+    // khong phai doi sang `generateMetadata()` doc DB, tuc khong keo thu dong
+    // nao vao trang bai viet von dang tinh (`revalidate = 3600`).
+    // Anh that do route quyet dinh luc chay; chua cau hinh thi tra
+    // `public/images/og-default.jpg` (1200x630).
+    ogImage: '/api/brand/og',
     author: 'Trà Đá Data',
 };
 

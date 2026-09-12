@@ -153,6 +153,10 @@ IndexNow xác thực host).
   vốn không có) — `rescue-blog` hiện chưa có chế độ đọc log; thêm thì phải che địa chỉ
   email, chỉ in số đếm + mã lỗi SMTP, vì repo `ke-truyen` là public.
   `LEAD_NOTIFY_EMAIL` là nơi nhận mail báo khách quan tâm phần mềm; thiếu thì rơi về `EMAIL_USER`.
+  Tab "Mẫu Email" trong `/admin/settings` giờ liệt kê theo DB trả về (5 mẫu:
+  `welcome`, `payment_pending`, `payment_success`, `renewal_reminder`, `new_post`).
+  Trước 12/09/2026 danh sách bị hardcode 3 mẫu, nên `payment_pending` — mail hướng
+  dẫn chuyển khoản, quan trọng nhất với khách — không sửa được từ giao diện.
 - **Cron**: 2 endpoint `/api/cron/process-email-queue` và `/api/cron/check-subscriptions`,
   cả hai yêu cầu header `Authorization: Bearer $CRON_SECRET`.
   Lịch chạy bằng CronJob của k8s, manifest ở `k8s/cronjobs.yaml`.
@@ -210,15 +214,26 @@ trong khi luồng auto-activate ở `orders/create` lại đọc đúng `product
 
 ## Điểm cần lưu ý khi phát triển tiếp
 
-- **Trang nào tĩnh, trang nào động** (đo bằng `curl -I`, xem `Cache-Control`):
-  - `/`, `/categories`, `/tag/[slug]`, `/courses` — có `revalidate` và không dùng
-    API động ⇒ được cache ở tầng route (`x-nextjs-cache: HIT`), rất nhanh.
-  - `/blog` — **động**, vì dùng `searchParams` (phân trang, lọc danh mục).
-    `export const revalidate` ở file đó KHÔNG bao giờ áp dụng, đừng tin nó.
-  - `/blog/[slug]` — **động**, vì gọi `auth()` để gating Premium.
-    Có `generateStaticParams` nhưng nó chỉ còn tác dụng lúc build.
-  ⇒ Với hai trang động này, thứ giữ cho chúng nhanh là **data cache**, không phải
-  route cache. Đừng thêm `export const revalidate` rồi tưởng đã xong.
+- **Trang nào tĩnh, trang nào động** (đọc thẳng khai báo trong từng `page.tsx`,
+  kiểm 12/09/2026 — bản CLAUDE.md trước sai ở 3 trong 4 gạch đầu dòng, vì code đã
+  đổi mà tài liệu thì không):
+  - `/blog/[slug]` — **TĨNH**, `revalidate = 3600`. `auth()` đã được dọn khỏi file
+    này: xem bản nháp chuyển sang route riêng `/blog/[slug]/xem-truoc`, còn gating
+    Premium do `MoKhoaPremium` xin qua `/api/posts/[slug]/noi-dung-premium`.
+    ⚠️ Thêm `auth()`, `cookies()`, `headers()` hay `searchParams` vào file đó là
+    mất sạch cache của cả 161 bài. Cảnh báo này có sẵn trong chính file.
+  - `/blog` — **TĨNH**, `revalidate = 3600`, và cố ý KHÔNG nhận `searchParams`
+    nữa (phân trang nằm ở route segment `/blog/trang/[so]`).
+  - `/categories`, `/tag/[slug]`, `/category/[slug]` — `revalidate = 3600`.
+  - `/` — **ĐỘNG**, `dynamic = 'force-dynamic'`, cố ý: bài ghim phải ăn hiệu lực
+    tức thì, mà cửa sổ `stale-while-revalidate` của route cache cho phép proxy
+    phục vụ bản cũ. Không mất tốc độ vì mọi truy vấn của nó đều đã bọc
+    `unstable_cache`.
+  ⇒ Với trang động, thứ giữ cho nó nhanh là **data cache**, không phải route
+  cache. Đừng thêm `export const revalidate` rồi tưởng đã xong.
+  ⇒ Muốn khai báo `metadata` phụ thuộc dữ liệu mà KHÔNG phá tính tĩnh: trỏ vào
+  một route API có đường dẫn cố định (xem `/api/brand/og` bên dưới) thay vì đổi
+  `metadata` tĩnh thành `generateMetadata()` có đọc DB.
 
 - **Mọi truy vấn dùng chung phải đi qua `src/lib/data/*` và bọc `unstable_cache`.**
   Đừng viết `supabaseAdmin.from(...)` thẳng trong page component. Lý do đo được
@@ -272,6 +287,42 @@ trong khi luồng auto-activate ở `orders/create` lại đọc đúng `product
 
   Muốn có skeleton mà vẫn giữ mã đúng: đừng dùng `loading.tsx`, hãy `await` truy vấn
   quyết định 404 trước, rồi mới bọc `<Suspense>` quanh phần chậm còn lại.
+
+- **Nhận diện thương hiệu (logo / banner / ảnh chia sẻ)** — thêm 12/09/2026.
+  Admin đổi được trong `/admin/settings` → tab **Thương hiệu**, KHÔNG phải sửa code
+  và KHÔNG phải deploy (route lưu đã gọi sẵn `revalidateSettings()`).
+  - Lưu ở `site_settings.brand_assets` (jsonb):
+    `{ logo_url, logo_dark_url, banner_url, og_image_url }`. Đọc qua
+    `getBrandAssets()` trong `src/lib/data/settings.ts` — có `unstable_cache`
+    tag `settings`, BẮT BUỘC vì Header/Footer nằm trong layout gốc.
+  - Kích thước chuẩn khai MỘT CHỖ ở `src/lib/brand.ts` (`CHUAN_ANH`), dùng chung
+    cho text hướng dẫn trong admin và preset nén ở route upload — đừng chép số ra
+    chỗ khác.
+  - Upload đi route RIÊNG `/api/admin/brand/upload`, không dùng chung
+    `/api/admin/upload` (route đó nén theo nhu cầu ảnh bìa: rộng tối đa 1600).
+    Tải banner lên thì route tự sinh thêm ảnh OG bằng cách cắt giữa về 1200×630.
+  - Hiển thị LUÔN đi qua `/api/brand/<logo|logo-toi|banner|og>`, không trỏ thẳng
+    URL Drive. Hai lý do: (1) `next/image` chỉ nhận host khai trong
+    `images.remotePatterns`, admin dán URL lạ là ảnh ném lỗi giữa layout gốc tức
+    hỏng cả site; (2) `og:image` cần đường dẫn cố định và crawler Zalo thường
+    không đi theo redirect — route stream lại bytes chứ không redirect.
+  - `duongDanAnh()` gắn `?v=<băm của URL gốc>`. BẮT BUỘC: `minimumCacheTTL` đang
+    đặt 30 ngày, URL cố định mà đổi ảnh bên dưới thì người đọc thấy logo cũ suốt
+    30 ngày.
+  - File tĩnh trong `public/` (`LOGO_TRA_DA_DATA.jpg` 512×512,
+    `images/banner-default.jpg` 1600×900, `images/og-default.jpg` 1200×630) là
+    bản rơi lui khi chưa cấu hình hoặc khi ảnh đã cấu hình hỏng. `src/app/icon.png`,
+    `apple-icon.png`, `favicon.ico` sinh từ cùng logo — Next đọc lúc build nên
+    KHÔNG cấu hình qua settings được, đổi favicon là phải build lại.
+  - Email: `getEmailTemplate()` tự tiêm `{{banner_url}}`, `{{logo_url}}`,
+    `{{site_url}}`, `{{site_name}}` vào MỌI mẫu, nơi gọi ghi đè được. Nhờ vậy chèn
+    banner vào mail chỉ là sửa HTML trong admin, không đụng 8 route gọi `sendEmail`.
+
+- **`GET /api/settings` là endpoint CÔNG KHAI, không kiểm quyền.** Nó lọc theo
+  danh sách trắng trong chính file (`social_links`, `brand_assets`). Trước
+  12/09/2026 nó trả nguyên cả bảng `site_settings`, tức ai cũng đọc được
+  `google_sheet_id` và `bank_info`. Thêm khoá vào đó CHỈ khi khoá đó vốn đã công
+  khai trên trang.
 
 - **Invalidate**: `revalidatePost(slugs, postId)` / `revalidateTaxonomy()` /
   `revalidateSettings()` trong `src/lib/cache.ts` —

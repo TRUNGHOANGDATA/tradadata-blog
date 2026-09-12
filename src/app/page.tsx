@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import { ArrowRight, Sparkles, BookOpen, TrendingUp } from 'lucide-react';
 import { PostCard } from '@/components/blog/PostCard';
 import { Newsletter } from '@/components/blog/Newsletter';
@@ -7,6 +8,8 @@ import { PinnedSlider } from '@/components/blog/PinnedSlider';
 import { SITE_CONFIG } from '@/lib/constants';
 import { getLatestPosts, getPosts, getPinnedPosts } from '@/lib/data/posts';
 import { getCategories, getCategoryPostCounts } from '@/lib/data/categories';
+import { getBrandAssets } from '@/lib/data/settings';
+import { duongDanAnh } from '@/lib/brand';
 
 // Render động để bài ghim ăn hiệu lực TỨC THÌ khi admin bấm ghim/bỏ ghim.
 // Trước đây trang chủ dùng `revalidate = 60` ⇒ được cache ở tầng route với header
@@ -19,11 +22,12 @@ import { getCategories, getCategoryPostCounts } from '@/lib/data/categories';
 export const dynamic = 'force-dynamic';
 
 export default async function HomePage() {
-  const [categories, recentPosts, { count: totalPosts }, pinnedPosts] = await Promise.all([
+  const [categories, recentPosts, { count: totalPosts }, pinnedPosts, brand] = await Promise.all([
     getCategories(),
     getLatestPosts(7),
     getPosts({ limit: 1, page: 1 }),  // just for the count
     getPinnedPosts(5),
+    getBrandAssets(),
   ]);
 
   // Filter out pinned posts from the recent posts grid
@@ -56,7 +60,9 @@ export default async function HomePage() {
     '@type': 'Organization',
     name: SITE_CONFIG.name,
     url: SITE_CONFIG.url,
-    logo: `${SITE_CONFIG.url}/logo.png`,
+    // Truoc day tro toi `/logo.png` — file KHONG he ton tai trong `public/`,
+    // tuc Google doc mot logo 404 suot thoi gian qua.
+    logo: `${SITE_CONFIG.url}/api/brand/logo`,
     description: SITE_CONFIG.description,
     sameAs: [
       'https://www.youtube.com/@tradadata',
@@ -86,36 +92,63 @@ export default async function HomePage() {
           </div>
         </div>
 
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-32">
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16">
           <div className="text-center max-w-3xl mx-auto">
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/60 dark:bg-white/10 text-brand-700 dark:text-white/90 text-sm backdrop-blur-sm border border-brand-200 dark:border-white/20 mb-6 font-medium shadow-sm">
-              <Sparkles className="h-4 w-4" />
+            {/* Banner mang san toan bo thong diep (ten, slogan, danh sach cong nghe)
+                nen tu 768px tro len no THAY cho khoi chu — giu ca hai la lap y.
+                Duoi 768px thi an: chu nam trong anh o be ngang 375px khong doc noi.
+
+                Anh de `alt=""`: <h1> va doan mo ta ngay duoi van con trong DOM
+                (chi `sr-only` o man lon), nen trinh doc man hinh da co nguyen van
+                thong diep roi — dat alt o day la doc trung hai lan.
+
+                Khung khoa ti le 16/9 san (dung ti le that cua file: 1600x900) de
+                anh vao khong lam nhay layout. Toi da 760px chu khong tran vien:
+                16:9 o container 1280px la CAO 720px, nuot tron man hinh dau. */}
+            <div className="hidden md:block mb-10">
+              <Image
+                src={duongDanAnh('banner', brand)}
+                alt=""
+                width={1600}
+                height={900}
+                // Duoi 768px banner bi an han, nen khai 1px de trinh duyet chon
+                // bien the nho nhat thay vi tai ban 828px ve roi khong dung.
+                sizes="(min-width: 768px) 760px, 1px"
+                priority
+                className="mx-auto w-full max-w-[760px] rounded-3xl ring-1 ring-line shadow-e2"
+              />
+            </div>
+
+            <div className="inline-flex md:hidden items-center gap-2 px-4 py-1.5 rounded-full bg-white/60 dark:bg-white/10 text-brand-700 dark:text-white/90 text-sm backdrop-blur-sm border border-brand-200 dark:border-white/20 mb-6 font-medium shadow-sm">
+              <Sparkles className="h-4 w-4" aria-hidden="true" />
               Kiến thức thực tế, chia sẻ tận tâm
             </div>
-            <h1 className="text-4xl md:text-6xl font-bold text-surface-900 dark:text-white mb-6 leading-tight">
+            <h1 className="md:sr-only text-4xl font-bold text-surface-900 dark:text-white mb-6 leading-tight">
               Nâng tầm kỹ năng{' '}
               <span className="bg-gradient-to-r from-brand-600 to-emerald-500 dark:from-emerald-300 dark:to-teal-300 bg-clip-text text-transparent">
                 Data & AI
               </span>
             </h1>
-            <p className="text-lg md:text-xl text-surface-600 dark:text-white/80 mb-8 leading-relaxed">
+            <p className="md:sr-only text-lg text-surface-600 dark:text-white/80 mb-8 leading-relaxed">
               Blog chia sẻ kiến thức chuyên sâu về Excel, Power Query, VBA, Power BI, SQL, Python,
               trí tuệ nhân tạo và quản lý chuỗi cung ứng.
             </p>
+            {/* MOT hanh dong chinh moi man hinh. Truoc day hai nut cung do dam nen
+                khong biet nen bam cai nao; "Xem chu de" gio la lien ket phu. */}
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <Link
                 href="/blog"
                 className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-brand-600 dark:bg-white text-white dark:text-brand-700 font-semibold hover:bg-brand-700 dark:hover:bg-white/90 transition-all shadow-lg hover:shadow-xl hover:-translate-y-0.5"
               >
-                <BookOpen className="h-5 w-5" />
+                <BookOpen className="h-5 w-5" aria-hidden="true" />
                 Khám phá bài viết
               </Link>
               <Link
                 href="/categories"
-                className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-white/80 dark:bg-white/10 text-surface-700 dark:text-white font-semibold hover:bg-white dark:hover:bg-white/20 transition-all backdrop-blur-sm border border-surface-200 dark:border-white/20 shadow-sm"
+                className="inline-flex items-center gap-2 px-4 py-3 rounded-xl font-medium text-surface-600 dark:text-white/80 hover:text-surface-900 dark:hover:text-white hover:bg-white/60 dark:hover:bg-white/10 transition-colors"
               >
                 Xem chủ đề
-                <ArrowRight className="h-5 w-5" />
+                <ArrowRight className="h-4 w-4" aria-hidden="true" />
               </Link>
             </div>
           </div>
