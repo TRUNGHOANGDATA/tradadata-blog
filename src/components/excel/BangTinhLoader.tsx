@@ -9,7 +9,7 @@ import { LogIn } from 'lucide-react';
 const BangTinh = dynamic(() => import('./BangTinh'), {
     ssr: false,
     loading: () => (
-        <div className="flex h-full w-full items-center justify-center text-sm text-gray-500">
+        <div className="flex h-full w-full items-center justify-center text-sm text-fg-subtle">
             Đang tải bảng tính…
         </div>
     ),
@@ -17,6 +17,17 @@ const BangTinh = dynamic(() => import('./BangTinh'), {
 
 // Dưới ngưỡng này thì grid canvas gần như không dùng được bằng ngón tay.
 const NGUONG_MAN_HINH = 768;
+
+/**
+ * Hàm 365 hiện ở cửa đăng nhập — để người chưa đăng nhập THẤY mình sắp được thử
+ * gì. Thẻ trắng "Đăng nhập để dùng bảng tính" trước đây không nói được điều đó.
+ * Danh sách này đã đối chiếu với engine công thức của Univer 0.25.1 (grep thẳng
+ * bundle, 13/09/2026): tất cả đều có và có tràn mảng (spill).
+ */
+const HAM_365_NOI_BAT = [
+    'XLOOKUP', 'FILTER', 'UNIQUE', 'SORT', 'SEQUENCE', 'LET', 'LAMBDA',
+    'TEXTSPLIT', 'TEXTJOIN', 'VSTACK', 'MAP', 'REDUCE', 'IFS', 'MAXIFS',
+];
 
 export default function BangTinhLoader() {
     const { status } = useSession();
@@ -41,8 +52,8 @@ export default function BangTinhLoader() {
         return (
             <div className="flex h-full w-full items-center justify-center p-8">
                 <div className="max-w-md text-center">
-                    <p className="text-lg font-semibold">Hãy mở trên máy tính</p>
-                    <p className="mt-2 text-sm text-gray-600">
+                    <p className="text-lg font-semibold text-fg">Hãy mở trên máy tính</p>
+                    <p className="mt-2 text-sm text-fg-muted">
                         Bảng tính cần chuột và bàn phím để thao tác. Trên điện thoại
                         thì gần như không dùng được, nên trang này chỉ chạy ở màn hình
                         từ {NGUONG_MAN_HINH}px trở lên.
@@ -53,21 +64,42 @@ export default function BangTinhLoader() {
     }
 
     // Chưa đăng nhập: che bảng tính, mời đăng nhập (không tải bundle Univer).
+    // Bắt đăng nhập là CỐ Ý — chủ site cần danh sách người dùng. Nhưng cửa này
+    // phải cho thấy bên trong có gì, không thì ít ai bấm.
     if (status !== 'authenticated') {
         return (
-            <div className="flex h-full w-full items-center justify-center p-8">
-                <div className="max-w-md rounded-2xl border border-gray-200 bg-white p-8 text-center shadow-sm">
-                    <p className="text-lg font-semibold text-gray-900">Đăng nhập để dùng bảng tính</p>
-                    <p className="mt-2 text-sm text-gray-600">
-                        Tính năng thực hành Excel yêu cầu đăng nhập. Đăng nhập nhanh bằng
-                        tài khoản Google để bắt đầu luyện tập.
+            <div className="flex h-full w-full items-center justify-center p-6">
+                <div className="w-full max-w-xl rounded-2xl border border-line bg-card p-8 shadow-e2">
+                    <p className="text-xs font-semibold uppercase tracking-wider text-brand-600 dark:text-brand-400">
+                        Thực hành Excel
                     </p>
+                    <h2 className="mt-2 text-2xl font-bold leading-tight text-fg">
+                        Thử hàm Excel 365 ngay trên trình duyệt
+                    </h2>
+                    <p className="mt-3 text-sm leading-relaxed text-fg-muted">
+                        Chưa có Excel 365 vẫn gõ được XLOOKUP, FILTER, LAMBDA… và xem kết quả
+                        tràn ra nhiều ô như bản thật. Không cần cài đặt, không cần tài khoản
+                        Microsoft — chỉ cần đăng nhập Google để giữ bài của bạn.
+                    </p>
+
+                    <ul className="mt-5 flex flex-wrap gap-1.5" aria-label="Hàm Excel 365 hỗ trợ">
+                        {HAM_365_NOI_BAT.map((ham) => (
+                            <li
+                                key={ham}
+                                className="rounded-md bg-sunken px-2 py-1 font-mono text-xs font-medium text-fg-muted ring-1 ring-line"
+                            >
+                                {ham}
+                            </li>
+                        ))}
+                        <li className="rounded-md px-2 py-1 text-xs text-fg-subtle">và hơn 400 hàm khác</li>
+                    </ul>
+
                     <button
                         type="button"
                         onClick={() => signIn('google', { callbackUrl: '/thuc-hanh' })}
-                        className="mt-5 inline-flex items-center gap-2 rounded-lg bg-brand-600 px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-brand-700"
+                        className="mt-6 inline-flex min-h-11 items-center gap-2 rounded-xl bg-brand-600 px-5 text-sm font-semibold text-white shadow-e2 transition-all hover:-translate-y-0.5 hover:bg-brand-700 hover:shadow-e3"
                     >
-                        <LogIn className="h-4 w-4" /> Đăng nhập với Google
+                        <LogIn className="h-4 w-4" aria-hidden="true" /> Đăng nhập với Google để bắt đầu
                     </button>
                 </div>
             </div>
