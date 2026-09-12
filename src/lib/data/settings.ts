@@ -1,6 +1,7 @@
 import { unstable_cache } from 'next/cache';
 import { supabaseAdmin } from '@/lib/supabase/server';
 import { BRAND_ASSETS_KEY, type BrandAssets } from '@/lib/brand';
+import { anToan, kiemLoiTruyVan } from '@/lib/data/an-toan';
 
 /**
  * Đọc một dòng cấu hình trong bảng `site_settings`, CÓ CACHE.
@@ -25,18 +26,19 @@ const getSettingCached = unstable_cache(
             .select('value')
             .eq('key', key)
             .single();
-        if (error) {
-            // Thiếu dòng cấu hình là chuyện bình thường -> để nơi gọi dùng giá trị mặc định
-            return null;
-        }
+        // Thiếu dòng cấu hình là chuyện bình thường -> null để nơi gọi dùng mặc định.
+        // Lỗi hệ thống -> ném, để không cache `null` giả 10 phút.
+        if (kiemLoiTruyVan(error, 'settings.getSetting', { boQuaKhongCoDong: true })) return null;
         return data?.value ?? null;
     },
     ['site-setting-v1'],
     { revalidate: 600, tags: ['settings'] }
 );
 
+const getSettingAnToan = anToan(getSettingCached, null);
+
 export async function getSetting<T>(key: string, fallback: T): Promise<T> {
-    const value = await getSettingCached(key);
+    const value = await getSettingAnToan(key);
     return (value === null || value === undefined ? fallback : value) as T;
 }
 
@@ -54,17 +56,17 @@ export async function getSetting<T>(key: string, fallback: T): Promise<T> {
 const getBrandAssetsCached = unstable_cache(
     async (): Promise<BrandAssets> => {
         if (!supabaseAdmin) return {};
-        const { data } = await supabaseAdmin
+        const { data, error } = await supabaseAdmin
             .from('site_settings')
             .select('value')
             .eq('key', BRAND_ASSETS_KEY)
             .single();
+        if (kiemLoiTruyVan(error, 'settings.getBrandAssets', { boQuaKhongCoDong: true })) return {};
         return (data?.value as BrandAssets | null) ?? {};
     },
     ['brand-assets-v1'],
     { revalidate: 600, tags: ['settings'] }
 );
 
-export async function getBrandAssets(): Promise<BrandAssets> {
-    return getBrandAssetsCached();
-}
+// Nằm trong layout gốc (Header/Footer) -> phải có dự phòng; rỗng = dùng ảnh tĩnh.
+export const getBrandAssets = anToan(getBrandAssetsCached, {} as BrandAssets);

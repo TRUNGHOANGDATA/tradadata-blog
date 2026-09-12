@@ -4,6 +4,7 @@ import { SITE_CONFIG, DEFAULT_CATEGORIES } from '@/lib/constants';
 import { LogoThuongHieu } from '@/components/layout/LogoThuongHieu';
 import { getBrandAssets } from '@/lib/data/settings';
 import { coLogoRiengChoNenToi, duongDanAnh } from '@/lib/brand';
+import { anToan, kiemLoiTruyVan } from '@/lib/data/an-toan';
 import { unstable_cache } from 'next/cache';
 import { supabaseAdmin } from '@/lib/supabase/server';
 
@@ -18,27 +19,29 @@ import { supabaseAdmin } from '@/lib/supabase/server';
  * Tag 'settings' — `revalidateSettings()` trong src/lib/cache.ts xoá ngay khi
  * admin lưu cài đặt.
  */
-const getFooterSettings = unstable_cache(
+const LIEN_HE_MAC_DINH = { email: 'trunghoangdata101091@gmail.com', phone: '' };
+
+// Bản cũ bọc try/catch BÊN TRONG cache và trả mặc định — tức cache luôn cái mặc
+// định 10 phút mỗi khi DB nghẹn. Giờ lỗi ném ra, `anToan` bên ngoài trả mặc định
+// KHÔNG cache. Xem src/lib/data/an-toan.ts.
+const getFooterSettings = anToan(unstable_cache(
     async () => {
-        if (!supabaseAdmin) return { email: 'trunghoangdata101091@gmail.com', phone: '' };
-        try {
-            const { data } = await supabaseAdmin
-                .from('site_settings')
-                .select('key, value')
-                .eq('key', 'social_links')
-                .single();
-            const links = data?.value as { email?: string; phone?: string } | null;
-            return {
-                email: links?.email || 'trunghoangdata101091@gmail.com',
-                phone: links?.phone || '',
-            };
-        } catch {
-            return { email: 'trunghoangdata101091@gmail.com', phone: '' };
-        }
+        if (!supabaseAdmin) return LIEN_HE_MAC_DINH;
+        const { data, error } = await supabaseAdmin
+            .from('site_settings')
+            .select('key, value')
+            .eq('key', 'social_links')
+            .single();
+        if (kiemLoiTruyVan(error, 'footer.social_links', { boQuaKhongCoDong: true })) return LIEN_HE_MAC_DINH;
+        const links = data?.value as { email?: string; phone?: string } | null;
+        return {
+            email: links?.email || LIEN_HE_MAC_DINH.email,
+            phone: links?.phone || '',
+        };
     },
     ['footer-settings-v1'],
     { revalidate: 600, tags: ['settings'] }
-);
+), LIEN_HE_MAC_DINH);
 
 export async function Footer() {
     // Ca hai deu di qua `unstable_cache` tag 'settings' — bat buoc, vi Footer

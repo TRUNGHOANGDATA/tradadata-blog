@@ -1,5 +1,6 @@
 import { supabaseAdmin } from '@/lib/supabase/server';
 import { unstable_cache } from 'next/cache';
+import { anToan, kiemLoiTruyVan } from '@/lib/data/an-toan';
 import { extractTextFromContent, calculateReadingTime } from '@/lib/utils';
 import type { Post, Category, HangBaiVietTho } from '@/types';
 
@@ -91,11 +92,8 @@ async function getPostsUncached({
     query = query.range(from, to);
 
     const { data, count, error } = await query;
-
-    if (error) {
-        console.error('Error fetching posts:', error);
-        return { data: [], count: 0 };
-    }
+    // Ném chứ không trả rỗng — xem src/lib/data/an-toan.ts.
+    kiemLoiTruyVan(error, 'posts.getPosts');
 
     // Fetch all categories for these posts from junction table
     const postIds = (data || []).map(p => p.id);
@@ -128,10 +126,13 @@ async function getPostsUncached({
     };
 }
 
-export const getPosts = unstable_cache(
-    getPostsUncached,
-    ['posts-list-v1'],
-    { revalidate: 120, tags: ['posts'] } // 2 phut; revalidatePost() xoa ngay khi can
+export const getPosts = anToan(
+    unstable_cache(
+        getPostsUncached,
+        ['posts-list-v1'],
+        { revalidate: 120, tags: ['posts'] } // 2 phut; revalidatePost() xoa ngay khi can
+    ),
+    { data: [], count: 0 }
 );
 
 // Cached version — prevents duplicate DB queries between generateMetadata and BlogPostPage
@@ -146,10 +147,9 @@ export const getPostBySlug = unstable_cache(
             .eq('status', 'published')
             .single();
 
-        if (error) {
-            console.error(`Error fetching post ${slug}:`, error);
-            return null;
-        }
+        // Không có bài là 404 thật -> null. Lỗi hệ thống -> ném, để trang ISR giữ
+        // bản cũ thay vì cache một trang 404 suốt một giờ. CỐ Ý không bọc anToan.
+        if (kiemLoiTruyVan(error, 'posts.getPostBySlug', { boQuaKhongCoDong: true })) return null;
 
         return formatPost(data);
     },
@@ -182,7 +182,7 @@ export async function getPostBySlugForPreview(slug: string): Promise<Post | null
 // Nhờ vậy bài chung 3 tag đứng trên bài chung 1 tag — bản cũ chỉ sort theo ngày
 // nên xếp ngang nhau. Danh mục lấy từ junction `post_categories` (đa chủ đề),
 // không chỉ cột `category_id` cũ, nên bài nhiều chủ đề match đủ mọi hướng.
-export const getRelatedPosts = unstable_cache(
+export const getRelatedPosts = anToan(unstable_cache(
     async (currentPostId: string, tagIds: string[] = [], limit = 3): Promise<Post[]> => {
         if (!supabaseAdmin) return [];
 
@@ -225,11 +225,12 @@ export const getRelatedPosts = unstable_cache(
 
         // Chỉ giữ bài đã publish; cần `published_at` để tie-break khi cùng điểm.
         const candidateIds = [...scores.keys()];
-        const { data: posts } = await supabaseAdmin
+        const { data: posts, error: loiPosts } = await supabaseAdmin
             .from('posts')
             .select('*, author:profiles(*), category:categories!category_id(*)')
             .eq('status', 'published')
             .in('id', candidateIds);
+        kiemLoiTruyVan(loiPosts, 'posts.getRelatedPosts');
 
         if (!posts) return [];
 
@@ -245,7 +246,7 @@ export const getRelatedPosts = unstable_cache(
     },
     ['related-posts-v2'],
     { revalidate: 600, tags: ['posts'] } // Cache 10 phút
-);
+), []);
 
 async function getPinnedPostsUncached(limit = 5): Promise<Post[]> {
     if (!supabaseAdmin) return [];
@@ -258,10 +259,7 @@ async function getPinnedPostsUncached(limit = 5): Promise<Post[]> {
         .order('pinned_at', { ascending: false })
         .limit(limit);
 
-    if (error) {
-        console.error('Error fetching pinned posts:', error);
-        return [];
-    }
+    kiemLoiTruyVan(error, 'posts.getPinnedPosts');
 
     if (!data || data.length === 0) return [];
 
@@ -305,7 +303,9 @@ export const getAllPublishedSlugs = unstable_cache(
             .from('posts')
             .select('slug')
             .eq('status', 'published');
-        if (error) { console.error('Error fetching slugs:', error); return []; }
+        // Dùng ở generateStaticParams: DB lỗi thì build PHẢI đỏ, không được
+        // lặng lẽ sinh 0 trang bài. CỐ Ý không bọc anToan.
+        kiemLoiTruyVan(error, 'posts.getAllPublishedSlugs');
         return (data || []).map(p => p.slug);
     },
     ['all-published-slugs'],
@@ -323,18 +323,18 @@ async function searchPostsUncached(query: string): Promise<Post[]> {
         .order('published_at', { ascending: false })
         .limit(10);
 
-    if (error) {
-        console.error('Error searching posts:', error);
-        return [];
-    }
+    kiemLoiTruyVan(error, 'posts.searchPosts');
 
     return (data || []).map(formatPostForList);
 }
 
-export const getPinnedPosts = unstable_cache(
-    getPinnedPostsUncached,
-    ['pinned-posts-v1'],
-    { revalidate: 300, tags: ['posts'] }
+export const getPinnedPosts = anToan(
+    unstable_cache(
+        getPinnedPostsUncached,
+        ['pinned-posts-v1'],
+        { revalidate: 300, tags: ['posts'] }
+    ),
+    []
 );
 
 /**
@@ -343,10 +343,13 @@ export const getPinnedPosts = unstable_cache(
  * Khoa cache la chuoi nguoi dung go nen khong gioi han so khoa. 60 giay du de
  * chan viec go lai/tai lai cung tu khoa lien tuc ma khong phinh cache tren dia.
  */
-export const searchPosts = unstable_cache(
-    searchPostsUncached,
-    ['search-posts-v1'],
-    { revalidate: 60, tags: ['posts'] }
+export const searchPosts = anToan(
+    unstable_cache(
+        searchPostsUncached,
+        ['search-posts-v1'],
+        { revalidate: 60, tags: ['posts'] }
+    ),
+    []
 );
 
 /**
@@ -357,16 +360,17 @@ export const searchPosts = unstable_cache(
  * KHONG cache duoc chung voi truy van kiem tra `profiles.is_subscribed` ben canh:
  * cai do la du lieu theo NGUOI DUNG, cache lai la ro quyen Premium sang nguoi khac.
  */
-export const getPostTags = unstable_cache(
+export const getPostTags = anToan(unstable_cache(
     async (postId: string): Promise<{ id: string; name: string; slug: string }[]> => {
         if (!supabaseAdmin) return [];
-        const { data } = await supabaseAdmin
+        const { data, error } = await supabaseAdmin
             .from('post_tags')
             .select('tag_id, tags(id, name, slug)')
             .eq('post_id', postId);
+        kiemLoiTruyVan(error, 'posts.getPostTags');
         type Row = { tags: { id: string; name: string; slug: string } | null };
         return ((data as Row[] | null) || []).map(pt => pt.tags).filter((t): t is { id: string; name: string; slug: string } => !!t);
     },
     ['post-tags-v1'],
     { revalidate: 300, tags: ['posts'] }
-);
+), []);
