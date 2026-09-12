@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { Upload, Download, FilePlus2 } from 'lucide-react';
+import { Upload, Download, FilePlus2, Maximize2, Minimize2 } from 'lucide-react';
 import { doiNgayVietSangSerial } from '@/lib/excel/ngay-thang';
 import { ghepNgonNgu } from '@/lib/excel/locale';
 import { docPhien, luuPhien, xoaPhien } from '@/lib/excel/luu-phien';
@@ -10,8 +10,15 @@ import type { FUniver } from '@univerjs/presets';
 import type { IWorkbookData } from '@univerjs/core';
 
 // CSS của Univer — nằm trong chunk lười vì file này chỉ được dynamic-import.
-// Đã kiểm: mọi class đều có tiền tố `univer-`, không đụng Tailwind 4 của site.
+// Mọi class đều có tiền tố `univer-`, không đụng Tailwind 4 của site.
 import '@univerjs/presets/lib/styles/preset-sheets-core.css';
+import '@univerjs/presets/lib/styles/preset-sheets-filter.css';
+import '@univerjs/presets/lib/styles/preset-sheets-sort.css';
+import '@univerjs/presets/lib/styles/preset-sheets-conditional-formatting.css';
+import '@univerjs/presets/lib/styles/preset-sheets-data-validation.css';
+import '@univerjs/presets/lib/styles/preset-sheets-find-replace.css';
+import '@univerjs/presets/lib/styles/preset-sheets-table.css';
+import '@univerjs/presets/lib/styles/preset-sheets-note.css';
 // Ghi đè màu chủ đạo sang xanh Excel — import SAU để thắng CSS gốc của Univer.
 import './excel-theme.css';
 
@@ -33,6 +40,7 @@ export default function BangTinh() {
     const [dangXuLy, setDangXuLy] = useState(false);
     const [loi, setLoi] = useState<string | null>(null);
     const [thongBao, setThongBao] = useState<string | null>(null);
+    const [toanManHinh, setToanManHinh] = useState(false);
 
     // --- Khởi tạo Univer một lần ---
     useEffect(() => {
@@ -42,24 +50,61 @@ export default function BangTinh() {
             const [
                 { createUniver, LocaleType, merge },
                 { UniverSheetsCorePreset },
-                enUS,
-                viVN,
+                { UniverSheetsFilterPreset },
+                { UniverSheetsSortPreset },
+                { UniverSheetsConditionalFormattingPreset },
+                { UniverSheetsDataValidationPreset },
+                { UniverSheetsFindReplacePreset },
+                { UniverSheetsTablePreset },
+                { UniverSheetsNotePreset },
+                enCore, viCore,
+                enFilter, enSort, enCF, enDV, enFR, enTable, enNote,
             ] = await Promise.all([
                 import('@univerjs/presets'),
                 import('@univerjs/presets/preset-sheets-core'),
+                import('@univerjs/presets/preset-sheets-filter'),
+                import('@univerjs/presets/preset-sheets-sort'),
+                import('@univerjs/presets/preset-sheets-conditional-formatting'),
+                import('@univerjs/presets/preset-sheets-data-validation'),
+                import('@univerjs/presets/preset-sheets-find-replace'),
+                import('@univerjs/presets/preset-sheets-table'),
+                import('@univerjs/presets/preset-sheets-note'),
                 import('@univerjs/presets/preset-sheets-core/locales/en-US'),
                 import('@univerjs/presets/preset-sheets-core/locales/vi-VN'),
+                import('@univerjs/presets/preset-sheets-filter/locales/en-US'),
+                import('@univerjs/presets/preset-sheets-sort/locales/en-US'),
+                import('@univerjs/presets/preset-sheets-conditional-formatting/locales/en-US'),
+                import('@univerjs/presets/preset-sheets-data-validation/locales/en-US'),
+                import('@univerjs/presets/preset-sheets-find-replace/locales/en-US'),
+                import('@univerjs/presets/preset-sheets-table/locales/en-US'),
+                import('@univerjs/presets/preset-sheets-note/locales/en-US'),
             ]);
 
             if (daHuy || !containerRef.current) return;
 
-            // Toàn bộ UI tiếng Anh chuẩn Microsoft; CHỈ phần giải thích hàm tiếng Việt.
-            const ngonNgu = merge({}, ghepNgonNgu(enUS.default, viVN.default));
+            // Nền UI tiếng Anh: gộp locale en-US của lõi + mọi preset chức năng.
+            const mergedEn = merge(
+                {},
+                enCore.default, enFilter.default, enSort.default, enCF.default,
+                enDV.default, enFR.default, enTable.default, enNote.default,
+            );
+            // Toàn bộ UI tiếng Anh; CHỈ giải thích hàm là tiếng Việt (lấy từ core vi-VN).
+            // Bọc merge({}, ...) để khớp kiểu ILanguagePack mà createUniver mong đợi.
+            const ngonNgu = merge({}, ghepNgonNgu(mergedEn, viCore.default));
 
             const { univer, univerAPI } = createUniver({
                 locale: LocaleType.EN_US,
                 locales: { [LocaleType.EN_US]: ngonNgu },
-                presets: [UniverSheetsCorePreset({ container: containerRef.current })],
+                presets: [
+                    UniverSheetsCorePreset({ container: containerRef.current }),
+                    UniverSheetsFilterPreset(),
+                    UniverSheetsSortPreset(),
+                    UniverSheetsConditionalFormattingPreset(),
+                    UniverSheetsDataValidationPreset(),
+                    UniverSheetsFindReplacePreset(),
+                    UniverSheetsTablePreset(),
+                    UniverSheetsNotePreset(),
+                ],
             });
 
             apiRef.current = univerAPI;
@@ -81,7 +126,6 @@ export default function BangTinh() {
             };
 
             // --- Nhận ngày theo NGÀY/THÁNG/NĂM ---
-            // Univer nhận ngày kiểu Mỹ; ta bắt chuỗi thô lúc gõ xong rồi ghi đè serial.
             let ngayChoGhi: { hang: number; cot: number; serial: number } | null = null;
 
             const huyBefore = univerAPI.addEvent(univerAPI.Event.BeforeSheetEditEnd, (p) => {
@@ -123,6 +167,24 @@ export default function BangTinh() {
             huyRef.current = null;
         };
     }, []);
+
+    // Univer vẽ theo kích thước container; khi đổi vào/ra toàn màn hình phải báo
+    // để nó vẽ lại cho vừa khung mới.
+    useEffect(() => {
+        if (!sanSang) return;
+        const t = setTimeout(() => window.dispatchEvent(new Event('resize')), 60);
+        return () => clearTimeout(t);
+    }, [toanManHinh, sanSang]);
+
+    // Esc để thoát toàn màn hình
+    useEffect(() => {
+        if (!toanManHinh) return;
+        const onKey = (e: KeyboardEvent) => {
+            if (e.key === 'Escape') setToanManHinh(false);
+        };
+        window.addEventListener('keydown', onKey);
+        return () => window.removeEventListener('keydown', onKey);
+    }, [toanManHinh]);
 
     /** Thay workbook hiện tại bằng snapshot mới (dùng chung cho mở file / phiên mới). */
     const thayWorkbook = useCallback((snapshot: Partial<IWorkbookData>) => {
@@ -180,46 +242,38 @@ export default function BangTinh() {
         thayWorkbook({});
     }, [thayWorkbook]);
 
+    const nutClass =
+        'inline-flex items-center gap-1.5 rounded-md border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-100 disabled:opacity-50';
+
     return (
-        <div className="bang-tinh-excel flex h-full w-full flex-col">
+        <div
+            className={
+                toanManHinh
+                    ? 'bang-tinh-excel fixed inset-0 z-[60] flex flex-col bg-white'
+                    : 'bang-tinh-excel flex h-full w-full flex-col'
+            }
+        >
             {/* Thanh thao tác của trang (không phải của Univer) */}
             <div className="flex flex-wrap items-center gap-2 border-b bg-gray-50 px-3 py-2">
-                <button
-                    type="button"
-                    onClick={() => inputFileRef.current?.click()}
-                    disabled={!sanSang || dangXuLy}
-                    className="inline-flex items-center gap-1.5 rounded-md border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-100 disabled:opacity-50"
-                >
+                <button type="button" onClick={() => inputFileRef.current?.click()} disabled={!sanSang || dangXuLy} className={nutClass}>
                     <Upload className="h-4 w-4" /> Mở file Excel
                 </button>
-                <button
-                    type="button"
-                    onClick={taiVe}
-                    disabled={!sanSang || dangXuLy}
-                    className="inline-flex items-center gap-1.5 rounded-md border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-100 disabled:opacity-50"
-                >
+                <button type="button" onClick={taiVe} disabled={!sanSang || dangXuLy} className={nutClass}>
                     <Download className="h-4 w-4" /> Tải về máy
                 </button>
-                <button
-                    type="button"
-                    onClick={phienMoi}
-                    disabled={!sanSang || dangXuLy}
-                    className="inline-flex items-center gap-1.5 rounded-md border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-100 disabled:opacity-50"
-                >
+                <button type="button" onClick={phienMoi} disabled={!sanSang || dangXuLy} className={nutClass}>
                     <FilePlus2 className="h-4 w-4" /> Phiên mới
+                </button>
+                <button type="button" onClick={() => setToanManHinh((v) => !v)} disabled={!sanSang} className={`${nutClass} ml-auto`}>
+                    {toanManHinh ? <Minimize2 className="h-4 w-4" /> : <Maximize2 className="h-4 w-4" />}
+                    {toanManHinh ? 'Thoát toàn màn hình' : 'Toàn màn hình'}
                 </button>
 
                 {dangXuLy && <span className="text-sm text-gray-500">Đang xử lý…</span>}
                 {loi && <span className="text-sm text-red-600">{loi}</span>}
                 {thongBao && !loi && <span className="text-sm text-amber-700">{thongBao}</span>}
 
-                <input
-                    ref={inputFileRef}
-                    type="file"
-                    accept=".xlsx,.xls"
-                    onChange={khiChonFile}
-                    className="hidden"
-                />
+                <input ref={inputFileRef} type="file" accept=".xlsx,.xls" onChange={khiChonFile} className="hidden" />
             </div>
 
             <div ref={containerRef} className="min-h-0 flex-1" />
