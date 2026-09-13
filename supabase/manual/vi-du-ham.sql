@@ -11,8 +11,13 @@
 --   vi_du_ham     — danh mục hàm 365 + ví dụ nạp sẵn (admin soạn ở /admin/vi-du-ham)
 --   bai_lam_excel — bài đang làm của từng người đăng nhập (thay sessionStorage)
 --
--- KHÔNG bật RLS: app đọc/ghi qua service role key, phân quyền nằm ở API route
--- (đúng kiến trúc chung của dự án — xem CLAUDE.md, mục Data access).
+-- BẬT RLS cho cả hai bảng (đã bật tay 13/09/2026 khi Supabase cảnh báo).
+-- Bản đầu của file này ghi "KHÔNG bật RLS vì app đi bằng service role key" —
+-- LỜI KHUYÊN ĐÓ SAI. Service role bỏ qua RLS nên bật RLS không cản app tí nào,
+-- nhưng KHÔNG bật thì `anon` key (nằm công khai trong bundle trình duyệt, và
+-- còn sót trong git history của repo public) đọc được thẳng bảng qua PostgREST.
+-- bai_lam_excel chứa bài của người dùng ⇒ bắt buộc.
+-- Xem thêm supabase/manual/siet-quyen-anon.sql — siết ở tầng GRANT cho mọi bảng.
 -- =============================================================================
 
 create extension if not exists pgcrypto;

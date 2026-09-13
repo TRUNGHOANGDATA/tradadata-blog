@@ -365,6 +365,30 @@ trong khi luồng auto-activate ở `orders/create` lại đọc đúng `product
     `{{site_url}}`, `{{site_name}}` vào MỌI mẫu, nơi gọi ghi đè được. Nhờ vậy chèn
     banner vào mail chỉ là sửa HTML trong admin, không đụng 8 route gọi `sendEmail`.
 
+- **`anon` key đọc thẳng được DB — chưa vá tính đến 13/09/2026.** CLAUDE.md nói
+  "phân quyền nằm ở tầng API route, không dựa vào RLS"; điều đó đúng với *app*,
+  nhưng KHÔNG ai bắt người ngoài phải đi qua app. `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+  nằm sẵn trong bundle trình duyệt (và trong git history của repo public), gọi
+  thẳng PostgREST là xong. Đo bằng chính key đó:
+
+  | bảng | anon đọc được |
+  |---|---|
+  | `profiles` | 61 dòng (email, phone) |
+  | `orders` | 7 dòng (email, phone, số tiền) |
+  | `user_subscriptions` | 3 |
+  | `site_settings` | 4 — có `bank_info` |
+  | `coupons` | 1 |
+  | `posts` | 288 — **gồm `content` bài Premium**, tức lấy hết nội dung bán tiền |
+
+  Ghi đã bị chặn; vấn đề là ĐỌC. Đây cũng là lý do thật khiến rào Premium chỉ là
+  rào UI: cắt nội dung ở server không có nghĩa lý gì khi bảng `posts` đọc trực
+  tiếp được.
+  Cách vá: `supabase/manual/siet-quyen-anon.sql` (chạy tay) — thu hồi GRANT của
+  `anon`/`authenticated` trên schema `public` thay vì đi vá RLS từng bảng. An
+  toàn vì **không file nào trong repo import `src/lib/supabase/client.ts`** (đã
+  grep); mọi truy vấn đi bằng service role, không dính.
+  ⇒ Bảng MỚI tạo sau này mặc định lại hở — tạo bảng xong thì chạy lại file đó.
+
 - **`GET /api/settings` là endpoint CÔNG KHAI, không kiểm quyền.** Nó lọc theo
   danh sách trắng trong chính file (`social_links`, `brand_assets`). Trước
   12/09/2026 nó trả nguyên cả bảng `site_settings`, tức ai cũng đọc được
