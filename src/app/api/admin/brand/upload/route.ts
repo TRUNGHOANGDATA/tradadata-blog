@@ -38,9 +38,15 @@ async function nenTheoChuan(goc: Buffer, ten: string, loai: LoaiAnhThuongHieu): 
 
     // `rotate()` không tham số = áp orientation trong EXIF vào pixel. Cần, vì
     // `resize` bỏ qua EXIF nên ảnh chụp dọc từ điện thoại sẽ bị quay ngang.
+    // `withoutEnlargement` — KHÔNG phóng to ảnh nhỏ hơn chuẩn.
+    // Thiếu cờ này thì sharp vui vẻ kéo một ảnh 577px lên 1600px: file nặng gấp
+    // mấy lần mà không thêm một chi tiết nào, và người tải lên tưởng đã đạt
+    // chuẩn. Để nguyên cỡ nhỏ thì ít ra `next/image` không phải nhân đôi cái mờ,
+    // còn admin đọc dòng mô tả sẽ biết cần ảnh to hơn.
+    // Hệ quả: ảnh nhỏ giữ nguyên TỈ LỆ GỐC (fit:cover chỉ cắt khi có đủ pixel).
     const ong = sharp(goc)
         .rotate()
-        .resize(chuan.rong, chuan.cao, { fit: 'cover', position: 'centre' });
+        .resize(chuan.rong, chuan.cao, { fit: 'cover', position: 'centre', withoutEnlargement: true });
 
     const goc2 = ten.replace(/\.[^.]+$/, '');
     if (giuPng) {
