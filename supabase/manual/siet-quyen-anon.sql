@@ -2,6 +2,12 @@
 -- SIẾT QUYỀN CỦA `anon` VÀ `authenticated` TRÊN SCHEMA public
 -- Chạy tay trong Supabase Dashboard → SQL Editor. Chạy lại nhiều lần vô hại.
 --
+-- ĐÃ CHẠY 13/09/2026. Nghiệm thu ngay sau đó: 20/20 bảng trả `42501 permission
+-- denied` cho cả đọc lẫn ghi bằng anon key; site không suy suyển (`/`, `/blog`,
+-- `/thuc-hanh`, `/courses`, `/categories` đều 200; trang chủ ra 10 bài + 8 chủ đề;
+-- /api/vi-du-ham vẫn 49 hàm).
+-- ⚠️ Tạo bảng MỚI qua Dashboard là Supabase lại cấp quyền cho anon ⇒ CHẠY LẠI file này.
+--
 -- VẤN ĐỀ (đo 13/09/2026 bằng chính anon key của dự án):
 --   profiles            -> đọc được 61 dòng  (có email, phone)
 --   orders              -> đọc được  7 dòng  (có email, phone, số tiền)
