@@ -4,7 +4,7 @@ import dynamic from 'next/dynamic';
 import { useEffect, useState } from 'react';
 import { useSession, signIn } from 'next-auth/react';
 import { LogIn } from 'lucide-react';
-import type { ViDuHam } from '@/lib/data/vi-du-ham';
+import type { ViDuHam } from '@/lib/excel/ham-365';
 
 // Univer đụng `window` ngay lúc khởi tạo và vẽ bằng canvas -> KHÔNG render ở server.
 const BangTinh = dynamic(() => import('./BangTinh'), {
