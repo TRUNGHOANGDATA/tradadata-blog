@@ -3,7 +3,7 @@ import sharp from 'sharp';
 import { auth } from '@/lib/auth';
 import { loiThanhChu } from '@/lib/errors';
 import { uploadToGoogleDrive } from '@/lib/storage/google-drive';
-import { CHUAN_ANH, type LoaiAnhThuongHieu } from '@/lib/brand';
+import { CHUAN_ANH, MB_TAI_LEN_TOI_DA, type LoaiAnhThuongHieu } from '@/lib/brand';
 
 /**
  * Upload ảnh nhận diện thương hiệu.
@@ -27,7 +27,7 @@ import { CHUAN_ANH, type LoaiAnhThuongHieu } from '@/lib/brand';
 
 const LOAI_HOP_LE: LoaiAnhThuongHieu[] = ['logo', 'logo-toi', 'hero', 'banner', 'og'];
 const KIEU_CHO_PHEP = ['image/jpeg', 'image/png', 'image/webp'];
-const KICH_THUOC_TOI_DA = 10 * 1024 * 1024;
+const KICH_THUOC_TOI_DA = MB_TAI_LEN_TOI_DA * 1024 * 1024;
 
 type AnhDaNen = { buffer: Buffer; ten: string; mime: string };
 
@@ -88,7 +88,7 @@ export async function POST(request: Request) {
         }
         if (file.size > KICH_THUOC_TOI_DA) {
             return NextResponse.json(
-                { error: `File nặng ${(file.size / 1024 / 1024).toFixed(1)}MB, tối đa 10MB.` },
+                { error: `File nặng ${(file.size / 1024 / 1024).toFixed(1)}MB, tối đa ${MB_TAI_LEN_TOI_DA}MB.` },
                 { status: 400 }
             );
         }

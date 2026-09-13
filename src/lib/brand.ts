@@ -37,13 +37,27 @@ export type ChuanAnhThuongHieu = {
     revMacDinh: number;
     /** Định dạng khuyến nghị, chỉ để hiển thị. */
     dinhDang: string;
-    /** Ngưỡng cảnh báo dung lượng (KB) — cảnh báo, không chặn. */
-    kbToiDa: number;
+    /**
+     * Dung lượng file SAU KHI hệ thống nén (KB) — con số tham khảo, KHÔNG phải
+     * giới hạn cho file bạn tải lên.
+     *
+     * Tên cũ `kbToiDa` hiển thị ra là "tối đa N KB" nên đọc như một cái chặn, và
+     * khuyên người dùng làm đúng thứ NGƯỢC với cái họ cần: muốn ảnh nét thì phải
+     * nhiều PIXEL, còn KB thì route upload tự quyết bằng mức nén của nó. Giới hạn
+     * thật là `MB_TAI_LEN_TOI_DA`.
+     */
+    kbSauNen: number;
     /** Tự sinh được từ ảnh khác nên không bắt buộc upload. */
     tuyChon: boolean;
     /** File tĩnh dùng khi chưa cấu hình gì. */
     macDinh: string;
 };
+
+/**
+ * Giới hạn THẬT cho file tải lên. Khai ở đây để admin hiển thị đúng con số mà
+ * route `/api/admin/brand/upload` thực sự chặn — đừng chép số ra chỗ khác.
+ */
+export const MB_TAI_LEN_TOI_DA = 10;
 
 export const CHUAN_ANH: Record<LoaiAnhThuongHieu, ChuanAnhThuongHieu> = {
     logo: {
@@ -52,7 +66,7 @@ export const CHUAN_ANH: Record<LoaiAnhThuongHieu, ChuanAnhThuongHieu> = {
         rong: 512,
         cao: 512,
         dinhDang: 'PNG hoặc JPG, vuông 1:1',
-        kbToiDa: 150,
+        kbSauNen: 150,
         tuyChon: false,
         macDinh: '/LOGO_TRA_DA_DATA.jpg',
         revMacDinh: 1,
@@ -63,7 +77,7 @@ export const CHUAN_ANH: Record<LoaiAnhThuongHieu, ChuanAnhThuongHieu> = {
         rong: 512,
         cao: 512,
         dinhDang: 'PNG nền trong suốt, vuông 1:1',
-        kbToiDa: 150,
+        kbSauNen: 150,
         tuyChon: true,
         macDinh: '/LOGO_TRA_DA_DATA.jpg',
         revMacDinh: 1,
@@ -80,7 +94,7 @@ export const CHUAN_ANH: Record<LoaiAnhThuongHieu, ChuanAnhThuongHieu> = {
         rong: 1600,
         cao: 1920,
         dinhDang: 'PNG hoặc JPG, ảnh dọc (khoảng 5:6)',
-        kbToiDa: 600,
+        kbSauNen: 600,
         tuyChon: false,
         macDinh: '/images/hero-default.jpg',
         // 2 = ban 1600x1920 thay cho ban 577x686 (13/09/2026).
@@ -92,7 +106,7 @@ export const CHUAN_ANH: Record<LoaiAnhThuongHieu, ChuanAnhThuongHieu> = {
         rong: 1600,
         cao: 900,
         dinhDang: 'PNG hoặc JPG, tỉ lệ 16:9',
-        kbToiDa: 400,
+        kbSauNen: 400,
         tuyChon: false,
         macDinh: '/images/banner-default.jpg',
         revMacDinh: 1,
@@ -103,7 +117,7 @@ export const CHUAN_ANH: Record<LoaiAnhThuongHieu, ChuanAnhThuongHieu> = {
         rong: 1200,
         cao: 630,
         dinhDang: 'PNG hoặc JPG, tỉ lệ 1.91:1',
-        kbToiDa: 300,
+        kbSauNen: 300,
         tuyChon: true,
         macDinh: '/images/og-default.jpg',
         revMacDinh: 1,

@@ -2,7 +2,7 @@
 
 import { useId, useRef, useState } from 'react';
 import { ImagePlus, Loader2, Trash2, AlertTriangle, Upload } from 'lucide-react';
-import { CHUAN_ANH, type LoaiAnhThuongHieu } from '@/lib/brand';
+import { CHUAN_ANH, MB_TAI_LEN_TOI_DA, type LoaiAnhThuongHieu } from '@/lib/brand';
 
 /**
  * Một ô ảnh thương hiệu trong tab "Thương hiệu" của trang cài đặt.
@@ -70,12 +70,12 @@ export function BrandAssetField({ loai, url, dangLuu, onChange }: Props) {
                 y.push(`ảnh ${kt.rong}×${kt.cao} nhỏ hơn ${chuan.rong}×${chuan.cao} nên sẽ hơi mờ trên màn hình nét cao`);
             }
         }
-        const kb = file.size / 1024;
-        if (kb > chuan.kbToiDa * 4) {
-            y.push(`file ${(kb / 1024).toFixed(1)}MB khá nặng, hệ thống sẽ tự nén lại`);
-        }
+        // CỐ Ý không cảnh báo "file nặng": ảnh gốc to là TỐT, route upload nén lại
+        // còn khoảng `kbSauNen` KB rồi mới lưu, và `next/image` còn nén lần nữa
+        // theo đúng bề rộng người đọc cần. Bản cũ cảnh báo ở đây làm người dùng
+        // tự nén ảnh trước khi tải lên — đúng thứ khiến ảnh bị mờ.
         return y.length
-            ? `${y.join('; ')}. Vẫn tải lên được — muốn đẹp nhất thì xuất lại đúng ${chuan.rong}×${chuan.cao}.`
+            ? `${y.join('; ')}. Vẫn tải lên được — muốn đẹp nhất thì xuất lại từ ${chuan.rong}×${chuan.cao} trở lên.`
             : null;
     };
 
@@ -129,7 +129,7 @@ export function BrandAssetField({ loai, url, dangLuu, onChange }: Props) {
                     )}
                 </h3>
                 <span className="text-xs font-medium tabular-nums text-fg-subtle">
-                    {chuan.rong}×{chuan.cao} · {chuan.dinhDang} · tối đa {chuan.kbToiDa} KB
+                    {chuan.rong}×{chuan.cao} trở lên · {chuan.dinhDang} · file tối đa {MB_TAI_LEN_TOI_DA}MB
                 </span>
             </div>
             <p className="mt-1 text-xs leading-relaxed text-fg-subtle">{chuan.moTa}</p>
