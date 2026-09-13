@@ -24,6 +24,17 @@ export type ChuanAnhThuongHieu = {
     moTa: string;
     rong: number;
     cao: number;
+    /**
+     * Tăng số này MỖI KHI thay file trong `macDinh`.
+     * Vì sao cần: `duongDanAnh()` băm URL ảnh để làm `?v=`, mà khi chưa cấu hình
+     * gì trong admin thì URL đó là đường dẫn TĨNH, không đổi — thay ruột file
+     * trong `public/` không làm băm đổi, nên với `minimumCacheTTL` 30 ngày thì
+     * khách cũ giữ ảnh cũ tới một tháng. Đúng lỗi này xảy ra 13/09/2026 khi
+     * thay `hero-default.jpg` 577px bằng bản 1600px: production trả ảnh mới mà
+     * trình duyệt vẫn hiện ảnh mờ.
+     * Ảnh admin TỰ tải lên không cần đụng số này — URL Drive đổi là băm đổi.
+     */
+    revMacDinh: number;
     /** Định dạng khuyến nghị, chỉ để hiển thị. */
     dinhDang: string;
     /** Ngưỡng cảnh báo dung lượng (KB) — cảnh báo, không chặn. */
@@ -44,6 +55,7 @@ export const CHUAN_ANH: Record<LoaiAnhThuongHieu, ChuanAnhThuongHieu> = {
         kbToiDa: 150,
         tuyChon: false,
         macDinh: '/LOGO_TRA_DA_DATA.jpg',
+        revMacDinh: 1,
     },
     'logo-toi': {
         nhan: 'Logo cho nền tối',
@@ -54,6 +66,7 @@ export const CHUAN_ANH: Record<LoaiAnhThuongHieu, ChuanAnhThuongHieu> = {
         kbToiDa: 150,
         tuyChon: true,
         macDinh: '/LOGO_TRA_DA_DATA.jpg',
+        revMacDinh: 1,
     },
     hero: {
         nhan: 'Ảnh minh hoạ trang chủ',
@@ -70,6 +83,8 @@ export const CHUAN_ANH: Record<LoaiAnhThuongHieu, ChuanAnhThuongHieu> = {
         kbToiDa: 600,
         tuyChon: false,
         macDinh: '/images/hero-default.jpg',
+        // 2 = ban 1600x1920 thay cho ban 577x686 (13/09/2026).
+        revMacDinh: 2,
     },
     banner: {
         nhan: 'Banner chia sẻ & email',
@@ -80,6 +95,7 @@ export const CHUAN_ANH: Record<LoaiAnhThuongHieu, ChuanAnhThuongHieu> = {
         kbToiDa: 400,
         tuyChon: false,
         macDinh: '/images/banner-default.jpg',
+        revMacDinh: 1,
     },
     og: {
         nhan: 'Ảnh chia sẻ mạng xã hội',
@@ -90,6 +106,7 @@ export const CHUAN_ANH: Record<LoaiAnhThuongHieu, ChuanAnhThuongHieu> = {
         kbToiDa: 300,
         tuyChon: true,
         macDinh: '/images/og-default.jpg',
+        revMacDinh: 1,
     },
 };
 
@@ -145,7 +162,13 @@ export function layUrlAnh(assets: BrandAssets | null | undefined, loai: LoaiAnhT
  * suốt 30 ngày. Đổi ảnh ⇒ đổi `v` ⇒ Next coi là ảnh khác.
  */
 export function duongDanAnh(loai: LoaiAnhThuongHieu, assets: BrandAssets | null | undefined): string {
-    return `/api/brand/${loai}?v=${bamNgan(layUrlAnh(assets, loai))}`;
+    const url = layUrlAnh(assets, loai);
+    // Rơi về file tĩnh thì băm KÈM `revMacDinh` — đường dẫn tĩnh không bao giờ
+    // đổi, nên thiếu nó là thay ảnh mà `?v=` giữ nguyên và khách cũ kẹt ảnh cũ
+    // suốt `minimumCacheTTL` (30 ngày).
+    const chuan = CHUAN_ANH[loai];
+    const nguon = url === chuan.macDinh ? `${url}#r${chuan.revMacDinh}` : url;
+    return `/api/brand/${loai}?v=${bamNgan(nguon)}`;
 }
 
 /**
