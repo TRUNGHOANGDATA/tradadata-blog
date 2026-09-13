@@ -57,11 +57,17 @@ export const CHUAN_ANH: Record<LoaiAnhThuongHieu, ChuanAnhThuongHieu> = {
     },
     hero: {
         nhan: 'Ảnh minh hoạ trang chủ',
-        moTa: 'Đứng cạnh tiêu đề ở đầu trang chủ. Ảnh DỌC, và ĐỪNG có chữ trong ảnh — chữ tiêu đề đã nằm trên trang rồi.',
-        rong: 640,
-        cao: 760,
+        moTa: 'Đứng cạnh tiêu đề ở đầu trang chủ. Ảnh DỌC, và ĐỪNG có chữ trong ảnh — chữ tiêu đề đã nằm trên trang rồi. Ảnh nhỏ hơn 1600px BỀ NGANG sẽ bị phóng to và trông mờ trên màn hình nét cao.',
+        // 1600 KHÔNG phải số chọn đại. Từ 1024px trở lên ảnh chiếm `w-[42%]` bề
+        // rộng CỬA SỔ: màn 1920 -> 806 CSS px, màn nét cao (DPR 2) -> cần 1612px
+        // THẬT. Đo 13/09/2026 với ảnh cũ 577x686: trình duyệt phóng 1.66x ở cửa
+        // sổ 1409px, và ~2.3x ở 1920px -> nhoè thấy rõ.
+        // Cao 1920 để giữ 5:6: bản mobile cắt khung 4:5, bản desktop cắt ngang
+        // ~1.6:1, một ảnh gốc phải đủ cho cả hai khung.
+        rong: 1600,
+        cao: 1920,
         dinhDang: 'PNG hoặc JPG, ảnh dọc (khoảng 5:6)',
-        kbToiDa: 300,
+        kbToiDa: 600,
         tuyChon: false,
         macDinh: '/images/hero-default.jpg',
     },
