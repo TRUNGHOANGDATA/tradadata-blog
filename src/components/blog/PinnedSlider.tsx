@@ -80,7 +80,7 @@ export function PinnedSlider({ posts }: PinnedSliderProps) {
         // tai, anh minh hoa tran toi mep man hinh con the slider bi bo trong
         // `max-w-7xl` => anh tho han ra BEN PHAI the, hai lop chong nhau trong vo
         // lan. Do 13/09/2026 tren production.
-        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative mb-12">
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative mt-12 mb-12 lg:mt-16">
             <div
                 className="relative w-full overflow-hidden bg-surface-900 rounded-2xl shadow-e3"
                 onMouseEnter={() => setIsPaused(true)}
