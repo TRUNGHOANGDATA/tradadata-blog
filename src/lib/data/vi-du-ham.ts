@@ -2,6 +2,7 @@ import { unstable_cache } from 'next/cache';
 import { supabaseAdmin } from '@/lib/supabase/server';
 import { anToan, kiemLoiTruyVan } from '@/lib/data/an-toan';
 import type { IWorkbookData } from '@univerjs/core';
+import type { ViDuHam } from '@/lib/excel/ham-365';
 
 /**
  * Danh mục hàm Excel 365 + ví dụ nạp sẵn cho /thuc-hanh.
@@ -16,17 +17,11 @@ import type { IWorkbookData } from '@univerjs/core';
  * Component là gửi cả xuống trình duyệt ngay lúc mở trang.
  */
 
-export interface ViDuHam {
-    id: string;
-    ten_ham: string;
-    nhom: string;
-    mo_ta: string | null;
-    cong_thuc_mau: string | null;
-    post_slug: string | null;
-    ho_tro: boolean;
-    thu_tu: number;
-    updated_at: string;
-}
+// Kiểu + hàm thuần nằm ở `@/lib/excel/ham-365` để Client Component dùng được mà
+// KHÔNG kéo `supabase/server` vào bundle trình duyệt (xem chú thích ở file đó).
+// Xuất lại ở đây để nơi gọi phía server giữ nguyên đường import.
+export { gomTheoNhom } from '@/lib/excel/ham-365';
+export type { ViDuHam };
 
 export interface ViDuHamDayDu extends ViDuHam {
     snapshot: Partial<IWorkbookData> | null;
@@ -69,14 +64,3 @@ export const getViDuHam = anToan(unstable_cache(
     ['vi-du-ham-mot-v1'],
     { revalidate: 600, tags: [TAG] }
 ), null);
-
-/** Gom danh mục theo nhóm, giữ đúng thứ tự nhóm xuất hiện. */
-export function gomTheoNhom(ds: ViDuHam[]): Array<{ nhom: string; ham: ViDuHam[] }> {
-    const ketQua: Array<{ nhom: string; ham: ViDuHam[] }> = [];
-    for (const h of ds) {
-        const cuoi = ketQua[ketQua.length - 1];
-        if (cuoi && cuoi.nhom === h.nhom) cuoi.ham.push(h);
-        else ketQua.push({ nhom: h.nhom, ham: [h] });
-    }
-    return ketQua;
-}

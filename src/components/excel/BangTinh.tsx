@@ -10,7 +10,9 @@ import { doiNgayVietSangSerial } from '@/lib/excel/ngay-thang';
 import { ghepNgonNgu } from '@/lib/excel/locale';
 import { docPhien, luuPhien, xoaPhien } from '@/lib/excel/luu-phien';
 import { docXlsxSangSnapshot, taiSnapshotXuongXlsx } from '@/lib/excel/xlsx';
-import { gomTheoNhom, type ViDuHam } from '@/lib/data/vi-du-ham';
+// KHÔNG import từ '@/lib/data/vi-du-ham': file đó kéo theo `supabase/server`,
+// mà đây là Client Component -> chunk trình duyệt sẽ ném `supabaseKey is required`.
+import { gomTheoNhom, type ViDuHam } from '@/lib/excel/ham-365';
 import type { FUniver } from '@univerjs/presets';
 import type { IWorkbookData } from '@univerjs/core';
 

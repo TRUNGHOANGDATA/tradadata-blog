@@ -235,6 +235,24 @@ trong khi luồng auto-activate ở `orders/create` lại đọc đúng `product
   một route API có đường dẫn cố định (xem `/api/brand/og` bên dưới) thay vì đổi
   `metadata` tĩnh thành `generateMetadata()` có đọc DB.
 
+- **Client Component KHÔNG được import GIÁ TRỊ từ `src/lib/data/*`.** Mọi file ở
+  đó `import { supabaseAdmin } from '@/lib/supabase/server'`, mà file ấy gọi
+  `createClient()` ngay lúc nạp module. Ở trình duyệt thì
+  `SUPABASE_SERVICE_ROLE_KEY` là chuỗi rỗng (không có tiền tố `NEXT_PUBLIC_`) nên
+  supabase-js ném `supabaseKey is required` và Next đưa cả trang sang `error.tsx`
+  — trang 500, không phải lỗi lặng.
+  `import type { ... }` thì AN TOÀN (TypeScript xoá lúc biên dịch); chỉ import
+  giá trị mới kéo module theo. Khác biệt này vô hình khi đọc diff, nên:
+  ⇒ Hàm thuần/kiểu mà client cần phải để ở module riêng không đụng DB —
+  mẫu: `src/lib/excel/ham-365.ts` (`gomTheoNhom`, `ViDuHam`), còn
+  `src/lib/data/vi-du-ham.ts` xuất lại cho phía server.
+  ⇒ `src/lib/supabase/server.ts` đã có `import 'server-only'` làm rào: lỡ tay là
+  **build đỏ ngay**, thay vì trắng trang trên production. Đừng gỡ dòng đó.
+  Đo 13/09/2026: `BangTinh.tsx` import `gomTheoNhom` từ `data/vi-du-ham` ⇒
+  `/thuc-hanh` trả trang 500 cho MỌI người đã đăng nhập suốt từ #49. Người chưa
+  đăng nhập không thấy gì lạ vì cổng đăng nhập không nạp chunk Univer — nên
+  `curl` trang đó vẫn 200 và smoke test không bắt được.
+
 - **Mọi truy vấn dùng chung phải đi qua `src/lib/data/*` và bọc `unstable_cache`.**
   Đừng viết `supabaseAdmin.from(...)` thẳng trong page component. Lý do đo được
   (07/09/2026): TTFB `/blog` là **1343ms** vì tầng data không cache và có 36 truy
