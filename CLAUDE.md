@@ -400,6 +400,38 @@ trong khi luồng auto-activate ở `orders/create` lại đọc đúng `product
   cấp sẵn khi tạo bảng qua Dashboard. Tạo bảng xong PHẢI chạy lại file đó, rồi
   kiểm bằng truy vấn nghiệm thu ở cuối file (phải trả 0 dòng).
 
+- **React lỗi #418 trên production — ĐÃ TRUY RA GỐC, CHƯA CÓ CÁCH VÁ AN TOÀN.**
+  Đừng điều tra lại từ đầu. Triệu chứng: console production in
+  `Minified React error #418` ở MỌI trang; local `next dev` và cả local
+  `next build` + `next start` đều SẠCH.
+  Gốc: **bug cache ISR của Next 15.5**. Khi một trang ISR hết hạn và request
+  KÍCH revalidate nền lại là một **prefetch của router** (`/duong-dan?_rsc=abc`),
+  Next nướng luôn `?_rsc=...` vào canonical URL trong flight data của bản HTML
+  đem đi cache. Khách sau đó hydrate với canonical lệch `location` thật ⇒ React
+  vứt HTML server và **dựng lại toàn bộ trang ở client**.
+  Kịch bản tái hiện (chạy được, dùng lại khi thử bản Next mới):
+  ```
+  curl localhost:3001/cart                       # nap cache
+  sleep 330                                      # cho het han (s-maxage 300)
+  curl -H 'RSC: 1' -H 'Next-Router-Prefetch: 1' 'localhost:3001/cart?_rsc=xxx'
+  curl localhost:3001/cart | grep -o 'c\\":\[[^]]*\]'
+  # dinh  -> "c":["","cart?_rsc=xxx"]      sach -> "c":["","cart"]
+  ```
+  Dấu hiệu nhận ở production: `curl` trang rồi `grep _rsc` — có là đang nhiễm.
+  **Đã thử và KHÔNG ăn thua** (đừng làm lại):
+  - Nâng `next` 15.5.12 → **15.5.25**: lỗi còn nguyên.
+  - Middleware `NextResponse.rewrite()` bỏ `_rsc`: Next vẫn lấy canonical từ URL
+    GỐC, không phải URL đã rewrite. (Vô hại nhưng vô tác dụng — đã gỡ.)
+  Hướng còn lại, CHƯA kiểm trên gateway thật: cho **nginx xoá `_rsc` khỏi query
+  trước khi proxy** — khi đó Next nhận thẳng đường dẫn sạch. Rủi ro phải cân:
+  response prefetch (`text/x-component`) và response HTML sẽ dùng chung URL ở mọi
+  tầng cache trung gian, nên nginx BẮT BUỘC phải tôn trọng `Vary: rsc`.
+  Trang `/` KHÔNG bị — nó `force-dynamic` nên không có mục cache ISR để nhiễm.
+  Mức thiệt hại: không hỏng chức năng, không ảnh hưởng SEO (crawler vẫn nhận HTML
+  đúng), chỉ phí công SSR và chậm hiện trang; tự khỏi sau lần sinh lại kế tiếp
+  (≤ 5 phút). Đo 13/09/2026: lấy mẫu 12 lượt liên tiếp thì 0 lượt nhiễm — nó
+  thỉnh thoảng mới dính, không phải lúc nào cũng.
+
 - **`GET /api/settings` là endpoint CÔNG KHAI, không kiểm quyền.** Nó lọc theo
   danh sách trắng trong chính file (`social_links`, `brand_assets`). Trước
   12/09/2026 nó trả nguyên cả bảng `site_settings`, tức ai cũng đọc được
