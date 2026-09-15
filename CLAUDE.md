@@ -467,6 +467,17 @@ trong khi luồng auto-activate ở `orders/create` lại đọc đúng `product
   `/sitemap.xml`), Search Console → URL Inspection → Request Indexing, và IndexNow
   (Bing/Yandex) qua `INDEXNOW_KEY`. Endpoint ping sitemap của Google đã tắt từ 6/2023 —
   đừng thêm lại.
+  **Tự index khi xuất bản (thêm 15/09/2026):** trình soạn thảo (`admin/posts/new` và
+  `admin/posts/[id]/edit`) tự gọi `/api/admin/index-url` cho slug ngay khi bài LẦN ĐẦU
+  chuyển sang `published`. Tín hiệu "vừa xuất bản" do server quyết định: `PUT
+  /api/admin/posts/[id]` trả `vuaXuatBan` (so `existing.status !== 'published'`), client
+  chỉ index khi cờ này bật ⇒ đúng cho cả nút "Xuất bản" lẫn đổi dropdown rồi "Lưu", và
+  KHÔNG index lại khi lưu bài đã published (đỡ đốt quota). Autosave (`silent`) không index.
+  Gọi index là **best-effort** — lỗi index không chặn việc xuất bản (giữ đúng lý do
+  `dang-loat` cố ý tách index khỏi publish). Trang danh sách có nút **"Index tất cả chưa
+  index (N)"** dò toàn site (không chỉ trang đang xem), gửi theo lô 50. Tất cả vẫn qua
+  cùng một route `/api/admin/index-url`, nên mọi giới hạn ở trên (200 OK ≠ sẽ index) giữ
+  nguyên — đây chỉ là tự động hoá thao tác GỬI.
 - Các fallback `|| 'https://tradadata.com'` trong email/order route vẫn là non-www,
   chỉ dùng khi thiếu `NEXT_PUBLIC_APP_URL`. Không ảnh hưởng nếu env được set đúng.
 - **Secret**: đã gỡ hết secret hardcode khỏi working tree (commit `e610833`), các script gốc repo

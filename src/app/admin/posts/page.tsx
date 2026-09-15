@@ -28,6 +28,8 @@ export default function PostsPage() {
     const [indexingState, setIndexingState] = useState<Record<string, 'idle' | 'loading' | 'success' | 'error'>>({});
     const [currentPage, setCurrentPage] = useState(1);
     const [bulkIndexing, setBulkIndexing] = useState(false);
+    const [siteIndexing, setSiteIndexing] = useState(false);
+    const [siteProgress, setSiteProgress] = useState<{ xong: number; tong: number } | null>(null);
     const [bulkResult, setBulkResult] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
     // Id cac bai dang duoc tick. Dung Set vi thao tac chinh la them/bo/kiem-co,
     // deu O(1); mang thi moi lan bo tick phai quet lai ca danh sach.
@@ -168,6 +170,75 @@ export default function PostsPage() {
         }
     };
 
+    /**
+     * Do TAT CA bai da xuat ban ma chua index (tren toan bo site, khong chi
+     * trang dang xem), roi gui index theo tung lo 50.
+     *
+     * Vi sao chia lo: route /api/admin/index-url xu ly tuan tu ~200ms moi URL,
+     * gui ca tram URL trong MOT request de nginx cat giua chung. Moi lo la mot
+     * request rieng, cap nhat indexed_at ngay khi lo do xong de nguoi dung thay
+     * tien do va khong mat ket qua neu lo sau loi.
+     */
+    const handleIndexAllUnindexed = async () => {
+        const chuaIndex = posts.filter(p => p.status === 'published' && !p.indexed_at);
+        if (chuaIndex.length === 0) {
+            alert('Tất cả bài đã xuất bản đều đã được gửi index rồi! 🎉');
+            return;
+        }
+        if (!confirm(`Dò thấy ${chuaIndex.length} bài đã xuất bản chưa index. Gửi index tất cả?`)) return;
+
+        setSiteIndexing(true);
+        setBulkResult(null);
+        setSiteProgress({ xong: 0, tong: chuaIndex.length });
+
+        const KICH_THUOC_LO = 50;
+        let tongThanhCong = 0;
+        let daXuLy = 0;
+        try {
+            for (let i = 0; i < chuaIndex.length; i += KICH_THUOC_LO) {
+                const lo = chuaIndex.slice(i, i + KICH_THUOC_LO);
+                const res = await fetch('/api/admin/index-url', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ postSlugs: lo.map(p => p.slug) }),
+                });
+                const data = await res.json().catch(() => null);
+
+                if (res.ok && data) {
+                    // Chi danh dau bai THAT SU gui duoc (xem handleBulkIndex).
+                    const slugDaGui = new Set<string>(
+                        (data.results || [])
+                            .filter((r: { success?: boolean }) => r.success)
+                            .map((r: { slug: string }) => r.slug)
+                    );
+                    if (slugDaGui.size > 0) {
+                        const now = new Date().toISOString();
+                        setPosts(prev => prev.map(p =>
+                            slugDaGui.has(p.slug) ? { ...p, indexed_at: now } : p
+                        ));
+                    }
+                    tongThanhCong += data.successCount ?? slugDaGui.size;
+                }
+
+                daXuLy += lo.length;
+                setSiteProgress({ xong: daXuLy, tong: chuaIndex.length });
+            }
+
+            setBulkResult({
+                message: tongThanhCong > 0
+                    ? `Đã gửi index ${tongThanhCong}/${chuaIndex.length} bài (kèm IndexNow cho Bing/Yandex).`
+                    : `Chưa gửi được lên Google (kiểm tra cấu hình Indexing API). ${chuaIndex.length} bài vẫn ở trạng thái chưa index.`,
+                type: tongThanhCong > 0 ? 'success' : 'error',
+            });
+        } catch (error) {
+            setBulkResult({ message: loiThanhChu(error), type: 'error' });
+        } finally {
+            setSiteIndexing(false);
+            setSiteProgress(null);
+            setTimeout(() => setBulkResult(null), 10000);
+        }
+    };
+
     /** Bat/tat tick mot bai. */
     const doiTick = (id: string) => {
         setChon(truoc => {
@@ -295,6 +366,8 @@ export default function PostsPage() {
     );
     const indexedCount = posts.filter(p => p.indexed_at).length;
     const publishedCount = posts.filter(p => p.status === 'published').length;
+    // Toan site, khong chi trang dang xem.
+    const siteUnindexedCount = posts.filter(p => p.status === 'published' && !p.indexed_at).length;
 
     const getPageNumbers = (): (number | '...')[] => {
         const pages: (number | '...')[] = [];
@@ -326,10 +399,27 @@ export default function PostsPage() {
                 <h1 className="text-2xl font-bold text-fg">Quản lý bài viết</h1>
                 <div className="flex items-center gap-3">
                     <button
-                        onClick={handleBulkIndex}
-                        disabled={bulkIndexing}
+                        onClick={handleIndexAllUnindexed}
+                        disabled={siteIndexing || bulkIndexing || siteUnindexedCount === 0}
                         className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-blue-600 text-white text-sm font-medium hover:bg-blue-700 transition-colors shadow-lg shadow-blue-600/25 disabled:opacity-50 disabled:cursor-not-allowed"
-                        title="Gửi yêu cầu index tất cả bài viết chưa index trên trang hiện tại"
+                        title="Dò tất cả bài đã xuất bản chưa index trên toàn site rồi gửi index"
+                    >
+                        {siteIndexing ? (
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                        ) : (
+                            <Globe className="h-4 w-4" />
+                        )}
+                        {siteIndexing
+                            ? (siteProgress ? `Đang index ${siteProgress.xong}/${siteProgress.tong}...` : 'Đang gửi...')
+                            : siteUnindexedCount > 0
+                                ? `Index tất cả chưa index (${siteUnindexedCount})`
+                                : 'Đã index hết'}
+                    </button>
+                    <button
+                        onClick={handleBulkIndex}
+                        disabled={bulkIndexing || siteIndexing}
+                        className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-card border border-blue-200 dark:border-blue-800 text-blue-700 dark:text-blue-400 text-sm font-medium hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                        title="Chỉ gửi index các bài chưa index trên trang đang xem"
                     >
                         {bulkIndexing ? (
                             <Loader2 className="h-4 w-4 animate-spin" />

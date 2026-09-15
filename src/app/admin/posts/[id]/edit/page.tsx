@@ -199,6 +199,22 @@ export default function EditPostPage() {
         }
     };
 
+    // Gửi một slug lên Google Indexing + IndexNow. KHÔNG ném lỗi: nơi gọi coi
+    // đây là việc phụ, thất bại thì bài vẫn đã lưu/xuất bản.
+    const guiIndexTuDong = async (slug: string): Promise<boolean> => {
+        try {
+            const res = await fetch('/api/admin/index-url', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ postSlugs: [slug] }),
+            });
+            const data = await res.json().catch(() => null);
+            return res.ok && (data?.successCount ?? 0) > 0;
+        } catch {
+            return false;
+        }
+    };
+
     const handleSave = async (publishStatus?: string, options?: { silent?: boolean }) => {
         if (!title.trim()) {
             alert('Vui lòng nhập tiêu đề bài viết');
@@ -239,7 +255,18 @@ export default function EditPostPage() {
                 // ẩn đi, dropdown nhảy sang "Xuất bản") — trước đây bấm "Xuất bản" ghi DB
                 // thành công nhưng state vẫn 'draft' nên trông như chưa đăng.
                 setStatus(finalStatus);
-                if (!silent) alert(finalStatus === 'published' ? 'Đã xuất bản bài viết!' : 'Đã lưu thành công!');
+                // Lần đầu chuyển sang published thì tự gửi index (server báo qua
+                // `vuaXuatBan`, đúng cho MỌI đường publish: nút Xuất bản lẫn đổi
+                // dropdown rồi Lưu). Bỏ qua autosave. Index lỗi KHÔNG chặn: bài đã
+                // lưu, chỉ cần index lại ở trang danh sách.
+                if (!silent && data.vuaXuatBan && data.post?.slug) {
+                    const daIndex = await guiIndexTuDong(data.post.slug);
+                    alert(daIndex
+                        ? 'Đã xuất bản và gửi yêu cầu index!'
+                        : 'Đã xuất bản! (chưa gửi index được — thử lại ở trang danh sách)');
+                } else if (!silent) {
+                    alert(finalStatus === 'published' ? 'Đã xuất bản bài viết!' : 'Đã lưu thành công!');
+                }
                 return true;
             } else {
                 alert('Lỗi: ' + (data.error || 'Unknown error'));
