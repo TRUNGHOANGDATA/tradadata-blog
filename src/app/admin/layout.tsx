@@ -44,7 +44,7 @@ const ADMIN_NAV = [
     { label: 'Video', href: '/admin/videos', icon: Film },
     { label: 'Ví dụ hàm Excel', href: '/admin/vi-du-ham', icon: FunctionSquare },
     { label: 'Sản phẩm', href: '/admin/products', icon: Box },
-    { label: 'Đầu mục khách hàng', href: '/admin/course-sections', icon: BookOpen },
+    { label: 'Đầu mục khoá học', href: '/admin/course-sections', icon: BookOpen },
     { label: 'Đơn hàng', href: '/admin/orders', icon: ShoppingCart },
     { label: 'Theo dõi Premium', href: '/admin/subscriptions', icon: Crown },
     { label: 'Mã giảm giá', href: '/admin/coupons', icon: Ticket },
