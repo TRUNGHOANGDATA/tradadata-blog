@@ -137,6 +137,22 @@ export default function NewPostPage() {
         }
     };
 
+    // Gửi một slug lên Google Indexing + IndexNow. KHÔNG ném lỗi: nơi gọi coi
+    // đây là việc phụ, thất bại thì bài vẫn đã xuất bản.
+    const guiIndexTuDong = async (slug: string): Promise<boolean> => {
+        try {
+            const res = await fetch('/api/admin/index-url', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ postSlugs: [slug] }),
+            });
+            const data = await res.json().catch(() => null);
+            return res.ok && (data?.successCount ?? 0) > 0;
+        } catch {
+            return false;
+        }
+    };
+
     const handleSave = async (publishStatus?: string) => {
         if (!title.trim()) {
             alert('Vui lòng nhập tiêu đề bài viết');
@@ -167,7 +183,17 @@ export default function NewPostPage() {
             const data = await res.json();
 
             if (res.ok && data.post) {
-                alert(finalStatus === 'published' ? 'Bài viết đã xuất bản thành công!' : 'Đã lưu bản nháp!');
+                if (finalStatus === 'published' && data.post.slug) {
+                    // Xuất bản xong thì tự gửi index luôn. Best-effort: index lỗi
+                    // (thiếu quota / service account) KHÔNG được làm hỏng việc xuất
+                    // bản — bài đã lên sóng, chỉ cần bấm "Index" lại ở trang danh sách.
+                    const daIndex = await guiIndexTuDong(data.post.slug);
+                    alert(daIndex
+                        ? 'Bài viết đã xuất bản và đã gửi yêu cầu index!'
+                        : 'Bài viết đã xuất bản! (chưa gửi index được — thử lại ở trang danh sách)');
+                } else {
+                    alert(finalStatus === 'published' ? 'Bài viết đã xuất bản thành công!' : 'Đã lưu bản nháp!');
+                }
                 router.push('/admin/posts');
             } else {
                 alert('Lỗi: ' + (data.error || 'Unknown error'));

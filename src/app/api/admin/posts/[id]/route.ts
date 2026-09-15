@@ -130,8 +130,12 @@ export async function PUT(request: Request, { params }: RouteParams) {
             }
         }
 
-        // Set published_at when first publishing
-        if (status === 'published' && existing && existing.status !== 'published') {
+        // Bài LẦN ĐẦU chuyển sang published — dùng để client biết có nên tự gửi
+        // index không. Tính ở server vì đây là nguồn sự thật duy nhất: client
+        // không phân biệt được "vừa xuất bản" với "lưu lại bài đã xuất bản" khi
+        // người dùng đổi trạng thái bằng dropdown rồi bấm Lưu thường.
+        const vuaXuatBan = status === 'published' && !!existing && existing.status !== 'published';
+        if (vuaXuatBan) {
             updateData.published_at = new Date().toISOString();
         }
 
@@ -175,7 +179,7 @@ export async function PUT(request: Request, { params }: RouteParams) {
         // Truyền cả slug cũ lẫn slug mới — nếu admin đổi slug thì trang cũ cũng phải bị xoá cache
         revalidatePost([existing?.slug, post?.slug], id);
 
-        return NextResponse.json({ post });
+        return NextResponse.json({ post, vuaXuatBan });
     } catch (error) {
         console.error('Error updating post:', error);
         return NextResponse.json({ error: loiThanhChu(error) }, { status: 500 });
