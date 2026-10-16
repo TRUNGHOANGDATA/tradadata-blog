@@ -78,3 +78,15 @@ export function revalidateViDuHam() {
     revalidateTag('vi-du-ham');
     revalidatePath('/thuc-hanh');
 }
+
+/**
+ * Xoá cache tab Game Việt hoá (`src/lib/data/game-viet-hoa.ts`). Gọi ở mọi API
+ * route ghi vào bảng `game_viet_hoa`. Cả hai trang đều tĩnh nên phải xoá cả
+ * route cache, và sitemap vì nó liệt kê từng game.
+ */
+export function revalidateGameVietHoa() {
+    revalidateTag('game-viet-hoa');
+    revalidatePath('/game-viet-hoa');
+    revalidatePath('/game-viet-hoa/[slug]', 'page');
+    revalidatePath('/sitemap.xml');
+}

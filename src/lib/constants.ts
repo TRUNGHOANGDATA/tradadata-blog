@@ -32,6 +32,7 @@ export const NAV_ITEMS: NavItem[] = [
     { label: 'Bài viết', href: '/blog' },
     { label: 'Chủ đề', href: '/categories' },
     { label: 'Excel Online', href: '/thuc-hanh' },
+    { label: 'Game Việt hoá', href: '/game-viet-hoa' },
     {
         label: 'Sản phẩm và dịch vụ',
         href: '/courses',
@@ -93,4 +94,19 @@ export const ROUTE_LUON_SANG = ['/phan-mem-ban-hang'];
 export function laRouteLuonSang(pathname: string): boolean {
     const p = pathname.replace(/\/+$/, '') || '/';
     return ROUTE_LUON_SANG.some((r) => p === r || p.startsWith(`${r}/`));
+}
+
+/**
+ * Cac route LUON hien mau toi — doi xung voi ROUTE_LUON_SANG.
+ *
+ * Tab Game Viet hoa dung nen anh toi (`public/images/game-viet-hoa/nen.webp`),
+ * header/footer sang tren nen do trong lac long. Cung co che: script chong nhay
+ * o layout goc THEM `.dark` cho lan tai dau, `ThemeToggle` lo dieu huong trong
+ * trang. Lua chon sang/toi da luu cua nguoi doc KHONG bi ghi de.
+ */
+export const ROUTE_LUON_TOI = ['/game-viet-hoa'];
+
+export function laRouteLuonToi(pathname: string): boolean {
+    const p = pathname.replace(/\/+$/, '') || '/';
+    return ROUTE_LUON_TOI.some((r) => p === r || p.startsWith(`${r}/`));
 }

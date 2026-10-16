@@ -31,6 +31,7 @@ import {
     Film,
     Inbox,
     FunctionSquare,
+    Gamepad2,
 } from 'lucide-react';
 
 const ADMIN_NAV = [
@@ -43,6 +44,7 @@ const ADMIN_NAV = [
     { label: 'Files', href: '/admin/files', icon: FileSpreadsheet },
     { label: 'Video', href: '/admin/videos', icon: Film },
     { label: 'Ví dụ hàm Excel', href: '/admin/vi-du-ham', icon: FunctionSquare },
+    { label: 'Game Việt hoá', href: '/admin/game-viet-hoa', icon: Gamepad2 },
     { label: 'Sản phẩm', href: '/admin/products', icon: Box },
     { label: 'Đầu mục khoá học', href: '/admin/course-sections', icon: BookOpen },
     { label: 'Đơn hàng', href: '/admin/orders', icon: ShoppingCart },

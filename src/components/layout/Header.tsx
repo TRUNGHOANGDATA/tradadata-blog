@@ -71,7 +71,7 @@ export function Header({
                             </Link>
 
                             {/* Desktop Nav */}
-                            <nav className="hidden lg:flex min-w-0 items-center justify-center gap-0.5 flex-1">
+                            <nav className="hidden lg:flex min-w-0 items-center justify-center flex-1">
                                 {NAV_ITEMS.map((item) => {
                                     const active = laActive(pathname, item.href);
 
@@ -88,7 +88,7 @@ export function Header({
                                                     href={item.href}
                                                     onClick={() => setCatOpen(false)}
                                                     aria-expanded={catOpen}
-                                                    className={`inline-flex items-center gap-1 shrink-0 whitespace-nowrap px-2.5 py-2 rounded-xl text-sm font-medium transition-all duration-200 ${active
+                                                    className={`inline-flex items-center gap-1 shrink-0 whitespace-nowrap px-2 py-2 rounded-xl text-sm font-medium transition-all duration-200 ${active
                                                         ? 'text-brand-700 dark:text-brand-300 bg-brand-50 dark:bg-brand-900/30'
                                                         : 'text-fg-muted hover:text-fg hover:bg-sunken'
                                                         }`}
@@ -154,7 +154,7 @@ export function Header({
                                                     onClick={() => setProdOpen(true)}
                                                     aria-expanded={prodOpen}
                                                     aria-haspopup="menu"
-                                                    className={`inline-flex items-center gap-1 shrink-0 whitespace-nowrap px-2.5 py-2 rounded-xl text-sm font-medium transition-all duration-200 ${active
+                                                    className={`inline-flex items-center gap-1 shrink-0 whitespace-nowrap px-2 py-2 rounded-xl text-sm font-medium transition-all duration-200 ${active
                                                         ? 'text-brand-700 dark:text-brand-300 bg-brand-50 dark:bg-brand-900/30'
                                                         : 'text-fg-muted hover:text-fg hover:bg-sunken'
                                                         }`}
@@ -188,7 +188,7 @@ export function Header({
                                             key={item.href}
                                             href={item.href}
                                             aria-current={active ? 'page' : undefined}
-                                            className={`shrink-0 whitespace-nowrap px-2.5 py-2 rounded-xl text-sm font-medium transition-all duration-200 ${active
+                                            className={`shrink-0 whitespace-nowrap px-2 py-2 rounded-xl text-sm font-medium transition-all duration-200 ${active
                                                 ? 'text-brand-700 dark:text-brand-300 bg-brand-50 dark:bg-brand-900/30'
                                                 : 'text-fg-muted hover:text-fg hover:bg-sunken'
                                                 }`}

@@ -5,7 +5,7 @@ import { Footer } from '@/components/layout/Footer';
 import { Providers } from '@/components/Providers';
 import { FloatingActions } from '@/components/layout/FloatingActions';
 import { LayoutShell } from '@/components/layout/LayoutShell';
-import { SITE_CONFIG, KHOA_THEME, ROUTE_LUON_SANG } from '@/lib/constants';
+import { SITE_CONFIG, KHOA_THEME, ROUTE_LUON_SANG, ROUTE_LUON_TOI } from '@/lib/constants';
 import './globals.css';
 
 /**
@@ -134,7 +134,8 @@ export default function RootLayout({
               `var p=location.pathname;` +
               `if(p.length>1&&p.charAt(p.length-1)==='/')p=p.slice(0,-1);` +
               `var sang=${JSON.stringify(ROUTE_LUON_SANG)}.some(function(r){return p===r||p.indexOf(r+'/')===0});` +
-              `if(!sang&&localStorage.getItem('${KHOA_THEME}')==='dark')document.documentElement.classList.add('dark');` +
+              `var toi=${JSON.stringify(ROUTE_LUON_TOI)}.some(function(r){return p===r||p.indexOf(r+'/')===0});` +
+              `if(toi||(!sang&&localStorage.getItem('${KHOA_THEME}')==='dark'))document.documentElement.classList.add('dark');` +
               `localStorage.removeItem('theme')` +
               `}catch(e){}`,
           }}

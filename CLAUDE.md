@@ -171,7 +171,8 @@ IndexNow xác thực host).
 
 `profiles`, `posts`, `categories`, `tags`, `post_tags`, `post_categories` (junction, cho phép 1 bài nhiều chủ đề),
 `comments`, `user_bookmarks`, `subscribers`, `email_queue`, `email_templates`, `site_settings`,
-`products`, `course_sections`, `orders`, `coupons`, `coupon_products`, `user_coupons`, `user_subscriptions`.
+`products`, `course_sections`, `orders`, `coupons`, `coupon_products`, `user_coupons`, `user_subscriptions`,
+`game_viet_hoa` (tab Game Việt hoá, tạo bằng `supabase/manual/game-viet-hoa.sql`).
 
 ⚠️ **Repo KHÔNG dựng lại được database.** `setup.sql` và `schema.json` đã bị xoá — chúng chỉ
 mô tả 4 bảng đời đầu nhưng trông như bản đầy đủ. `supabase/migrations/` vẫn còn nhưng chỉ là
@@ -431,6 +432,15 @@ trong khi luồng auto-activate ở `orders/create` lại đọc đúng `product
   đúng), chỉ phí công SSR và chậm hiện trang; tự khỏi sau lần sinh lại kế tiếp
   (≤ 5 phút). Đo 13/09/2026: lấy mẫu 12 lượt liên tiếp thì 0 lượt nhiễm — nó
   thỉnh thoảng mới dính, không phải lúc nào cũng.
+
+- **Tab Game Việt hoá** (`/game-viet-hoa`, admin `/admin/game-viet-hoa`) — thêm 17/10/2026.
+  Giao diện tối riêng chỉ cho segment này: nền là background của `game-viet-hoa/layout.tsx`
+  (KHÔNG dùng lớp `fixed` — nó đè lên Footer), Header/Footer tối theo nhờ `ROUTE_LUON_TOI`
+  trong `src/lib/constants.ts`, đối xứng với `ROUTE_LUON_SANG` (script chống nháy ở layout
+  gốc + `ThemeToggle`). Trang chi tiết là ISR, `generateStaticParams` trả `[]` cố ý để
+  `next build` không truy vấn thêm. Ghi vào bảng thì gọi `revalidateGameVietHoa()`.
+  Link tải/mua/ảnh bìa chỉ nhận http(s) (chặn `javascript:`), kiểm ở API route.
+  Menu đã có 7 mục: thêm mục nữa là tràn ở 1024–1280px — đo `nav.scrollWidth` trước.
 
 - **`GET /api/settings` là endpoint CÔNG KHAI, không kiểm quyền.** Nó lọc theo
   danh sách trắng trong chính file (`social_links`, `brand_assets`). Trước
