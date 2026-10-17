@@ -407,8 +407,15 @@ async function chay() {
         });
         if (error) { console.warn(`  ! upload ảnh lỗi (${duongStorage}): ${error.message}`); return webPath; }
         const { data } = db.storage.from(BUCKET_ANH).getPublicUrl(duongStorage);
-        cacheUpload[webPath] = data.publicUrl;
-        return data.publicUrl;
+        // Gắn "vân tay" nội dung (?v=<hash>) vào URL. Path Supabase cố định theo tên
+        // file nên URL đứng yên khi thay ảnh cùng tên ⇒ trình duyệt / CDN Supabase /
+        // Next Image optimizer (minimumCacheTTL 30 ngày) đều phục vụ ảnh CŨ. Hash đổi
+        // theo bytes ⇒ ảnh đổi thì URL đổi (cache tự làm mới), ảnh giữ nguyên thì URL
+        // giữ nguyên (vẫn được cache). Hết cảnh phải F5.
+        const vanTay = require('crypto').createHash('sha1').update(buf).digest('hex').slice(0, 8);
+        const urlCuoi = `${data.publicUrl}?v=${vanTay}`;
+        cacheUpload[webPath] = urlCuoi;
+        return urlCuoi;
     }
     // Duyệt cây TipTap, upload & đổi src mọi node ảnh
     async function upAnhTrongDoc(node) {

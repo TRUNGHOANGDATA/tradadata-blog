@@ -129,8 +129,16 @@ function dungSvg(spec) {
             + '" text-anchor="middle">' + thoat(spec.congThuc.o || '') + '</text>');
         p.push('<text x="68" y="' + (y + 19) + '" font-family="Georgia, serif" font-size="12" font-style="italic" fill="'
             + MAU.chuDauCot + '">fx</text>');
-        p.push('<text x="90" y="' + (y + 19) + '" font-family="' + CHU_CT + '" font-size="12.5" fill="' + MAU.chu + '">'
-            + thoat(spec.congThuc.ct || '') + '</text>');
+        // Thanh công thức tự co cỡ chữ cho vừa bề rộng bảng, rồi mới cắt kèm "…"
+        // như thanh tiêu đề — không có bước này, công thức dài hơn bảng bị cắt cụt
+        // ngay giữa chữ ở mép phải canvas mà không có dấu hiệu gì.
+        const ctText = spec.congThuc.ct || '';
+        const rongChoCt = rongBang - 90 - 10;
+        let coCt = 12.5;
+        while (coCt > 9 && beRong(ctText, coCt, true) > rongChoCt) coCt -= 0.5;
+        const ctHienThi = catChu(ctText, rongChoCt, coCt, true);
+        p.push('<text x="90" y="' + (y + 19) + '" font-family="' + CHU_CT + '" font-size="' + coCt + '" fill="' + MAU.chu + '">'
+            + thoat(ctHienThi) + '</text>');
     }
 
     // Dải đầu cột A B C...
