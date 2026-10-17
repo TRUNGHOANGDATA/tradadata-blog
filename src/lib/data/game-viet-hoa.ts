@@ -36,6 +36,8 @@ export interface GameDayDu extends GameTomTat {
     link_tai: LinkTai[];
     link_mua: string | null;
     post_slug: string | null;
+    /** VNĐ điền sẵn vào QR ủng hộ; null = QR không kèm số tiền. */
+    so_tien: number | null;
 }
 
 const COT_TOM_TAT = 'slug, ten, anh_bia, nen_tang, the_loai, tien_do, updated_at';
@@ -64,13 +66,13 @@ export const getGameBySlug = unstable_cache(
         if (!supabaseAdmin) return null;
         const { data, error } = await supabaseAdmin
             .from('game_viet_hoa')
-            .select(`id, ${COT_TOM_TAT}, ten_goc, phien_ban_game, phien_ban_patch, nhom_dich, mo_ta, link_tai, link_mua, post_slug`)
+            .select(`id, ${COT_TOM_TAT}, ten_goc, phien_ban_game, phien_ban_patch, nhom_dich, mo_ta, link_tai, link_mua, post_slug, so_tien`)
             .eq('slug', slug)
             .eq('is_published', true)
             .maybeSingle();
         if (kiemLoiTruyVan(error, 'game-viet-hoa.getGameBySlug', { boQuaKhongCoDong: true, boQuaKhongCoBang: true })) return null;
         return (data as GameDayDu | null) ?? null;
     },
-    ['game-viet-hoa-mot-v1'],
+    ['game-viet-hoa-mot-v2'],
     { revalidate: 3600, tags: [TAG] }
 );

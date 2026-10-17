@@ -29,16 +29,17 @@ interface GameAdmin {
     post_slug: string | null;
     is_published: boolean;
     thu_tu: number;
+    so_tien: number | null;
 }
 
-type Form = Omit<GameAdmin, 'id'> & { id?: string };
+type Form = Omit<GameAdmin, 'id' | 'so_tien'> & { id?: string; so_tien: string };
 
 const NEN_TANG = ['PC', 'Switch', 'PlayStation', 'Xbox', 'Android', 'iOS'];
 
 const FORM_TRONG: Form = {
     slug: '', ten: '', ten_goc: '', anh_bia: '', nen_tang: [], the_loai: [], phien_ban_game: '', phien_ban_patch: '',
     nhom_dich: 'Trà Đá Data', tien_do: 0, mo_ta: '', link_tai: [{ nhan: 'Google Drive', url: '' }], link_mua: '',
-    post_slug: '', is_published: false, thu_tu: 0,
+    post_slug: '', is_published: false, thu_tu: 0, so_tien: '',
 };
 
 const oInput =
@@ -114,7 +115,7 @@ export default function GameVietHoaAdminPage() {
             ...g,
             ten_goc: g.ten_goc ?? '', anh_bia: g.anh_bia ?? '', phien_ban_game: g.phien_ban_game ?? '',
             phien_ban_patch: g.phien_ban_patch ?? '', nhom_dich: g.nhom_dich ?? '', mo_ta: g.mo_ta ?? '',
-            link_mua: g.link_mua ?? '', post_slug: g.post_slug ?? '',
+            link_mua: g.link_mua ?? '', post_slug: g.post_slug ?? '', so_tien: g.so_tien == null ? '' : String(g.so_tien),
             link_tai: g.link_tai?.length ? g.link_tai : [{ nhan: 'Google Drive', url: '' }],
         });
     };
@@ -421,6 +422,22 @@ export default function GameVietHoaAdminPage() {
                         <label className="block text-sm">
                             <span className={nhan}>Link mua game chính hãng</span>
                             <input type="url" value={form.link_mua ?? ''} onChange={(e) => sua({ link_mua: e.target.value })} placeholder="https://store.steampowered.com/app/..." className={oInput} />
+                        </label>
+                        <label className="block text-sm">
+                            <span className={nhan}>Số tiền ủng hộ (đ) <span className="font-normal text-fg-faint">(điền sẵn vào mã QR trên trang game; để trống = người ủng hộ tự nhập)</span></span>
+                            <input
+                                type="number"
+                                min={0}
+                                step={1000}
+                                inputMode="numeric"
+                                value={form.so_tien}
+                                onChange={(e) => sua({ so_tien: e.target.value })}
+                                placeholder="50000"
+                                className={oInput}
+                            />
+                            {form.so_tien && Number(form.so_tien) > 0 && (
+                                <span className="mt-1 block text-xs text-fg-faint">{Number(form.so_tien).toLocaleString('vi-VN')}đ</span>
+                            )}
                         </label>
                         <p className="flex items-start gap-2 rounded-xl border border-amber-300 bg-amber-50 p-3 text-xs text-amber-800 dark:border-amber-700 dark:bg-amber-900/20 dark:text-amber-300">
                             <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
