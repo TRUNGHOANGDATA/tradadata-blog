@@ -29,6 +29,7 @@ type ThanBai = {
     post_slug?: string | null;
     is_published?: boolean;
     thu_tu?: number;
+    so_tien?: unknown;
 };
 
 const chuoi = (v: unknown) => (v == null ? '' : String(v).trim());
@@ -62,6 +63,13 @@ function chuanHoa(b: ThanBai) {
     const tienDo = Math.round(Number(b.tien_do));
     if (!Number.isFinite(tienDo) || tienDo < 0 || tienDo > 100) throw new Error('Tiến độ phải từ 0 đến 100.');
 
+    // Số tiền ủng hộ (VNĐ) điền sẵn vào QR. Trống = QR không kèm tiền.
+    let soTien: number | null = null;
+    if (chuoi(b.so_tien)) {
+        soTien = Math.round(Number(b.so_tien));
+        if (!Number.isFinite(soTien) || soTien < 0 || soTien > 100_000_000) throw new Error('Số tiền ủng hộ phải từ 0 đến 100.000.000đ.');
+    }
+
     const linkTai = (Array.isArray(b.link_tai) ? b.link_tai : [])
         .map((l: { nhan?: unknown; url?: unknown }, i: number) => {
             const url = urlHoacNull(l?.url, `Link tải #${i + 1}`);
@@ -86,6 +94,7 @@ function chuanHoa(b: ThanBai) {
         post_slug: hoacNull(b.post_slug),
         is_published: b.is_published === true,
         thu_tu: Number.isFinite(Number(b.thu_tu)) ? Number(b.thu_tu) : 0,
+        so_tien: soTien,
         updated_at: new Date().toISOString(),
     };
 }

@@ -2,8 +2,9 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
-import { ArrowLeft, ArrowRight, BookOpen, CalendarDays, Download, ExternalLink, Gamepad2, LayoutGrid, ShoppingCart, Tag, Users } from 'lucide-react';
+import { ArrowLeft, ArrowRight, BookOpen, CalendarDays, Download, ExternalLink, Gamepad2, HeartHandshake, LayoutGrid, ShoppingCart, Tag, Users } from 'lucide-react';
 import { getDanhSachGame, getGameBySlug } from '@/lib/data/game-viet-hoa';
+import { getSetting } from '@/lib/data/settings';
 import { ThanhTienDo } from '@/components/game/DanhSachGame';
 import { THE_KINH, O_TOI, CHU_PHU, toiUuDuoc } from '@/components/game/kieu';
 
@@ -36,7 +37,20 @@ export default async function TrangGame({ params }: Props) {
     const g = await getGameBySlug(slug);
     if (!g) notFound();
 
-    const khac = (await getDanhSachGame()).filter((x) => x.slug !== g.slug).slice(0, 3);
+    const [dsGame, bank] = await Promise.all([
+        getDanhSachGame(),
+        // Cùng tài khoản nhận tiền với trang thanh toán (admin → Cài đặt). Có cache tag 'settings'.
+        getSetting<Record<string, string>>('bank_info', {}),
+    ]);
+    const khac = dsGame.filter((x) => x.slug !== g.slug).slice(0, 3);
+    // Chưa cấu hình tài khoản thì ẩn khối ủng hộ — KHÔNG rơi về số tài khoản mẫu như trang thanh toán.
+    const qrUngHo = bank.bankId && bank.accountNo
+        ? `https://img.vietqr.io/image/${encodeURIComponent(bank.bankId)}-${encodeURIComponent(bank.accountNo)}-compact.png?${new URLSearchParams({
+            ...(g.so_tien ? { amount: String(g.so_tien) } : {}),
+            addInfo: `UNG HO ${g.slug}`.slice(0, 40),
+            accountName: bank.accountName ?? '',
+        })}`
+        : null;
     const xong = g.tien_do === 100;
     const [linkChinh, ...linkPhu] = g.link_tai ?? [];
     const ngay = new Date(g.updated_at).toLocaleDateString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh' });
@@ -135,6 +149,34 @@ export default async function TrangGame({ params }: Props) {
                             <ArrowRight className="ml-auto h-4 w-4 text-[#60a5fa]" aria-hidden="true" />
                         </Link>
                     )}
+                </section>
+            )}
+
+            {qrUngHo && (
+                <section className={`${THE_KINH} mt-5 grid items-center gap-6 p-5 sm:grid-cols-[200px_1fr] sm:p-7`}>
+                    {/* eslint-disable-next-line @next/next/no-img-element -- ảnh QR từ img.vietqr.io, không cần qua optimizer */}
+                    <img src={qrUngHo} alt={`Mã QR ủng hộ bản Việt hoá ${g.ten}`} width={200} height={200} loading="lazy" className="mx-auto rounded-xl bg-white p-2" />
+                    <div>
+                        <h2 className="flex items-center gap-2.5 text-xl font-bold">
+                            <HeartHandshake className="h-5 w-5 text-[#60a5fa]" aria-hidden="true" /> Ủng hộ nhóm dịch
+                        </h2>
+                        <p className={`mt-2 leading-relaxed ${CHU_PHU}`}>
+                            Thấy bản dịch hữu ích? Quét mã bằng app ngân hàng để ủng hộ nhóm tiếp tục Việt hoá game mới.
+                        </p>
+                        <dl className="mt-4 space-y-1.5 text-sm">
+                            {([
+                                ['Ngân hàng', bank.bankId],
+                                ['Số tài khoản', bank.accountNo],
+                                ['Chủ tài khoản', bank.accountName],
+                                ['Số tiền', g.so_tien ? `${g.so_tien.toLocaleString('vi-VN')}đ` : 'Tuỳ tâm'],
+                            ] as const).filter(([, v]) => v).map(([nhan, v]) => (
+                                <div key={nhan} className="flex justify-between gap-3">
+                                    <dt className={CHU_PHU}>{nhan}</dt>
+                                    <dd className="font-semibold">{v}</dd>
+                                </div>
+                            ))}
+                        </dl>
+                    </div>
                 </section>
             )}
 

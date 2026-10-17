@@ -44,3 +44,11 @@ select grantee, privilege_type
 from information_schema.role_table_grants
 where table_schema = 'public' and table_name = 'game_viet_hoa'
   and grantee in ('anon', 'authenticated');
+
+-- -----------------------------------------------------------------------------
+-- Bổ sung 17/10/2026: số tiền ủng hộ riêng cho từng game (VNĐ), điền sẵn vào mã
+-- QR chuyển khoản trên trang chi tiết. null = QR không kèm số tiền.
+-- PHẢI chạy TRƯỚC khi rollout bản code có cột này, nếu không trang chi tiết lỗi.
+-- -----------------------------------------------------------------------------
+alter table public.game_viet_hoa
+    add column if not exists so_tien int check (so_tien is null or so_tien >= 0);
