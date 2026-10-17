@@ -73,7 +73,7 @@ export function Header({
                             {/* Desktop Nav */}
                             <nav className="hidden lg:flex min-w-0 items-center justify-center flex-1">
                                 {NAV_ITEMS.map((item) => {
-                                    const active = laActive(pathname, item.href);
+                                    const active = laActive(pathname, item.href) || !!item.children?.some((c) => laActive(pathname, c.href));
 
                                     // "Chu de" mang theo mega-dropdown liet ke danh muc.
                                     if (item.href === NAV_CHU_DE) {
@@ -321,7 +321,7 @@ export function Header({
                         <div className="lg:hidden border-t border-line animate-slide-down max-h-[calc(100vh-4rem)] overflow-y-auto">
                             <div className="px-4 py-3 space-y-1">
                                 {NAV_ITEMS.map((item) => {
-                                    const active = laActive(pathname, item.href);
+                                    const active = laActive(pathname, item.href) || !!item.children?.some((c) => laActive(pathname, c.href));
 
                                     if (item.href === NAV_CHU_DE) {
                                         return (

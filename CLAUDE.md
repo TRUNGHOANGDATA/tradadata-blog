@@ -440,7 +440,8 @@ trong khi luồng auto-activate ở `orders/create` lại đọc đúng `product
   gốc + `ThemeToggle`). Trang chi tiết là ISR, `generateStaticParams` trả `[]` cố ý để
   `next build` không truy vấn thêm. Ghi vào bảng thì gọi `revalidateGameVietHoa()`.
   Link tải/mua/ảnh bìa chỉ nhận http(s) (chặn `javascript:`), kiểm ở API route.
-  Menu đã có 7 mục: thêm mục nữa là tràn ở 1024–1280px — đo `nav.scrollWidth` trước.
+  Menu còn 6 mục (Excel Online đã vào dropdown "Sản phẩm và dịch vụ"); 7 mục từng tràn
+  ở 1024–1280px — thêm mục thì đo `nav.scrollWidth` trước.
 
 - **`GET /api/settings` là endpoint CÔNG KHAI, không kiểm quyền.** Nó lọc theo
   danh sách trắng trong chính file (`social_links`, `brand_assets`). Trước
