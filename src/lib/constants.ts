@@ -31,7 +31,6 @@ export const NAV_ITEMS: NavItem[] = [
     { label: 'Trang chủ', href: '/' },
     { label: 'Bài viết', href: '/blog' },
     { label: 'Chủ đề', href: '/categories' },
-    { label: 'Excel Online', href: '/thuc-hanh' },
     { label: 'Game Việt hoá', href: '/game-viet-hoa' },
     {
         label: 'Sản phẩm và dịch vụ',
@@ -39,6 +38,7 @@ export const NAV_ITEMS: NavItem[] = [
         children: [
             { label: 'Khóa học', href: '/courses' },
             { label: 'Phần mềm bán hàng', href: '/phan-mem-ban-hang' },
+            { label: 'Excel Online', href: '/thuc-hanh' },
         ],
     },
     { label: 'Giới thiệu', href: '/about' },
