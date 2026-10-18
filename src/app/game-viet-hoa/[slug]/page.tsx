@@ -2,11 +2,12 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
-import { ArrowLeft, ArrowRight, BookOpen, CalendarDays, Download, ExternalLink, Gamepad2, HeartHandshake, LayoutGrid, ShoppingCart, Tag, Users } from 'lucide-react';
+import { ArrowLeft, ArrowRight, BookOpen, CalendarDays, ExternalLink, Gamepad2, HeartHandshake, LayoutGrid, ShoppingCart, Tag, Users } from 'lucide-react';
 import { getDanhSachGame, getGameBySlug } from '@/lib/data/game-viet-hoa';
 import { getSetting } from '@/lib/data/settings';
 import { ThanhTienDo } from '@/components/game/DanhSachGame';
-import { THE_KINH, O_TOI, CHU_PHU, toiUuDuoc } from '@/components/game/kieu';
+import { NutTai } from '@/components/game/NutTai';
+import { THE_KINH, O_TOI, CHU_PHU, toiUuDuoc, boDuoiVietHoa } from '@/components/game/kieu';
 
 // Trang tĩnh sinh theo yêu cầu (ISR). generateStaticParams trả [] CỐ Ý: không
 // prerender lúc `next build`, để build không đốt thêm truy vấn vào Supabase NANO.
@@ -24,11 +25,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     const g = await getGameBySlug(slug);
     if (!g) return {};
     const moTa = g.mo_ta?.slice(0, 160) || `Tải patch Việt hoá ${g.ten}${g.nen_tang.length ? ` cho ${g.nen_tang.join(', ')}` : ''}.`;
+    const tieuDe = `${boDuoiVietHoa(g.ten)} Việt hoá`;
     return {
-        title: `${g.ten} Việt hoá`,
+        title: tieuDe,
         description: moTa,
         alternates: { canonical: `/game-viet-hoa/${g.slug}` },
-        openGraph: { title: `${g.ten} Việt hoá`, description: moTa, images: g.anh_bia ? [g.anh_bia] : undefined },
+        openGraph: { title: tieuDe, description: moTa, images: g.anh_bia ? [g.anh_bia] : undefined },
     };
 }
 
@@ -52,7 +54,6 @@ export default async function TrangGame({ params }: Props) {
         })}`
         : null;
     const xong = g.tien_do === 100;
-    const [linkChinh, ...linkPhu] = g.link_tai ?? [];
     const ngay = new Date(g.updated_at).toLocaleDateString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh' });
 
     const thongTin: [typeof Gamepad2, string, string | null][] = [
@@ -100,25 +101,13 @@ export default async function TrangGame({ params }: Props) {
 
                     {/* Mobile: nút bám đáy màn hình để luôn bấm được */}
                     <div className="sticky bottom-0 -mx-4 mt-3 space-y-2.5 bg-[rgba(7,11,36,.9)] px-4 py-3 sm:static sm:mx-0 sm:bg-transparent sm:p-0">
-                        {linkChinh && (
-                            <a
-                                href={linkChinh.url}
-                                target="_blank"
-                                rel="noopener noreferrer nofollow"
-                                className="flex h-12 items-center justify-center gap-2.5 rounded-xl border border-[#7aa8ff] bg-gradient-to-b from-[#4f8ff7] to-[#2563eb] font-semibold text-white shadow-[0_0_24px_rgba(59,130,246,.45)] transition hover:brightness-110"
-                            >
-                                <Download className="h-5 w-5" aria-hidden="true" /> Tải patch Việt hoá{linkPhu.length ? ` (${linkChinh.nhan})` : ''}
-                            </a>
-                        )}
-                        {linkPhu.length > 0 && (
-                            <div className="flex flex-wrap gap-2">
-                                {linkPhu.map((l) => (
-                                    <a key={l.url} href={l.url} target="_blank" rel="noopener noreferrer nofollow" className={`inline-flex flex-1 items-center justify-center gap-1.5 px-3 py-2 text-sm hover:border-[rgba(130,160,255,.55)] ${O_TOI}`}>
-                                        <Download className="h-4 w-4" aria-hidden="true" /> {l.nhan}
-                                    </a>
-                                ))}
-                            </div>
-                        )}
+                        <NutTai
+                            links={g.link_tai ?? []}
+                            ungHo={qrUngHo ? { qr: qrUngHo, soTien: g.so_tien, bankId: bank.bankId, accountNo: bank.accountNo, accountName: bank.accountName ?? '' } : null}
+                            tenGame={g.ten}
+                            phienBanGame={g.phien_ban_game}
+                            postSlug={g.post_slug}
+                        />
                         {g.link_mua && (
                             <a
                                 href={g.link_mua}
@@ -155,7 +144,7 @@ export default async function TrangGame({ params }: Props) {
             {qrUngHo && (
                 <section className={`${THE_KINH} mt-5 grid items-center gap-6 p-5 sm:grid-cols-[200px_1fr] sm:p-7`}>
                     {/* eslint-disable-next-line @next/next/no-img-element -- ảnh QR từ img.vietqr.io, không cần qua optimizer */}
-                    <img src={qrUngHo} alt={`Mã QR ủng hộ bản Việt hoá ${g.ten}`} width={200} height={200} loading="lazy" className="mx-auto rounded-xl bg-white p-2" />
+                    <img src={qrUngHo} alt={`Mã QR ủng hộ bản Việt hoá ${boDuoiVietHoa(g.ten)}`} width={200} height={200} loading="lazy" className="mx-auto rounded-xl bg-white p-2" />
                     <div>
                         <h2 className="flex items-center gap-2.5 text-xl font-bold">
                             <HeartHandshake className="h-5 w-5 text-[#60a5fa]" aria-hidden="true" /> Ủng hộ nhóm dịch
