@@ -21,3 +21,11 @@ export const CHU_PHU = 'text-[#a9b3e0]';
 export function toiUuDuoc(src: string): boolean {
     return src.startsWith('https://lh3.googleusercontent.com/');
 }
+
+/**
+ * Bỏ đuôi "Việt hoá" admin lỡ gõ vào tên game, để chỗ nào tự ghép thêm chữ đó
+ * (tiêu đề tab, hộp ủng hộ) không thành "… Việt Hoá Việt hoá".
+ */
+export function boDuoiVietHoa(ten: string): string {
+    return ten.normalize('NFC').replace(/\s*[-–:|(]?\s*vi[eệ]t\s*h(?:o[aáà]|óa)\)?\s*$/iu, '').trim() || ten;
+}
