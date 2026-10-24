@@ -52,3 +52,33 @@ where table_schema = 'public' and table_name = 'game_viet_hoa'
 -- -----------------------------------------------------------------------------
 alter table public.game_viet_hoa
     add column if not exists so_tien int check (so_tien is null or so_tien >= 0);
+
+-- -----------------------------------------------------------------------------
+-- Bổ sung 24/10/2026: đếm lượt tải patch. Route /api/game-viet-hoa/[slug]/tai
+-- gọi hàm dưới (mỗi IP mỗi game tối đa 1 lượt / 6 giờ, chặn ở tầng app).
+-- PHẢI chạy TRƯỚC khi rollout bản code đọc cột này.
+-- Tăng bằng hàm SQL cho NGUYÊN TỬ — đọc rồi ghi ở app thì hai lượt tải cùng lúc
+-- sẽ mất một. Cố ý KHÔNG đụng updated_at: ngày "Cập nhật" ngoài trang là ngày
+-- bản dịch đổi, không phải ngày có người tải.
+-- -----------------------------------------------------------------------------
+alter table public.game_viet_hoa
+    add column if not exists luot_tai int not null default 0 check (luot_tai >= 0);
+
+create or replace function public.tang_luot_tai_game(p_slug text)
+returns void
+language sql
+as $$
+    update public.game_viet_hoa set luot_tai = luot_tai + 1
+    where slug = p_slug and is_published;
+$$;
+
+-- Hàm mới mặc định cho PUBLIC quyền EXECUTE ⇒ anon gọi được qua /rest/v1/rpc
+-- để bơm số. Chỉ service role (app) được gọi.
+revoke all on function public.tang_luot_tai_game(text) from public, anon, authenticated;
+grant execute on function public.tang_luot_tai_game(text) to service_role;
+
+-- Nghiệm thu: anon/authenticated/PUBLIC KHÔNG được có quyền EXECUTE (phải 0 dòng).
+select grantee, privilege_type
+from information_schema.routine_privileges
+where routine_schema = 'public' and routine_name = 'tang_luot_tai_game'
+  and grantee in ('anon', 'authenticated', 'PUBLIC');
