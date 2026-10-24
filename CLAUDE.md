@@ -52,7 +52,7 @@ Domain chuẩn: `https://www.tradadata.com`.
 - **Vận hành cụm khi cần sửa env / xem log**: máy dev KHÔNG có `kubectl`, control plane
   `192.168.1.250` chỉ vào được qua gateway bằng khoá SSH — khoá đó nằm trong secret của
   repo `TRUNGHOANGDATA/ke-truyen`, không có ở repo này. Đường vào là workflow
-  **`rescue-blog`** bên repo đó (`workflow_dispatch`, 6 chế độ — kiểm 10/09/2026):
+  **`rescue-blog`** bên repo đó (`workflow_dispatch`, kiểm lại 24/10/2026):
   - `diagnose` — chỉ đọc: pods, events, trạng thái từng container, image đang khai.
   - `fix-pullsecret` — làm mới `ghcr-secret` khi PAT hết hạn gây 403 ImagePullBackOff.
   - `force-restart` — xoá cứng pod để k8s tạo lại (gỡ pod kẹt Terminating/Pending).
@@ -62,6 +62,13 @@ Domain chuẩn: `https://www.tradadata.com`.
   - `blog-env-set` — ghi `GOOGLE_INDEXING_CREDENTIALS`, `INDEXNOW_KEY`, và
     `GOOGLE_OAUTH_REFRESH_TOKEN` (nếu có secret `BLOG_GOOGLE_OAUTH_REFRESH_TOKEN`).
     Cố ý KHÔNG restart — để `deploy-blog` recreate một lần, đỡ một lần downtime.
+  - `blog-supabase-set` (thêm 24/10/2026) — ghi `NEXT_PUBLIC_SUPABASE_URL`,
+    `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY` từ secret
+    `BLOG_SUPABASE_URL` / `BLOG_SUPABASE_ANON_KEY` / `BLOG_SUPABASE_SERVICE_ROLE_KEY`
+    của repo `ke-truyen`. Kiểm URL đúng dạng `https://<ref>.supabase.co` rồi in `ref`
+    để đối chiếu. Cũng KHÔNG restart.
+  Ngoài ra còn `blog-resources`, `blog-cpu-4`, `apply-cronjobs` — đọc đầu file
+  `rescue-blog.yml`, nó tự mô tả từng chế độ.
   ⚠️ **KHÔNG có workflow `blog-cron`** — bản CLAUDE.md trước mô tả nó với 5 chế độ
   (`apply-cronjobs`, `test-run`, `check-lead-mail`, `set-mail-secret`) đều không tồn tại.
   Muốn sửa env mail thì thêm khoá vào `blog-env-set` theo đúng khuôn của nó.
@@ -182,6 +189,9 @@ lịch sử một phần: nó **không** chứa 10 bảng app đang dùng (`orde
 Chạy hết migration lên DB rỗng sẽ ra schema thiếu sạch phần bán hàng mà vẫn báo thành công.
 Xem `supabase/migrations/README.md`. Schema thật sửa trực tiếp trên Supabase — cần biết cột nào
 có thật thì đọc code hoặc query DB.
+Bản dựng lại được duy nhất là `pg_dump` ngày 24/10/2026 ở `backups/2026-10-24-pgdump/`
+(`schema.sql` để đọc, `public.dump` cho `pg_restore`) — CHỈ có trên máy dev vì `backups/`
+gitignore (có PII). Đã dùng chính bản này dựng project mới, đối chiếu md5 từng bảng khớp.
 
 ## Luồng nghiệp vụ chính
 
@@ -295,11 +305,39 @@ trong khi luồng auto-activate ở `orders/create` lại đọc đúng `product
     (đã làm 2 lần ngày 12/09 và góp phần vào sự cố); đối chứng bằng
     `npx tsc --noEmit` + dev server.
   - Mỗi lần recreate pod là cache lạnh đồng loạt. Hai rollout sát nhau = hai cơn.
-  - Gói free **không có backup tự động** (LAST BACKUP: No backups). Bản sao dữ liệu
-    xuất qua REST nằm ở `backups/` (gitignore vì có PII). Thiếu schema — cần
-    `pg_dump --schema-only` khi có Supabase CLI + connection string.
+  - Gói free **không có backup tự động** (LAST BACKUP: No backups). Bản `pg_dump`
+    đầy đủ (schema + dữ liệu) ở `backups/2026-10-24-pgdump/` (gitignore vì có PII).
+    Xuất lại: `pg_dump` **bản 17** (cài ở `C:/Program Files/PostgreSQL/17/bin`) qua
+    **Session pooler** (máy dev không có IPv6 nên không vào đường direct được),
+    `sslmode=verify-full` với CA `Supabase Root 2021 CA` (tải ở Database Settings).
+    ⚠️ `pg_dump.exe` không mở được đường dẫn có dấu ("Trà Đá") — chạy với `cwd` là
+    thư mục đích và chỉ truyền tên file.
   Trạng thái Unhealthy kẹt lâu: Dashboard → Project Settings → General →
   *Fast database reboot*, không đỡ thì *Restart project*.
+
+- **Egress (băng thông ra) — thứ đã khoá CẢ site tháng 10/2026.** Gói Free có 5 GB
+  egress/tháng cho cả organization; vượt là Supabase trả `402` cho MỌI request API
+  lẫn Storage tới hết kỳ (không phải chậm — chết hẳn). Đo kỳ 30/09–30/10: 8.08 GB,
+  97% là PostgREST, nền ~330 MB/ngày ⇒ ~10 GB/tháng. Gốc: hàm danh sách
+  `select('*')` kéo cả `content` (79% dung lượng một hàng) rồi mới bỏ trong JS, và
+  `getRelatedPosts` kéo đủ hàng của ~200 ứng viên để giữ 3.
+  Ngưỡng an toàn cho gói Free: **~165 MB/ngày** — xem Dashboard → Usage sau mỗi đợt
+  đổi truy vấn. Lưu ý: pooler Postgres KHÔNG bị chặn khi project bị khoá egress, nên
+  vẫn `pg_dump` ra được (đã làm 24/10/2026).
+
+- **Project Supabase hiện tại (từ 24/10/2026)**: `gmatbbgfouqhkdbdkqfn`, vùng
+  Singapore (`aws-0-ap-southeast-1` pooler), tài khoản/organization RIÊNG cho blog.
+  Khoá kiểu mới: `NEXT_PUBLIC_SUPABASE_ANON_KEY` là `sb_publishable_…`,
+  `SUPABASE_SERVICE_ROLE_KEY` là `sb_secret_…` — supabase-js 2.97 dùng thẳng, mọi chỗ
+  dùng khoá đều qua `createClient` (đừng thêm code giải mã khoá như JWT).
+  Project CŨ `ujwdhjtzmmflhfewqtid` (bị khoá egress) **chưa được xoá**: Storage của nó
+  còn **929 file (~56 MB, bucket `blog-images` + `blog-demos`)** mà `pg_dump` không
+  mang theo; 176 bài (`content`) + 29 ảnh bìa (`cover_image`) còn trỏ URL về đó, và
+  `next.config.ts` → `remotePatterns` vẫn khai host cũ. Việc còn nợ: khi project cũ
+  mở lại (kỳ mới, ~30/10) chép file sang chỗ mới, sửa URL trong DB, đổi host.
+  Khoá project cũ giữ trong `.env.local` với đuôi `_CU` để làm việc đó.
+  ⚠️ Project mới cũng phải chạy lại `supabase/manual/siet-quyen-anon.sql` (đã chạy
+  24/10/2026 — nghiệm thu 0 dòng).
 
 - **Layout gốc KHÔNG được `await` truy vấn không cache.** `Footer` nằm trong layout
   và đọc `site_settings`; trước đây không cache nên React không render nổi shell,
@@ -466,6 +504,9 @@ trong khi luồng auto-activate ở `orders/create` lại đọc đúng `product
   Mọi hàm trả về danh sách trong `src/lib/data/posts.ts` phải dùng `formatPostForList`
   (đã bỏ `content`); chỉ `getPostBySlug`/`getPostBySlugForPreview` mới giữ `content`.
   Thêm hàm danh sách mới mà quên là lộ sạch nội dung bài Premium.
+  Và phải **select bằng `SELECT_BAI_DANH_SACH`** (hoặc `COT_BAI_TRU_NOI_DUNG`) chứ
+  không `*`: `formatPostForList` chỉ cắt `content` SAU khi đã kéo về, tức egress
+  PostgREST vẫn tính đủ — chính nó làm project bị khoá tháng 10/2026 (mục Egress).
 - **Index & SEO — đừng lặp lại cuộc điều tra ngày 10/09/2026.** Google Indexing API
   (`/api/admin/index-url`) đã cấu hình ĐÚNG hoàn toàn: service account
   `tradadata-bot@tradadata-blog-auth`, API đã bật, đã là Owner của property Domain
