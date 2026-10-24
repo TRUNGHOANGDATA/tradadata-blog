@@ -2,6 +2,7 @@ import { Metadata } from 'next';
 import type { Post, HangBaiVietTho } from '@/types';
 import { notFound } from 'next/navigation';
 import { supabaseAdmin } from '@/lib/supabase/server';
+import { SELECT_BAI_DANH_SACH } from '@/lib/data/posts';
 import { PostCard } from '@/components/blog/PostCard';
 import { Tag } from 'lucide-react';
 import Link from 'next/link';
@@ -34,7 +35,7 @@ function formatPost(raw: HangBaiVietTho): Post {
         title: raw.title,
         slug: raw.slug,
         excerpt: raw.excerpt,
-        content: raw.content,
+        content: null, // danh sách không kéo `content` — xem SELECT_BAI_DANH_SACH
         cover_image: raw.cover_image,
         published_at: raw.published_at,
         created_at: raw.created_at,
@@ -92,7 +93,7 @@ export default async function TagPage({ params }: Props) {
         const postIds = postTagRows.map(r => r.post_id);
         const { data: postsData } = await supabaseAdmin
             .from('posts')
-            .select('*, author:profiles(full_name, avatar_url), category:categories!category_id(name, slug, icon)')
+            .select(SELECT_BAI_DANH_SACH)
             .in('id', postIds)
             .eq('status', 'published')
             .order('published_at', { ascending: false });
