@@ -4,24 +4,41 @@ import { anToan, kiemLoiTruyVan } from '@/lib/data/an-toan';
 import { extractTextFromContent, calculateReadingTime } from '@/lib/utils';
 import type { Post, Category, HangBaiVietTho } from '@/types';
 
+/**
+ * Mọi cột của `posts` TRỪ `content`. Danh sách bài PHẢI select bằng hằng này,
+ * không dùng `*`.
+ *
+ * Lý do đo được: `content` chiếm ~79% dung lượng một hàng (backup 12/09/2026:
+ * 11.8KB / 14.8KB). Kéo về rồi mới `delete` trong JS thì PostgREST vẫn tính
+ * egress — và egress chính là thứ làm gói Free bị khoá toàn bộ tháng 10/2026
+ * (8.08GB / 5GB, 97% là PostgREST).
+ */
+export const COT_BAI_TRU_NOI_DUNG =
+    'id, title, slug, excerpt, cover_image, author_id, category_id, status, is_premium, view_count, ' +
+    'published_at, created_at, updated_at, meta_description, keywords, reading_time, is_featured, ' +
+    'is_pinned, pinned_at, indexed_at, demo_url, demo_label, demo_filename';
+
+// `author` chỉ lấy 2 cột thẻ bài cần. `profiles(*)` trước đây còn kéo email/phone
+// vào props Client Component, tức lộ ra RSC payload ở trình duyệt.
+export const SELECT_BAI_DANH_SACH =
+    `${COT_BAI_TRU_NOI_DUNG}, author:profiles(full_name, avatar_url), category:categories!category_id(*)`;
+
 // Enhance post with computed fields if necessary
 //
-// `stripContent` BẮT BUỘC bật cho mọi hàm trả về DANH SÁCH bài viết.
-// Lý do: các query dùng select('*') nên kéo về cả cột `content`. Danh sách bài
-// được truyền xuống Client Component (BlogListClient, PinnedSlider), mà props của
-// Client Component thì Next serialize vào RSC payload gửi thẳng cho trình duyệt.
-// Không cắt ở đây thì toàn bộ nội dung bài Premium tải được từ /blog dù có paywall.
-// Danh sách cũng không cần `content` — chỉ dùng title/excerpt/cover.
+// `stripContent` BẮT BUỘC bật cho mọi hàm trả về DANH SÁCH bài viết — lớp chặn
+// thứ hai sau SELECT_BAI_DANH_SACH. Danh sách bài được truyền xuống Client
+// Component (BlogListClient, PinnedSlider), props của chúng bị Next serialize vào
+// RSC payload gửi thẳng cho trình duyệt ⇒ lọt `content` là lộ bài Premium.
 function formatPost(post: HangBaiVietTho, { stripContent = false }: { stripContent?: boolean } = {}): Post {
     // `content` lưu dạng chuỗi JSON Tiptap ⇒ phải bóc text thuần bằng
     // extractTextFromContent (khớp cách admin tính reading_time), không dùng
     // typeof === 'object' vì chuỗi luôn trượt điều kiện đó ⇒ mọi bài ra 1 phút.
-    const textForReadingTime = extractTextFromContent(post.content) || post.excerpt || '';
-
-    // Tính reading_time TRƯỚC khi bỏ content
+    // Danh sách không kéo `content` ⇒ dùng cột reading_time admin/script đã ghi sẵn.
     const formatted = {
         ...post,
-        reading_time: calculateReadingTime(textForReadingTime),
+        reading_time: post.content
+            ? calculateReadingTime(extractTextFromContent(post.content) || post.excerpt || '')
+            : post.reading_time || 1,
     };
 
     if (stripContent) {
@@ -68,7 +85,7 @@ async function getPostsUncached({
 
     let query = supabaseAdmin
         .from('posts')
-        .select('*, author:profiles(*), category:categories!category_id(*)', { count: 'exact' })
+        .select(SELECT_BAI_DANH_SACH, { count: 'exact' })
         .eq('status', 'published')
         .order('published_at', { ascending: false });
 
@@ -223,18 +240,19 @@ export const getRelatedPosts = anToan(unstable_cache(
 
         if (scores.size === 0) return [];
 
+        // Chấm điểm trên 2 cột nhỏ, rồi mới lấy đủ cột cho `limit` bài thắng.
+        // Ứng viên chung danh mục có thể là gần hết site (~200 bài) — trước đây
+        // kéo đủ hàng kèm `content` cho cả đám đó (~3MB/lượt) chỉ để giữ lại 3.
         // Chỉ giữ bài đã publish; cần `published_at` để tie-break khi cùng điểm.
         const candidateIds = [...scores.keys()];
-        const { data: posts, error: loiPosts } = await supabaseAdmin
+        const { data: ungVien, error: loiUngVien } = await supabaseAdmin
             .from('posts')
-            .select('*, author:profiles(*), category:categories!category_id(*)')
+            .select('id, published_at')
             .eq('status', 'published')
             .in('id', candidateIds);
-        kiemLoiTruyVan(loiPosts, 'posts.getRelatedPosts');
+        kiemLoiTruyVan(loiUngVien, 'posts.getRelatedPosts');
 
-        if (!posts) return [];
-
-        return posts
+        const topIds = (ungVien || [])
             .sort((a, b) => {
                 const diff = (scores.get(b.id) || 0) - (scores.get(a.id) || 0);
                 if (diff !== 0) return diff;
@@ -242,6 +260,20 @@ export const getRelatedPosts = anToan(unstable_cache(
                 return new Date(b.published_at || 0).getTime() - new Date(a.published_at || 0).getTime();
             })
             .slice(0, limit)
+            .map(p => p.id);
+        if (topIds.length === 0) return [];
+
+        const { data: posts, error: loiPosts } = await supabaseAdmin
+            .from('posts')
+            .select(SELECT_BAI_DANH_SACH)
+            .in('id', topIds);
+        kiemLoiTruyVan(loiPosts, 'posts.getRelatedPosts');
+
+        // `in()` không giữ thứ tự ⇒ xếp lại theo topIds.
+        const theoId = new Map((posts || []).map(p => [p.id, p]));
+        return topIds
+            .map(id => theoId.get(id))
+            .filter((p): p is NonNullable<typeof p> => !!p)
             .map(formatPostForList);
     },
     ['related-posts-v2'],
@@ -253,7 +285,7 @@ async function getPinnedPostsUncached(limit = 5): Promise<Post[]> {
 
     const { data, error } = await supabaseAdmin
         .from('posts')
-        .select('*, author:profiles(*), category:categories!category_id(*)')
+        .select(SELECT_BAI_DANH_SACH)
         .eq('status', 'published')
         .eq('is_pinned', true)
         .order('pinned_at', { ascending: false })
@@ -317,7 +349,7 @@ async function searchPostsUncached(query: string): Promise<Post[]> {
 
     const { data, error } = await supabaseAdmin
         .from('posts')
-        .select('*, author:profiles(*), category:categories!category_id(*)')
+        .select(SELECT_BAI_DANH_SACH)
         .eq('status', 'published')
         .ilike('title', `%${query}%`)
         .order('published_at', { ascending: false })

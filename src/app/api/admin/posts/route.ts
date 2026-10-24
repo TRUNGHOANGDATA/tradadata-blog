@@ -4,6 +4,7 @@ import { loiThanhChu } from '@/lib/errors';
 import { auth } from '@/lib/auth';
 import { supabaseAdmin } from '@/lib/supabase/server';
 import { revalidatePost } from '@/lib/cache';
+import { COT_BAI_TRU_NOI_DUNG } from '@/lib/data/posts';
 
 // GET /api/admin/posts — List all posts (including drafts) for admin
 export async function GET() {
@@ -19,7 +20,9 @@ export async function GET() {
 
         const { data, error } = await supabaseAdmin
             .from('posts')
-            .select('*, author:profiles(full_name, email), category:categories!category_id(name, slug, icon)')
+            // Trang danh sách admin không dùng `content`; select('*') ở đây kéo
+            // ~4MB (mọi bài, kể cả nháp) mỗi lần mở /admin/posts.
+            .select(`${COT_BAI_TRU_NOI_DUNG}, author:profiles(full_name, email), category:categories!category_id(name, slug, icon)`)
             .order('created_at', { ascending: false });
 
         if (error) throw error;
