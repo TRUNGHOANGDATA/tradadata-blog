@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
-import { ArrowLeft, ArrowRight, BookOpen, CalendarDays, ExternalLink, Gamepad2, HeartHandshake, LayoutGrid, ShoppingCart, Tag, Users } from 'lucide-react';
+import { ArrowLeft, ArrowRight, BookOpen, CalendarDays, Download, ExternalLink, Gamepad2, HeartHandshake, LayoutGrid, ShoppingCart, Tag, Users } from 'lucide-react';
 import { getDanhSachGame, getGameBySlug } from '@/lib/data/game-viet-hoa';
 import { getSetting } from '@/lib/data/settings';
 import { ThanhTienDo } from '@/components/game/DanhSachGame';
@@ -13,6 +13,9 @@ import { THE_KINH, O_TOI, CHU_PHU, toiUuDuoc, boDuoiVietHoa } from '@/components
 // prerender lúc `next build`, để build không đốt thêm truy vấn vào Supabase NANO.
 // ĐỪNG thêm auth()/cookies()/headers()/searchParams vào file này — mất tính tĩnh.
 export const revalidate = 3600;
+
+/** Dưới ngưỡng này trang hiện "Mới phát hành" thay cho số lượt tải. */
+const LUOT_TAI_HIEN_SO = 50;
 
 export async function generateStaticParams() {
     return [];
@@ -61,6 +64,8 @@ export default async function TrangGame({ params }: Props) {
         [LayoutGrid, 'Thể loại', g.the_loai.join(', ') || null],
         [Tag, 'Bản game / patch', [g.phien_ban_game, g.phien_ban_patch].filter(Boolean).join(' / ') || null],
         [Users, 'Nhóm dịch', g.nhom_dich],
+        // Số thật, không bơm. Dưới ngưỡng thì hiện nhãn thay vì một con số lèo tèo.
+        [Download, 'Lượt tải', (g.luot_tai ?? 0) >= LUOT_TAI_HIEN_SO ? `${g.luot_tai.toLocaleString('vi-VN')} lượt` : 'Mới phát hành'],
     ];
 
     return (
@@ -102,7 +107,9 @@ export default async function TrangGame({ params }: Props) {
                     {/* Mobile: nút bám đáy màn hình để luôn bấm được */}
                     <div className="sticky bottom-0 -mx-4 mt-3 space-y-2.5 bg-[rgba(7,11,36,.9)] px-4 py-3 sm:static sm:mx-0 sm:bg-transparent sm:p-0">
                         <NutTai
-                            links={g.link_tai ?? []}
+                            slug={g.slug}
+                            // CHỈ nhãn: URL thật không được lọt vào RSC payload, route /tai mới cấp sau khi chờ.
+                            links={(g.link_tai ?? []).map((l) => ({ nhan: l.nhan }))}
                             ungHo={qrUngHo ? { qr: qrUngHo, soTien: g.so_tien, bankId: bank.bankId, accountNo: bank.accountNo, accountName: bank.accountName ?? '' } : null}
                             tenGame={g.ten}
                             phienBanGame={g.phien_ban_game}

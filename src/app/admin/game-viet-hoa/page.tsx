@@ -23,6 +23,8 @@ interface GameAdmin {
     phien_ban_patch: string | null;
     nhom_dich: string | null;
     tien_do: number;
+    /** Chỉ đọc — route lưu không ghi cột này, nên admin bấm lưu không làm mất số đếm. */
+    luot_tai?: number;
     mo_ta: string | null;
     link_tai: LinkTai[];
     link_mua: string | null;
@@ -266,7 +268,7 @@ export default function GameVietHoaAdminPage() {
                                         </span>
                                         <span className="min-w-0">
                                             <span className="block truncate font-medium text-fg">{g.ten}</span>
-                                            <span className="block truncate text-xs text-fg-subtle">{g.nen_tang.join(', ') || '—'} · {g.tien_do}%</span>
+                                            <span className="block truncate text-xs text-fg-subtle">{g.nen_tang.join(', ') || '—'} · {g.tien_do}% · {(g.luot_tai ?? 0).toLocaleString('vi-VN')} lượt tải</span>
                                         </span>
                                         <span className={`ml-auto shrink-0 rounded px-1.5 py-0.5 text-[11px] ${g.is_published ? 'bg-brand-100 text-brand-700 dark:bg-brand-900/40 dark:text-brand-300' : 'bg-surface-200 text-fg-muted dark:bg-surface-700'}`}>
                                             {g.is_published ? 'Đã đăng' : 'Nháp'}

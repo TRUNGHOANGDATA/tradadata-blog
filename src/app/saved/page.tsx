@@ -1,26 +1,17 @@
 import { redirect } from 'next/navigation';
 import { auth } from '@/lib/auth';
 import { supabaseAdmin } from '@/lib/supabase/server';
+import { SELECT_BAI_DANH_SACH } from '@/lib/data/posts';
 import { PostCard } from '@/components/blog/PostCard';
 import { Bookmark, Search } from 'lucide-react';
 import Link from 'next/link';
 import type { Post, HangBaiVietTho } from '@/types';
 
-// Compute reading time (same logic as posts.ts)
-function calculateReadingTime(text: string): number {
-    const wordsPerMinute = 200;
-    const noOfWords = text.split(/\s/g).length;
-    return Math.ceil(noOfWords / wordsPerMinute);
-}
-
+// Không kéo `content` (xem SELECT_BAI_DANH_SACH) ⇒ dùng cột reading_time đã lưu.
 function formatPost(post: HangBaiVietTho): Post {
-    let textForReadingTime = post.excerpt || '';
-    if (post.content && typeof post.content === 'object') {
-        textForReadingTime += JSON.stringify(post.content);
-    }
     return {
         ...post,
-        reading_time: calculateReadingTime(textForReadingTime) || 3,
+        reading_time: post.reading_time || 3,
     } as Post;
 }
 
@@ -66,7 +57,7 @@ export default async function SavedPostsPage() {
                 const postIds = bookmarks.map(b => b.post_id);
                 const { data: posts, error: postsError } = await supabaseAdmin
                     .from('posts')
-                    .select('*, author:profiles(*), category:categories!category_id(*)')
+                    .select(SELECT_BAI_DANH_SACH)
                     .in('id', postIds)
                     .eq('status', 'published');
 
@@ -77,7 +68,7 @@ export default async function SavedPostsPage() {
                     const postMap = new Map(posts.map(p => [p.id, p]));
                     savedPosts = postIds
                         .map(id => postMap.get(id))
-                        .filter(Boolean)
+                        .filter((p): p is NonNullable<typeof p> => !!p)
                         .map(formatPost);
                 }
             }
