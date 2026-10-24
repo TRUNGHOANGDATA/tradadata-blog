@@ -49,10 +49,12 @@ export default async function TrangGame({ params }: Props) {
     ]);
     const khac = dsGame.filter((x) => x.slug !== g.slug).slice(0, 3);
     // Chưa cấu hình tài khoản thì ẩn khối ủng hộ — KHÔNG rơi về số tài khoản mẫu như trang thanh toán.
+    // Nội dung CK dùng chung cho QR và nút "Chép nội dung" trong hộp tải — lệch nhau là khó đối soát.
+    const noiDungCk = `UNG HO ${g.slug}`.slice(0, 40);
     const qrUngHo = bank.bankId && bank.accountNo
         ? `https://img.vietqr.io/image/${encodeURIComponent(bank.bankId)}-${encodeURIComponent(bank.accountNo)}-compact.png?${new URLSearchParams({
             ...(g.so_tien ? { amount: String(g.so_tien) } : {}),
-            addInfo: `UNG HO ${g.slug}`.slice(0, 40),
+            addInfo: noiDungCk,
             accountName: bank.accountName ?? '',
         })}`
         : null;
@@ -110,7 +112,7 @@ export default async function TrangGame({ params }: Props) {
                             slug={g.slug}
                             // CHỈ nhãn: URL thật không được lọt vào RSC payload, route /tai mới cấp sau khi chờ.
                             links={(g.link_tai ?? []).map((l) => ({ nhan: l.nhan }))}
-                            ungHo={qrUngHo ? { qr: qrUngHo, soTien: g.so_tien, bankId: bank.bankId, accountNo: bank.accountNo, accountName: bank.accountName ?? '' } : null}
+                            ungHo={qrUngHo ? { qr: qrUngHo, soTien: g.so_tien, bankId: bank.bankId, accountNo: bank.accountNo, accountName: bank.accountName ?? '', noiDung: noiDungCk } : null}
                             tenGame={g.ten}
                             phienBanGame={g.phien_ban_game}
                             postSlug={g.post_slug}
@@ -186,9 +188,11 @@ export default async function TrangGame({ params }: Props) {
                             Xem thêm <ArrowRight className="h-4 w-4" aria-hidden="true" />
                         </Link>
                     </div>
+                    {/* li min-w-0: ô lưới mặc định min-width:auto ⇒ tiêu đề `truncate` không co, đẩy trang
+                        rộng 524px trên điện thoại 375px và kéo lệch luôn hộp ủng hộ (dialog canh theo trang). */}
                     <ul className="grid gap-4 md:grid-cols-3">
                         {khac.map((k) => (
-                            <li key={k.slug}>
+                            <li key={k.slug} className="min-w-0">
                                 <Link href={`/game-viet-hoa/${k.slug}`} className={`${THE_KINH} flex gap-3.5 p-2.5 hover:border-[rgba(130,160,255,.55)]`}>
                                     <span className="relative aspect-video w-36 shrink-0 overflow-hidden rounded-lg bg-[#111a44]">
                                         {k.anh_bia && <Image src={k.anh_bia} alt="" fill sizes="144px" className="object-cover" unoptimized={!toiUuDuoc(k.anh_bia)} />}
